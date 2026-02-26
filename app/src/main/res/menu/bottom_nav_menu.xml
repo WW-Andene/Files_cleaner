@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/browseFragment"
+        android:icon="@drawable/ic_folder"
+        android:title="Browse" />
+
+    <item
+        android:id="@+id/duplicatesFragment"
+        android:icon="@drawable/ic_copy"
+        android:title="Duplicates" />
+
+    <item
+        android:id="@+id/largeFilesFragment"
+        android:icon="@drawable/ic_storage"
+        android:title="Large" />
+
+    <item
+        android:id="@+id/junkFragment"
+        android:icon="@drawable/ic_delete"
+        android:title="Junk" />
+
+</menu>

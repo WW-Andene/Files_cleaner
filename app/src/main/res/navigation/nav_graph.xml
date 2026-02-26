@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/browseFragment">
+
+    <fragment
+        android:id="@+id/browseFragment"
+        android:name="com.filecleaner.app.ui.browse.BrowseFragment"
+        android:label="Browse" />
+
+    <fragment
+        android:id="@+id/duplicatesFragment"
+        android:name="com.filecleaner.app.ui.duplicates.DuplicatesFragment"
+        android:label="Duplicates" />
+
+    <fragment
+        android:id="@+id/largeFilesFragment"
+        android:name="com.filecleaner.app.ui.large.LargeFilesFragment"
+        android:label="Large Files" />
+
+    <fragment
+        android:id="@+id/junkFragment"
+        android:name="com.filecleaner.app.ui.junk.JunkFragment"
+        android:label="Junk" />
+
+</navigation>
