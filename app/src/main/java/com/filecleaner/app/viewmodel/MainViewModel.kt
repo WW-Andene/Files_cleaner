@@ -12,6 +12,7 @@ import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.utils.DuplicateFinder
 import com.filecleaner.app.utils.FileScanner
 import com.filecleaner.app.utils.JunkFinder
+import com.filecleaner.app.utils.ScanCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -93,6 +94,39 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
 
+    init {
+        // Load cached scan results on startup
+        viewModelScope.launch {
+            val cached = ScanCache.load(getApplication())
+            if (cached != null) {
+                val (files, tree) = cached
+                stateMutex.withLock {
+                    _allFiles.postValue(files)
+                    _directoryTree.postValue(tree)
+                    _filesByCategory.postValue(files.groupBy { it.category })
+
+                    val dupes = DuplicateFinder.findDuplicates(files)
+                    _duplicates.postValue(dupes)
+
+                    val large = JunkFinder.findLargeFiles(files)
+                    _largeFiles.postValue(large)
+
+                    val junk = JunkFinder.findJunk(files)
+                    _junkFiles.postValue(junk)
+
+                    _storageStats.postValue(StorageStats(
+                        totalFiles    = files.size,
+                        totalSize     = files.sumOf { it.size },
+                        junkSize      = junk.sumOf { it.size },
+                        duplicateSize = dupes.sumOf { it.size },
+                        largeSize     = large.sumOf { it.size }
+                    ))
+                }
+                _scanState.postValue(ScanState.Done)
+            }
+        }
+    }
+
     fun startScan(minLargeFileMb: Int = 50) {
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
@@ -126,6 +160,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
 
                 _scanState.postValue(ScanState.Done)
+
+                // Cache results to disk for persistence
+                ScanCache.save(getApplication(), files, tree)
             }.onFailure { e ->
                 if (e is kotlinx.coroutines.CancellationException) throw e
                 _scanState.postValue(ScanState.Error(e.message ?: "Unknown error"))
