@@ -9,7 +9,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.filecleaner.app.R
+import com.filecleaner.app.data.FileCategory
+import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentArborescenceBinding
+import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
@@ -68,6 +71,21 @@ class ArborescenceFragment : Fragment() {
             }
         }
 
+        // File long-press context menu
+        binding.arborescenceView.onFileLongPress = { filePath, fileName ->
+            val file = File(filePath)
+            val ext = file.extension.lowercase()
+            val category = FileCategory.fromExtension(ext)
+            val item = FileItem(
+                path = filePath,
+                name = fileName,
+                size = file.length(),
+                lastModified = file.lastModified(),
+                category = category
+            )
+            FileContextMenu.show(requireContext(), binding.arborescenceView, item, contextMenuCallback)
+        }
+
         // Tree search
         binding.etSearchTree.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -118,6 +136,25 @@ class ArborescenceFragment : Fragment() {
         bytes >= 1_048_576 -> "%.1f MB".format(bytes / 1_048_576.0)
         bytes >= 1_024 -> "%.0f KB".format(bytes / 1_024.0)
         else -> "$bytes B"
+    }
+
+    private val contextMenuCallback = object : FileContextMenu.Callback {
+        override fun onDelete(item: FileItem) {
+            vm.deleteFiles(listOf(item))
+        }
+        override fun onRename(item: FileItem, newName: String) {
+            vm.renameFile(item.path, newName)
+        }
+        override fun onCompress(item: FileItem) {
+            vm.compressFile(item.path)
+        }
+        override fun onExtract(item: FileItem) {
+            vm.extractArchive(item.path)
+        }
+        override fun onOpenInTree(item: FileItem) {
+            binding.arborescenceView.highlightFilePath(item.path)
+        }
+        override fun onRefresh() {}
     }
 
     override fun onDestroyView() {

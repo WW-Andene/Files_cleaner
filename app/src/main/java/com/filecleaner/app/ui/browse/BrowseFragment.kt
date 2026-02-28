@@ -20,9 +20,11 @@ import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentBrowseBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
+import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.chip.Chip
+import com.google.android.material.snackbar.Snackbar
 
 class BrowseFragment : Fragment() {
 
@@ -55,6 +57,9 @@ class BrowseFragment : Fragment() {
         // RecyclerView
         adapter = FileAdapter(selectable = false)
         adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
+        adapter.onItemLongClick = { item, anchor ->
+            FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback)
+        }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 
@@ -215,6 +220,27 @@ class BrowseFragment : Fragment() {
                 }
             }
             chipGroup.addView(chip)
+        }
+    }
+
+    private val contextMenuCallback = object : FileContextMenu.Callback {
+        override fun onDelete(item: FileItem) {
+            vm.deleteFiles(listOf(item))
+        }
+        override fun onRename(item: FileItem, newName: String) {
+            vm.renameFile(item.path, newName)
+        }
+        override fun onCompress(item: FileItem) {
+            vm.compressFile(item.path)
+        }
+        override fun onExtract(item: FileItem) {
+            vm.extractArchive(item.path)
+        }
+        override fun onOpenInTree(item: FileItem) {
+            vm.requestTreeHighlight(item.path)
+        }
+        override fun onRefresh() {
+            refresh()
         }
     }
 

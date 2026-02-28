@@ -12,7 +12,26 @@ enum class FileCategory(val displayName: String, val emoji: String) {
     APK("APKs", "\uD83D\uDCE6"),
     ARCHIVE("Archives", "\uD83D\uDDDC\uFE0F"),
     DOWNLOAD("Downloads", "\u2B07\uFE0F"),
-    OTHER("Other", "\uD83D\uDCC1")
+    OTHER("Other", "\uD83D\uDCC1");
+
+    companion object {
+        private val extMap = mapOf(
+            IMAGE to setOf("jpg","jpeg","png","gif","bmp","webp","heic","heif","tiff","svg","raw","cr2","nef"),
+            VIDEO to setOf("mp4","mkv","avi","mov","wmv","flv","webm","m4v","3gp","ts","mpeg","mpg"),
+            AUDIO to setOf("mp3","aac","flac","wav","ogg","m4a","wma","opus","aiff","mid"),
+            DOCUMENT to setOf("pdf","doc","docx","xls","xlsx","ppt","pptx","txt","csv","odt","ods","odp","epub","mobi","rtf","md"),
+            APK to setOf("apk","xapk","apks"),
+            ARCHIVE to setOf("zip","rar","7z","tar","gz","bz2","xz","cab","iso","tgz")
+        )
+
+        fun fromExtension(ext: String): FileCategory {
+            val lower = ext.lowercase()
+            for ((cat, exts) in extMap) {
+                if (lower in exts) return cat
+            }
+            return OTHER
+        }
+    }
 }
 
 @Parcelize

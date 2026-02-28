@@ -135,6 +135,7 @@ class ArborescenceView @JvmOverloads constructor(
     var onFileMoveRequested: ((filePath: String, targetDirPath: String) -> Unit)? = null
     var onStatsUpdate: ((totalFiles: Int, totalSize: Long, visibleNodes: Int, zoom: Float) -> Unit)? = null
     var onNodeSelected: ((DirectoryNode?) -> Unit)? = null
+    var onFileLongPress: ((filePath: String, fileName: String) -> Unit)? = null
 
     // ── Gesture detectors ──
     private val scaleDetector = ScaleGestureDetector(context,
@@ -187,14 +188,19 @@ class ArborescenceView @JvmOverloads constructor(
                 val pt = screenToWorld(e.x, e.y)
                 val hit = hitTestFile(pt[0], pt[1])
                 if (hit != null) {
-                    isDragging = true
-                    dragFilePath = hit.first
-                    dragFileName = hit.second
-                    dragSourceBlock = hit.third
-                    dragX = e.x
-                    dragY = e.y
                     performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                    invalidate()
+                    // If context menu callback is set, use that; otherwise drag
+                    if (onFileLongPress != null) {
+                        onFileLongPress?.invoke(hit.first, hit.second)
+                    } else {
+                        isDragging = true
+                        dragFilePath = hit.first
+                        dragFileName = hit.second
+                        dragSourceBlock = hit.third
+                        dragX = e.x
+                        dragY = e.y
+                        invalidate()
+                    }
                 }
             }
         })

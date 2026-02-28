@@ -104,6 +104,23 @@
     <string name="open_with">Open with</string>
     <string name="no_app_found">No app found to open this file</string>
 
+    <!-- Context menu -->
+    <string name="ctx_open">Open</string>
+    <string name="ctx_delete">Delete</string>
+    <string name="ctx_rename">Rename</string>
+    <string name="ctx_share">Share</string>
+    <string name="ctx_cut">Cut</string>
+    <string name="ctx_compress">Compress</string>
+    <string name="ctx_extract">Extract</string>
+    <string name="ctx_open_in_tree">Open in Raccoon Tab</string>
+    <string name="rename_success">Renamed successfully</string>
+    <string name="rename_failed">Rename failed</string>
+    <string name="compress_success">Compressed successfully</string>
+    <string name="compress_failed">Compression failed</string>
+    <string name="extract_success">Extracted successfully</string>
+    <string name="extract_failed">Extraction failed</string>
+    <string name="extract_unsupported">Only ZIP archives can be extracted</string>
+
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>
 </resources>
