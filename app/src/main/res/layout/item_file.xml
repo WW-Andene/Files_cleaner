@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="4dp"
     android:layout_marginVertical="3dp"
-    app:cardCornerRadius="12dp"
+    app:cardCornerRadius="@dimen/radius_card"
     app:cardElevation="0dp"
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="1dp"
@@ -25,7 +25,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="44dp"
             android:layout_height="44dp"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="@dimen/radius_icon_container"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
             app:cardBackgroundColor="@color/surfaceDim">
@@ -52,7 +52,7 @@
                 android:id="@+id/tv_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
                 android:textColor="@color/textPrimary"
                 android:maxLines="1"
                 android:ellipsize="middle"
@@ -62,8 +62,7 @@
                 android:id="@+id/tv_file_meta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@color/textTertiary"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                 android:layout_marginTop="2dp" />
 
         </LinearLayout>

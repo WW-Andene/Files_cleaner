@@ -16,10 +16,10 @@
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusTopStart="@dimen/radius_input"
+        app:boxCornerRadiusTopEnd="@dimen/radius_input"
+        app:boxCornerRadiusBottomStart="@dimen/radius_input"
+        app:boxCornerRadiusBottomEnd="@dimen/radius_input"
         app:boxStrokeColor="@color/borderDefault"
         app:hintTextColor="@color/colorPrimary"
         app:startIconTint="@color/textTertiary"
@@ -33,7 +33,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionSearch"
-            android:textSize="14sp" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Stats row + filter toggle + zoom info -->
@@ -50,8 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/textTertiary"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
             android:fontFamily="sans-serif-medium"
             android:visibility="gone" />
 
@@ -80,8 +79,7 @@
             android:id="@+id/tv_zoom_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/textTertiary"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
             android:visibility="gone" />
     </LinearLayout>
 
@@ -172,7 +170,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/scan_to_see_results"
-                android:textSize="15sp"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
                 android:textColor="@color/textSecondary"
                 android:gravity="center" />
         </LinearLayout>
@@ -189,7 +187,7 @@
             android:paddingHorizontal="14dp"
             android:paddingVertical="10dp"
             android:textColor="@android:color/white"
-            android:textSize="13sp"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:fontFamily="sans-serif-medium"
             android:elevation="4dp"
             android:visibility="gone" />

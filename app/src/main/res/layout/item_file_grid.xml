@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    app:cardCornerRadius="12dp"
+    app:cardCornerRadius="@dimen/radius_card"
     app:cardElevation="0dp"
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="1dp"
@@ -20,7 +20,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
             app:cardBackgroundColor="@color/surfaceDim">
@@ -48,7 +48,7 @@
                 android:id="@+id/tv_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                 android:textColor="@color/textPrimary"
                 android:maxLines="2"
                 android:ellipsize="end"
@@ -58,8 +58,7 @@
                 android:id="@+id/tv_file_meta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:textColor="@color/textTertiary"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                 android:maxLines="1"
                 android:layout_marginTop="2dp" />
         </LinearLayout>

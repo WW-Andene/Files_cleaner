@@ -61,33 +61,34 @@ class ArborescenceView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 18f
-        typeface = Typeface.DEFAULT_BOLD
+        textSize = context.resources.getDimension(R.dimen.text_subtitle)
+        typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
         color = Color.WHITE
+        letterSpacing = -0.01f
     }
     private val subtitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 13f
+        textSize = context.resources.getDimension(R.dimen.text_body_small)
         color = 0xCCFFFFFF.toInt()
     }
     private val filePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 14f
+        textSize = context.resources.getDimension(R.dimen.text_body)
     }
     private val fileSizePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 12f
+        textSize = context.resources.getDimension(R.dimen.text_body_small)
     }
     private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 2f
     }
     private val expandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 22f
+        textSize = context.resources.getDimension(R.dimen.text_title)
         typeface = Typeface.DEFAULT_BOLD
     }
     private val statsBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
     private val statsTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 14f
+        textSize = context.resources.getDimension(R.dimen.text_body)
         color = Color.WHITE
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

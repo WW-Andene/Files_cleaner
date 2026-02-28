@@ -66,42 +66,45 @@
 
     <!-- Material Button -->
     <style name="Widget.FileCleaner.Button" parent="Widget.MaterialComponents.Button">
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">@dimen/radius_btn</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:letterSpacing">0</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:minHeight">44dp</item>
     </style>
 
     <!-- Outlined Button -->
     <style name="Widget.FileCleaner.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">@dimen/radius_btn</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:letterSpacing">0</item>
+        <item name="android:letterSpacing">0.01</item>
         <item name="strokeColor">@color/borderDefault</item>
         <item name="strokeWidth">1dp</item>
     </style>
 
-    <!-- Chip -->
+    <!-- Chip — checked state uses primary tint for clear feedback -->
     <style name="Widget.FileCleaner.Chip" parent="Widget.MaterialComponents.Chip.Filter">
         <item name="chipCornerRadius">20dp</item>
-        <item name="chipBackgroundColor">@color/surfaceDim</item>
-        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipBackgroundColor">@color/chip_bg_color</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">@color/chip_stroke_color</item>
         <item name="checkedIconVisible">false</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/chip_text_color</item>
     </style>
 
     <!-- TextInputLayout styling -->
     <style name="Widget.FileCleaner.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_input</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_input</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_input</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_input</item>
         <item name="boxStrokeColor">@color/borderDefault</item>
         <item name="hintTextColor">@color/colorPrimary</item>
     </style>
 
     <!-- Card style for file items -->
     <style name="Widget.FileCleaner.Card" parent="Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">12dp</item>
+        <item name="cardCornerRadius">@dimen/radius_card</item>
         <item name="cardElevation">0dp</item>
         <item name="strokeWidth">1dp</item>
         <item name="strokeColor">@color/borderDefault</item>
@@ -112,5 +115,64 @@
     <style name="Widget.FileCleaner.FAB" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
         <item name="backgroundTint">@color/colorPrimary</item>
         <item name="shapeAppearance">@style/ShapeSmall</item>
+    </style>
+
+    <!-- ═══ Typography System (§DT1-4) ═══ -->
+    <!-- Headline: bold, slight negative tracking for optical tightening -->
+    <style name="TextAppearance.FileCleaner.Headline" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">@dimen/text_headline</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <!-- Title: medium weight, tighter than body -->
+    <style name="TextAppearance.FileCleaner.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.005</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <!-- Subtitle: slightly emphasized -->
+    <style name="TextAppearance.FileCleaner.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textSize">@dimen/text_subtitle</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <!-- Body: regular weight, natural tracking -->
+    <style name="TextAppearance.FileCleaner.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.005</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingMultiplier">1.4</item>
+    </style>
+
+    <!-- Body small: secondary info -->
+    <style name="TextAppearance.FileCleaner.BodySmall" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">@dimen/text_body_small</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
+    <!-- Caption: small labels, wider tracking for legibility at small size -->
+    <style name="TextAppearance.FileCleaner.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_caption</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="android:textColor">@color/textTertiary</item>
+    </style>
+
+    <!-- Label: all-caps chip/tag labels — wide tracking is mandatory -->
+    <style name="TextAppearance.FileCleaner.Label" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.06</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/textSecondary</item>
     </style>
 </resources>

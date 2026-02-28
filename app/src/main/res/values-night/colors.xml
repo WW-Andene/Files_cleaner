@@ -17,21 +17,27 @@
     <color name="colorSuccess">#66BB6A</color>
     <color name="colorWarning">#FFD54F</color>
 
-    <!-- Surface elevation ladder (chromatic near-blacks) -->
-    <color name="surfaceBase">#0F1412</color>
-    <color name="surfaceColor">#171D1A</color>
-    <color name="surfaceElevated">#1E2622</color>
-    <color name="surfaceDim">#232B27</color>
+    <!-- Surface elevation ladder (chromatic near-blacks, ~3-4% lightness steps) -->
+    <color name="surfaceBase">#0E1311</color>
+    <color name="surfaceColor">#161C19</color>
+    <color name="surfaceElevated">#1F2723</color>
+    <color name="surfaceDim">#252E2A</color>
 
-    <!-- Text -->
-    <color name="textPrimary">#E8E6E1</color>
-    <color name="textSecondary">#A3A8A5</color>
-    <color name="textTertiary">#6E7572</color>
-    <color name="textOnPrimary">#0F1412</color>
+    <!-- Text (chromatic green-gray, not pure gray) -->
+    <color name="textPrimary">#E6E4DF</color>
+    <color name="textSecondary">#9FA5A2</color>
+    <color name="textTertiary">#6B726E</color>
+    <color name="textOnPrimary">#0E1311</color>
+    <color name="textDisabled">#4A514D</color>
 
     <!-- Borders -->
-    <color name="borderDefault">#2E3631</color>
+    <color name="borderDefault">#2D3531</color>
+    <color name="borderSubtle">#222A26</color>
     <color name="borderFocus">#66BB9A</color>
+
+    <!-- Selection / highlight -->
+    <color name="selectedBackground">#1A3D2E</color>
+    <color name="selectedBorder">#2E7D5F</color>
 
     <!-- Bottom nav -->
     <color name="bottomNavBackground">#171D1A</color>

@@ -17,21 +17,27 @@
     <color name="colorSuccess">#2E7D32</color>
     <color name="colorWarning">#F9A825</color>
 
-    <!-- Surface elevation ladder -->
-    <color name="surfaceBase">#FAFAF7</color>
-    <color name="surfaceColor">#FFFFFF</color>
+    <!-- Surface elevation ladder (chromatic warm-whites) -->
+    <color name="surfaceBase">#F8F6F2</color>
+    <color name="surfaceColor">#FEFDFB</color>
     <color name="surfaceElevated">#FFFFFF</color>
-    <color name="surfaceDim">#F0EDE8</color>
+    <color name="surfaceDim">#EEEAE4</color>
 
-    <!-- Text hierarchy -->
-    <color name="textPrimary">#1A1A1A</color>
-    <color name="textSecondary">#5C6360</color>
-    <color name="textTertiary">#8E9490</color>
+    <!-- Text hierarchy (chromatic, not pure gray) -->
+    <color name="textPrimary">#1C1E1C</color>
+    <color name="textSecondary">#515854</color>
+    <color name="textTertiary">#838A86</color>
     <color name="textOnPrimary">#FFFFFF</color>
+    <color name="textDisabled">#B0B5B2</color>
 
     <!-- Borders -->
-    <color name="borderDefault">#E0DDD8</color>
+    <color name="borderDefault">#DDD9D3</color>
+    <color name="borderSubtle">#EBE8E3</color>
     <color name="borderFocus">#2E7D5F</color>
+
+    <!-- Selection / highlight -->
+    <color name="selectedBackground">#E6F2EC</color>
+    <color name="selectedBorder">#A8D5BF</color>
 
     <!-- Bottom nav -->
     <color name="bottomNavBackground">#FFFFFF</color>

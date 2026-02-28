@@ -8,11 +8,18 @@
     <dimen name="spacing_xl">20dp</dimen>
     <dimen name="spacing_xxl">24dp</dimen>
 
-    <!-- Corner radii -->
+    <!-- Corner radii — intentional scale, not one-size-fits-all (§DBI3 #3) -->
+    <dimen name="radius_btn">10dp</dimen>
+    <dimen name="radius_input">10dp</dimen>
+    <dimen name="radius_card">14dp</dimen>
+    <dimen name="radius_icon_container">10dp</dimen>
+    <dimen name="radius_header">16dp</dimen>
+    <dimen name="radius_modal">20dp</dimen>
+    <dimen name="radius_pill">24dp</dimen>
+    <!-- Legacy aliases -->
     <dimen name="radius_sm">8dp</dimen>
     <dimen name="radius_md">12dp</dimen>
     <dimen name="radius_lg">16dp</dimen>
-    <dimen name="radius_pill">24dp</dimen>
 
     <!-- Icon sizes -->
     <dimen name="icon_file_list">44dp</dimen>

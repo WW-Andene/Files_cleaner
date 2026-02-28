@@ -35,10 +35,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="@string/app_name"
-                android:textColor="@color/textPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:textColor="@color/textPrimary" />
         </LinearLayout>
 
         <!-- Scan status bar — soft container style -->
@@ -48,7 +46,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="0dp"
             app:cardBackgroundColor="@color/scanBarBackground"
             app:strokeWidth="0dp">
@@ -75,8 +73,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="@string/scan_prompt"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/scanBarText"
-                    android:textSize="13sp"
                     android:fontFamily="sans-serif-medium" />
 
                 <ProgressBar

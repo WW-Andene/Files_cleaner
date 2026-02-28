@@ -15,10 +15,10 @@
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusTopStart="@dimen/radius_input"
+        app:boxCornerRadiusTopEnd="@dimen/radius_input"
+        app:boxCornerRadiusBottomStart="@dimen/radius_input"
+        app:boxCornerRadiusBottomEnd="@dimen/radius_input"
         app:boxStrokeColor="@color/borderDefault"
         app:hintTextColor="@color/colorPrimary"
         app:startIconTint="@color/textTertiary"
@@ -32,7 +32,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionSearch"
-            android:textSize="14sp" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Filters row -->
@@ -111,8 +111,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/n_files"
-        android:textSize="12sp"
-        android:textColor="@color/textTertiary"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
         android:paddingHorizontal="20dp"
         android:paddingTop="8dp"
         android:paddingBottom="4dp"
@@ -141,8 +140,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/no_files_found"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
             android:textColor="@color/textSecondary"
-            android:textSize="15sp"
             android:gravity="center"
             android:lineSpacingExtra="4dp" />
     </LinearLayout>
