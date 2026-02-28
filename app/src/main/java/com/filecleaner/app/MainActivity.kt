@@ -64,6 +64,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Pop arborescence from back stack when navigating via bottom nav
+        val bottomNavIds = setOf(
+            R.id.browseFragment, R.id.duplicatesFragment,
+            R.id.largeFilesFragment, R.id.junkFragment
+        )
+        navController.addOnDestinationChangedListener { _, dest, _ ->
+            if (dest.id in bottomNavIds) {
+                navController.popBackStack(R.id.arborescenceFragment, true)
+            }
+        }
+
         // Navigate to tree on "Open in Raccoon Tab"
         viewModel.navigateToTree.observe(this) { filePath ->
             if (filePath != null) {
