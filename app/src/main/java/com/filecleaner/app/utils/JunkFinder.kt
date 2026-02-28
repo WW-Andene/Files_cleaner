@@ -39,10 +39,13 @@ object JunkFinder {
                 // In a cache/temp directory
                 JUNK_DIR_KEYWORDS.any { path.contains("/$it/") } -> true
 
-                // Old download (> 90 days old, not a media file)
+                // Old download (> 90 days old, only truly disposable types)
+                // Excludes documents, media, archives, APKs — only flags
+                // files with no recognized extension (F-002)
                 item.path.startsWith(downloadPath) &&
                         item.lastModified < cutoff90Days &&
-                        !isMedia(ext) -> true
+                        !isMedia(ext) && !isDocument(ext) &&
+                        !isArchiveOrApk(ext) -> true
 
                 else -> false
             }
@@ -72,4 +75,16 @@ object JunkFinder {
     )
 
     private fun isMedia(ext: String) = ext in MEDIA_EXTENSIONS
+
+    private val DOCUMENT_EXTENSIONS = setOf(
+        "pdf","doc","docx","xls","xlsx","ppt","pptx","txt","csv",
+        "odt","ods","odp","epub","mobi","rtf","md"
+    )
+
+    private val ARCHIVE_APK_EXTENSIONS = setOf(
+        "apk","xapk","apks","zip","rar","7z","tar","gz","bz2","xz","cab","iso","tgz"
+    )
+
+    private fun isDocument(ext: String) = ext in DOCUMENT_EXTENSIONS
+    private fun isArchiveOrApk(ext: String) = ext in ARCHIVE_APK_EXTENSIONS
 }
