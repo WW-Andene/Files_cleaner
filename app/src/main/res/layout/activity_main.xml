@@ -58,13 +58,15 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-    <!-- FAB scan button -->
+    <!-- FAB scan button (F-023: use individual margins to avoid overlap) -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="72dp"
         android:text="Scan Storage"
         app:icon="@drawable/ic_scan"
@@ -78,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@android:color/white"
+        android:background="?android:attr/colorBackground"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled" />
 
