@@ -112,6 +112,10 @@ class BrowseFragment : Fragment() {
         }
 
         vm.filesByCategory.observe(viewLifecycleOwner) { refresh() }
+
+        vm.operationResult.observe(viewLifecycleOwner) { result ->
+            Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun cycleViewMode() {

@@ -19,6 +19,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 sealed class ScanState {
     object Idle : ScanState()
@@ -234,6 +237,98 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             File(trashPath).delete()
         }
         pendingTrash.clear()
+    }
+
+    // ── Navigate to tree highlight ──
+    private val _navigateToTree = MutableLiveData<String?>()
+    val navigateToTree: LiveData<String?> = _navigateToTree
+
+    fun requestTreeHighlight(filePath: String) {
+        _navigateToTree.value = filePath
+    }
+
+    fun clearTreeHighlight() {
+        _navigateToTree.value = null
+    }
+
+    // ── File operations ──
+    private val _operationResult = MutableLiveData<MoveResult>()
+    val operationResult: LiveData<MoveResult> = _operationResult
+
+    fun renameFile(oldPath: String, newName: String) {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                val src = File(oldPath)
+                if (!src.exists()) return@withContext MoveResult(false, "File not found")
+                val dst = File(src.parent, newName)
+                if (dst.exists()) return@withContext MoveResult(false, "File with that name already exists")
+                if (src.renameTo(dst)) MoveResult(true, "Renamed to $newName")
+                else MoveResult(false, "Rename failed")
+            }
+            _operationResult.postValue(result)
+            if (result.success) startScan()
+        }
+    }
+
+    fun compressFile(filePath: String) {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                try {
+                    val src = File(filePath)
+                    if (!src.exists()) return@withContext MoveResult(false, "File not found")
+                    val zipFile = File(src.parent, "${src.nameWithoutExtension}.zip")
+                    ZipOutputStream(zipFile.outputStream().buffered()).use { zos ->
+                        zos.putNextEntry(ZipEntry(src.name))
+                        src.inputStream().buffered().use { it.copyTo(zos) }
+                        zos.closeEntry()
+                    }
+                    MoveResult(true, "Compressed to ${zipFile.name}")
+                } catch (e: Exception) {
+                    MoveResult(false, "Compression failed: ${e.message}")
+                }
+            }
+            _operationResult.postValue(result)
+            if (result.success) startScan()
+        }
+    }
+
+    fun extractArchive(filePath: String) {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                try {
+                    val src = File(filePath)
+                    if (!src.exists()) return@withContext MoveResult(false, "File not found")
+                    if (!src.extension.equals("zip", ignoreCase = true)) {
+                        return@withContext MoveResult(false, "Only ZIP archives can be extracted")
+                    }
+                    val outDir = File(src.parent, src.nameWithoutExtension)
+                    outDir.mkdirs()
+                    ZipInputStream(src.inputStream().buffered()).use { zis ->
+                        var entry = zis.nextEntry
+                        while (entry != null) {
+                            val outFile = File(outDir, entry.name)
+                            // Prevent zip slip
+                            if (!outFile.canonicalPath.startsWith(outDir.canonicalPath)) {
+                                entry = zis.nextEntry
+                                continue
+                            }
+                            if (entry.isDirectory) {
+                                outFile.mkdirs()
+                            } else {
+                                outFile.parentFile?.mkdirs()
+                                outFile.outputStream().buffered().use { zis.copyTo(it) }
+                            }
+                            entry = zis.nextEntry
+                        }
+                    }
+                    MoveResult(true, "Extracted to ${outDir.name}/")
+                } catch (e: Exception) {
+                    MoveResult(false, "Extraction failed: ${e.message}")
+                }
+            }
+            _operationResult.postValue(result)
+            if (result.success) startScan()
+        }
     }
 
     private fun recalcStats(remaining: List<FileItem>) {

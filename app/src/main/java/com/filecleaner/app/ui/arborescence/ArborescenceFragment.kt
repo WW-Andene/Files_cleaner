@@ -146,11 +146,20 @@ class ArborescenceFragment : Fragment() {
 
         // Observe move results
         vm.moveResult.observe(viewLifecycleOwner) { result ->
-            Snackbar.make(
-                binding.root,
-                result.message,
-                Snackbar.LENGTH_SHORT
-            ).show()
+            Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+        }
+
+        // Observe operation results (rename, compress, extract)
+        vm.operationResult.observe(viewLifecycleOwner) { result ->
+            Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+        }
+
+        // Observe tree highlight navigation from other tabs
+        vm.navigateToTree.observe(viewLifecycleOwner) { filePath ->
+            if (filePath != null) {
+                binding.arborescenceView.highlightFilePath(filePath)
+                vm.clearTreeHighlight()
+            }
         }
     }
 

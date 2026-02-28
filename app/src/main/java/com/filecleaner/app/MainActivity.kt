@@ -64,6 +64,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Navigate to tree on "Open in Raccoon Tab"
+        viewModel.navigateToTree.observe(this) { filePath ->
+            if (filePath != null) {
+                val currentDest = navController.currentDestination?.id
+                if (currentDest != R.id.arborescenceFragment) {
+                    navController.navigate(R.id.arborescenceFragment)
+                }
+            }
+        }
+
         // Scan button
         binding.fabScan.setOnClickListener { requestPermissionsAndScan() }
 
