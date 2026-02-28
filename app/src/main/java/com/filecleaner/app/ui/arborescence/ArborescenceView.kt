@@ -749,10 +749,10 @@ class ArborescenceView @JvmOverloads constructor(
     private fun startHighlightAnimation() {
         highlightAnimator?.cancel()
         highlightAlpha = 1f
+        val emphasisDuration = resources.getInteger(R.integer.motion_emphasis).toLong()
 
-        // Pulse 3 times over 3 seconds
         highlightAnimator = ValueAnimator.ofFloat(1f, 0.3f, 1f).apply {
-            duration = 1000
+            duration = emphasisDuration
             repeatCount = 2
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
@@ -761,7 +761,6 @@ class ArborescenceView @JvmOverloads constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    // Fade out after 2 more seconds
                     postDelayed({ fadeOutHighlight() }, 2000)
                 }
             })
@@ -772,8 +771,10 @@ class ArborescenceView @JvmOverloads constructor(
     private fun fadeOutHighlight() {
         if (highlightedFilePath == null) return
         highlightAnimator?.cancel()
+        val enterDuration = resources.getInteger(R.integer.motion_enter).toLong()
+
         highlightAnimator = ValueAnimator.ofFloat(1f, 0f).apply {
-            duration = 500
+            duration = enterDuration
             addUpdateListener {
                 highlightAlpha = it.animatedValue as Float
                 invalidate()

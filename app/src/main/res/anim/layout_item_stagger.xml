@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- §DM3: Staggered list entrance — 40ms per item, capped at ~5 visible items -->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/item_enter"
+    android:delay="15%"
+    android:animationOrder="normal" />

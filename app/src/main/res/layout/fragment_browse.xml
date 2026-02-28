@@ -131,7 +131,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/ic_raccoon_face"
-            android:alpha="0.4"
+            android:alpha="0.55"
             android:importantForAccessibility="no" />
 
         <TextView
@@ -153,6 +153,7 @@
         android:layout_weight="1"
         android:clipToPadding="false"
         android:paddingHorizontal="12dp"
-        android:paddingBottom="80dp" />
+        android:paddingBottom="80dp"
+        android:layoutAnimation="@anim/layout_item_stagger" />
 
 </LinearLayout>

@@ -124,15 +124,23 @@ class FileAdapter(
             }
         }
 
-        // Duplicate group colouring — use card background for MaterialCardView
+        // Visual state: duplicate group colouring → selection highlight → default
         val card = holder.itemView as? MaterialCardView
         if (item.duplicateGroup >= 0) {
             val colorRes = DUPLICATE_GROUP_COLOR_RES[item.duplicateGroup % DUPLICATE_GROUP_COLOR_RES.size]
             val color = ContextCompat.getColor(holder.itemView.context, colorRes)
             card?.setCardBackgroundColor(color) ?: holder.itemView.setBackgroundColor(color)
+            card?.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.borderDefault)
+        } else if (isSelected) {
+            // §DP3: Selected state — primary character carrier, not just a checkbox
+            val selBg = ContextCompat.getColor(holder.itemView.context, R.color.selectedBackground)
+            val selBorder = ContextCompat.getColor(holder.itemView.context, R.color.selectedBorder)
+            card?.setCardBackgroundColor(selBg) ?: holder.itemView.setBackgroundColor(selBg)
+            card?.strokeColor = selBorder
         } else {
             val defaultColor = ContextCompat.getColor(holder.itemView.context, R.color.surfaceColor)
             card?.setCardBackgroundColor(defaultColor) ?: holder.itemView.setBackgroundColor(0x00000000)
+            card?.strokeColor = ContextCompat.getColor(holder.itemView.context, R.color.borderDefault)
         }
 
         // Meta line (only in list layouts that have it)
@@ -151,6 +159,16 @@ class FileAdapter(
                 holder.check.isChecked = nowSelected
                 holder.check.contentDescription = ctx.getString(
                     if (nowSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
+                // Immediate card visual feedback for selection (§DP3)
+                if (item.duplicateGroup < 0) {
+                    if (nowSelected) {
+                        card?.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.selectedBackground))
+                        card?.strokeColor = ContextCompat.getColor(ctx, R.color.selectedBorder)
+                    } else {
+                        card?.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surfaceColor))
+                        card?.strokeColor = ContextCompat.getColor(ctx, R.color.borderDefault)
+                    }
+                }
                 notifySelectionChanged()
             }
             holder.check.setOnClickListener { toggle() }

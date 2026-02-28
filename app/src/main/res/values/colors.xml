@@ -11,11 +11,11 @@
     <color name="colorAccent">#E8913A</color>
     <color name="colorAccentLight">#FCEBD4</color>
 
-    <!-- Semantic -->
-    <color name="colorError">#C62828</color>
-    <color name="colorErrorLight">#FFEBEE</color>
-    <color name="colorSuccess">#2E7D32</color>
-    <color name="colorWarning">#F9A825</color>
+    <!-- Semantic — slightly warm-shifted to stay on-character (§DP3) -->
+    <color name="colorError">#B93B3B</color>
+    <color name="colorErrorLight">#FFF0EE</color>
+    <color name="colorSuccess">#2E7D42</color>
+    <color name="colorWarning">#E8A830</color>
 
     <!-- Surface elevation ladder (chromatic warm-whites) -->
     <color name="surfaceBase">#F8F6F2</color>
