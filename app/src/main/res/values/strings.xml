@@ -75,6 +75,7 @@
     <string name="a11y_file_selected">%1$s, %2$s, selected</string>
     <string name="a11y_file_not_selected">%1$s, %2$s, not selected</string>
     <string name="a11y_file_info">%1$s, %2$s</string>
+    <string name="a11y_tree_view">File tree view, %1$d files, %2$s total</string>
 
     <!-- Arborescence -->
     <string name="open_arborescence">Open tree view</string>

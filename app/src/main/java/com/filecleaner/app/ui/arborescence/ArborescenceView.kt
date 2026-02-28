@@ -2,14 +2,15 @@ package com.filecleaner.app.ui.arborescence
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.*
-import android.os.Build
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import kotlin.math.max
@@ -18,6 +19,10 @@ import kotlin.math.min
 class ArborescenceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
+
+    private val isDarkMode: Boolean
+        get() = (context.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     // ── Layout constants ──
     private val blockWidth = 260f
@@ -205,6 +210,8 @@ class ArborescenceView @JvmOverloads constructor(
         viewMatrix.reset()
         scaleFactor = 1f
         viewMatrix.postTranslate(60f, 60f)
+        contentDescription = context.getString(
+            R.string.a11y_tree_view, root.totalFileCount, formatSize(root.totalSize))
         invalidate()
         notifyStats()
     }
@@ -431,8 +438,14 @@ class ArborescenceView @JvmOverloads constructor(
         val node = layout.node
         val rect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + layout.h)
 
-        // Block background
-        blockPaint.color = 0xFFFAFAFA.toInt()
+        // Theme-aware text colors
+        filePaint.color = if (isDarkMode) 0xFFE0E0E0.toInt() else 0xFF212121.toInt()
+        fileSizePaint.color = if (isDarkMode) 0xFFB0B0B0.toInt() else 0xFF757575.toInt()
+        blockStrokePaint.color = if (isDarkMode) 0xFF616161.toInt() else 0xFF455A64.toInt()
+        linePaint.color = if (isDarkMode) 0x664DB6AC.toInt() else 0x6600897B.toInt()
+
+        // Block background (theme-aware)
+        blockPaint.color = if (isDarkMode) 0xFF2C2C2C.toInt() else 0xFFFAFAFA.toInt()
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockPaint)
 
         // Drop target highlight
