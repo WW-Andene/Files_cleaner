@@ -62,11 +62,6 @@
         <item name="itemIconTint">@color/bottom_nav_color</item>
         <item name="itemTextColor">@color/bottom_nav_color</item>
         <item name="labelVisibilityMode">labeled</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.FileCleaner.BottomNav.ActiveIndicator</item>
-    </style>
-
-    <style name="Widget.FileCleaner.BottomNav.ActiveIndicator" parent="Widget.MaterialComponents.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/bottomNavIndicator</item>
     </style>
 
     <!-- Material Button -->

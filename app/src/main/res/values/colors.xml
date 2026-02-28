@@ -41,7 +41,6 @@
 
     <!-- Bottom nav -->
     <color name="bottomNavBackground">#FFFFFF</color>
-    <color name="bottomNavIndicator">#D4F0E4</color>
 
     <!-- Scan bar -->
     <color name="scanBarBackground">#EBF5F0</color>
