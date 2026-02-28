@@ -82,6 +82,9 @@
     <string name="reset_view">Reset view</string>
     <string name="node_detail">%1$s\n%2$d files \u2022 %3$s\n%4$d sub-folders</string>
     <string name="nav_tree">Tree</string>
+    <string name="confirm_move_title">Move file?</string>
+    <string name="confirm_move_message">Move \"%1$s\" to \"%2$s\"?</string>
+    <string name="move">Move</string>
 
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>

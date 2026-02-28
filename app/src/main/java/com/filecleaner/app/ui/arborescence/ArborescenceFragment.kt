@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.filecleaner.app.R
 import com.filecleaner.app.databinding.FragmentArborescenceBinding
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import java.io.File
 
 class ArborescenceFragment : Fragment() {
 
@@ -25,9 +27,18 @@ class ArborescenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Wire file move callback
+        // Wire file move callback with confirmation dialog
         binding.arborescenceView.onFileMoveRequested = { filePath, targetDirPath ->
-            vm.moveFile(filePath, targetDirPath)
+            val fileName = File(filePath).name
+            val targetName = File(targetDirPath).name
+            AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.confirm_move_title))
+                .setMessage(getString(R.string.confirm_move_message, fileName, targetName))
+                .setPositiveButton(getString(R.string.move)) { _, _ ->
+                    vm.moveFile(filePath, targetDirPath)
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
         }
 
         // Node selection detail

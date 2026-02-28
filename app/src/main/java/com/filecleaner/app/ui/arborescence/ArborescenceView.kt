@@ -3,8 +3,10 @@ package com.filecleaner.app.ui.arborescence
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.view.GestureDetector
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -186,6 +188,7 @@ class ArborescenceView @JvmOverloads constructor(
                     dragSourceBlock = hit.third
                     dragX = e.x
                     dragY = e.y
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     invalidate()
                 }
             }
