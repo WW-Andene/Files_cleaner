@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.filecleaner.app.databinding.ActivityMainBinding
@@ -58,24 +59,23 @@ class MainActivity : AppCompatActivity() {
 
         // Raccoon bubble → toggle arborescence
         val navController = navHost.navController
+        val arboNavOptions = NavOptions.Builder()
+            .setPopUpTo(navController.graph.startDestinationId, false)
+            .build()
+
         RaccoonBubble.attach(binding.raccoonBubbleCard) {
             val currentDest = navController.currentDestination?.id
             if (currentDest == R.id.arborescenceFragment) {
                 navController.popBackStack()
             } else {
-                navController.navigate(R.id.arborescenceFragment)
+                navController.navigate(R.id.arborescenceFragment, null, arboNavOptions)
             }
         }
 
-        // Pop arborescence from back stack when navigating via bottom nav
-        val bottomNavIds = setOf(
-            R.id.browseFragment, R.id.duplicatesFragment,
-            R.id.largeFilesFragment, R.id.junkFragment
-        )
+        // Toggle raccoon bubble visibility based on current destination
         navController.addOnDestinationChangedListener { _, dest, _ ->
-            if (dest.id in bottomNavIds) {
-                navController.popBackStack(R.id.arborescenceFragment, true)
-            }
+            binding.raccoonBubbleCard.visibility =
+                if (dest.id == R.id.arborescenceFragment) View.GONE else View.VISIBLE
         }
 
         // Navigate to tree on "Open in Raccoon Tab"
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             if (filePath != null) {
                 val currentDest = navController.currentDestination?.id
                 if (currentDest != R.id.arborescenceFragment) {
-                    navController.navigate(R.id.arborescenceFragment)
+                    navController.navigate(R.id.arborescenceFragment, null, arboNavOptions)
                 }
             }
         }

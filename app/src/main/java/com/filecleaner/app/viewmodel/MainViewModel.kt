@@ -306,6 +306,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun setCutFile(item: FileItem) { _clipboardItem.value = item }
     fun clearClipboard() { _clipboardItem.value = null }
 
+    // ── Tree expansion state (survives fragment recreation) ──
+    var savedExpandedPaths: Set<String>? = null
+
     // ── Navigate to tree highlight ──
     private val _navigateToTree = MutableLiveData<String?>()
     val navigateToTree: LiveData<String?> = _navigateToTree

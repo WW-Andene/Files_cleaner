@@ -29,8 +29,6 @@ class ArborescenceFragment : Fragment() {
 
     private var filterPanelVisible = false
     private val selectedTreeExtensions = mutableSetOf<String>()
-    private var savedExpandedPaths: Set<String>? = null
-    private var lastTreeRef: DirectoryNode? = null
 
     private val treeCategories by lazy {
         listOf(
@@ -142,15 +140,13 @@ class ArborescenceFragment : Fragment() {
                 binding.arborescenceView.visibility = View.VISIBLE
                 binding.tvEmpty.visibility = View.GONE
                 // Restore expansion state if navigating back
-                if (tree === lastTreeRef) {
-                    // Same tree reference, already set — skip
-                } else if (savedExpandedPaths != null) {
-                    binding.arborescenceView.setTreeWithState(tree, savedExpandedPaths!!)
-                    savedExpandedPaths = null
+                val saved = vm.savedExpandedPaths
+                if (saved != null) {
+                    binding.arborescenceView.setTreeWithState(tree, saved)
+                    vm.savedExpandedPaths = null
                 } else {
                     binding.arborescenceView.setTree(tree)
                 }
-                lastTreeRef = tree
                 updateTreeExtensionChips()
             } else {
                 binding.arborescenceView.visibility = View.GONE
@@ -183,8 +179,8 @@ class ArborescenceFragment : Fragment() {
         // Category spinner
         val labels = treeCategories.map { it.first }
         val catAdapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_spinner_item, labels)
-        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            R.layout.item_spinner, labels)
+        catAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         binding.spinnerTreeCategory.adapter = catAdapter
 
         // Sort spinner (not used for tree sorting, but shows filter category)
@@ -194,8 +190,8 @@ class ArborescenceFragment : Fragment() {
             getString(R.string.sort_date_asc), getString(R.string.sort_date_desc)
         )
         val sortAdapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_spinner_item, sortOptions)
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            R.layout.item_spinner, sortOptions)
+        sortAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         binding.spinnerTreeSort.adapter = sortAdapter
 
         binding.spinnerTreeCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -305,7 +301,7 @@ class ArborescenceFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        savedExpandedPaths = binding.arborescenceView.getExpandedPaths()
+        vm.savedExpandedPaths = binding.arborescenceView.getExpandedPaths()
         super.onDestroyView()
         _binding = null
     }

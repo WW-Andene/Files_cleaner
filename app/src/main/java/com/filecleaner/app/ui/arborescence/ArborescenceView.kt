@@ -710,8 +710,39 @@ class ArborescenceView @JvmOverloads constructor(
         expandToNode(node)
         highlightedFilePath = filePath
         selectedPath = node.path
-        zoomToFit(node.path)
+        zoomToFileRow(node.path, filePath)
         startHighlightAnimation()
+        invalidate()
+    }
+
+    /** Centers the viewport on the specific file row within a block, not just the block. */
+    private fun zoomToFileRow(blockPath: String, filePath: String) {
+        val layout = layouts[blockPath] ?: return
+        val cw = width.toFloat()
+        val ch = height.toFloat()
+
+        // Find the file's row index
+        val files = filteredFiles(layout.node)
+        val maxFiles = 5
+        val fileIndex = files.take(maxFiles).indexOfFirst { it.path == filePath }
+
+        // Calculate the center Y of the file row (or block center as fallback)
+        val centerY = if (fileIndex >= 0) {
+            layout.y + headerHeight + fileIndex * fileLineHeight + fileLineHeight / 2f
+        } else {
+            layout.y + layout.h / 2f
+        }
+        val centerX = layout.x + layout.w / 2f
+
+        // Zoom to show the block but center on the file row
+        val targetScale = min(cw / (layout.w + 80f), ch / (layout.h + 80f)).coerceIn(minScale, maxScale)
+        scaleFactor = targetScale
+        viewMatrix.reset()
+        viewMatrix.postScale(scaleFactor, scaleFactor)
+        viewMatrix.postTranslate(
+            cw / 2f - centerX * scaleFactor,
+            ch / 2f - centerY * scaleFactor
+        )
         invalidate()
     }
 

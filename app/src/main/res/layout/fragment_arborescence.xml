@@ -67,7 +67,7 @@
                 android:id="@+id/btn_toggle_filters"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_view_list"
+                android:src="@drawable/ic_filter"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:padding="6dp"
@@ -89,8 +89,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
+        android:background="@drawable/bg_filter_panel"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
         android:visibility="gone">
 
         <LinearLayout
