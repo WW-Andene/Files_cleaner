@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.filecleaner.app.databinding.ActivityMainBinding
+import com.filecleaner.app.ui.widget.RaccoonBubble
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
 
@@ -51,6 +52,17 @@ class MainActivity : AppCompatActivity() {
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         binding.bottomNav.setupWithNavController(navHost.navController)
+
+        // Raccoon bubble → toggle arborescence
+        val navController = navHost.navController
+        RaccoonBubble.attach(binding.raccoonBubble) {
+            val currentDest = navController.currentDestination?.id
+            if (currentDest == R.id.arborescenceFragment) {
+                navController.popBackStack()
+            } else {
+                navController.navigate(R.id.arborescenceFragment)
+            }
+        }
 
         // Scan button
         binding.fabScan.setOnClickListener { requestPermissionsAndScan() }

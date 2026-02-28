@@ -74,6 +74,20 @@
         android:textColor="@android:color/white"
         app:iconTint="@android:color/white" />
 
+    <!-- Raccoon bubble: draggable floating toggle for arborescence view -->
+    <ImageView
+        android:id="@+id/raccoon_bubble"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="72dp"
+        android:src="@drawable/ic_raccoon_face"
+        android:background="@drawable/bg_bubble"
+        android:elevation="8dp"
+        android:contentDescription="@string/open_arborescence"
+        android:importantForAccessibility="yes" />
+
     <!-- Bottom nav -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
