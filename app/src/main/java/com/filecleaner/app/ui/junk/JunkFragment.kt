@@ -14,4 +14,6 @@ class JunkFragment : BaseFileListFragment() {
     override fun liveData(): LiveData<List<FileItem>> = vm.junkFiles
     override fun summaryText(count: Int, sizeText: String) = getString(R.string.junk_summary, count, sizeText)
     override val emptySummary get() = getString(R.string.no_junk_found)
+    override val emptyPreScan get() = getString(R.string.empty_junk_pre_scan)
+    override val emptyPostScan get() = getString(R.string.empty_junk_post_scan)
 }

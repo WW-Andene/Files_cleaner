@@ -14,4 +14,6 @@ class LargeFilesFragment : BaseFileListFragment() {
     override fun liveData(): LiveData<List<FileItem>> = vm.largeFiles
     override fun summaryText(count: Int, sizeText: String) = getString(R.string.large_summary, count, sizeText)
     override val emptySummary get() = getString(R.string.no_large_found)
+    override val emptyPreScan get() = getString(R.string.empty_large_pre_scan)
+    override val emptyPostScan get() = getString(R.string.empty_large_post_scan)
 }

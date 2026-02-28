@@ -4,11 +4,19 @@
 
     <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
-    <string name="scan_prompt">Ready to scan your storage</string>
+    <string name="scan_prompt">Tap Scan to analyze your storage</string>
     <string name="scanning_progress">Scanning\u2026 %d files found</string>
-    <string name="scan_complete">Scan complete</string>
+    <string name="scan_complete">Scan complete \u2014 %1$d files found (%2$s)</string>
+    <string name="scan_complete_simple">Scan complete</string>
     <string name="scanning_in_progress">Scanning in progress</string>
-    <string name="error_prefix">Error: %s</string>
+    <string name="scan_cancel">Cancel scan</string>
+    <string name="scan_cancelled">Scan cancelled</string>
+    <string name="scanning_phase_indexing">Scanning\u2026 %d files found</string>
+    <string name="scanning_phase_duplicates">Finding duplicates\u2026 %d files</string>
+    <string name="scanning_phase_analyzing">Analyzing sizes\u2026 %d files</string>
+    <string name="scanning_phase_junk">Detecting junk\u2026 %d files</string>
+    <string name="error_prefix">Something went wrong: %s</string>
+    <string name="error_scan_failed">Scan failed. Check storage permissions and try again.</string>
 
     <!-- Actions -->
     <string name="delete_selected">Delete selected</string>
@@ -18,6 +26,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="clean">Clean</string>
+    <string name="undo">Undo</string>
 
     <!-- Confirm dialog -->
     <string name="confirm_delete_title">Confirm Delete</string>
@@ -28,10 +37,10 @@
 
     <!-- Permission dialogs -->
     <string name="storage_access_needed">Storage access needed</string>
-    <string name="storage_access_message">To scan all files, please grant \'Allow access to manage all files\' in the next screen.</string>
+    <string name="storage_access_message">Raccoon needs permission to scan your files. Your data stays on-device \u2014 nothing is uploaded.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
     <string name="open_settings">Open Settings</string>
     <string name="permission_required">Permission required</string>
-    <string name="permission_required_message">Storage permission is required to scan files. Please grant it in Settings.</string>
+    <string name="permission_required_message">Storage permission is needed to scan files. Please grant it in Settings so Raccoon can help clean up your storage.</string>
     <string name="settings">Settings</string>
 
     <!-- Browse -->
@@ -40,6 +49,19 @@
     <string name="no_files_found">No files found yet.\nTap Scan Storage to get started.</string>
     <string name="nothing_found">Nothing found yet.\nTap Scan Storage to get started.</string>
     <string name="scan_to_see_results">Tap Scan Storage to get started</string>
+
+    <!-- Context-aware empty states (Browse) -->
+    <string name="empty_browse_pre_scan">Tap the Scan button to browse your files.</string>
+    <string name="empty_browse_post_scan">No files match your filters.\nTry a different category or clear the search.</string>
+    <string name="empty_search_results">No results for \"%s\"</string>
+
+    <!-- Context-aware empty states (Junk/Large/Duplicates) -->
+    <string name="empty_junk_pre_scan">Tap Scan Storage to find junk files like caches, temp files, and leftovers.</string>
+    <string name="empty_junk_post_scan">Your storage is clean! No junk files detected.</string>
+    <string name="empty_large_pre_scan">Tap Scan Storage to find files larger than 50 MB.</string>
+    <string name="empty_large_post_scan">No large files found. Your storage looks well-managed!</string>
+    <string name="empty_duplicates_pre_scan">Tap Scan Storage to find duplicate files across your storage.</string>
+    <string name="empty_duplicates_post_scan">No duplicate files found. Everything is unique!</string>
 
     <!-- Sort options -->
     <string name="sort_name_asc">Name \u2191</string>
@@ -61,8 +83,8 @@
     <string name="no_junk_found">No junk files found</string>
     <string name="no_large_found">No large files found</string>
     <string name="no_duplicates_found">No duplicates found</string>
-    <string name="action_delete_n">Delete %1$d selected  (%2$s)</string>
-    <string name="action_clean_n">Clean %1$d files  (%2$s)</string>
+    <string name="action_delete_n">Delete %1$d selected (%2$s)</string>
+    <string name="action_clean_n">Clean %1$d files (%2$s)</string>
 
     <!-- Bottom nav -->
     <string name="nav_browse">Browse</string>
@@ -77,6 +99,7 @@
     <string name="a11y_file_not_selected">%1$s, %2$s, not selected</string>
     <string name="a11y_file_info">%1$s, %2$s</string>
     <string name="a11y_tree_view">File tree view, %1$d files, %2$s total</string>
+    <string name="a11y_raccoon_bubble">Open tree view \u2014 tap to visualize your file structure</string>
 
     <!-- Arborescence -->
     <string name="open_arborescence">Open tree view</string>
@@ -89,6 +112,7 @@
     <string name="move">Move</string>
     <string name="stats_header_format">%1$d files \u2022 %2$s</string>
     <string name="zoom_info_format">%1$d%% \u2022 %2$d nodes</string>
+    <string name="located_file">Found: %s</string>
 
     <!-- View mode -->
     <string name="view_mode">View mode</string>
@@ -116,14 +140,22 @@
     <string name="cut_hint">%s cut \u2014 long-press a file to paste into its folder</string>
     <string name="ctx_compress">Compress</string>
     <string name="ctx_extract">Extract</string>
-    <string name="ctx_open_in_tree">Open in Raccoon Tab</string>
+    <string name="ctx_open_in_tree">Show in Tree</string>
     <string name="rename_success">Renamed successfully</string>
-    <string name="rename_failed">Rename failed</string>
+    <string name="rename_failed">Rename failed. The file may be in use or the name contains invalid characters.</string>
     <string name="compress_success">Compressed successfully</string>
-    <string name="compress_failed">Compression failed</string>
+    <string name="compress_failed">Compression failed. Check available storage space and try again.</string>
     <string name="extract_success">Extracted successfully</string>
-    <string name="extract_failed">Extraction failed</string>
+    <string name="extract_failed">Extraction failed. The archive may be corrupted.</string>
     <string name="extract_unsupported">Only ZIP archives can be extracted</string>
+
+    <!-- Undo / Delete feedback -->
+    <string name="undo_deleted_single">Deleted %1$s (%2$s). Undo?</string>
+    <string name="undo_deleted_multiple">Deleted %1$d files (%2$s). Undo?</string>
+    <string name="delete_partial_failure">%1$d deleted, %2$d failed \u2014 some files may be in use</string>
+
+    <!-- Post-scan summary -->
+    <string name="scan_summary">Found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
 
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>

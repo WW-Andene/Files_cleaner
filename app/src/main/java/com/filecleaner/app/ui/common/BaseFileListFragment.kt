@@ -18,6 +18,7 @@ import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -61,6 +62,12 @@ abstract class BaseFileListFragment : Fragment() {
 
     /** Summary text when the list is empty, e.g. "No large files found". */
     abstract val emptySummary: String
+
+    /** Empty state text before any scan has been run. */
+    abstract val emptyPreScan: String
+
+    /** Empty state text when scan completed but category is clean (positive framing). */
+    abstract val emptyPostScan: String
 
     /** Called when "Select All" is tapped. Override for custom behavior (e.g. duplicates). */
     open fun onSelectAll() {
@@ -129,7 +136,17 @@ abstract class BaseFileListFragment : Fragment() {
         adapter.submitList(filtered)
         binding.tvSummary.text = if (rawItems.isEmpty()) emptySummary
         else summaryText(rawItems.size, UndoHelper.totalSize(rawItems))
-        binding.tvEmpty.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
+
+        if (filtered.isEmpty()) {
+            binding.tvEmpty.visibility = View.VISIBLE
+            binding.tvEmptyText.text = when {
+                searchQuery.isNotEmpty() -> getString(com.filecleaner.app.R.string.empty_search_results, searchQuery)
+                vm.scanState.value is ScanState.Done -> emptyPostScan
+                else -> emptyPreScan
+            }
+        } else {
+            binding.tvEmpty.visibility = View.GONE
+        }
     }
 
     private fun confirmDelete() {

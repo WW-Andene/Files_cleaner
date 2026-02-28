@@ -93,16 +93,16 @@ object RaccoonBubble {
     }
 
     private fun startPulse(view: View) {
-        pulseAnimatorX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.08f, 1f).apply {
+        pulseAnimatorX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.05f, 1f).apply {
             duration = 600
-            startDelay = 5000
-            repeatCount = ObjectAnimator.INFINITE
+            startDelay = 15000
+            repeatCount = 2
             repeatMode = ObjectAnimator.RESTART
         }
-        pulseAnimatorY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.08f, 1f).apply {
+        pulseAnimatorY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.05f, 1f).apply {
             duration = 600
-            startDelay = 5000
-            repeatCount = ObjectAnimator.INFINITE
+            startDelay = 15000
+            repeatCount = 2
             repeatMode = ObjectAnimator.RESTART
         }
         pulseAnimatorX?.start()

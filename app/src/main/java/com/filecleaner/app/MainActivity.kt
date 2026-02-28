@@ -19,8 +19,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.filecleaner.app.databinding.ActivityMainBinding
 import com.filecleaner.app.ui.widget.RaccoonBubble
+import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.filecleaner.app.viewmodel.ScanPhase
 import com.filecleaner.app.viewmodel.ScanState
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -88,23 +91,60 @@ class MainActivity : AppCompatActivity() {
         // Scan button
         binding.fabScan.setOnClickListener { requestPermissionsAndScan() }
 
+        // Cancel scan button
+        binding.btnCancelScan.setOnClickListener { viewModel.cancelScan() }
+
         // Scan state observer
         viewModel.scanState.observe(this) { state ->
             when (state) {
                 is ScanState.Idle     -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.btnCancelScan.visibility = View.GONE
                     binding.tvScanStatus.text = getString(R.string.scan_prompt)
                 }
                 is ScanState.Scanning -> {
                     binding.progressBar.visibility = View.VISIBLE
-                    binding.tvScanStatus.text = getString(R.string.scanning_progress, state.filesFound)
+                    binding.btnCancelScan.visibility = View.VISIBLE
+                    binding.tvScanStatus.text = when (state.phase) {
+                        ScanPhase.INDEXING   -> getString(R.string.scanning_phase_indexing, state.filesFound)
+                        ScanPhase.DUPLICATES -> getString(R.string.scanning_phase_duplicates, state.filesFound)
+                        ScanPhase.ANALYZING  -> getString(R.string.scanning_phase_analyzing, state.filesFound)
+                        ScanPhase.JUNK       -> getString(R.string.scanning_phase_junk, state.filesFound)
+                    }
                 }
                 is ScanState.Done     -> {
                     binding.progressBar.visibility = View.GONE
-                    binding.tvScanStatus.text = getString(R.string.scan_complete)
+                    binding.btnCancelScan.visibility = View.GONE
+                    val stats = viewModel.storageStats.value
+                    if (stats != null) {
+                        binding.tvScanStatus.text = getString(
+                            R.string.scan_complete,
+                            stats.totalFiles,
+                            UndoHelper.formatBytes(stats.totalSize)
+                        )
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.scan_summary,
+                                stats.totalFiles,
+                                UndoHelper.formatBytes(stats.totalSize),
+                                viewModel.duplicates.value?.size ?: 0,
+                                viewModel.junkFiles.value?.size ?: 0,
+                                viewModel.largeFiles.value?.size ?: 0
+                            ),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    } else {
+                        binding.tvScanStatus.text = getString(R.string.scan_complete_simple)
+                    }
+                }
+                is ScanState.Cancelled -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnCancelScan.visibility = View.GONE
+                    binding.tvScanStatus.text = getString(R.string.scan_cancelled)
                 }
                 is ScanState.Error    -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.btnCancelScan.visibility = View.GONE
                     Toast.makeText(this, getString(R.string.error_prefix, state.message), Toast.LENGTH_LONG).show()
                 }
             }

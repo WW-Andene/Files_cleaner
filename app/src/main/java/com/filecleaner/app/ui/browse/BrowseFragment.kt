@@ -23,6 +23,7 @@ import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 
@@ -184,7 +185,17 @@ class BrowseFragment : Fragment() {
         }
 
         adapter.submitList(sorted)
-        binding.tvEmpty.visibility = if (sorted.isEmpty()) View.VISIBLE else View.GONE
+
+        if (sorted.isEmpty()) {
+            binding.tvEmpty.visibility = View.VISIBLE
+            binding.tvEmptyText.text = when {
+                searchQuery.isNotEmpty() -> getString(R.string.empty_search_results, searchQuery)
+                vm.scanState.value is ScanState.Done -> getString(R.string.empty_browse_post_scan)
+                else -> getString(R.string.empty_browse_pre_scan)
+            }
+        } else {
+            binding.tvEmpty.visibility = View.GONE
+        }
         binding.tvCount.text = getString(R.string.n_files, sorted.size)
     }
 

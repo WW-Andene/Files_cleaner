@@ -25,10 +25,13 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
+enum class ScanPhase { INDEXING, DUPLICATES, ANALYZING, JUNK }
+
 sealed class ScanState {
     object Idle : ScanState()
-    data class Scanning(val filesFound: Int) : ScanState()
+    data class Scanning(val filesFound: Int, val phase: ScanPhase = ScanPhase.INDEXING) : ScanState()
     object Done : ScanState()
+    object Cancelled : ScanState()
     data class Error(val message: String) : ScanState()
 }
 
@@ -95,6 +98,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
 
+    fun cancelScan() {
+        scanJob?.cancel()
+        scanJob = null
+        _scanState.value = ScanState.Cancelled
+    }
+
     init {
         // Load cached scan results on startup
         viewModelScope.launch {
@@ -134,7 +143,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             _scanState.value = ScanState.Scanning(0)
             runCatching {
                 val (files, tree) = FileScanner.scanWithTree(getApplication()) { count ->
-                    _scanState.postValue(ScanState.Scanning(count))
+                    _scanState.postValue(ScanState.Scanning(count, ScanPhase.INDEXING))
                 }
 
                 stateMutex.withLock {
@@ -142,12 +151,15 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _directoryTree.postValue(tree)
                     _filesByCategory.postValue(files.groupBy { it.category })
 
+                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.DUPLICATES))
                     val dupes = DuplicateFinder.findDuplicates(files)
                     _duplicates.postValue(dupes)
 
+                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING))
                     val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L)
                     _largeFiles.postValue(large)
 
+                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.JUNK))
                     val junk = JunkFinder.findJunk(files)
                     _junkFiles.postValue(junk)
 

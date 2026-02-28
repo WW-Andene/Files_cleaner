@@ -172,7 +172,7 @@ class ArborescenceFragment : Fragment() {
             if (filePath != null) {
                 binding.arborescenceView.highlightFilePath(filePath)
                 val fileName = File(filePath).name
-                Snackbar.make(binding.root, "Located: $fileName", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
                 vm.clearTreeHighlight()
             }
         }

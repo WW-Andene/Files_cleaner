@@ -14,6 +14,8 @@ class DuplicatesFragment : BaseFileListFragment() {
     override fun liveData(): LiveData<List<FileItem>> = vm.duplicates
     override fun summaryText(count: Int, sizeText: String) = getString(R.string.duplicates_summary, count, sizeText)
     override val emptySummary get() = getString(R.string.no_duplicates_found)
+    override val emptyPreScan get() = getString(R.string.empty_duplicates_pre_scan)
+    override val emptyPostScan get() = getString(R.string.empty_duplicates_post_scan)
 
     override fun onSelectAll() {
         adapter.selectAllDuplicatesExceptBest()

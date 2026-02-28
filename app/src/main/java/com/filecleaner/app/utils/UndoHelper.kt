@@ -1,6 +1,7 @@
 package com.filecleaner.app.utils
 
 import android.view.View
+import com.filecleaner.app.R
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -14,18 +15,21 @@ object UndoHelper {
         result: MainViewModel.DeleteResult,
         vm: MainViewModel
     ) {
-        val msg = buildString {
-            append("${result.moved} file${if (result.moved != 1) "s" else ""} removed")
-            append(" (${formatBytes(result.freedBytes)})")
-            if (result.failed > 0) {
-                append(" \u2022 ${result.failed} failed")
-            }
+        val ctx = view.context
+        val sizeText = formatBytes(result.freedBytes)
+
+        val msg = if (result.failed > 0) {
+            ctx.getString(R.string.delete_partial_failure, result.moved, result.failed)
+        } else if (result.moved == 1) {
+            ctx.getString(R.string.undo_deleted_single, "file", sizeText)
+        } else {
+            ctx.getString(R.string.undo_deleted_multiple, result.moved, sizeText)
         }
 
         if (result.canUndo && result.moved > 0) {
             Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                 .setDuration(8000) // 8 seconds to undo
-                .setAction("Undo") { vm.undoDelete() }
+                .setAction(ctx.getString(R.string.undo)) { vm.undoDelete() }
                 .addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(bar: Snackbar?, event: Int) {
                         if (event != DISMISS_EVENT_ACTION) {
