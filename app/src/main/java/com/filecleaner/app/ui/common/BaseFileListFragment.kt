@@ -1,6 +1,10 @@
 package com.filecleaner.app.ui.common
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +31,12 @@ abstract class BaseFileListFragment : Fragment() {
     protected val vm: MainViewModel by activityViewModels()
     protected lateinit var adapter: FileAdapter
     private var selected = listOf<FileItem>()
+
+    // Search state
+    private var searchQuery = ""
+    private var rawItems = listOf<FileItem>()
+    private val handler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
 
     /** Screen title shown in the header. */
     abstract val screenTitle: String
@@ -84,11 +94,23 @@ abstract class BaseFileListFragment : Fragment() {
         binding.btnAction.isEnabled = false
         binding.btnAction.setOnClickListener { confirmDelete() }
 
+        // Search with 300ms debounce
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchRunnable?.let { handler.removeCallbacks(it) }
+                searchRunnable = Runnable {
+                    searchQuery = s?.toString()?.trim() ?: ""
+                    applySearch()
+                }
+                handler.postDelayed(searchRunnable!!, 300)
+            }
+        })
+
         liveData().observe(viewLifecycleOwner) { items ->
-            adapter.submitList(items)
-            binding.tvSummary.text = if (items.isEmpty()) emptySummary
-            else summaryText(items.size, UndoHelper.totalSize(items))
-            binding.tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+            rawItems = items
+            applySearch()
         }
 
         vm.deleteResult.observe(viewLifecycleOwner) { result ->
@@ -98,6 +120,16 @@ abstract class BaseFileListFragment : Fragment() {
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    private fun applySearch() {
+        val filtered = if (searchQuery.isEmpty()) rawItems
+        else rawItems.filter { it.name.lowercase().contains(searchQuery.lowercase()) }
+
+        adapter.submitList(filtered)
+        binding.tvSummary.text = if (rawItems.isEmpty()) emptySummary
+        else summaryText(rawItems.size, UndoHelper.totalSize(rawItems))
+        binding.tvEmpty.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun confirmDelete() {
@@ -132,6 +164,7 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        searchRunnable?.let { handler.removeCallbacks(it) }
         super.onDestroyView()
         _binding = null
     }
