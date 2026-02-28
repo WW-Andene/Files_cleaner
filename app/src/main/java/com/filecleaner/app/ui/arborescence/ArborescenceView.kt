@@ -502,6 +502,16 @@ class ArborescenceView @JvmOverloads constructor(
             // File size
             val fsz = formatSize(file.size)
             canvas.drawText(fsz, layout.x + layout.w - fileSizePaint.measureText(fsz) - 8f, fy, fileSizePaint)
+
+            // Highlight matched file
+            if (file.path == highlightedFilePath) {
+                val fileRowTop = layout.y + headerHeight + i * fileLineHeight
+                val highlightRect = RectF(
+                    layout.x + 4f, fileRowTop,
+                    layout.x + layout.w - 4f, fileRowTop + fileLineHeight
+                )
+                canvas.drawRoundRect(highlightRect, 4f, 4f, highlightPaint)
+            }
         }
 
         // "and N more..." label
@@ -554,6 +564,106 @@ class ArborescenceView @JvmOverloads constructor(
             12f, 12f, ghostPaint
         )
         canvas.drawText(name, dragX - tw / 2 + 12f, dragY - 4f, textPaint)
+    }
+
+    // ── Search + highlight ──
+    var highlightedFilePath: String? = null
+        private set
+
+    fun searchAndHighlight(query: String): Boolean {
+        if (query.isBlank()) {
+            clearHighlight()
+            return false
+        }
+        val root = rootNode ?: return false
+        val lowerQuery = query.lowercase()
+
+        // BFS to find first matching file or folder
+        val queue = ArrayDeque<DirectoryNode>()
+        queue.add(root)
+        while (queue.isNotEmpty()) {
+            val node = queue.removeFirst()
+            // Check folder name
+            if (node.name.lowercase().contains(lowerQuery)) {
+                expandToNode(node)
+                highlightedFilePath = null
+                selectedPath = node.path
+                zoomToFit(node.path)
+                onNodeSelected?.invoke(node)
+                invalidate()
+                return true
+            }
+            // Check files in this folder
+            for (file in node.files) {
+                if (file.name.lowercase().contains(lowerQuery)) {
+                    expandToNode(node)
+                    highlightedFilePath = file.path
+                    selectedPath = node.path
+                    zoomToFit(node.path)
+                    invalidate()
+                    return true
+                }
+            }
+            queue.addAll(node.children)
+        }
+        return false
+    }
+
+    fun highlightFilePath(filePath: String) {
+        val root = rootNode ?: return
+        val node = findNodeContainingFile(root, filePath) ?: return
+        expandToNode(node)
+        highlightedFilePath = filePath
+        selectedPath = node.path
+        zoomToFit(node.path)
+        invalidate()
+    }
+
+    fun clearHighlight() {
+        highlightedFilePath = null
+        invalidate()
+    }
+
+    private fun expandToNode(target: DirectoryNode) {
+        val root = rootNode ?: return
+        val path = mutableListOf<DirectoryNode>()
+        if (!findPath(root, target, path)) return
+
+        // Expand each ancestor
+        for (ancestor in path) {
+            val layout = layouts[ancestor.path]
+            if (layout != null && !layout.expanded && ancestor.children.isNotEmpty()) {
+                layout.expanded = true
+                for (child in ancestor.children) {
+                    if (child.path !in layouts) {
+                        buildLayout(child, expanded = false, expandChildren = false)
+                    }
+                }
+            }
+        }
+        computePositions()
+        notifyStats()
+    }
+
+    private fun findPath(current: DirectoryNode, target: DirectoryNode, path: MutableList<DirectoryNode>): Boolean {
+        path.add(current)
+        if (current.path == target.path) return true
+        for (child in current.children) {
+            if (findPath(child, target, path)) return true
+        }
+        path.removeAt(path.lastIndex)
+        return false
+    }
+
+    private fun findNodeContainingFile(node: DirectoryNode, filePath: String): DirectoryNode? {
+        for (file in node.files) {
+            if (file.path == filePath) return node
+        }
+        for (child in node.children) {
+            val result = findNodeContainingFile(child, filePath)
+            if (result != null) return result
+        }
+        return null
     }
 
     private fun notifyStats() {

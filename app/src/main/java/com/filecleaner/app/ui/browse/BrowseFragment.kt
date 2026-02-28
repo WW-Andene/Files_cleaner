@@ -1,6 +1,10 @@
 package com.filecleaner.app.ui.browse
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +32,9 @@ class BrowseFragment : Fragment() {
 
     private var currentViewMode = ViewMode.LIST
     private val selectedExtensions = mutableSetOf<String>()
+    private var searchQuery = ""
+    private val handler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
 
     private val categories by lazy {
         listOf(
@@ -52,6 +59,20 @@ class BrowseFragment : Fragment() {
         // View mode toggle
         binding.btnViewMode.setOnClickListener { cycleViewMode() }
         updateViewModeIcon()
+
+        // Search with 300ms debounce
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchRunnable?.let { handler.removeCallbacks(it) }
+                searchRunnable = Runnable {
+                    searchQuery = s?.toString()?.trim() ?: ""
+                    refresh()
+                }
+                handler.postDelayed(searchRunnable!!, 300)
+            }
+        })
 
         // Category spinner
         val labels = categories.map { it.first }
@@ -122,14 +143,21 @@ class BrowseFragment : Fragment() {
             vm.filesByCategory.value?.get(selectedCat) ?: emptyList()
         }
 
-        // Build extension chips from current file set
-        updateExtensionChips(raw)
+        // Apply search filter
+        val searched = if (searchQuery.isEmpty()) {
+            raw
+        } else {
+            raw.filter { it.name.lowercase().contains(searchQuery.lowercase()) }
+        }
+
+        // Build extension chips from searched file set
+        updateExtensionChips(searched)
 
         // Apply extension filter
         val filtered = if (selectedExtensions.isEmpty()) {
-            raw
+            searched
         } else {
-            raw.filter { file ->
+            searched.filter { file ->
                 val ext = file.name.substringAfterLast('.', "").lowercase()
                 ext in selectedExtensions
             }
@@ -188,5 +216,9 @@ class BrowseFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    override fun onDestroyView() {
+        searchRunnable?.let { handler.removeCallbacks(it) }
+        super.onDestroyView()
+        _binding = null
+    }
 }

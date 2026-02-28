@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -65,6 +66,22 @@ class ArborescenceFragment : Fragment() {
             } else {
                 binding.tvNodeDetail.visibility = View.GONE
             }
+        }
+
+        // Tree search
+        binding.etSearchTree.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = binding.etSearchTree.text?.toString()?.trim() ?: ""
+                if (query.isNotEmpty()) {
+                    val found = binding.arborescenceView.searchAndHighlight(query)
+                    if (!found) {
+                        Snackbar.make(binding.root, getString(R.string.search_not_found), Snackbar.LENGTH_SHORT).show()
+                    }
+                } else {
+                    binding.arborescenceView.clearHighlight()
+                }
+                true
+            } else false
         }
 
         // Reset view button
