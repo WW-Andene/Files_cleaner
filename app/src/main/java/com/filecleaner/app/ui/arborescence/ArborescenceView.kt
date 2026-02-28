@@ -259,14 +259,36 @@ class ArborescenceView @JvmOverloads constructor(
     fun setFilter(category: FileCategory?, extensions: Set<String>) {
         filterCategory = category
         filterExtensions = extensions
-        // Rebuild layouts to recalculate heights based on filtered files
-        val expandedPaths = layouts.filter { it.value.expanded }.keys.toSet()
-        layouts.clear()
+
         val root = rootNode ?: return
+
+        // Preserve manually expanded paths
+        val expandedPaths = layouts.filter { it.value.expanded }.keys.toMutableSet()
+
+        // Auto-expand nodes with matching files when a filter is active
+        if (category != null || extensions.isNotEmpty()) {
+            collectMatchingPaths(root, expandedPaths)
+        }
+
+        layouts.clear()
         rebuildWithState(root, expandedPaths)
         computePositions()
         invalidate()
         notifyStats()
+    }
+
+    /** Recursively finds nodes with matching filtered files and adds their paths + ancestors. */
+    private fun collectMatchingPaths(node: DirectoryNode, paths: MutableSet<String>): Boolean {
+        var hasMatch = filteredFiles(node).isNotEmpty()
+        for (child in node.children) {
+            if (collectMatchingPaths(child, paths)) {
+                hasMatch = true
+            }
+        }
+        if (hasMatch) {
+            paths.add(node.path)
+        }
+        return hasMatch
     }
 
     private fun rebuildWithState(node: DirectoryNode, expandedPaths: Set<String>) {
