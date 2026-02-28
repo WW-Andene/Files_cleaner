@@ -1,6 +1,7 @@
 package com.filecleaner.app.viewmodel
 
 import android.app.Application
+import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.io.File
 
 sealed class ScanState {
     object Idle : ScanState()
@@ -34,7 +36,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _allFiles = MutableLiveData<List<FileItem>>(emptyList())
 
-    // Derived lists (populated after scan)
     private val _filesByCategory = MutableLiveData<Map<FileCategory, List<FileItem>>>(emptyMap())
     val filesByCategory: LiveData<Map<FileCategory, List<FileItem>>> = _filesByCategory
 
@@ -62,44 +63,46 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     data class DeleteResult(
-        val deleted: Int,
+        val moved: Int,
         val failed: Int,
-        val freedBytes: Long
+        val freedBytes: Long,
+        val canUndo: Boolean
     )
+
+    // Trash directory for undo support (F-026)
+    private val trashDir: File
+        get() = File(
+            getApplication<Application>().getExternalFilesDir(null),
+            ".trash"
+        )
+
+    // Map of original path -> trash path for pending undo
+    private var pendingTrash = mutableMapOf<String, String>()
 
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
 
     fun startScan(minLargeFileMb: Int = 50) {
-        // Cancel any in-progress scan before starting a new one (F-004)
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             _scanState.value = ScanState.Scanning(0)
             runCatching {
-                // 1. Scan
                 val files = FileScanner.scanAll(getApplication()) { count ->
                     _scanState.postValue(ScanState.Scanning(count))
                 }
 
-                // Use mutex to prevent concurrent state mutations (F-013)
                 stateMutex.withLock {
                     _allFiles.postValue(files)
-
-                    // 2. Classify by category
                     _filesByCategory.postValue(files.groupBy { it.category })
 
-                    // 3. Find duplicates
                     val dupes = DuplicateFinder.findDuplicates(files)
                     _duplicates.postValue(dupes)
 
-                    // 4. Large files
                     val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L)
                     _largeFiles.postValue(large)
 
-                    // 5. Junk files
                     val junk = JunkFinder.findJunk(files)
                     _junkFiles.postValue(junk)
 
-                    // 6. Stats
                     _storageStats.postValue(StorageStats(
                         totalFiles    = files.size,
                         totalSize     = files.sumOf { it.size },
@@ -117,49 +120,106 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Deletes a list of FileItems from disk and removes them from all caches. */
+    /**
+     * Moves files to trash (app-private .trash dir) instead of deleting immediately.
+     * Call confirmDelete() to permanently remove, or undoDelete() to restore.
+     */
     fun deleteFiles(toDelete: List<FileItem>) {
-        if (isScanning) return // Don't delete during an active scan (F-013)
+        if (isScanning) return
         viewModelScope.launch {
-            // Perform IO on background thread (F-014)
-            val (deletedPaths, freedBytes) = withContext(Dispatchers.IO) {
+            // Permanently delete any previously trashed files first
+            commitPendingTrash()
+
+            val (movedPaths, freedBytes) = withContext(Dispatchers.IO) {
+                val dir = trashDir
+                dir.mkdirs()
                 var freed = 0L
-                val succeeded = mutableSetOf<String>()
+                val moved = mutableMapOf<String, String>()
                 for (item in toDelete) {
-                    val size = item.size
-                    if (item.file.delete()) {
-                        succeeded.add(item.path)
-                        freed += size
+                    val src = File(item.path)
+                    val dst = File(dir, "${System.nanoTime()}_${src.name}")
+                    if (src.renameTo(dst)) {
+                        moved[item.path] = dst.absolutePath
+                        freed += item.size
                     }
                 }
-                succeeded to freed
+                moved to freed
             }
 
-            // Report result including failures (F-005)
-            val failed = toDelete.size - deletedPaths.size
-            _deleteResult.postValue(DeleteResult(deletedPaths.size, failed, freedBytes))
+            pendingTrash = movedPaths.toMutableMap()
 
-            // Serialize state mutations with scan (F-013)
+            val failed = toDelete.size - movedPaths.size
+            _deleteResult.postValue(DeleteResult(movedPaths.size, failed, freedBytes, canUndo = true))
+
             stateMutex.withLock {
+                val deletedPaths = movedPaths.keys
                 val remaining = _allFiles.value?.filter { it.path !in deletedPaths } ?: return@launch
                 _allFiles.postValue(remaining)
                 _filesByCategory.postValue(remaining.groupBy { it.category })
                 _duplicates.postValue(_duplicates.value?.filter { it.path !in deletedPaths })
                 _largeFiles.postValue(_largeFiles.value?.filter { it.path !in deletedPaths })
                 _junkFiles.postValue(_junkFiles.value?.filter { it.path !in deletedPaths })
-
-                // Recalculate storage stats (F-006)
-                val dupes = _duplicates.value ?: emptyList()
-                val large = _largeFiles.value ?: emptyList()
-                val junk = _junkFiles.value ?: emptyList()
-                _storageStats.postValue(StorageStats(
-                    totalFiles    = remaining.size,
-                    totalSize     = remaining.sumOf { it.size },
-                    junkSize      = junk.sumOf { it.size },
-                    duplicateSize = dupes.sumOf { it.size },
-                    largeSize     = large.sumOf { it.size }
-                ))
+                recalcStats(remaining)
             }
         }
+    }
+
+    /** Undo the last delete — move files back from trash to original locations. */
+    fun undoDelete() {
+        if (pendingTrash.isEmpty()) return
+        viewModelScope.launch {
+            val restored = withContext(Dispatchers.IO) {
+                val items = mutableListOf<FileItem>()
+                for ((origPath, trashPath) in pendingTrash) {
+                    val trashFile = File(trashPath)
+                    val origFile = File(origPath)
+                    if (trashFile.renameTo(origFile)) {
+                        items.add(FileScanner.fileToItem(origFile))
+                    }
+                }
+                items
+            }
+            pendingTrash.clear()
+
+            if (restored.isNotEmpty()) {
+                stateMutex.withLock {
+                    val current = _allFiles.value ?: emptyList()
+                    val updated = current + restored
+                    _allFiles.postValue(updated)
+                    _filesByCategory.postValue(updated.groupBy { it.category })
+                    // Re-run classification for restored files
+                    val dupes = DuplicateFinder.findDuplicates(updated)
+                    _duplicates.postValue(dupes)
+                    _largeFiles.postValue(JunkFinder.findLargeFiles(updated))
+                    _junkFiles.postValue(JunkFinder.findJunk(updated))
+                    recalcStats(updated)
+                }
+            }
+        }
+    }
+
+    /** Permanently delete trashed files (called when undo window expires). */
+    fun confirmDelete() {
+        viewModelScope.launch { commitPendingTrash() }
+    }
+
+    private suspend fun commitPendingTrash() = withContext(Dispatchers.IO) {
+        for ((_, trashPath) in pendingTrash) {
+            File(trashPath).delete()
+        }
+        pendingTrash.clear()
+    }
+
+    private fun recalcStats(remaining: List<FileItem>) {
+        val dupes = _duplicates.value ?: emptyList()
+        val large = _largeFiles.value ?: emptyList()
+        val junk = _junkFiles.value ?: emptyList()
+        _storageStats.postValue(StorageStats(
+            totalFiles    = remaining.size,
+            totalSize     = remaining.sumOf { it.size },
+            junkSize      = junk.sumOf { it.size },
+            duplicateSize = dupes.sumOf { it.size },
+            largeSize     = large.sumOf { it.size }
+        ))
     }
 }

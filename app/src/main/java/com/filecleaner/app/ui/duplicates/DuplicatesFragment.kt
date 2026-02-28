@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentListActionBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
+import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 
 class DuplicatesFragment : Fragment() {
@@ -32,11 +33,10 @@ class DuplicatesFragment : Fragment() {
         adapter = FileAdapter(selectable = true) { sel ->
             selected = sel
             binding.btnAction.isEnabled = sel.isNotEmpty()
-            binding.btnAction.text = "Delete ${sel.size} selected  (${totalSize(sel)})"
+            binding.btnAction.text = "Delete ${sel.size} selected  (${UndoHelper.totalSize(sel)})"
         }
         binding.recyclerView.adapter = adapter
 
-        // Select All keeps one copy per group (F-028)
         binding.btnSelectAll.setOnClickListener { adapter.selectAllDuplicatesExceptBest() }
         binding.btnDeselectAll.setOnClickListener { adapter.deselectAll() }
 
@@ -47,27 +47,22 @@ class DuplicatesFragment : Fragment() {
         vm.duplicates.observe(viewLifecycleOwner) { dupes ->
             adapter.submitList(dupes)
             binding.tvSummary.text = if (dupes.isEmpty()) "No duplicates found" else
-                "${dupes.size} duplicate files \u2014 ${totalSize(dupes)} in duplicates"
+                "${dupes.size} duplicate files \u2014 ${UndoHelper.totalSize(dupes)} in duplicates"
             binding.tvEmpty.visibility = if (dupes.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        vm.deleteResult.observe(viewLifecycleOwner) { result ->
+            UndoHelper.showUndoSnackbar(binding.root, result, vm)
         }
     }
 
     private fun confirmDelete() {
         AlertDialog.Builder(requireContext())
             .setTitle("Delete ${selected.size} files?")
-            .setMessage("This will permanently delete the selected files. This cannot be undone.")
+            .setMessage("Files will be moved to trash. You can undo within 8 seconds.")
             .setPositiveButton("Delete") { _, _ -> vm.deleteFiles(selected); adapter.deselectAll() }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-
-    private fun totalSize(list: List<FileItem>): String {
-        val bytes = list.sumOf { it.size }
-        return when {
-            bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
-            bytes >= 1_048_576     -> "%.1f MB".format(bytes / 1_048_576.0)
-            else                   -> "%.0f KB".format(bytes / 1_024.0)
-        }
     }
 
     override fun onDestroyView() { super.onDestroyView(); _binding = null }

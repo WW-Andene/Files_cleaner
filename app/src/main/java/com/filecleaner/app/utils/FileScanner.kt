@@ -56,6 +56,9 @@ object FileScanner {
         }
     }
 
+    /** Public helper for creating a FileItem from a File (used by undo restore). */
+    fun fileToItem(file: File): FileItem = file.toFileItem()
+
     fun File.toFileItem(): FileItem {
         val ext = extension.lowercase()
         val category = CATEGORY_MAP.entries.firstOrNull { ext in it.value }?.key
