@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.utils.DuplicateFinder
@@ -51,6 +52,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val _storageStats = MutableLiveData<StorageStats>()
     val storageStats: LiveData<StorageStats> = _storageStats
 
+    private val _directoryTree = MutableLiveData<DirectoryNode?>(null)
+    val directoryTree: LiveData<DirectoryNode?> = _directoryTree
+
+    private val _moveResult = MutableLiveData<MoveResult>()
+    val moveResult: LiveData<MoveResult> = _moveResult
+
     private val _deleteResult = MutableLiveData<DeleteResult>()
     val deleteResult: LiveData<DeleteResult> = _deleteResult
 
@@ -69,6 +76,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         val canUndo: Boolean
     )
 
+    data class MoveResult(val success: Boolean, val message: String)
+
     // Trash directory for undo support (F-026)
     private val trashDir: File
         get() = File(
@@ -86,12 +95,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         scanJob = viewModelScope.launch {
             _scanState.value = ScanState.Scanning(0)
             runCatching {
-                val files = FileScanner.scanAll(getApplication()) { count ->
+                val (files, tree) = FileScanner.scanWithTree(getApplication()) { count ->
                     _scanState.postValue(ScanState.Scanning(count))
                 }
 
                 stateMutex.withLock {
                     _allFiles.postValue(files)
+                    _directoryTree.postValue(tree)
                     _filesByCategory.postValue(files.groupBy { it.category })
 
                     val dupes = DuplicateFinder.findDuplicates(files)
@@ -117,6 +127,22 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 if (e is kotlinx.coroutines.CancellationException) throw e
                 _scanState.postValue(ScanState.Error(e.message ?: "Unknown error"))
             }
+        }
+    }
+
+    /** Move a file to a different directory and refresh the tree. */
+    fun moveFile(filePath: String, targetDirPath: String) {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                val src = File(filePath)
+                val dst = File(targetDirPath, src.name)
+                if (!src.exists()) return@withContext MoveResult(false, "Source file not found")
+                if (dst.exists()) return@withContext MoveResult(false, "File already exists in target")
+                if (src.renameTo(dst)) MoveResult(true, "Moved ${src.name}")
+                else MoveResult(false, "Failed to move file")
+            }
+            _moveResult.postValue(result)
+            if (result.success) startScan()
         }
     }
 
