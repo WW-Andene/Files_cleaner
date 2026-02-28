@@ -93,12 +93,12 @@ abstract class BaseFileListFragment : Fragment() {
     private fun confirmDelete() {
         AlertDialog.Builder(requireContext())
             .setTitle(confirmTitle(selected.size))
-            .setMessage("Files will be moved to trash. You can undo within 8 seconds.")
+            .setMessage(getString(com.filecleaner.app.R.string.confirm_delete_message))
             .setPositiveButton(confirmPositiveLabel) { _, _ ->
                 vm.deleteFiles(selected)
                 adapter.deselectAll()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(com.filecleaner.app.R.string.cancel), null)
             .show()
     }
 

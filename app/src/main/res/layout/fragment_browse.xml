@@ -39,7 +39,7 @@
             android:id="@+id/tv_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 files"
+            android:text="@string/n_files"
             android:textSize="12sp"
             android:textColor="@color/textSecondary" />
     </LinearLayout>
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="32dp"
-        android:text="No files found.\nTap 'Scan Storage' to start."
+        android:text="@string/no_files_found"
         android:visibility="gone"
         android:textColor="@color/textSecondary" />
 

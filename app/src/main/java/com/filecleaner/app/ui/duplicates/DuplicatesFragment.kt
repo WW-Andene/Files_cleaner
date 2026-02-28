@@ -1,18 +1,19 @@
 package com.filecleaner.app.ui.duplicates
 
 import androidx.lifecycle.LiveData
+import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.ui.common.BaseFileListFragment
 
 class DuplicatesFragment : BaseFileListFragment() {
-    override val screenTitle = "Duplicate Files"
-    override val defaultActionLabel = "Delete selected"
-    override fun actionLabel(count: Int, sizeText: String) = "Delete $count selected  ($sizeText)"
-    override fun confirmTitle(count: Int) = "Delete $count files?"
-    override val confirmPositiveLabel = "Delete"
+    override val screenTitle get() = getString(R.string.title_duplicates)
+    override val defaultActionLabel get() = getString(R.string.delete_selected)
+    override fun actionLabel(count: Int, sizeText: String) = getString(R.string.action_delete_n, count, sizeText)
+    override fun confirmTitle(count: Int) = getString(R.string.delete_n_files_title, count)
+    override val confirmPositiveLabel get() = getString(R.string.delete)
     override fun liveData(): LiveData<List<FileItem>> = vm.duplicates
-    override fun summaryText(count: Int, sizeText: String) = "$count duplicate files \u2014 $sizeText in duplicates"
-    override val emptySummary = "No duplicates found"
+    override fun summaryText(count: Int, sizeText: String) = getString(R.string.duplicates_summary, count, sizeText)
+    override val emptySummary get() = getString(R.string.no_duplicates_found)
 
     override fun onSelectAll() {
         adapter.selectAllDuplicatesExceptBest()

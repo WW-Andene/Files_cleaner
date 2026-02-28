@@ -52,7 +52,6 @@ class FileAdapter(
         val isSelected = item.path in selectedPaths
 
         holder.name.text = item.name
-        holder.meta.text = buildMeta(item)
 
         // Thumbnail for images/videos; icon otherwise
         if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
@@ -76,24 +75,28 @@ class FileAdapter(
         }
 
         // Checkbox + accessibility (F-033)
+        val ctx = holder.itemView.context
+        val meta = buildMeta(holder, item)
         if (selectable) {
             holder.check.visibility = View.VISIBLE
             holder.check.isChecked = isSelected
-            holder.check.contentDescription = if (isSelected) "Deselect ${item.name}" else "Select ${item.name}"
+            holder.check.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
             val toggle = {
                 toggleSelection(item.path)
                 val nowSelected = item.path in selectedPaths
                 holder.check.isChecked = nowSelected
-                holder.check.contentDescription = if (nowSelected) "Deselect ${item.name}" else "Select ${item.name}"
+                holder.check.contentDescription = ctx.getString(
+                    if (nowSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
                 notifySelectionChanged()
             }
             holder.check.setOnClickListener { toggle() }
             holder.itemView.setOnClickListener { toggle() }
-            // Row-level accessibility description
-            holder.itemView.contentDescription = "${item.name}, ${buildMeta(item)}, ${if (isSelected) "selected" else "not selected"}"
+            holder.itemView.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected, item.name, meta)
         } else {
             holder.check.visibility = View.GONE
-            holder.itemView.contentDescription = "${item.name}, ${buildMeta(item)}"
+            holder.itemView.contentDescription = ctx.getString(R.string.a11y_file_info, item.name, meta)
         }
     }
 
@@ -132,8 +135,11 @@ class FileAdapter(
 
     fun getSelectedItems(): List<FileItem> = currentList.filter { it.path in selectedPaths }
 
-    private fun buildMeta(item: FileItem): String {
-        val date = android.text.format.DateFormat.format("dd MMM yyyy", item.lastModified)
+    private fun buildMeta(holder: FileVH, item: FileItem): String {
+        val pattern = android.text.format.DateFormat.getBestDateTimePattern(
+            holder.itemView.resources.configuration.locales[0], "dd MMM yyyy")
+        val date = android.text.format.DateFormat.format(pattern, item.lastModified)
+        holder.meta.text = "${item.sizeReadable}  \u2022  $date"
         return "${item.sizeReadable}  \u2022  $date"
     }
 

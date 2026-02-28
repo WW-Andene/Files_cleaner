@@ -4,21 +4,21 @@
     <item
         android:id="@+id/browseFragment"
         android:icon="@drawable/ic_folder"
-        android:title="Browse" />
+        android:title="@string/nav_browse" />
 
     <item
         android:id="@+id/duplicatesFragment"
         android:icon="@drawable/ic_copy"
-        android:title="Duplicates" />
+        android:title="@string/nav_duplicates" />
 
     <item
         android:id="@+id/largeFilesFragment"
         android:icon="@drawable/ic_storage"
-        android:title="Large" />
+        android:title="@string/nav_large" />
 
     <item
         android:id="@+id/junkFragment"
         android:icon="@drawable/ic_delete"
-        android:title="Junk" />
+        android:title="@string/nav_junk" />
 
 </menu>

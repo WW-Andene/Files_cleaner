@@ -1,12 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">File Cleaner</string>
+
+    <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
-    <string name="delete_selected">Delete Selected</string>
-    <string name="select_all">Select All</string>
-    <string name="deselect_all">Deselect All</string>
-    <string name="confirm_delete_title">Confirm Delete</string>
-    <string name="confirm_delete_message">This action cannot be undone.</string>
+    <string name="scan_prompt">Tap \u25B6 to scan your storage</string>
+    <string name="scanning_progress">Scanning\u2026 %d files found</string>
+    <string name="scan_complete">Scan complete \u2713</string>
+    <string name="scanning_in_progress">Scanning in progress</string>
+    <string name="error_prefix">Error: %s</string>
+
+    <!-- Actions -->
+    <string name="delete_selected">Delete selected</string>
+    <string name="clean_selected">Clean selected</string>
+    <string name="select_all">Select all</string>
+    <string name="deselect_all">Deselect all</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="clean">Clean</string>
+
+    <!-- Confirm dialog -->
+    <string name="confirm_delete_title">Confirm Delete</string>
+    <string name="confirm_delete_message">Files will be moved to trash. You can undo within 8 seconds.</string>
+    <string name="delete_n_files_title">Delete %d files?</string>
+    <string name="clean_n_files_title">Clean %d files?</string>
+
+    <!-- Permission dialogs -->
+    <string name="storage_access_needed">Storage access needed</string>
+    <string name="storage_access_message">To scan all files, please grant \'Allow access to manage all files\' in the next screen.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="permission_required">Permission required</string>
+    <string name="permission_required_message">Storage permission is required to scan files. Please grant it in Settings.</string>
+    <string name="settings">Settings</string>
+
+    <!-- Browse -->
+    <string name="all_files">All files</string>
+    <string name="n_files">%d files</string>
+    <string name="no_files_found">No files found.\nTap \'Scan Storage\' to start.</string>
+    <string name="nothing_found">Nothing found.\nTap \'Scan Storage\' to start.</string>
+    <string name="scan_to_see_results">Scan to see results</string>
+
+    <!-- Sort options -->
+    <string name="sort_name_asc">Name \u2191</string>
+    <string name="sort_name_desc">Name \u2193</string>
+    <string name="sort_size_asc">Size \u2191</string>
+    <string name="sort_size_desc">Size \u2193</string>
+    <string name="sort_date_asc">Date \u2191</string>
+    <string name="sort_date_desc">Date \u2193</string>
+
+    <!-- Screen titles -->
+    <string name="title_junk">Junk Files</string>
+    <string name="title_large">Large Files</string>
+    <string name="title_duplicates">Duplicate Files</string>
+
+    <!-- Summaries -->
+    <string name="junk_summary">%1$d junk files \u2014 %2$s can be freed</string>
+    <string name="large_summary">%1$d large files \u2014 %2$s total</string>
+    <string name="duplicates_summary">%1$d duplicate files \u2014 %2$s in duplicates</string>
+    <string name="no_junk_found">No junk files found</string>
+    <string name="no_large_found">No large files found</string>
+    <string name="no_duplicates_found">No duplicates found</string>
+    <string name="action_delete_n">Delete %1$d selected  (%2$s)</string>
+    <string name="action_clean_n">Clean %1$d files  (%2$s)</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_browse">Browse</string>
+    <string name="nav_duplicates">Duplicates</string>
+    <string name="nav_large">Large</string>
+    <string name="nav_junk">Junk</string>
+
+    <!-- Accessibility -->
+    <string name="a11y_select_file">Select %s</string>
+    <string name="a11y_deselect_file">Deselect %s</string>
+    <string name="a11y_file_selected">%1$s, %2$s, selected</string>
+    <string name="a11y_file_not_selected">%1$s, %2$s, not selected</string>
+    <string name="a11y_file_info">%1$s, %2$s</string>
+
+    <!-- Date format -->
+    <string name="date_format_short">dd MMM yyyy</string>
 </resources>
