@@ -1,5 +1,8 @@
 package com.filecleaner.app.ui.arborescence
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
@@ -83,9 +86,15 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 4f
+        strokeWidth = 6f
         color = 0xFFFFB300.toInt()
     }
+    private val highlightFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = 0x44FFB300.toInt()
+    }
+    private var highlightAnimator: ValueAnimator? = null
+    private var highlightAlpha = 1f
 
     // ── Category colors ──
     private val categoryColors = mapOf(
@@ -584,6 +593,9 @@ class ArborescenceView @JvmOverloads constructor(
                     layout.x + 4f, fileRowTop,
                     layout.x + layout.w - 4f, fileRowTop + fileLineHeight
                 )
+                highlightFillPaint.alpha = (64 * highlightAlpha).toInt()
+                highlightPaint.alpha = (255 * highlightAlpha).toInt()
+                canvas.drawRoundRect(highlightRect, 4f, 4f, highlightFillPaint)
                 canvas.drawRoundRect(highlightRect, 4f, 4f, highlightPaint)
             }
         }
@@ -690,12 +702,63 @@ class ArborescenceView @JvmOverloads constructor(
         highlightedFilePath = filePath
         selectedPath = node.path
         zoomToFit(node.path)
+        startHighlightAnimation()
         invalidate()
     }
 
     fun clearHighlight() {
+        highlightAnimator?.cancel()
+        highlightAnimator = null
         highlightedFilePath = null
+        highlightAlpha = 1f
+        highlightPaint.alpha = 255
+        highlightFillPaint.alpha = 64
         invalidate()
+    }
+
+    private fun startHighlightAnimation() {
+        highlightAnimator?.cancel()
+        highlightAlpha = 1f
+
+        // Pulse 3 times over 3 seconds
+        highlightAnimator = ValueAnimator.ofFloat(1f, 0.3f, 1f).apply {
+            duration = 1000
+            repeatCount = 2
+            repeatMode = ValueAnimator.RESTART
+            addUpdateListener {
+                highlightAlpha = it.animatedValue as Float
+                invalidate()
+            }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    // Fade out after 2 more seconds
+                    postDelayed({ fadeOutHighlight() }, 2000)
+                }
+            })
+            start()
+        }
+    }
+
+    private fun fadeOutHighlight() {
+        if (highlightedFilePath == null) return
+        highlightAnimator?.cancel()
+        highlightAnimator = ValueAnimator.ofFloat(1f, 0f).apply {
+            duration = 500
+            addUpdateListener {
+                highlightAlpha = it.animatedValue as Float
+                invalidate()
+            }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    highlightedFilePath = null
+                    highlightAlpha = 1f
+                    highlightPaint.alpha = 255
+                    highlightFillPaint.alpha = 64
+                    invalidate()
+                }
+            })
+            start()
+        }
     }
 
     private fun expandToNode(target: DirectoryNode) {
