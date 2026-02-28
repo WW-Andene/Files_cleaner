@@ -163,7 +163,6 @@
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
-        app:itemActiveIndicatorStyle="@style/Widget.FileCleaner.BottomNav.ActiveIndicator"
         app:elevation="8dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
