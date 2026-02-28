@@ -17,6 +17,7 @@ import com.filecleaner.app.databinding.FragmentBrowseBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.google.android.material.chip.Chip
 
 class BrowseFragment : Fragment() {
 
@@ -26,6 +27,7 @@ class BrowseFragment : Fragment() {
     private lateinit var adapter: FileAdapter
 
     private var currentViewMode = ViewMode.LIST
+    private val selectedExtensions = mutableSetOf<String>()
 
     private val categories by lazy {
         listOf(
@@ -70,7 +72,10 @@ class BrowseFragment : Fragment() {
         binding.spinnerSort.adapter = sortAdapter
 
         binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = refresh()
+            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
+                selectedExtensions.clear()
+                refresh()
+            }
             override fun onNothingSelected(p: AdapterView<*>?) {}
         }
         binding.spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -117,18 +122,70 @@ class BrowseFragment : Fragment() {
             vm.filesByCategory.value?.get(selectedCat) ?: emptyList()
         }
 
+        // Build extension chips from current file set
+        updateExtensionChips(raw)
+
+        // Apply extension filter
+        val filtered = if (selectedExtensions.isEmpty()) {
+            raw
+        } else {
+            raw.filter { file ->
+                val ext = file.name.substringAfterLast('.', "").lowercase()
+                ext in selectedExtensions
+            }
+        }
+
         val sorted = when (binding.spinnerSort.selectedItemPosition) {
-            0 -> raw.sortedBy { it.name.lowercase() }
-            1 -> raw.sortedByDescending { it.name.lowercase() }
-            2 -> raw.sortedBy { it.size }
-            3 -> raw.sortedByDescending { it.size }
-            4 -> raw.sortedBy { it.lastModified }
-            else -> raw.sortedByDescending { it.lastModified }
+            0 -> filtered.sortedBy { it.name.lowercase() }
+            1 -> filtered.sortedByDescending { it.name.lowercase() }
+            2 -> filtered.sortedBy { it.size }
+            3 -> filtered.sortedByDescending { it.size }
+            4 -> filtered.sortedBy { it.lastModified }
+            else -> filtered.sortedByDescending { it.lastModified }
         }
 
         adapter.submitList(sorted)
         binding.tvEmpty.visibility = if (sorted.isEmpty()) View.VISIBLE else View.GONE
         binding.tvCount.text = getString(R.string.n_files, sorted.size)
+    }
+
+    private fun updateExtensionChips(files: List<FileItem>) {
+        val chipGroup = binding.chipGroupExtensions
+
+        // Count extensions
+        val extCounts = mutableMapOf<String, Int>()
+        for (file in files) {
+            val ext = file.name.substringAfterLast('.', "").lowercase()
+            if (ext.isNotEmpty()) {
+                extCounts[ext] = (extCounts[ext] ?: 0) + 1
+            }
+        }
+
+        // Show top 15 extensions sorted by count
+        val topExtensions = extCounts.entries
+            .sortedByDescending { it.value }
+            .take(15)
+
+        if (topExtensions.isEmpty()) {
+            binding.scrollExtensions.visibility = View.GONE
+            return
+        }
+
+        binding.scrollExtensions.visibility = View.VISIBLE
+        chipGroup.removeAllViews()
+
+        for ((ext, count) in topExtensions) {
+            val chip = Chip(requireContext()).apply {
+                text = ".$ext ($count)"
+                isCheckable = true
+                isChecked = ext in selectedExtensions
+                setOnCheckedChangeListener { _, checked ->
+                    if (checked) selectedExtensions.add(ext) else selectedExtensions.remove(ext)
+                    refresh()
+                }
+            }
+            chipGroup.addView(chip)
+        }
     }
 
     override fun onDestroyView() { super.onDestroyView(); _binding = null }

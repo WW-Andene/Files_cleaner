@@ -92,6 +92,9 @@
     <!-- View mode -->
     <string name="view_mode">View mode</string>
 
+    <!-- Extension filter -->
+    <string name="filter_by_extension">Filter by extension</string>
+
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>
 </resources>
