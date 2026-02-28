@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/browseFragment"
-        android:icon="@drawable/ic_folder"
+        android:icon="@drawable/ic_nav_browse"
         android:title="@string/nav_browse" />
 
     <item
         android:id="@+id/duplicatesFragment"
-        android:icon="@drawable/ic_copy"
+        android:icon="@drawable/ic_nav_duplicates"
         android:title="@string/nav_duplicates" />
 
     <item
         android:id="@+id/largeFilesFragment"
-        android:icon="@drawable/ic_storage"
+        android:icon="@drawable/ic_nav_large"
         android:title="@string/nav_large" />
 
     <item
         android:id="@+id/junkFragment"
-        android:icon="@drawable/ic_delete"
+        android:icon="@drawable/ic_nav_junk"
         android:title="@string/nav_junk" />
 
 </menu>

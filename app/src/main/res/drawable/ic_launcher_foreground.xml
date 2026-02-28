@@ -36,13 +36,13 @@
         android:fillColor="#A09488"
         android:pathData="M45,27 C48,24 51,23 54,23 C57,23 60,24 63,27 L59,34 C57,31 51,31 49,34 Z" />
 
-    <!-- Eye mask base (wider, wrapping naturally) -->
+    <!-- Eye mask base (wider, wrapping naturally — themed green) -->
     <path
-        android:fillColor="#546E7A"
+        android:fillColor="#3D6B5A"
         android:pathData="M18,48 C26,36 40,38 54,40 C68,38 82,36 90,48 L88,60 C80,50 68,52 54,54 C40,52 28,50 20,60 Z" />
     <!-- Eye mask top (darker accent for depth) -->
     <path
-        android:fillColor="#37474F"
+        android:fillColor="#2A4F3F"
         android:pathData="M22,49 C30,39 42,42 54,43 C66,42 78,39 86,49 L84,57 C77,48 66,51 54,52 C42,51 31,48 24,57 Z" />
 
     <!-- Muzzle (cream, larger and rounder) -->
