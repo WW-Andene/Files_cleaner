@@ -1,33 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.filecleaner.app.ui.arborescence.ArborescenceView
-        android:id="@+id/arborescence_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <!-- Empty state -->
-    <TextView
-        android:id="@+id/tv_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/scan_to_see_results"
-        android:textSize="16sp"
-        android:visibility="gone" />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <!-- Search bar -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search_tree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -47,15 +32,50 @@
             android:imeOptions="actionSearch" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Stats row + filter toggle + zoom info -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp">
+
+        <TextView
+            android:id="@+id/tv_stats_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/textSecondary"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btn_toggle_filters"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_view_list"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:padding="6dp"
+            android:layout_marginHorizontal="4dp"
+            android:contentDescription="@string/toggle_filters" />
+
+        <TextView
+            android:id="@+id/tv_zoom_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
     <!-- Filter panel (collapsible) -->
     <LinearLayout
         android:id="@+id/filter_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="64dp"
         android:orientation="vertical"
-        android:background="@drawable/bg_stats_overlay"
         android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
         android:visibility="gone">
@@ -96,76 +116,54 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <!-- Filter toggle button -->
-    <ImageButton
-        android:id="@+id/btn_toggle_filters"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="top|end"
-        android:layout_marginEnd="56dp"
-        android:layout_marginTop="68dp"
-        android:src="@drawable/ic_view_list"
-        android:background="@drawable/bg_stats_overlay"
-        android:scaleType="centerInside"
-        android:padding="6dp"
-        android:contentDescription="@string/toggle_filters" />
+    <!-- Tree area with overlays -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <!-- Stats header (top-left, below filter panel) -->
-    <TextView
-        android:id="@+id/tv_stats_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="68dp"
-        android:background="@drawable/bg_stats_overlay"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="13sp"
-        android:visibility="gone" />
+        <com.filecleaner.app.ui.arborescence.ArborescenceView
+            android:id="@+id/arborescence_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <!-- Zoom info (top-right) -->
-    <TextView
-        android:id="@+id/tv_zoom_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="68dp"
-        android:background="@drawable/bg_stats_overlay"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="13sp"
-        android:visibility="gone" />
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tv_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/scan_to_see_results"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
-    <!-- Selected node detail (bottom-right) -->
-    <TextView
-        android:id="@+id/tv_node_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_stats_overlay"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="13sp"
-        android:visibility="gone" />
+        <!-- Selected node detail (bottom-right) -->
+        <TextView
+            android:id="@+id/tv_node_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_stats_overlay"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
-    <!-- Back-to-root mini FAB (bottom-start) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_reset_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="@string/reset_view"
-        android:src="@drawable/ic_raccoon_face"
-        app:fabSize="mini"
-        app:backgroundTint="@color/colorPrimary" />
+        <!-- Back-to-root mini FAB (bottom-start) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_reset_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/reset_view"
+            android:src="@drawable/ic_raccoon_face"
+            app:fabSize="mini"
+            app:backgroundTint="@color/colorPrimary" />
+    </FrameLayout>
 
-</FrameLayout>
+</LinearLayout>
