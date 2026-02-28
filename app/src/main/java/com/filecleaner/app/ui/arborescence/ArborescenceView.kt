@@ -13,6 +13,7 @@ import android.view.View
 import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
+import com.filecleaner.app.data.FileItem
 import kotlin.math.max
 import kotlin.math.min
 
@@ -111,6 +112,10 @@ class ArborescenceView @JvmOverloads constructor(
     private var rootNode: DirectoryNode? = null
     private val layouts = mutableMapOf<String, NodeLayout>()
     private var selectedPath: String? = null
+
+    // ── Filter state ──
+    private var filterCategory: FileCategory? = null
+    private var filterExtensions: Set<String> = emptySet()
 
     // ── Transform ──
     private val viewMatrix = Matrix()
@@ -222,11 +227,48 @@ class ArborescenceView @JvmOverloads constructor(
         notifyStats()
     }
 
+    fun setFilter(category: FileCategory?, extensions: Set<String>) {
+        filterCategory = category
+        filterExtensions = extensions
+        // Rebuild layouts to recalculate heights based on filtered files
+        val expandedPaths = layouts.filter { it.value.expanded }.keys.toSet()
+        layouts.clear()
+        val root = rootNode ?: return
+        rebuildWithState(root, expandedPaths)
+        computePositions()
+        invalidate()
+        notifyStats()
+    }
+
+    private fun rebuildWithState(node: DirectoryNode, expandedPaths: Set<String>) {
+        val expanded = node.path in expandedPaths
+        buildLayout(node, expanded = expanded, expandChildren = false)
+        if (expanded) {
+            for (child in node.children) {
+                rebuildWithState(child, expandedPaths)
+            }
+        }
+    }
+
+    private fun filteredFiles(node: DirectoryNode): List<FileItem> {
+        var files = node.files
+        if (filterCategory != null) {
+            files = files.filter { it.category == filterCategory }
+        }
+        if (filterExtensions.isNotEmpty()) {
+            files = files.filter { file ->
+                file.name.substringAfterLast('.', "").lowercase() in filterExtensions
+            }
+        }
+        return files
+    }
+
     private fun buildLayout(node: DirectoryNode, expanded: Boolean, expandChildren: Boolean) {
+        val filtered = filteredFiles(node)
         val maxFiles = 5
-        val displayFiles = min(node.files.size, maxFiles)
+        val displayFiles = min(filtered.size, maxFiles)
         val h = headerHeight + displayFiles * fileLineHeight +
-            (if (node.files.size > maxFiles) fileLineHeight else 0f) + 12f
+            (if (filtered.size > maxFiles) fileLineHeight else 0f) + 12f
         layouts[node.path] = NodeLayout(
             node = node,
             w = blockWidth,
@@ -450,9 +492,14 @@ class ArborescenceView @JvmOverloads constructor(
         blockStrokePaint.color = if (isDarkMode) 0xFF616161.toInt() else 0xFF455A64.toInt()
         linePaint.color = if (isDarkMode) 0x664DB6AC.toInt() else 0x6600897B.toInt()
 
-        // Block background (theme-aware)
+        // Block background (theme-aware), semi-transparent if no matching files
+        val hasMatchingFiles = filteredFiles(node).isNotEmpty() ||
+            (filterCategory == null && filterExtensions.isEmpty())
+        val alpha = if (hasMatchingFiles) 255 else 80
         blockPaint.color = if (isDarkMode) 0xFF2C2C2C.toInt() else 0xFFFAFAFA.toInt()
+        blockPaint.alpha = alpha
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockPaint)
+        blockPaint.alpha = 255
 
         // Drop target highlight
         if (isDropTarget) {
@@ -490,9 +537,10 @@ class ArborescenceView @JvmOverloads constructor(
             canvas.drawText(indicator, layout.x + layout.w - 28f, layout.y + 30f, expandPaint)
         }
 
-        // File list
+        // File list (filtered)
+        val filtered = filteredFiles(node)
         val maxFiles = 5
-        val files = node.files.take(maxFiles)
+        val files = filtered.take(maxFiles)
         for ((i, file) in files.withIndex()) {
             val fy = layout.y + headerHeight + i * fileLineHeight + 20f
 
@@ -521,9 +569,9 @@ class ArborescenceView @JvmOverloads constructor(
         }
 
         // "and N more..." label
-        if (node.files.size > maxFiles) {
+        if (filtered.size > maxFiles) {
             val moreY = layout.y + headerHeight + maxFiles * fileLineHeight + 20f
-            val moreText = "+${node.files.size - maxFiles} more\u2026"
+            val moreText = "+${filtered.size - maxFiles} more\u2026"
             fileSizePaint.color = 0xFF9E9E9E.toInt()
             canvas.drawText(moreText, layout.x + 28f, moreY, fileSizePaint)
             fileSizePaint.color = 0xFF757575.toInt()

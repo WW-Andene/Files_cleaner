@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,6 +16,7 @@ import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentArborescenceBinding
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
@@ -22,6 +25,16 @@ class ArborescenceFragment : Fragment() {
     private var _binding: FragmentArborescenceBinding? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
+
+    private var filterPanelVisible = false
+    private val selectedTreeExtensions = mutableSetOf<String>()
+
+    private val treeCategories by lazy {
+        listOf(
+            getString(R.string.all_files) to null,
+            *FileCategory.entries.map { "${it.emoji} ${it.displayName}" to it }.toTypedArray()
+        )
+    }
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View {
         _binding = FragmentArborescenceBinding.inflate(i, c, false)
@@ -102,6 +115,15 @@ class ArborescenceFragment : Fragment() {
             } else false
         }
 
+        // Filter toggle
+        binding.btnToggleFilters.setOnClickListener {
+            filterPanelVisible = !filterPanelVisible
+            binding.filterPanel.visibility = if (filterPanelVisible) View.VISIBLE else View.GONE
+        }
+
+        // Filter spinners
+        setupTreeFilterSpinners()
+
         // Reset view button
         binding.fabResetView.setOnClickListener {
             vm.directoryTree.value?.let { tree ->
@@ -115,6 +137,7 @@ class ArborescenceFragment : Fragment() {
                 binding.arborescenceView.visibility = View.VISIBLE
                 binding.tvEmpty.visibility = View.GONE
                 binding.arborescenceView.setTree(tree)
+                updateTreeExtensionChips()
             } else {
                 binding.arborescenceView.visibility = View.GONE
                 binding.tvEmpty.visibility = View.VISIBLE
@@ -129,6 +152,100 @@ class ArborescenceFragment : Fragment() {
                 Snackbar.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun setupTreeFilterSpinners() {
+        // Category spinner
+        val labels = treeCategories.map { it.first }
+        val catAdapter = ArrayAdapter(requireContext(),
+            android.R.layout.simple_spinner_item, labels)
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerTreeCategory.adapter = catAdapter
+
+        // Sort spinner (not used for tree sorting, but shows filter category)
+        val sortOptions = listOf(
+            getString(R.string.sort_name_asc), getString(R.string.sort_name_desc),
+            getString(R.string.sort_size_asc), getString(R.string.sort_size_desc),
+            getString(R.string.sort_date_asc), getString(R.string.sort_date_desc)
+        )
+        val sortAdapter = ArrayAdapter(requireContext(),
+            android.R.layout.simple_spinner_item, sortOptions)
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerTreeSort.adapter = sortAdapter
+
+        binding.spinnerTreeCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
+                selectedTreeExtensions.clear()
+                applyTreeFilter()
+                updateTreeExtensionChips()
+            }
+            override fun onNothingSelected(p: AdapterView<*>?) {}
+        }
+        binding.spinnerTreeSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
+                applyTreeFilter()
+            }
+            override fun onNothingSelected(p: AdapterView<*>?) {}
+        }
+    }
+
+    private fun applyTreeFilter() {
+        val catEntry = treeCategories[binding.spinnerTreeCategory.selectedItemPosition]
+        val category = catEntry.second
+        binding.arborescenceView.setFilter(category, selectedTreeExtensions)
+    }
+
+    private fun updateTreeExtensionChips() {
+        val tree = vm.directoryTree.value ?: return
+        val chipGroup = binding.chipGroupTreeExtensions
+
+        // Collect all files from tree
+        val allFiles = collectAllFiles(tree)
+        val catEntry = treeCategories[binding.spinnerTreeCategory.selectedItemPosition]
+        val category = catEntry.second
+
+        val filteredByCategory = if (category == null) allFiles
+        else allFiles.filter { it.category == category }
+
+        val extCounts = mutableMapOf<String, Int>()
+        for (file in filteredByCategory) {
+            val ext = file.name.substringAfterLast('.', "").lowercase()
+            if (ext.isNotEmpty()) {
+                extCounts[ext] = (extCounts[ext] ?: 0) + 1
+            }
+        }
+
+        val topExtensions = extCounts.entries.sortedByDescending { it.value }.take(15)
+
+        if (topExtensions.isEmpty()) {
+            binding.scrollTreeExtensions.visibility = View.GONE
+            return
+        }
+
+        binding.scrollTreeExtensions.visibility = View.VISIBLE
+        chipGroup.removeAllViews()
+
+        for ((ext, count) in topExtensions) {
+            val chip = Chip(requireContext()).apply {
+                text = ".$ext ($count)"
+                isCheckable = true
+                isChecked = ext in selectedTreeExtensions
+                setOnCheckedChangeListener { _, checked ->
+                    if (checked) selectedTreeExtensions.add(ext) else selectedTreeExtensions.remove(ext)
+                    applyTreeFilter()
+                }
+            }
+            chipGroup.addView(chip)
+        }
+    }
+
+    private fun collectAllFiles(node: com.filecleaner.app.data.DirectoryNode): List<FileItem> {
+        val result = mutableListOf<FileItem>()
+        result.addAll(node.files)
+        for (child in node.children) {
+            result.addAll(collectAllFiles(child))
+        }
+        return result
     }
 
     private fun formatSize(bytes: Long): String = when {

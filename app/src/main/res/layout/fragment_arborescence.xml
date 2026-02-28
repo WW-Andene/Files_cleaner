@@ -47,7 +47,70 @@
             android:imeOptions="actionSearch" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Stats header (top-left, below search) -->
+    <!-- Filter panel (collapsible) -->
+    <LinearLayout
+        android:id="@+id/filter_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_stats_overlay"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Spinner
+                android:id="@+id/spinner_tree_category"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp" />
+
+            <Spinner
+                android:id="@+id/spinner_tree_sort"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/scroll_tree_extensions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_tree_extensions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true" />
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- Filter toggle button -->
+    <ImageButton
+        android:id="@+id/btn_toggle_filters"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="56dp"
+        android:layout_marginTop="68dp"
+        android:src="@drawable/ic_view_list"
+        android:background="@drawable/bg_stats_overlay"
+        android:scaleType="centerInside"
+        android:padding="6dp"
+        android:contentDescription="@string/filter_by_extension" />
+
+    <!-- Stats header (top-left, below filter panel) -->
     <TextView
         android:id="@+id/tv_stats_header"
         android:layout_width="wrap_content"
