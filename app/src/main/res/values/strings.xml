@@ -76,6 +76,13 @@
     <string name="a11y_file_not_selected">%1$s, %2$s, not selected</string>
     <string name="a11y_file_info">%1$s, %2$s</string>
 
+    <!-- Arborescence -->
+    <string name="open_arborescence">Open tree view</string>
+    <string name="tree_view">Tree View</string>
+    <string name="reset_view">Reset view</string>
+    <string name="node_detail">%1$s\n%2$d files \u2022 %3$s\n%4$d sub-folders</string>
+    <string name="nav_tree">Tree</string>
+
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>
 </resources>
