@@ -86,6 +86,8 @@
     <string name="confirm_move_title">Move file?</string>
     <string name="confirm_move_message">Move \"%1$s\" to \"%2$s\"?</string>
     <string name="move">Move</string>
+    <string name="stats_header_format">%1$d files \u2022 %2$s</string>
+    <string name="zoom_info_format">%1$d%% \u2022 %2$d nodes</string>
 
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>

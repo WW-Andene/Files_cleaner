@@ -203,8 +203,8 @@ class ArborescenceView @JvmOverloads constructor(
         rootNode = root
         layouts.clear()
         selectedPath = null
-        // Expand root + first level by default (2-level display)
-        buildLayout(root, expanded = true, expandChildren = true)
+        // Start collapsed — user expands as they explore
+        buildLayout(root, expanded = false, expandChildren = false)
         computePositions()
         // Center on root
         viewMatrix.reset()
@@ -411,8 +411,8 @@ class ArborescenceView @JvmOverloads constructor(
 
         canvas.restore()
 
-        // Draw stats overlay in screen space
-        drawStatsOverlay(canvas)
+        // Stats are now shown via fragment TextViews (onStatsUpdate callback)
+        notifyStats()
 
         // Draw drag ghost
         if (isDragging && dragFileName != null) {

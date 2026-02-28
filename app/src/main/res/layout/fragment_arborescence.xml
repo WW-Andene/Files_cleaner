@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,6 +17,36 @@
         android:layout_gravity="center"
         android:text="@string/scan_to_see_results"
         android:textSize="16sp"
+        android:visibility="gone" />
+
+    <!-- Stats header (top-left) -->
+    <TextView
+        android:id="@+id/tv_stats_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_stats_overlay"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <!-- Zoom info (top-right) -->
+    <TextView
+        android:id="@+id/tv_zoom_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_stats_overlay"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
         android:visibility="gone" />
 
     <!-- Selected node detail (bottom-right) -->
@@ -44,7 +75,6 @@
         android:contentDescription="@string/reset_view"
         android:src="@drawable/ic_raccoon_face"
         app:fabSize="mini"
-        app:backgroundTint="@color/colorPrimary"
-        xmlns:app="http://schemas.android.com/apk/res-auto" />
+        app:backgroundTint="@color/colorPrimary" />
 
 </FrameLayout>
