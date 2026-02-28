@@ -299,6 +299,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         pendingTrash.clear()
     }
 
+    // ── Clipboard for cut/paste (moved from FileContextMenu static state) ──
+    private val _clipboardItem = MutableLiveData<FileItem?>(null)
+    val clipboardItem: LiveData<FileItem?> = _clipboardItem
+
+    fun setCutFile(item: FileItem) { _clipboardItem.value = item }
+    fun clearClipboard() { _clipboardItem.value = null }
+
     // ── Navigate to tree highlight ──
     private val _navigateToTree = MutableLiveData<String?>()
     val navigateToTree: LiveData<String?> = _navigateToTree

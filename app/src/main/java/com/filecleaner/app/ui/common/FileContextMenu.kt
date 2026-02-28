@@ -17,19 +17,18 @@ import java.io.File
 
 object FileContextMenu {
 
-    var clipboardItem: FileItem? = null
-
     interface Callback {
         fun onDelete(item: FileItem)
         fun onRename(item: FileItem, newName: String)
         fun onCompress(item: FileItem)
         fun onExtract(item: FileItem)
         fun onOpenInTree(item: FileItem)
+        fun onCut(item: FileItem) {}
         fun onPaste(targetDirPath: String) {}
         fun onRefresh()
     }
 
-    fun show(context: Context, anchor: View, item: FileItem, callback: Callback) {
+    fun show(context: Context, anchor: View, item: FileItem, callback: Callback, hasCutFile: Boolean = false) {
         val popup = PopupMenu(context, anchor)
         popup.menu.apply {
             add(0, 1, 0, context.getString(R.string.ctx_open))
@@ -37,8 +36,7 @@ object FileContextMenu {
             add(0, 3, 2, context.getString(R.string.ctx_rename))
             add(0, 4, 3, context.getString(R.string.ctx_share))
             add(0, 5, 4, context.getString(R.string.ctx_cut))
-            // Show Paste option if there's a cut file and this item is in a directory
-            if (clipboardItem != null) {
+            if (hasCutFile) {
                 val targetDir = File(item.path).parent
                 if (targetDir != null) {
                     add(0, 9, 5, context.getString(R.string.ctx_paste_here))
@@ -100,8 +98,8 @@ object FileContextMenu {
                     context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.ctx_share)))
                     true
                 }
-                5 -> { // Cut
-                    clipboardItem = item
+                5 -> { // Cut — delegate to callback (clipboard lives in ViewModel)
+                    callback.onCut(item)
                     Toast.makeText(context,
                         context.getString(R.string.cut_hint, item.name),
                         Toast.LENGTH_SHORT).show()
@@ -119,11 +117,10 @@ object FileContextMenu {
                     callback.onOpenInTree(item)
                     true
                 }
-                9 -> { // Paste here (move cut file to this file's directory)
+                9 -> { // Paste here
                     val targetDir = File(item.path).parent
-                    if (targetDir != null && clipboardItem != null) {
+                    if (targetDir != null) {
                         callback.onPaste(targetDir)
-                        clipboardItem = null
                     }
                     true
                 }

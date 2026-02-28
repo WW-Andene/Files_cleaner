@@ -1,6 +1,7 @@
 package com.filecleaner.app.data
 
 import android.os.Parcelable
+import com.filecleaner.app.utils.UndoHelper
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
@@ -24,6 +25,13 @@ enum class FileCategory(val displayName: String, val emoji: String) {
             ARCHIVE to setOf("zip","rar","7z","tar","gz","bz2","xz","cab","iso","tgz")
         )
 
+        /** Combined media extensions (image + video + audio) — single source of truth. */
+        val MEDIA_EXTENSIONS: Set<String> =
+            (extMap[IMAGE] ?: emptySet()) + (extMap[VIDEO] ?: emptySet()) + (extMap[AUDIO] ?: emptySet())
+
+        val DOCUMENT_EXTENSIONS: Set<String> = extMap[DOCUMENT] ?: emptySet()
+        val ARCHIVE_APK_EXTENSIONS: Set<String> = (extMap[ARCHIVE] ?: emptySet()) + (extMap[APK] ?: emptySet())
+
         fun fromExtension(ext: String): FileCategory {
             val lower = ext.lowercase()
             for ((cat, exts) in extMap) {
@@ -46,10 +54,5 @@ data class FileItem(
 
     val file: File get() = File(path)
 
-    val sizeReadable: String get() = when {
-        size >= 1_073_741_824 -> "%.1f GB".format(size / 1_073_741_824.0)
-        size >= 1_048_576     -> "%.1f MB".format(size / 1_048_576.0)
-        size >= 1_024         -> "%.0f KB".format(size / 1_024.0)
-        else                  -> "$size B"
-    }
+    val sizeReadable: String get() = UndoHelper.formatBytes(size)
 }

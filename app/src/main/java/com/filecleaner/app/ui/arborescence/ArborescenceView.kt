@@ -47,7 +47,7 @@ class ArborescenceView @JvmOverloads constructor(
     private val colorTextPrimary get() = ContextCompat.getColor(context, R.color.textPrimary)
     private val colorTextSecondary get() = ContextCompat.getColor(context, R.color.textSecondary)
     private val colorTextTertiary get() = ContextCompat.getColor(context, R.color.textTertiary)
-    private val colorPrimaryDark get() = ContextCompat.getColor(context, R.color.colorPrimaryDark)
+
 
     // ── Paints ──
     private val blockPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -83,13 +83,6 @@ class ArborescenceView @JvmOverloads constructor(
     private val expandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_title)
         typeface = Typeface.DEFAULT_BOLD
-    }
-    private val statsBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-    private val statsTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = context.resources.getDimension(R.dimen.text_body)
-        color = Color.WHITE
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -548,7 +541,7 @@ class ArborescenceView @JvmOverloads constructor(
         expandPaint.color = colorPrimary
         highlightPaint.color = colorAccent
         highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
-        statsBgPaint.color = colorPrimaryDark
+
 
         // Block background, semi-transparent if no matching files
         val hasMatchingFiles = filteredFiles(node).isNotEmpty() ||
@@ -643,27 +636,6 @@ class ArborescenceView @JvmOverloads constructor(
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockStrokePaint)
     }
 
-    private fun drawStatsOverlay(canvas: Canvas) {
-        val root = rootNode ?: return
-        val padding = 12f
-        val lineH = 20f
-
-        // Top-left: total stats
-        val totalText = "${root.totalFileCount} files \u2022 ${formatSize(root.totalSize)}"
-        val tw = statsTextPaint.measureText(totalText) + padding * 2
-        canvas.drawRoundRect(RectF(8f, 8f, 8f + tw, 8f + lineH + padding * 2),
-            8f, 8f, statsBgPaint)
-        canvas.drawText(totalText, 8f + padding, 8f + padding + 14f, statsTextPaint)
-
-        // Top-right: zoom + visible nodes
-        val zoomText = "%.0f%%  \u2022  ${layouts.size} nodes".format(scaleFactor * 100)
-        val zw = statsTextPaint.measureText(zoomText) + padding * 2
-        val zx = width - 8f - zw
-        canvas.drawRoundRect(RectF(zx, 8f, zx + zw, 8f + lineH + padding * 2),
-            8f, 8f, statsBgPaint)
-        canvas.drawText(zoomText, zx + padding, 8f + padding + 14f, statsTextPaint)
-    }
-
     private fun drawDragGhost(canvas: Canvas) {
         val name = dragFileName ?: return
         val ghostPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -694,9 +666,11 @@ class ArborescenceView @JvmOverloads constructor(
         val root = rootNode ?: return false
         val lowerQuery = query.lowercase()
 
-        // BFS to find first matching file or folder
+        // BFS to find first matching file or folder (visited set guards against symlink cycles)
         val queue = ArrayDeque<DirectoryNode>()
+        val visited = mutableSetOf<String>()
         queue.add(root)
+        visited.add(root.path)
         while (queue.isNotEmpty()) {
             val node = queue.removeFirst()
             // Check folder name
@@ -720,7 +694,12 @@ class ArborescenceView @JvmOverloads constructor(
                     return true
                 }
             }
-            queue.addAll(node.children)
+            for (child in node.children) {
+                if (child.path !in visited) {
+                    visited.add(child.path)
+                    queue.add(child)
+                }
+            }
         }
         return false
     }

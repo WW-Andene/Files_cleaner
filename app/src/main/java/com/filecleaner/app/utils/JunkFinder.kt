@@ -1,6 +1,7 @@
 package com.filecleaner.app.utils
 
 import android.os.Environment
+import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,26 +66,8 @@ object JunkFinder {
             .take(maxResults)
     }
 
-    private val MEDIA_EXTENSIONS = setOf(
-        // Images — matches FileScanner.CATEGORY_MAP
-        "jpg","jpeg","png","gif","bmp","webp","heic","heif","tiff","svg","raw","cr2","nef",
-        // Videos
-        "mp4","mkv","avi","mov","wmv","flv","webm","m4v","3gp","ts","mpeg","mpg",
-        // Audio
-        "mp3","aac","flac","wav","ogg","m4a","wma","opus","aiff","mid"
-    )
-
-    private fun isMedia(ext: String) = ext in MEDIA_EXTENSIONS
-
-    private val DOCUMENT_EXTENSIONS = setOf(
-        "pdf","doc","docx","xls","xlsx","ppt","pptx","txt","csv",
-        "odt","ods","odp","epub","mobi","rtf","md"
-    )
-
-    private val ARCHIVE_APK_EXTENSIONS = setOf(
-        "apk","xapk","apks","zip","rar","7z","tar","gz","bz2","xz","cab","iso","tgz"
-    )
-
-    private fun isDocument(ext: String) = ext in DOCUMENT_EXTENSIONS
-    private fun isArchiveOrApk(ext: String) = ext in ARCHIVE_APK_EXTENSIONS
+    // Derive from FileCategory — single source of truth for extension mappings
+    private fun isMedia(ext: String) = ext in FileCategory.MEDIA_EXTENSIONS
+    private fun isDocument(ext: String) = ext in FileCategory.DOCUMENT_EXTENSIONS
+    private fun isArchiveOrApk(ext: String) = ext in FileCategory.ARCHIVE_APK_EXTENSIONS
 }

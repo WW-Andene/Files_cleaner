@@ -99,7 +99,8 @@ class ArborescenceFragment : Fragment() {
                 lastModified = file.lastModified(),
                 category = category
             )
-            FileContextMenu.show(requireContext(), binding.arborescenceView, item, contextMenuCallback)
+            FileContextMenu.show(requireContext(), binding.arborescenceView, item, contextMenuCallback,
+                hasCutFile = vm.clipboardItem.value != null)
         }
 
         // Tree search
@@ -291,9 +292,13 @@ class ArborescenceFragment : Fragment() {
         override fun onOpenInTree(item: FileItem) {
             binding.arborescenceView.highlightFilePath(item.path)
         }
+        override fun onCut(item: FileItem) {
+            vm.setCutFile(item)
+        }
         override fun onPaste(targetDirPath: String) {
-            FileContextMenu.clipboardItem?.let { cut ->
+            vm.clipboardItem.value?.let { cut ->
                 vm.moveFile(cut.path, targetDirPath)
+                vm.clearClipboard()
             }
         }
         override fun onRefresh() {}

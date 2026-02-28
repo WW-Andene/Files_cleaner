@@ -17,8 +17,13 @@ object RaccoonBubble {
     private var pulseAnimatorX: ObjectAnimator? = null
     private var pulseAnimatorY: ObjectAnimator? = null
 
+    private val TAG_ATTACHED = R.id.raccoon_bubble_attached
+
     @SuppressLint("ClickableViewAccessibility")
     fun attach(bubble: View, onClick: () -> Unit) {
+        // Guard against duplicate attach — prevents stacking listeners and pulse animators
+        if (bubble.getTag(TAG_ATTACHED) == true) return
+        bubble.setTag(TAG_ATTACHED, true)
         var downX = 0f
         var downY = 0f
         var startTransX = 0f
@@ -68,6 +73,7 @@ object RaccoonBubble {
             override fun onViewAttachedToWindow(v: View) {}
             override fun onViewDetachedFromWindow(v: View) {
                 cancelPulse()
+                v.setTag(TAG_ATTACHED, null)
                 v.removeOnAttachStateChangeListener(this)
             }
         })

@@ -59,7 +59,8 @@ class BrowseFragment : Fragment() {
         adapter = FileAdapter(selectable = false)
         adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
         adapter.onItemLongClick = { item, anchor ->
-            FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback)
+            FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
+                hasCutFile = vm.clipboardItem.value != null)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
@@ -254,9 +255,13 @@ class BrowseFragment : Fragment() {
         override fun onOpenInTree(item: FileItem) {
             vm.requestTreeHighlight(item.path)
         }
+        override fun onCut(item: FileItem) {
+            vm.setCutFile(item)
+        }
         override fun onPaste(targetDirPath: String) {
-            FileContextMenu.clipboardItem?.let { cut ->
+            vm.clipboardItem.value?.let { cut ->
                 vm.moveFile(cut.path, targetDirPath)
+                vm.clearClipboard()
             }
         }
         override fun onRefresh() {
