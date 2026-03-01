@@ -106,16 +106,26 @@ class ArborescenceView @JvmOverloads constructor(
     private var highlightAlpha = 1f
 
     // ── Category colors (resolved once — View is recreated on config change) ──
-    private val categoryColors: Map<FileCategory, Int> by lazy { mapOf(
-        FileCategory.IMAGE to ContextCompat.getColor(context, R.color.catImage),
-        FileCategory.VIDEO to ContextCompat.getColor(context, R.color.catVideo),
-        FileCategory.AUDIO to ContextCompat.getColor(context, R.color.catAudio),
-        FileCategory.DOCUMENT to ContextCompat.getColor(context, R.color.catDocument),
-        FileCategory.APK to ContextCompat.getColor(context, R.color.catApk),
-        FileCategory.ARCHIVE to ContextCompat.getColor(context, R.color.catArchive),
-        FileCategory.DOWNLOAD to ContextCompat.getColor(context, R.color.catDownload),
-        FileCategory.OTHER to ContextCompat.getColor(context, R.color.catOther)
-    ) }
+    // Maps each FileCategory to its corresponding color resource; auto-populated
+    // from enum entries so new categories can't be silently missed.
+    private val categoryColorRes = mapOf(
+        FileCategory.IMAGE to R.color.catImage,
+        FileCategory.VIDEO to R.color.catVideo,
+        FileCategory.AUDIO to R.color.catAudio,
+        FileCategory.DOCUMENT to R.color.catDocument,
+        FileCategory.APK to R.color.catApk,
+        FileCategory.ARCHIVE to R.color.catArchive,
+        FileCategory.DOWNLOAD to R.color.catDownload,
+        FileCategory.OTHER to R.color.catOther
+    ).also { map ->
+        // Fail-fast if a FileCategory is added without a color mapping
+        require(map.keys == FileCategory.entries.toSet()) {
+            "categoryColorRes missing entries: ${FileCategory.entries.toSet() - map.keys}"
+        }
+    }
+    private val categoryColors: Map<FileCategory, Int> by lazy {
+        categoryColorRes.mapValues { (_, resId) -> ContextCompat.getColor(context, resId) }
+    }
 
     // ── Reusable draw objects (avoid allocations in onDraw) ──
     private val selectionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -305,26 +315,39 @@ class ArborescenceView @JvmOverloads constructor(
         notifyStats()
     }
 
-    /** Recursively finds nodes with matching filtered files and adds their paths + ancestors. */
-    private fun collectMatchingPaths(node: DirectoryNode, paths: MutableSet<String>): Boolean {
-        var hasMatch = filteredFiles(node).isNotEmpty()
-        for (child in node.children) {
-            if (collectMatchingPaths(child, paths)) {
-                hasMatch = true
+    /** Iterative post-order traversal — marks nodes with matching files + their ancestors. */
+    private fun collectMatchingPaths(root: DirectoryNode, paths: MutableSet<String>) {
+        // Phase 1: collect all nodes in pre-order (parents before children)
+        val ordered = mutableListOf<DirectoryNode>()
+        val stack = ArrayDeque<DirectoryNode>()
+        stack.addLast(root)
+        while (stack.isNotEmpty()) {
+            val node = stack.removeLast()
+            ordered.add(node)
+            for (child in node.children.asReversed()) stack.addLast(child)
+        }
+        // Phase 2: iterate in reverse (post-order) to propagate matches upward
+        val matchSet = mutableSetOf<String>()
+        for (node in ordered.asReversed()) {
+            val hasOwnMatch = filteredFiles(node).isNotEmpty()
+            val childMatch = node.children.any { it.path in matchSet }
+            if (hasOwnMatch || childMatch) {
+                matchSet.add(node.path)
+                paths.add(node.path)
             }
         }
-        if (hasMatch) {
-            paths.add(node.path)
-        }
-        return hasMatch
     }
 
-    private fun rebuildWithState(node: DirectoryNode, expandedPaths: Set<String>) {
-        val expanded = node.path in expandedPaths
-        buildLayout(node, expanded = expanded, expandChildren = false)
-        if (expanded) {
-            for (child in node.children) {
-                rebuildWithState(child, expandedPaths)
+    /** Iterative rebuild — avoids stack overflow on deeply nested trees. */
+    private fun rebuildWithState(root: DirectoryNode, expandedPaths: Set<String>) {
+        val stack = ArrayDeque<DirectoryNode>()
+        stack.addLast(root)
+        while (stack.isNotEmpty()) {
+            val node = stack.removeLast()
+            val expanded = node.path in expandedPaths
+            buildLayout(node, expanded = expanded, expandChildren = false)
+            if (expanded) {
+                for (child in node.children.asReversed()) stack.addLast(child)
             }
         }
     }
@@ -944,23 +967,38 @@ class ArborescenceView @JvmOverloads constructor(
         notifyStats()
     }
 
-    private fun findPath(current: DirectoryNode, target: DirectoryNode, path: MutableList<DirectoryNode>): Boolean {
-        path.add(current)
-        if (current.path == target.path) return true
-        for (child in current.children) {
-            if (findPath(child, target, path)) return true
+    /** Iterative DFS path-finding — avoids stack overflow on deeply nested trees. */
+    private fun findPath(root: DirectoryNode, target: DirectoryNode, path: MutableList<DirectoryNode>): Boolean {
+        // DFS with explicit stack; each frame tracks (node, childIndex)
+        val stack = ArrayDeque<Pair<DirectoryNode, Int>>()
+        stack.addLast(root to 0)
+        path.add(root)
+        if (root.path == target.path) return true
+
+        while (stack.isNotEmpty()) {
+            val (node, idx) = stack.last()
+            if (idx < node.children.size) {
+                stack[stack.lastIndex] = node to (idx + 1)
+                val child = node.children[idx]
+                path.add(child)
+                if (child.path == target.path) return true
+                stack.addLast(child to 0)
+            } else {
+                stack.removeLast()
+                path.removeAt(path.lastIndex)
+            }
         }
-        path.removeAt(path.lastIndex)
         return false
     }
 
-    private fun findNodeContainingFile(node: DirectoryNode, filePath: String): DirectoryNode? {
-        for (file in node.files) {
-            if (file.path == filePath) return node
-        }
-        for (child in node.children) {
-            val result = findNodeContainingFile(child, filePath)
-            if (result != null) return result
+    /** Iterative BFS search — avoids stack overflow on deeply nested trees. */
+    private fun findNodeContainingFile(root: DirectoryNode, filePath: String): DirectoryNode? {
+        val queue = ArrayDeque<DirectoryNode>()
+        queue.add(root)
+        while (queue.isNotEmpty()) {
+            val node = queue.removeFirst()
+            if (node.files.any { it.path == filePath }) return node
+            queue.addAll(node.children)
         }
         return null
     }

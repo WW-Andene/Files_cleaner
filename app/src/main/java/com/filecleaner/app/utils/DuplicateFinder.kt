@@ -9,7 +9,10 @@ import java.security.MessageDigest
 
 object DuplicateFinder {
 
-    private const val PARTIAL_HASH_BYTES = 4096L // 4 KB from head + tail
+    // 4 KB from head + tail — balances collision avoidance vs. I/O cost.
+    // Reducing below 1 KB raises false-positive rate significantly on media files.
+    private const val PARTIAL_HASH_BYTES = 4096L
+    // Standard I/O buffer — matches Android's default BufferedInputStream size.
     private const val HASH_BUFFER_SIZE = 8192
 
     /**

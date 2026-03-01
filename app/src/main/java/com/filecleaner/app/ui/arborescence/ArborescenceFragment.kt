@@ -277,11 +277,15 @@ class ArborescenceFragment : Fragment() {
         }
     }
 
-    private fun collectAllFiles(node: com.filecleaner.app.data.DirectoryNode): List<FileItem> {
+    /** Iterative BFS — avoids stack overflow on deeply nested directory trees. */
+    private fun collectAllFiles(root: com.filecleaner.app.data.DirectoryNode): List<FileItem> {
         val result = mutableListOf<FileItem>()
-        result.addAll(node.files)
-        for (child in node.children) {
-            result.addAll(collectAllFiles(child))
+        val queue = ArrayDeque<com.filecleaner.app.data.DirectoryNode>()
+        queue.add(root)
+        while (queue.isNotEmpty()) {
+            val node = queue.removeFirst()
+            result.addAll(node.files)
+            queue.addAll(node.children)
         }
         return result
     }
