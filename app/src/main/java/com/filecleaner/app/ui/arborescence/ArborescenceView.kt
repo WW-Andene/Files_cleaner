@@ -537,7 +537,9 @@ class ArborescenceView @JvmOverloads constructor(
         val rect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + layout.h)
 
         // Save canvas state and clip to block bounds (prevent text overflow / superposition)
+        // Left margin allows highlight arrow indicator; right edge prevents text overflow
         canvas.save()
+        canvas.clipRect(rect.left - 24f, rect.top - 4f, rect.right + 4f, rect.bottom + 4f)
 
         // Theme-aware colors from resources
         filePaint.color = colorTextPrimary
@@ -579,13 +581,16 @@ class ArborescenceView @JvmOverloads constructor(
         canvas.drawRect(layout.x, layout.y + headerHeight - cornerRadius,
             layout.x + layout.w, layout.y + headerHeight, headerPaint)
 
-        // Title (folder name)
-        val displayName = if (node.name.length > 18) node.name.take(16) + "\u2026" else node.name
+        // Title (folder name) — pixel-based truncation to fit within block
+        val titleMaxWidth = layout.w - 24f - (if (node.children.isNotEmpty()) 28f else 0f)
+        val displayName = ellipsizeText(node.name, titlePaint, titleMaxWidth)
         canvas.drawText(displayName, layout.x + 12f, layout.y + 22f, titlePaint)
 
-        // Subtitle (file count + size)
+        // Subtitle (file count + size) — also truncated to block width
         val sizeStr = formatSize(node.totalSize)
-        canvas.drawText("${node.totalFileCount} files \u2022 $sizeStr",
+        val subtitleText = "${node.totalFileCount} files \u2022 $sizeStr"
+        val subtitleMaxWidth = layout.w - 24f
+        canvas.drawText(ellipsizeText(subtitleText, subtitlePaint, subtitleMaxWidth),
             layout.x + 12f, layout.y + 40f, subtitlePaint)
 
         // Expand/collapse indicator

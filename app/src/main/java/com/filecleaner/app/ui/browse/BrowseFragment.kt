@@ -1,6 +1,7 @@
 package com.filecleaner.app.ui.browse
 
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
@@ -18,7 +19,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentBrowseBinding
-import com.filecleaner.app.ui.adapters.FileAdapter
+import com.filecleaner.app.ui.adapters.BrowseAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
@@ -27,19 +28,24 @@ import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import java.io.File
 
 class BrowseFragment : Fragment() {
 
     private var _binding: FragmentBrowseBinding? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
-    private lateinit var adapter: FileAdapter
+    private lateinit var adapter: BrowseAdapter
 
     private var currentViewMode = ViewMode.LIST
     private val selectedExtensions = mutableSetOf<String>()
     private var searchQuery = ""
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+
+    private val storagePath: String by lazy {
+        Environment.getExternalStorageDirectory().absolutePath
+    }
 
     private val categories by lazy {
         listOf(
@@ -56,8 +62,8 @@ class BrowseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // RecyclerView
-        adapter = FileAdapter(selectable = false)
+        // RecyclerView with BrowseAdapter (supports folder headers)
+        adapter = BrowseAdapter()
         adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
         adapter.onItemLongClick = { item, anchor ->
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
@@ -135,7 +141,13 @@ class BrowseFragment : Fragment() {
         binding.recyclerView.layoutManager = if (spanCount == 1) {
             LinearLayoutManager(requireContext())
         } else {
-            GridLayoutManager(requireContext(), spanCount)
+            GridLayoutManager(requireContext(), spanCount).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (adapter.isHeader(position)) spanCount else 1
+                    }
+                }
+            }
         }
     }
 
@@ -186,9 +198,12 @@ class BrowseFragment : Fragment() {
             else -> filtered.sortedByDescending { it.lastModified }
         }
 
-        adapter.submitList(sorted)
+        // Group files by parent folder and build list with section headers
+        val browseItems = buildGroupedList(sorted)
+        adapter.submitList(browseItems)
 
-        if (sorted.isEmpty()) {
+        val fileCount = adapter.getFileCount()
+        if (fileCount == 0) {
             binding.tvEmpty.visibility = View.VISIBLE
             binding.tvEmptyText.text = when {
                 searchQuery.isNotEmpty() -> getString(R.string.empty_search_results, searchQuery)
@@ -198,7 +213,41 @@ class BrowseFragment : Fragment() {
         } else {
             binding.tvEmpty.visibility = View.GONE
         }
-        binding.tvCount.text = getString(R.string.n_files, sorted.size)
+        binding.tvCount.text = getString(R.string.n_files, fileCount)
+    }
+
+    /** Groups files by their parent folder and creates a list with folder headers. */
+    private fun buildGroupedList(files: List<FileItem>): List<BrowseAdapter.Item> {
+        if (files.isEmpty()) return emptyList()
+
+        // Group by parent directory
+        val grouped = files.groupBy { File(it.path).parent ?: "" }
+
+        // Sort groups: by folder path for a clean hierarchy
+        val sortedGroups = grouped.entries.sortedBy { it.key.lowercase() }
+
+        val result = mutableListOf<BrowseAdapter.Item>()
+        for ((folderPath, folderFiles) in sortedGroups) {
+            // Create a readable folder display name
+            val displayName = folderDisplayName(folderPath)
+            result.add(BrowseAdapter.Item.Header(folderPath, displayName, folderFiles.size))
+            for (file in folderFiles) {
+                result.add(BrowseAdapter.Item.File(file))
+            }
+        }
+        return result
+    }
+
+    /** Converts a full folder path to a user-friendly display name relative to storage. */
+    private fun folderDisplayName(folderPath: String): String {
+        if (folderPath.isEmpty()) return "/"
+        // Show path relative to external storage for readability
+        val relative = if (folderPath.startsWith(storagePath)) {
+            folderPath.removePrefix(storagePath)
+        } else {
+            folderPath
+        }
+        return if (relative.isEmpty()) "/Storage" else relative
     }
 
     private fun updateExtensionChips(files: List<FileItem>) {
