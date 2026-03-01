@@ -29,4 +29,9 @@
         android:name="com.filecleaner.app.ui.arborescence.ArborescenceFragment"
         android:label="@string/tree_view" />
 
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.filecleaner.app.ui.settings.SettingsFragment"
+        android:label="@string/settings" />
+
 </navigation>

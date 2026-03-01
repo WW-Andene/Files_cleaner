@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
@@ -200,6 +201,11 @@ class MainActivity : AppCompatActivity() {
             val badge = binding.bottomNav.getOrCreateBadge(R.id.junkFragment)
             badge.isVisible = junk.isNotEmpty()
             if (junk.isNotEmpty()) badge.number = junk.size
+        }
+
+        // Settings button
+        binding.btnSettings.setOnClickListener {
+            findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
         }
     }
 
