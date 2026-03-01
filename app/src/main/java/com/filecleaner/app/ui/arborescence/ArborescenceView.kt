@@ -30,6 +30,9 @@ class ArborescenceView @JvmOverloads constructor(
         isFocusable = true
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
         contentDescription = context.getString(R.string.a11y_tree_view_default)
+        // D1: Set theme-dependent paint colors once at construction.
+        // View is recreated on configuration change, so this is sufficient.
+        initPaintColors()
     }
 
     private val isDarkMode: Boolean
@@ -105,10 +108,33 @@ class ArborescenceView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    // D1: Pre-allocated drag ghost paints (avoid allocation in onDraw during 60 FPS drag)
+    private val ghostPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+    }
+    private val ghostTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = 12f * dp
+    }
     private var highlightAnimator: ValueAnimator? = null
     private var highlightAlpha = 1f
     // B5: Track pending fade-out runnable so it can be cancelled on detach
     private val fadeOutRunnable = Runnable { fadeOutHighlight() }
+
+    // D1: Cache ellipsis width — constant for a given paint, avoid measuring on every call
+    private var cachedEllipsisWidth = -1f
+    private var cachedEllipsisPaint: Paint? = null
+
+    /** Set theme-dependent paint colors once (View is recreated on config change). */
+    private fun initPaintColors() {
+        filePaint.color = colorTextPrimary
+        fileSizePaint.color = colorTextSecondary
+        blockStrokePaint.color = colorBorder
+        linePaint.color = (colorPrimary and 0x00FFFFFF) or 0x66000000
+        expandPaint.color = colorPrimary
+        highlightPaint.color = colorAccent
+        highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
+        ghostTextPaint.color = colorTextPrimary
+    }
 
     // ── Category colors (resolved once — View is recreated on config change) ──
     // Maps each FileCategory to its corresponding color resource; auto-populated
@@ -635,14 +661,7 @@ class ArborescenceView @JvmOverloads constructor(
         super.onDraw(canvas)
         if (rootNode == null) return
 
-        // Set theme-aware paint colors once per frame (not per block)
-        filePaint.color = colorTextPrimary
-        fileSizePaint.color = colorTextSecondary
-        blockStrokePaint.color = colorBorder
-        linePaint.color = (colorPrimary and 0x00FFFFFF) or 0x66000000
-        expandPaint.color = colorPrimary
-        highlightPaint.color = colorAccent
-        highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
+        // D1: Paint colors set once in initPaintColors() — no per-frame work needed.
 
         canvas.save()
         canvas.concat(viewMatrix)
@@ -847,15 +866,24 @@ class ArborescenceView @JvmOverloads constructor(
         }
     }
 
+    // D1: Cache ellipsis width per paint to avoid measuring "…" on every binary search iteration
+    private fun ellipsisWidth(paint: Paint): Float {
+        if (paint === cachedEllipsisPaint && cachedEllipsisWidth >= 0f) return cachedEllipsisWidth
+        cachedEllipsisWidth = paint.measureText("\u2026")
+        cachedEllipsisPaint = paint
+        return cachedEllipsisWidth
+    }
+
     private fun ellipsizeText(text: String, paint: Paint, maxWidth: Float): String {
         if (maxWidth <= 0f) return "\u2026"
         if (paint.measureText(text) <= maxWidth) return text
+        val ew = ellipsisWidth(paint)
         // Binary search for the longest prefix that fits (O(log n) measureText calls)
         var lo = 1
         var hi = text.length - 1
         while (lo < hi) {
             val mid = (lo + hi + 1) / 2
-            if (paint.measureText(text, 0, mid) + paint.measureText("\u2026") <= maxWidth) {
+            if (paint.measureText(text, 0, mid) + ew <= maxWidth) {
                 lo = mid
             } else {
                 hi = mid - 1
@@ -864,23 +892,17 @@ class ArborescenceView @JvmOverloads constructor(
         return if (lo > 0) text.substring(0, lo) + "\u2026" else "\u2026"
     }
 
+    // D1: Uses pre-allocated ghostPaint/ghostTextPaint — zero allocations during drag
     private fun drawDragGhost(canvas: Canvas) {
         val name = dragFileName ?: return
-        val ghostPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = (colorAccent and 0x00FFFFFF) or 0xDD000000.toInt()
-            style = Paint.Style.FILL
-        }
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = colorTextPrimary
-            textSize = 12f * dp
-        }
-        val tw = textPaint.measureText(name) + 16f * dp
+        ghostPaint.color = (colorAccent and 0x00FFFFFF) or 0xDD000000.toInt()
+        val tw = ghostTextPaint.measureText(name) + 16f * dp
         val th = 20f * dp
         canvas.drawRoundRect(
             RectF(dragX - tw / 2, dragY - th, dragX + tw / 2, dragY + 6f * dp),
             8f * dp, 8f * dp, ghostPaint
         )
-        canvas.drawText(name, dragX - tw / 2 + 8f * dp, dragY - 3f * dp, textPaint)
+        canvas.drawText(name, dragX - tw / 2 + 8f * dp, dragY - 3f * dp, ghostTextPaint)
     }
 
     // ── Search + highlight ──

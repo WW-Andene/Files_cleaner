@@ -172,9 +172,14 @@ class FileAdapter(
         onSelectionChanged(currentList.filter { it.path in selectedPaths })
     }
 
+    // D1: Use notifyItemRangeChanged for selection changes instead of
+    // notifyDataSetChanged — preserves RecyclerView item animations and avoids
+    // full layout recalculation.  notifyDataSetChanged is only justified when
+    // the view type changes (e.g. list↔grid switch in viewMode setter).
+
     fun selectAll() {
         selectedPaths.addAll(currentList.map { it.path })
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount)
         notifySelectionChanged()
     }
 
@@ -188,13 +193,13 @@ class FileAdapter(
             val bestPath = best?.path
             group.forEach { if (it.path != bestPath) selectedPaths.add(it.path) }
         }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount)
         notifySelectionChanged()
     }
 
     fun deselectAll() {
         selectedPaths.clear()
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount)
         onSelectionChanged(emptyList())
     }
 
@@ -207,7 +212,7 @@ class FileAdapter(
     fun restoreSelection(paths: Set<String>) {
         selectedPaths.clear()
         selectedPaths.addAll(paths)
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount)
         notifySelectionChanged()
     }
 

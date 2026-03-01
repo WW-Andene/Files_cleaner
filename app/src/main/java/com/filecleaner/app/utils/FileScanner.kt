@@ -46,6 +46,8 @@ object FileScanner {
         val stack = ArrayDeque<Pair<File, Int>>() // (dir, depth)
         stack.push(root to 0)
         var scanned = 0
+        // D5: Read preference once at scan start instead of per-directory
+        val showHidden = try { UserPreferences.showHiddenFiles } catch (_: Exception) { false }
 
         while (stack.isNotEmpty()) {
             coroutineContext.ensureActive()
@@ -53,7 +55,6 @@ object FileScanner {
             val dirPath = dir.absolutePath
             val children = dir.listFiles() ?: continue
 
-            val showHidden = try { UserPreferences.showHiddenFiles } catch (_: Exception) { false }
             for (child in children) {
                 if (child.isDirectory) {
                     val relative = child.absolutePath.substringAfter("$rootPath/")

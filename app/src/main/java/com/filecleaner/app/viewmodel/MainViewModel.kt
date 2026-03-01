@@ -20,6 +20,7 @@ import com.filecleaner.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -46,6 +47,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         private const val MAX_EXTRACT_BYTES = 2L * 1024 * 1024 * 1024 // 2 GB
         private const val MAX_EXTRACT_ENTRIES = 10_000
         private const val IO_BUFFER_SIZE = 8192
+        // D5: Debounce interval for cache writes after file operations
+        private const val SAVE_CACHE_DEBOUNCE_MS = 3000L
 
         // Characters invalid on FAT32/exFAT or that can cause shell injection issues
         private val INVALID_FILENAME_CHARS = charArrayOf('/', '\u0000', ':', '*', '?', '"', '<', '>', '|')
@@ -139,6 +142,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     // B4: Guard against concurrent delete operations (rapid double-taps)
     private val deleteMutex = Mutex()
 
+    // D5: Debounce cache writes — at most once per 3 seconds
+    private var saveCacheJob: Job? = null
+
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
 
     private fun str(@StringRes id: Int): String = getApplication<Application>().getString(id)
@@ -179,7 +185,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _directoryTree.postValue(tree)
                     _filesByCategory.postValue(files.groupBy { it.category })
 
-                    val dupes = DuplicateFinder.findDuplicates(files)
+                    // D2: Use cached duplicate group IDs from the saved cache instead
+                    // of re-running the full MD5 hash pipeline on cold start.  The cache
+                    // preserves duplicateGroup assignments from the last scan, so we only
+                    // need to filter and prune orphan groups (< 2 members).
+                    val dupes = files.filter { it.duplicateGroup >= 0 }
+                        .let { dups ->
+                            val validGroups = dups.groupBy { it.duplicateGroup }
+                                .filter { it.value.size >= 2 }.keys
+                            dups.filter { it.duplicateGroup in validGroups }
+                        }
                     _duplicates.postValue(dupes)
 
                     val large = JunkFinder.findLargeFiles(files)
@@ -284,8 +299,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             }
 
             // Cache results to disk — outside runCatching so save failure
-            // doesn't override ScanState.Done with Error
-            saveCache()
+            // doesn't override ScanState.Done with Error.
+            // D5: Flush immediately after scan (no debounce) since this is the primary save.
+            saveCacheNow()
         }
     }
 
@@ -563,18 +579,35 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val msg = str(R.string.batch_rename_result, success, failed)
             _operationResult.postValue(MoveResult(true, msg))
 
-            // B1: Rebuild all derived state after batch rename (not just filesByCategory)
+            // B1+D1: Rebuild derived state after batch rename, but carry duplicate
+            // groups from old items since renaming doesn't change file content.
             stateMutex.withLock {
                 val renamedPaths = renames.map { it.first.path }.toSet()
+                // Build a map of old path → duplicate group for carrying over
+                val oldDupeGroups = latestFiles.filter { it.path in renamedPaths && it.duplicateGroup >= 0 }
+                    .associate { it.path to it.duplicateGroup }
                 val remaining = latestFiles.filter { it.path !in renamedPaths }
                 val newItems = renames.mapNotNull { (item, newName) ->
                     val parentDir = File(item.path).parent ?: return@mapNotNull null
                     val newFile = File(parentDir, newName)
-                    if (newFile.exists()) FileScanner.fileToItem(newFile) else null
+                    if (newFile.exists()) {
+                        val newItem = FileScanner.fileToItem(newFile)
+                        // D1: Carry duplicate group from old item (content unchanged by rename)
+                        val group = oldDupeGroups[item.path]
+                        if (group != null) newItem.copy(duplicateGroup = group) else newItem
+                    } else null
                 }
                 latestFiles = remaining + newItems
                 _filesByCategory.postValue(latestFiles.groupBy { it.category })
-                val dupes = DuplicateFinder.findDuplicates(latestFiles)
+                // D1: Incrementally update duplicate list by replacing old paths
+                val currentDupes = _duplicates.value ?: emptyList()
+                val dupes = currentDupes.filter { it.path !in renamedPaths }
+                    .plus(newItems.filter { it.duplicateGroup >= 0 })
+                    .let { dups ->
+                        val validGroups = dups.groupBy { it.duplicateGroup }
+                            .filter { it.value.size >= 2 }.keys
+                        dups.filter { it.duplicateGroup in validGroups }
+                    }
                 val large = JunkFinder.findLargeFiles(latestFiles)
                 val junk = JunkFinder.findJunk(latestFiles)
                 _duplicates.postValue(dupes)
@@ -695,7 +728,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Incrementally update file lists after a single-file operation (rename, compress, move). */
+    /** Incrementally update file lists after a single-file operation (rename, compress, move).
+     *  D1: Avoids re-running the full DuplicateFinder hash pipeline — single-file rename/move
+     *  doesn't change content, so duplicate membership is updated incrementally by path. */
     private fun refreshAfterFileChange(removedPath: String? = null, addedFile: File? = null) {
         viewModelScope.launch {
             stateMutex.withLock {
@@ -710,31 +745,69 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
                 latestFiles = files
                 _filesByCategory.postValue(files.groupBy { it.category })
-                val dupes = DuplicateFinder.findDuplicates(files)
+
+                // D1: Incrementally update duplicate list — replace old path with new
+                // path, preserving the duplicate group.  No file I/O required.
+                val currentDupes = _duplicates.value ?: emptyList()
+                val oldDupe = if (removedPath != null) currentDupes.find { it.path == removedPath } else null
+                val updatedDupes = currentDupes
+                    .filter { it.path != removedPath }
+                    .let { dupes ->
+                        val newItem = if (addedFile != null) files.find { it.path == addedFile.absolutePath } else null
+                        if (newItem != null && oldDupe != null) {
+                            dupes + newItem.copy(duplicateGroup = oldDupe.duplicateGroup)
+                        } else {
+                            dupes
+                        }
+                    }
+                    .let { dupes ->
+                        // Prune groups with < 2 members
+                        val validGroups = dupes.groupBy { it.duplicateGroup }
+                            .filter { it.value.size >= 2 }.keys
+                        dupes.filter { it.duplicateGroup in validGroups }
+                    }
+
                 val large = JunkFinder.findLargeFiles(files)
                 val junk = JunkFinder.findJunk(files)
-                _duplicates.postValue(dupes)
+                _duplicates.postValue(updatedDupes)
                 _largeFiles.postValue(large)
                 _junkFiles.postValue(junk)
-                recalcStats(files, dupes, large, junk)
+                recalcStats(files, updatedDupes, large, junk)
             }
             saveCache()
         }
     }
 
     /** Persist current in-memory scan data to disk cache.
-     *  Uses NonCancellable so the write finishes even if the scope is cancelled
-     *  (e.g., app going to background or ViewModel being cleared). */
+     *  D5: Debounced — rapid successive file operations (rename, move, delete)
+     *  coalesce into a single write after 3 seconds of inactivity.
+     *  Uses NonCancellable so the write finishes even if the scope is cancelled. */
     private fun saveCache() {
         val files = latestFiles.ifEmpty { return }
         val tree = latestTree ?: return
-        viewModelScope.launch {
+        saveCacheJob?.cancel()
+        saveCacheJob = viewModelScope.launch {
+            delay(SAVE_CACHE_DEBOUNCE_MS)
             withContext(NonCancellable + Dispatchers.IO) {
                 try {
                     ScanCache.save(getApplication(), files, tree)
                 } catch (_: Exception) {
                     // Non-critical — cache will be rebuilt on next scan
                 }
+            }
+        }
+    }
+
+    /** Immediately flush any pending cache write (e.g. after a scan). */
+    private fun saveCacheNow() {
+        val files = latestFiles.ifEmpty { return }
+        val tree = latestTree ?: return
+        saveCacheJob?.cancel()
+        saveCacheJob = viewModelScope.launch {
+            withContext(NonCancellable + Dispatchers.IO) {
+                try {
+                    ScanCache.save(getApplication(), files, tree)
+                } catch (_: Exception) { }
             }
         }
     }

@@ -15,6 +15,18 @@ object DuplicateFinder {
     // Standard I/O buffer — matches Android's default BufferedInputStream size.
     private const val HASH_BUFFER_SIZE = 8192
 
+    // D1: Pre-allocated lookup table for hex encoding (avoids per-byte String.format allocation)
+    private val HEX_CHARS = "0123456789abcdef".toCharArray()
+    private fun bytesToHex(bytes: ByteArray): String {
+        val result = CharArray(bytes.size * 2)
+        for (i in bytes.indices) {
+            val v = bytes[i].toInt() and 0xFF
+            result[i * 2] = HEX_CHARS[v ushr 4]
+            result[i * 2 + 1] = HEX_CHARS[v and 0x0F]
+        }
+        return String(result)
+    }
+
     /**
      * Multi-stage duplicate detection (F-017):
      *   Stage 1 — group by file size (free, eliminates most files)
@@ -88,7 +100,7 @@ object DuplicateFinder {
             raf.readFully(buf)
             md.update(buf)
         }
-        md.digest().joinToString("") { "%02x".format(it) }
+        bytesToHex(md.digest())
     }.getOrNull()
 
     /** Full MD5 of the entire file content. */
@@ -101,6 +113,6 @@ object DuplicateFinder {
                 md.update(buffer, 0, read)
             }
         }
-        md.digest().joinToString("") { "%02x".format(it) }
+        bytesToHex(md.digest())
     }.getOrNull()
 }
