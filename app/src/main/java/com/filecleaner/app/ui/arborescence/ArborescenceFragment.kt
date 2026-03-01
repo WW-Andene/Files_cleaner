@@ -276,32 +276,9 @@ class ArborescenceFragment : Fragment() {
     private fun formatSize(bytes: Long): String =
         com.filecleaner.app.utils.UndoHelper.formatBytes(bytes)
 
-    private val contextMenuCallback = object : FileContextMenu.Callback {
-        override fun onDelete(item: FileItem) {
-            vm.deleteFiles(listOf(item))
-        }
-        override fun onRename(item: FileItem, newName: String) {
-            vm.renameFile(item.path, newName)
-        }
-        override fun onCompress(item: FileItem) {
-            vm.compressFile(item.path)
-        }
-        override fun onExtract(item: FileItem) {
-            vm.extractArchive(item.path)
-        }
-        override fun onOpenInTree(item: FileItem) {
-            binding.arborescenceView.highlightFilePath(item.path)
-        }
-        override fun onCut(item: FileItem) {
-            vm.setCutFile(item)
-        }
-        override fun onPaste(targetDirPath: String) {
-            vm.clipboardItem.value?.let { cut ->
-                vm.moveFile(cut.path, targetDirPath)
-                vm.clearClipboard()
-            }
-        }
-        override fun onRefresh() {}
+    private val contextMenuCallback by lazy {
+        FileContextMenu.defaultCallback(vm,
+            onOpenInTree = { binding.arborescenceView.highlightFilePath(it.path) })
     }
 
     override fun onDestroyView() {

@@ -73,56 +73,16 @@ class FileAdapter(
 
         holder.name.text = item.name
 
-        // Thumbnail strategy based on view mode
-        when (viewMode) {
-            ViewMode.LIST -> {
-                // Standard list: thumbnails only for images/videos
-                if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
-                    Glide.with(holder.itemView)
-                        .load(item.file)
-                        .placeholder(categoryDrawable(item.category))
-                        .centerCrop()
-                        .into(holder.icon)
-                } else {
-                    Glide.with(holder.itemView).clear(holder.icon)
-                    holder.icon.setImageResource(categoryDrawable(item.category))
-                    holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                }
-            }
-            ViewMode.LIST_WITH_THUMBNAILS -> {
-                // List with larger thumbnails for all media types
-                val lp = holder.icon.layoutParams
-                lp.width = 72.dpToPx(holder.itemView)
-                lp.height = 72.dpToPx(holder.itemView)
-                holder.icon.layoutParams = lp
-
-                if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
-                    Glide.with(holder.itemView)
-                        .load(item.file)
-                        .placeholder(categoryDrawable(item.category))
-                        .centerCrop()
-                        .into(holder.icon)
-                } else {
-                    Glide.with(holder.itemView).clear(holder.icon)
-                    holder.icon.setImageResource(categoryDrawable(item.category))
-                    holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                }
-            }
-            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> {
-                // Grid: always try to load thumbnail
-                if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
-                    Glide.with(holder.itemView)
-                        .load(item.file)
-                        .placeholder(categoryDrawable(item.category))
-                        .centerCrop()
-                        .into(holder.icon)
-                } else {
-                    Glide.with(holder.itemView).clear(holder.icon)
-                    holder.icon.setImageResource(categoryDrawable(item.category))
-                    holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                }
-            }
+        // Larger thumbnails for LIST_WITH_THUMBNAILS mode
+        if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
+            val lp = holder.icon.layoutParams
+            lp.width = 72.dpToPx(holder.itemView)
+            lp.height = 72.dpToPx(holder.itemView)
+            holder.icon.layoutParams = lp
         }
+
+        // Load thumbnail for images/videos, category icon for everything else
+        loadThumbnail(holder, item)
 
         // Visual state: duplicate group colouring → selection highlight → default
         val card = holder.itemView as? MaterialCardView
@@ -186,6 +146,20 @@ class FileAdapter(
             }
             holder.itemView.contentDescription = ctx.getString(
                 R.string.a11y_file_info, item.name, holder.meta?.text ?: item.sizeReadable)
+        }
+    }
+
+    private fun loadThumbnail(holder: FileVH, item: FileItem) {
+        if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
+            Glide.with(holder.itemView)
+                .load(item.file)
+                .placeholder(categoryDrawable(item.category))
+                .centerCrop()
+                .into(holder.icon)
+        } else {
+            Glide.with(holder.itemView).clear(holder.icon)
+            holder.icon.setImageResource(categoryDrawable(item.category))
+            holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
     }
 

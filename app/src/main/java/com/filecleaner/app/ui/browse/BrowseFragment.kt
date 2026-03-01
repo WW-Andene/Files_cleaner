@@ -20,6 +20,7 @@ import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentBrowseBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
+import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.viewmodel.MainViewModel
@@ -79,7 +80,7 @@ class BrowseFragment : Fragment() {
                     searchQuery = s?.toString()?.trim() ?: ""
                     refresh()
                 }
-                handler.postDelayed(searchRunnable!!, 300)
+                handler.postDelayed(searchRunnable!!, BaseFileListFragment.SEARCH_DEBOUNCE_MS)
             }
         })
 
@@ -239,34 +240,8 @@ class BrowseFragment : Fragment() {
         }
     }
 
-    private val contextMenuCallback = object : FileContextMenu.Callback {
-        override fun onDelete(item: FileItem) {
-            vm.deleteFiles(listOf(item))
-        }
-        override fun onRename(item: FileItem, newName: String) {
-            vm.renameFile(item.path, newName)
-        }
-        override fun onCompress(item: FileItem) {
-            vm.compressFile(item.path)
-        }
-        override fun onExtract(item: FileItem) {
-            vm.extractArchive(item.path)
-        }
-        override fun onOpenInTree(item: FileItem) {
-            vm.requestTreeHighlight(item.path)
-        }
-        override fun onCut(item: FileItem) {
-            vm.setCutFile(item)
-        }
-        override fun onPaste(targetDirPath: String) {
-            vm.clipboardItem.value?.let { cut ->
-                vm.moveFile(cut.path, targetDirPath)
-                vm.clearClipboard()
-            }
-        }
-        override fun onRefresh() {
-            refresh()
-        }
+    private val contextMenuCallback by lazy {
+        FileContextMenu.defaultCallback(vm, onRefresh = ::refresh)
     }
 
     override fun onDestroyView() {

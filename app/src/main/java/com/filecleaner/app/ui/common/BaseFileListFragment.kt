@@ -27,6 +27,10 @@ import com.google.android.material.snackbar.Snackbar
  */
 abstract class BaseFileListFragment : Fragment() {
 
+    companion object {
+        const val SEARCH_DEBOUNCE_MS = 300L
+    }
+
     private var _binding: FragmentListActionBinding? = null
     protected val binding get() = _binding!!
     protected val vm: MainViewModel by activityViewModels()
@@ -112,7 +116,7 @@ abstract class BaseFileListFragment : Fragment() {
                     searchQuery = s?.toString()?.trim() ?: ""
                     applySearch()
                 }
-                handler.postDelayed(searchRunnable!!, 300)
+                handler.postDelayed(searchRunnable!!, SEARCH_DEBOUNCE_MS)
             }
         })
 
@@ -165,33 +169,7 @@ abstract class BaseFileListFragment : Fragment() {
             .show()
     }
 
-    private val contextMenuCallback = object : FileContextMenu.Callback {
-        override fun onDelete(item: FileItem) {
-            vm.deleteFiles(listOf(item))
-        }
-        override fun onRename(item: FileItem, newName: String) {
-            vm.renameFile(item.path, newName)
-        }
-        override fun onCompress(item: FileItem) {
-            vm.compressFile(item.path)
-        }
-        override fun onExtract(item: FileItem) {
-            vm.extractArchive(item.path)
-        }
-        override fun onOpenInTree(item: FileItem) {
-            vm.requestTreeHighlight(item.path)
-        }
-        override fun onCut(item: FileItem) {
-            vm.setCutFile(item)
-        }
-        override fun onPaste(targetDirPath: String) {
-            vm.clipboardItem.value?.let { cut ->
-                vm.moveFile(cut.path, targetDirPath)
-                vm.clearClipboard()
-            }
-        }
-        override fun onRefresh() {}
-    }
+    private val contextMenuCallback by lazy { FileContextMenu.defaultCallback(vm) }
 
     override fun onDestroyView() {
         searchRunnable?.let { handler.removeCallbacks(it) }

@@ -10,6 +10,8 @@ import com.google.android.material.snackbar.Snackbar
  */
 object UndoHelper {
 
+    private const val UNDO_TIMEOUT_MS = 8000
+
     fun showUndoSnackbar(
         view: View,
         result: MainViewModel.DeleteResult,
@@ -28,7 +30,7 @@ object UndoHelper {
 
         if (result.canUndo && result.moved > 0) {
             Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
-                .setDuration(8000) // 8 seconds to undo
+                .setDuration(UNDO_TIMEOUT_MS)
                 .setAction(ctx.getString(R.string.undo)) { vm.undoDelete() }
                 .addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(bar: Snackbar?, event: Int) {

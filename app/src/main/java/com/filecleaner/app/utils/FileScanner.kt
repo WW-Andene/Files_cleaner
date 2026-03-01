@@ -21,37 +21,6 @@ object FileScanner {
         "lost+found", "proc", "sys", "dev"
     )
 
-    suspend fun scanAll(context: Context, onProgress: (Int) -> Unit = {}): List<FileItem> =
-        withContext(Dispatchers.IO) {
-            val results = mutableListOf<FileItem>()
-            val root = Environment.getExternalStorageDirectory()
-            val rootPath = root.absolutePath
-
-            // Iterative walk using explicit stack (F-018)
-            val stack = ArrayDeque<File>()
-            stack.push(root)
-            var scanned = 0
-
-            while (stack.isNotEmpty()) {
-                coroutineContext.ensureActive()
-                val dir = stack.pop()
-                val children = dir.listFiles() ?: continue
-
-                for (child in children) {
-                    if (child.isDirectory) {
-                        val relative = child.absolutePath.substringAfter("$rootPath/")
-                        if (SKIP_DIRS.any { relative.startsWith(it) } || child.name.startsWith(".")) continue
-                        stack.push(child)
-                    } else {
-                        scanned++
-                        if (scanned % 100 == 0) onProgress(scanned)
-                        results.add(child.toFileItem())
-                    }
-                }
-            }
-            results
-        }
-
     /** Scan returning both a flat file list and a directory tree. */
     suspend fun scanWithTree(
         context: Context,
