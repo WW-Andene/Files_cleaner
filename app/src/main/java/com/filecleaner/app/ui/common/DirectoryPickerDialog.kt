@@ -94,7 +94,7 @@ object DirectoryPickerDialog {
             } else {
                 for (child in children) {
                     if (child.path == excludePath) continue
-                    val row = createRow(context, dp, child.name, isBack = false)
+                    val row = createRow(context, child.name, isBack = false)
                     row.setOnClickListener {
                         currentNode = child
                         buildDialog()
