@@ -96,6 +96,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     // Map of original path -> trash path for pending undo
     private var pendingTrash = mutableMapOf<String, String>()
 
+    // In-memory copies for reliable cache saving (postValue is async,
+    // so LiveData .value may be stale when saveCache reads it)
+    private var latestFiles: List<FileItem> = emptyList()
+    private var latestTree: DirectoryNode? = null
+
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
 
     fun cancelScan() {
@@ -111,6 +116,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             if (cached != null) {
                 val (files, tree) = cached
                 stateMutex.withLock {
+                    latestFiles = files
+                    latestTree = tree
                     _allFiles.postValue(files)
                     _directoryTree.postValue(tree)
                     _filesByCategory.postValue(files.groupBy { it.category })
@@ -147,6 +154,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
 
                 stateMutex.withLock {
+                    latestFiles = files
+                    latestTree = tree
                     _allFiles.postValue(files)
                     _directoryTree.postValue(tree)
                     _filesByCategory.postValue(files.groupBy { it.category })
@@ -243,7 +252,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
             stateMutex.withLock {
                 val deletedPaths = movedPaths.keys
-                val remaining = _allFiles.value?.filter { it.path !in deletedPaths } ?: return@launch
+                val remaining = latestFiles.filter { it.path !in deletedPaths }
+                latestFiles = remaining
                 _allFiles.postValue(remaining)
                 _filesByCategory.postValue(remaining.groupBy { it.category })
                 _duplicates.postValue(_duplicates.value?.filter { it.path !in deletedPaths })
@@ -274,8 +284,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
             if (restored.isNotEmpty()) {
                 stateMutex.withLock {
-                    val current = _allFiles.value ?: emptyList()
-                    val updated = current + restored
+                    val updated = latestFiles + restored
+                    latestFiles = updated
                     _allFiles.postValue(updated)
                     _filesByCategory.postValue(updated.groupBy { it.category })
                     // Re-run classification for restored files
@@ -441,7 +451,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private fun refreshAfterFileChange(removedPath: String? = null, addedFile: File? = null) {
         viewModelScope.launch {
             stateMutex.withLock {
-                var files = _allFiles.value?.toMutableList() ?: return@launch
+                var files = latestFiles.toMutableList()
 
                 if (removedPath != null) {
                     files = files.filter { it.path != removedPath }.toMutableList()
@@ -450,6 +460,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     files.add(FileScanner.fileToItem(addedFile))
                 }
 
+                latestFiles = files
                 _allFiles.postValue(files)
                 _filesByCategory.postValue(files.groupBy { it.category })
                 _duplicates.postValue(DuplicateFinder.findDuplicates(files))
@@ -463,8 +474,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Persist current in-memory scan data to disk cache. */
     private fun saveCache() {
-        val files = _allFiles.value ?: return
-        val tree = _directoryTree.value ?: return
+        val files = latestFiles.ifEmpty { return }
+        val tree = latestTree ?: return
         viewModelScope.launch {
             try {
                 ScanCache.save(getApplication(), files, tree)

@@ -210,6 +210,7 @@
             android:src="@drawable/ic_raccoon_logo"
             app:fabSize="mini"
             app:backgroundTint="@color/surfaceDim"
+            app:tint="@color/colorPrimary"
             app:shapeAppearance="@style/ShapeSmall" />
     </FrameLayout>
 

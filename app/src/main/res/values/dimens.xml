@@ -22,8 +22,8 @@
     <dimen name="radius_lg">16dp</dimen>
 
     <!-- Icon sizes -->
-    <dimen name="icon_file_list">44dp</dimen>
-    <dimen name="icon_file_grid">80dp</dimen>
+    <dimen name="icon_file_list">52dp</dimen>
+    <dimen name="icon_file_grid">110dp</dimen>
     <dimen name="icon_nav">24dp</dimen>
     <dimen name="icon_raccoon_bubble">36dp</dimen>
 
