@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Show version number in header
-        binding.tvVersion.text = "v${BuildConfig.VERSION_NAME}"
+        binding.tvVersion.text = getString(R.string.version_format, BuildConfig.VERSION_NAME)
 
         // Navigation setup
         val navHost = supportFragmentManager

@@ -36,7 +36,7 @@ class ArborescenceFragment : Fragment() {
     private val treeCategories by lazy {
         listOf(
             getString(R.string.all_files) to null,
-            *FileCategory.entries.map { "${it.emoji} ${it.displayName}" to it }.toTypedArray()
+            *FileCategory.entries.map { "${it.emoji} ${getString(it.displayNameRes)}" to it }.toTypedArray()
         )
     }
 
@@ -265,7 +265,7 @@ class ArborescenceFragment : Fragment() {
 
         for ((ext, count) in topExtensions) {
             val chip = Chip(requireContext()).apply {
-                text = ".$ext ($count)"
+                text = getString(R.string.extension_chip_format, ext, count)
                 isCheckable = true
                 isChecked = ext in selectedTreeExtensions
                 setOnCheckedChangeListener { _, checked ->

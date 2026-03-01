@@ -2,6 +2,7 @@ package com.filecleaner.app.utils
 
 import android.content.Context
 import android.os.Environment
+import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
@@ -80,9 +81,10 @@ object FileScanner {
             val totalSize = ownFileSize + childNodes.sumOf { it.totalSize }
             val totalFileCount = ownFileCount + childNodes.sumOf { it.totalFileCount }
 
+            val storageName = context.getString(R.string.internal_storage)
             nodeMap[path] = DirectoryNode(
                 path = path,
-                name = if (path == rootPath) "Internal Storage" else info.file.name,
+                name = if (path == rootPath) storageName else info.file.name,
                 files = info.files.toList(),
                 children = childNodes.toMutableList(),
                 totalSize = totalSize,
@@ -93,7 +95,7 @@ object FileScanner {
 
         val rootNode = nodeMap[rootPath] ?: DirectoryNode(
             path = rootPath,
-            name = "Internal Storage",
+            name = context.getString(R.string.internal_storage),
             files = emptyList(),
             totalSize = 0,
             totalFileCount = 0,

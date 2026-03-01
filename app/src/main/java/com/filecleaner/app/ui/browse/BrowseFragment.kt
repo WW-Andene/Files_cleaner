@@ -53,7 +53,7 @@ class BrowseFragment : Fragment() {
     private val categories by lazy {
         listOf(
             getString(R.string.all_files) to null,
-            *FileCategory.entries.map { "${it.emoji} ${it.displayName}" to it }.toTypedArray()
+            *FileCategory.entries.map { "${it.emoji} ${getString(it.displayNameRes)}" to it }.toTypedArray()
         )
     }
 
@@ -267,7 +267,7 @@ class BrowseFragment : Fragment() {
         } else {
             folderPath
         }
-        return if (relative.isEmpty()) "/Storage" else relative
+        return if (relative.isEmpty()) getString(R.string.storage_root) else relative
     }
 
     private fun updateExtensionChips(files: List<FileItem>) {
@@ -297,7 +297,7 @@ class BrowseFragment : Fragment() {
 
         for ((ext, count) in topExtensions) {
             val chip = Chip(requireContext()).apply {
-                text = ".$ext ($count)"
+                text = getString(R.string.extension_chip_format, ext, count)
                 isCheckable = true
                 isChecked = ext in selectedExtensions
                 setOnCheckedChangeListener { _, checked ->

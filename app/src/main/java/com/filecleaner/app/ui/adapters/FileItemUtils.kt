@@ -56,7 +56,7 @@ object FileItemUtils {
         } else {
             metaView.context.getString(R.string.unknown_date)
         }
-        val text = "${item.sizeReadable}  \u2022  $date"
+        val text = metaView.context.getString(R.string.file_meta_format, item.sizeReadable, date)
         metaView.text = text
         return text
     }

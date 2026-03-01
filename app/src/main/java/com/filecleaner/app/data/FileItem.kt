@@ -1,20 +1,22 @@
 package com.filecleaner.app.data
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.filecleaner.app.R
 import com.filecleaner.app.utils.UndoHelper
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
-enum class FileCategory(val displayName: String, val emoji: String) {
-    IMAGE("Images", "\uD83D\uDDBC\uFE0F"),
-    VIDEO("Videos", "\uD83C\uDFAC"),
-    AUDIO("Audio", "\uD83C\uDFB5"),
-    DOCUMENT("Documents", "\uD83D\uDCC4"),
-    APK("APKs", "\uD83D\uDCE6"),
-    ARCHIVE("Archives", "\uD83D\uDDDC\uFE0F"),
-    DOWNLOAD("Downloads", "\u2B07\uFE0F"),
-    OTHER("Other", "\uD83D\uDCC1");
+enum class FileCategory(@StringRes val displayNameRes: Int, val emoji: String) {
+    IMAGE(R.string.cat_images, "\uD83D\uDDBC\uFE0F"),
+    VIDEO(R.string.cat_videos, "\uD83C\uDFAC"),
+    AUDIO(R.string.cat_audio, "\uD83C\uDFB5"),
+    DOCUMENT(R.string.cat_documents, "\uD83D\uDCC4"),
+    APK(R.string.cat_apks, "\uD83D\uDCE6"),
+    ARCHIVE(R.string.cat_archives, "\uD83D\uDDDC\uFE0F"),
+    DOWNLOAD(R.string.cat_downloads, "\u2B07\uFE0F"),
+    OTHER(R.string.cat_other, "\uD83D\uDCC1");
 
     companion object {
         private val extMap = mapOf(

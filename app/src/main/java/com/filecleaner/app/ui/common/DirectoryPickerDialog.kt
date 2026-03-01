@@ -60,7 +60,7 @@ object DirectoryPickerDialog {
 
             // Back / parent entry (if not root)
             if (currentNode != rootNode) {
-                val backRow = createRow(context, dp, "\u2190  ..", isBack = true)
+                val backRow = createRow(context, dp, context.getString(R.string.dir_picker_back), isBack = true)
                 backRow.setOnClickListener {
                     val parentPath = currentNode.path.substringBeforeLast('/')
                     val parent = findNode(rootNode, parentPath)
@@ -114,7 +114,7 @@ object DirectoryPickerDialog {
 
     private fun createRow(context: Context, dp: Float, label: String, isBack: Boolean): TextView {
         return TextView(context).apply {
-            text = if (isBack) label else "\uD83D\uDCC1  $label"
+            text = if (isBack) label else context.getString(R.string.dir_picker_folder, label)
             textSize = 15f
             setTextColor(ContextCompat.getColor(context,
                 if (isBack) R.color.colorPrimary else R.color.textPrimary))
