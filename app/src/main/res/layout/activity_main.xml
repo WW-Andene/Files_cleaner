@@ -133,7 +133,6 @@
             android:layout_gravity="center"
             android:src="@drawable/ic_raccoon_logo"
             android:scaleType="centerCrop"
-            app:tint="@android:color/white"
             android:contentDescription="@string/open_arborescence"
             android:importantForAccessibility="yes" />
     </com.google.android.material.card.MaterialCardView>

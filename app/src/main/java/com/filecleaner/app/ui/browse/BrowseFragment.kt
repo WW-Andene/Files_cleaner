@@ -224,8 +224,13 @@ class BrowseFragment : Fragment() {
         // Group by parent directory
         val grouped = files.groupBy { File(it.path).parent ?: "" }
 
-        // Sort groups: by folder path for a clean hierarchy
-        val sortedGroups = grouped.entries.sortedBy { it.key.lowercase() }
+        // Sort groups: root-level first (matching arborescence root), then by path
+        val sortedGroups = grouped.entries.sortedWith(
+            compareBy(
+                { it.key.removePrefix(storagePath).count { c -> c == File.separatorChar } },
+                { it.key.lowercase() }
+            )
+        )
 
         val result = mutableListOf<BrowseAdapter.Item>()
         for ((folderPath, folderFiles) in sortedGroups) {

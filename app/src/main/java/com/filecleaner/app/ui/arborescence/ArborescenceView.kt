@@ -536,11 +536,6 @@ class ArborescenceView @JvmOverloads constructor(
         val node = layout.node
         val rect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + layout.h)
 
-        // Save canvas state and clip to block bounds (prevent text overflow / superposition)
-        // Left margin allows highlight arrow indicator; right edge prevents text overflow
-        canvas.save()
-        canvas.clipRect(rect.left - 24f, rect.top - 4f, rect.right + 4f, rect.bottom + 4f)
-
         // Theme-aware colors from resources
         filePaint.color = colorTextPrimary
         fileSizePaint.color = colorTextSecondary
@@ -549,7 +544,6 @@ class ArborescenceView @JvmOverloads constructor(
         expandPaint.color = colorPrimary
         highlightPaint.color = colorAccent
         highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
-
 
         // Block background, semi-transparent if no matching files
         val hasMatchingFiles = filteredFiles(node).isNotEmpty() ||
@@ -560,16 +554,9 @@ class ArborescenceView @JvmOverloads constructor(
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockPaint)
         blockPaint.alpha = 255
 
-        // Drop target highlight
-        if (isDropTarget) {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, highlightPaint)
-        }
-
-        // Selection highlight
-        if (isSelected) {
-            val selPaint = Paint(highlightPaint).apply { color = colorPrimary }
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, selPaint)
-        }
+        // Clip to exact block bounds to prevent text overflow / superposition
+        canvas.save()
+        canvas.clipRect(rect)
 
         // Header bar with category-based color
         val dominant = node.files.groupBy { it.category }
@@ -599,10 +586,12 @@ class ArborescenceView @JvmOverloads constructor(
             canvas.drawText(indicator, layout.x + layout.w - 28f, layout.y + 30f, expandPaint)
         }
 
-        // File list (filtered) — clip to block bounds to prevent text overflow
+        // File list (filtered) — clip to file area within block
         val filtered = filteredFiles(node)
         val maxFiles = 5
         val files = filtered.take(maxFiles)
+        var highlightFileRowTop = -1f // Track for drawing arrow outside clip
+
         canvas.save()
         canvas.clipRect(layout.x, layout.y + headerHeight, layout.x + layout.w, layout.y + layout.h)
         for ((i, file) in files.withIndex()) {
@@ -624,21 +613,14 @@ class ArborescenceView @JvmOverloads constructor(
             // File size
             canvas.drawText(fsz, layout.x + layout.w - fszWidth - 8f, fy, fileSizePaint)
 
-            // Highlight matched file with prominent indicator
+            // Highlight matched file row fill + border
             if (file.path == highlightedFilePath) {
                 val fileRowTop = layout.y + headerHeight + i * fileLineHeight
+                highlightFileRowTop = fileRowTop
                 val highlightRect = RectF(
                     layout.x + 2f, fileRowTop,
                     layout.x + layout.w - 2f, fileRowTop + fileLineHeight
                 )
-
-                // Glow outline around the entire containing block
-                val blockGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-                blockGlowPaint.style = Paint.Style.STROKE
-                blockGlowPaint.strokeWidth = 6f
-                blockGlowPaint.color = colorAccent
-                blockGlowPaint.setAlpha((160 * highlightAlpha).toInt())
-                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockGlowPaint)
 
                 // Strong fill + border on the file row
                 highlightFillPaint.color = colorAccent
@@ -649,18 +631,6 @@ class ArborescenceView @JvmOverloads constructor(
                 canvas.drawRoundRect(highlightRect, 6f, 6f, highlightFillPaint)
                 canvas.drawRoundRect(highlightRect, 6f, 6f, highlightPaint)
                 highlightPaint.strokeWidth = savedStrokeWidth
-
-                // Large arrow indicator on the left edge
-                highlightArrowPaint.color = colorAccent
-                highlightArrowPaint.alpha = (255 * highlightAlpha).toInt()
-                val arrowPath = Path().apply {
-                    val cy = fileRowTop + fileLineHeight / 2f
-                    moveTo(layout.x - 20f, cy - 12f)
-                    lineTo(layout.x - 4f, cy)
-                    lineTo(layout.x - 20f, cy + 12f)
-                    close()
-                }
-                canvas.drawPath(arrowPath, highlightArrowPaint)
             }
         }
 
@@ -675,11 +645,46 @@ class ArborescenceView @JvmOverloads constructor(
         }
 
         canvas.restore() // Restore from file list clip
+        canvas.restore() // Restore from block-level clip
+
+        // --- Draw elements outside clip (borders, highlights, arrows) ---
 
         // Border
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockStrokePaint)
 
-        canvas.restore() // Restore from block-level save
+        // Drop target highlight
+        if (isDropTarget) {
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, highlightPaint)
+        }
+
+        // Selection highlight
+        if (isSelected) {
+            val selPaint = Paint(highlightPaint).apply { color = colorPrimary }
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, selPaint)
+        }
+
+        // Highlight glow + arrow (drawn outside clip so arrow extends left of block)
+        if (highlightFileRowTop >= 0f) {
+            // Glow outline around the entire containing block
+            val blockGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+            blockGlowPaint.style = Paint.Style.STROKE
+            blockGlowPaint.strokeWidth = 6f
+            blockGlowPaint.color = colorAccent
+            blockGlowPaint.setAlpha((160 * highlightAlpha).toInt())
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockGlowPaint)
+
+            // Large arrow indicator on the left edge
+            highlightArrowPaint.color = colorAccent
+            highlightArrowPaint.alpha = (255 * highlightAlpha).toInt()
+            val arrowPath = Path().apply {
+                val cy = highlightFileRowTop + fileLineHeight / 2f
+                moveTo(layout.x - 20f, cy - 12f)
+                lineTo(layout.x - 4f, cy)
+                lineTo(layout.x - 20f, cy + 12f)
+                close()
+            }
+            canvas.drawPath(arrowPath, highlightArrowPaint)
+        }
     }
 
     private fun ellipsizeText(text: String, paint: Paint, maxWidth: Float): String {

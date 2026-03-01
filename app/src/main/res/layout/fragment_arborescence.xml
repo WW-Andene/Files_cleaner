@@ -209,8 +209,7 @@
             android:contentDescription="@string/reset_view"
             android:src="@drawable/ic_raccoon_logo"
             app:fabSize="mini"
-            app:backgroundTint="@color/colorPrimary"
-            app:tint="@android:color/white"
+            app:backgroundTint="@color/surfaceDim"
             app:shapeAppearance="@style/ShapeSmall" />
     </FrameLayout>
 
