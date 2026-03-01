@@ -138,15 +138,16 @@
             android:importantForAccessibility="yes" />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- FAB scan button — positioned next to raccoon bubble -->
+    <!-- FAB scan button -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="76dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="84dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="80dp"
         android:text="@string/scan_storage"
         app:icon="@drawable/ic_scan"
         android:backgroundTint="@color/colorPrimary"
