@@ -2,10 +2,8 @@ package com.filecleaner.app.ui.common
 
 import android.content.Context
 import android.graphics.Typeface
-import android.text.method.ScrollingMovementMethod
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog

@@ -137,7 +137,7 @@
             android:layout_marginTop="@dimen/spacing_xl"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textTertiary"
-            android:fontStyle="italic" />
+            android:textStyle="italic" />
 
     </LinearLayout>
 </ScrollView>
