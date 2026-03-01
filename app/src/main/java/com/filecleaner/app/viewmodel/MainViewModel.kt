@@ -422,6 +422,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // ── Navigate to Browse tab (filtered to a folder) ──
+    private val _navigateToBrowse = MutableLiveData<String?>()
+    val navigateToBrowse: LiveData<String?> = _navigateToBrowse
+
+    fun requestBrowseFolder(folderPath: String) {
+        _navigateToBrowse.value = folderPath
+    }
+
+    fun clearBrowseNavigation() {
+        _navigateToBrowse.value = null
+    }
+
     // ── Navigate to tree highlight ──
     // Uses MutableLiveData (not SingleLiveEvent) so both MainActivity (tab switch)
     // and ArborescenceFragment (highlight) can observe the same value.

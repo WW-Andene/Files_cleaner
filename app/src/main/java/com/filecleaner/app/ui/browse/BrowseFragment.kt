@@ -155,6 +155,23 @@ class BrowseFragment : Fragment() {
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
         }
+
+        // Observe "Browse folder" navigation from other tabs (e.g. arborescence)
+        vm.navigateToBrowse.observe(viewLifecycleOwner) { folderPath ->
+            if (folderPath != null) {
+                // Reset category filter to "All files" and set search to folder path
+                binding.spinnerCategory.setSelection(0, false)
+                selectedExtensions.clear()
+                val folderName = File(folderPath).name
+                searchQuery = folderName
+                binding.etSearch.setText(folderName)
+                refresh()
+                val displayName = folderDisplayName(folderPath)
+                Snackbar.make(binding.root, getString(R.string.browsing_folder, displayName),
+                    Snackbar.LENGTH_SHORT).show()
+                vm.clearBrowseNavigation()
+            }
+        }
     }
 
     private fun cycleViewMode() {
@@ -262,7 +279,8 @@ class BrowseFragment : Fragment() {
 
         adapter.submitList(browseItems) {
             // Scroll after DiffUtil finishes and layout is settled
-            binding.recyclerView.scrollToPosition(0)
+            // Guard against _binding being null if fragment is destroyed before callback fires
+            _binding?.recyclerView?.scrollToPosition(0)
         }
         binding.tvCount.text = resources.getQuantityString(R.plurals.n_files, fileCount, fileCount)
     }

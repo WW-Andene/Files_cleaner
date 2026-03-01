@@ -46,6 +46,7 @@ class ArborescenceView @JvmOverloads constructor(
     private val cornerRadius = 10f * dp
     private val headerHeight = 48f * dp
     private val DEFAULT_MAX_FILES = 5
+    private val EXPANDED_MAX_FILES = 50
 
     // ── Theme colors (resolved once — View is recreated on config change) ──
     private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }
@@ -399,8 +400,8 @@ class ArborescenceView @JvmOverloads constructor(
         val filtered = filteredFiles(node)
         val existing = layouts[node.path]
         val filesExp = existing?.filesExpanded ?: false
-        val displayFiles = if (filesExp) filtered.size else min(filtered.size, DEFAULT_MAX_FILES)
-        val hasMore = !filesExp && filtered.size > DEFAULT_MAX_FILES
+        val displayFiles = if (filesExp) min(filtered.size, EXPANDED_MAX_FILES) else min(filtered.size, DEFAULT_MAX_FILES)
+        val hasMore = filtered.size > displayFiles
         val h = headerHeight + displayFiles * fileLineHeight +
             (if (hasMore) fileLineHeight else 0f) + 8f * dp
         val dominant = node.files.groupBy { it.category }
@@ -509,8 +510,8 @@ class ArborescenceView @JvmOverloads constructor(
 
     private fun recalcBlockHeight(layout: NodeLayout) {
         val fileCount = layout.cachedFiles.size
-        val displayFiles = if (layout.filesExpanded) fileCount else min(fileCount, DEFAULT_MAX_FILES)
-        val hasMore = !layout.filesExpanded && fileCount > DEFAULT_MAX_FILES
+        val displayFiles = if (layout.filesExpanded) min(fileCount, EXPANDED_MAX_FILES) else min(fileCount, DEFAULT_MAX_FILES)
+        val hasMore = fileCount > displayFiles
         val h = headerHeight + displayFiles * fileLineHeight +
             (if (hasMore) fileLineHeight else 0f) + 8f * dp
         layout.h = max(blockMinHeight, h)
@@ -551,7 +552,7 @@ class ArborescenceView @JvmOverloads constructor(
         for ((blockPath, layout) in layouts) {
             if (wx < layout.x || wx > layout.x + layout.w) continue
             val fileStartY = layout.y + headerHeight
-            val maxFiles = if (layout.filesExpanded) layout.cachedFiles.size else DEFAULT_MAX_FILES
+            val maxFiles = if (layout.filesExpanded) min(layout.cachedFiles.size, EXPANDED_MAX_FILES) else DEFAULT_MAX_FILES
             val files = layout.cachedFiles.take(maxFiles)
             for ((i, file) in files.withIndex()) {
                 val rowTop = fileStartY + i * fileLineHeight
@@ -736,7 +737,7 @@ class ArborescenceView @JvmOverloads constructor(
 
         // File list (filtered) — clip to file area within block
         val filtered = layout.cachedFiles
-        val maxFiles = if (layout.filesExpanded) filtered.size else DEFAULT_MAX_FILES
+        val maxFiles = if (layout.filesExpanded) min(filtered.size, EXPANDED_MAX_FILES) else DEFAULT_MAX_FILES
         val files = filtered.take(maxFiles)
         var highlightFileRowTop = -1f // Track for drawing arrow outside clip
         val dotR = 3f * dp
@@ -977,7 +978,8 @@ class ArborescenceView @JvmOverloads constructor(
         if (cw <= 0f || ch <= 0f) return
 
         // Find the Y position of the specific file row
-        val files = layout.cachedFiles.take(5)
+        val visibleMax = if (layout.filesExpanded) min(layout.cachedFiles.size, EXPANDED_MAX_FILES) else DEFAULT_MAX_FILES
+        val files = layout.cachedFiles.take(visibleMax)
         val fileIndex = files.indexOfFirst { it.path == filePath }
         val fileRowCenterY = if (fileIndex >= 0) {
             layout.y + headerHeight + fileIndex * fileLineHeight + fileLineHeight / 2f

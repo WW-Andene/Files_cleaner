@@ -126,6 +126,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Navigate to Browse tab on "Browse folder"
+        viewModel.navigateToBrowse.observe(this) { folderPath ->
+            if (folderPath != null) {
+                val currentDest = navController.currentDestination?.id
+                if (currentDest != R.id.browseFragment) {
+                    binding.bottomNav.selectedItemId = R.id.browseFragment
+                }
+            }
+        }
+
         // Cancel scan button
         binding.btnCancelScan.setOnClickListener { viewModel.cancelScan() }
 

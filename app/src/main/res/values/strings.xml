@@ -71,6 +71,7 @@
     <string name="empty_browse_pre_scan">Go to the Manager tab and tap Scan Storage to browse your files.</string>
     <string name="empty_browse_post_scan">No files match your filters.\nTry a different category or clear the search.</string>
     <string name="empty_search_results">No results for \"%s\"</string>
+    <string name="browsing_folder">Browsing %s</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
     <string name="empty_junk_pre_scan">Go to the Manager tab and tap Scan Storage to find junk files.</string>
@@ -183,6 +184,7 @@
     <string name="ctx_compress">Compress</string>
     <string name="ctx_extract">Extract</string>
     <string name="ctx_open_in_tree">Show in Tree</string>
+    <string name="ctx_browse_folder">Browse folder</string>
     <string name="ctx_properties">Properties</string>
     <string name="ctx_preview">Preview</string>
     <string name="preview_error">Cannot preview: %s</string>

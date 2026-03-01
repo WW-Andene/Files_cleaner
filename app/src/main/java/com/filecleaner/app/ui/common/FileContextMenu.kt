@@ -36,6 +36,7 @@ object FileContextMenu {
         fun onCompress(item: FileItem)
         fun onExtract(item: FileItem)
         fun onOpenInTree(item: FileItem)
+        fun onBrowseFolder(folderPath: String) {}
         fun onCut(item: FileItem) {}
         fun onCopy(item: FileItem) {}
         fun onPaste(targetDirPath: String) {}
@@ -58,6 +59,7 @@ object FileContextMenu {
         override fun onCompress(item: FileItem) { vm.compressFile(item.path) }
         override fun onExtract(item: FileItem) { vm.extractArchive(item.path) }
         override fun onOpenInTree(item: FileItem) { onOpenInTree(item) }
+        override fun onBrowseFolder(folderPath: String) { vm.requestBrowseFolder(folderPath) }
         override fun onCut(item: FileItem) { vm.setCutFile(item) }
         override fun onCopy(item: FileItem) { vm.setCopyFile(item) }
         override fun onPaste(targetDirPath: String) {
@@ -158,11 +160,24 @@ object FileContextMenu {
         }
 
         // -- Menu items --
-        addItem(context.getString(R.string.ctx_open), android.R.drawable.ic_menu_view) {
-            FileOpener.open(context, item.file)
-        }
-        addItem(context.getString(R.string.ctx_preview), android.R.drawable.ic_menu_gallery) {
-            FilePreviewDialog.show(context, item)
+        val isFolder = item.file.isDirectory
+        if (isFolder) {
+            addItem(context.getString(R.string.ctx_browse_folder), R.drawable.ic_nav_browse) {
+                callback.onBrowseFolder(item.path)
+            }
+        } else {
+            addItem(context.getString(R.string.ctx_open), android.R.drawable.ic_menu_view) {
+                FileOpener.open(context, item.file)
+            }
+            addItem(context.getString(R.string.ctx_preview), android.R.drawable.ic_menu_gallery) {
+                FilePreviewDialog.show(context, item)
+            }
+            val parentDir = item.file.parent
+            if (parentDir != null) {
+                addItem(context.getString(R.string.ctx_browse_folder), R.drawable.ic_nav_browse) {
+                    callback.onBrowseFolder(parentDir)
+                }
+            }
         }
 
         addDivider()
