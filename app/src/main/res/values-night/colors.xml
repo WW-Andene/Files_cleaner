@@ -12,7 +12,7 @@
     <color name="colorAccentLight">#3D2E1A</color>
 
     <!-- Semantic — warm-shifted for character consistency (§DP3) -->
-    <color name="colorError">#E57373</color>
+    <color name="colorError">#CF5353</color>
     <color name="colorErrorLight">#3D1F1A</color>
     <color name="colorSuccess">#66BB78</color>
     <color name="colorWarning">#FFCA5F</color>
@@ -26,7 +26,7 @@
     <!-- Text (chromatic green-gray, not pure gray) -->
     <color name="textPrimary">#E6E4DF</color>
     <color name="textSecondary">#9FA5A2</color>
-    <color name="textTertiary">#6B726E</color>
+    <color name="textTertiary">#8A918D</color>
     <color name="textOnPrimary">#0E1311</color>
     <color name="textDisabled">#4A514D</color>
 
@@ -45,6 +45,9 @@
     <!-- Scan bar -->
     <color name="scanBarBackground">#1A3D2E</color>
     <color name="scanBarText">#B8E6D0</color>
+
+    <!-- Text on colored backgrounds (e.g. tree view headers) -->
+    <color name="textOnColor">#CCFFFFFF</color>
 
     <!-- File category tints -->
     <color name="catImage">#B388FF</color>
