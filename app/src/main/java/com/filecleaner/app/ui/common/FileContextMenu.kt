@@ -2,12 +2,18 @@ package com.filecleaner.app.ui.common
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.EditText
-import android.widget.PopupMenu
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
@@ -16,28 +22,13 @@ import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object FileContextMenu {
-
-    private const val ID_OPEN = 1
-    private const val ID_DELETE = 2
-    private const val ID_RENAME = 3
-    private const val ID_SHARE = 4
-    private const val ID_CUT = 5
-    private const val ID_COMPRESS = 6
-    private const val ID_EXTRACT = 7
-    private const val ID_OPEN_IN_TREE = 8
-    private const val ID_PASTE = 9
-    private const val ID_COPY = 10
-    private const val ID_MOVE_TO = 11
-    private const val ID_PROPERTIES = 12
-    private const val ID_TOGGLE_FAVORITE = 13
-    private const val ID_TOGGLE_PROTECTED = 14
-    private const val ID_PREVIEW = 15
 
     interface Callback {
         fun onDelete(item: FileItem)
@@ -78,7 +69,6 @@ object FileContextMenu {
                 }
                 MainViewModel.ClipboardMode.COPY -> {
                     vm.copyFile(entry.item.path, targetDirPath)
-                    // Don't clear clipboard on copy — allows pasting multiple times
                 }
             }
         }
@@ -87,150 +77,231 @@ object FileContextMenu {
     }
 
     fun show(context: Context, anchor: View, item: FileItem, callback: Callback, hasClipboard: Boolean = false) {
-        val popup = PopupMenu(context, anchor)
-        var order = 0
-        popup.menu.apply {
-            add(0, ID_OPEN, order++, context.getString(R.string.ctx_open))
-            add(0, ID_PREVIEW, order++, context.getString(R.string.ctx_preview))
-            add(0, ID_COPY, order++, context.getString(R.string.ctx_copy))
-            add(0, ID_CUT, order++, context.getString(R.string.ctx_cut))
-            if (hasClipboard) {
-                val targetDir = File(item.path).parent
-                if (targetDir != null) {
-                    add(0, ID_PASTE, order++, context.getString(R.string.ctx_paste_here))
+        val dialog = BottomSheetDialog(context, R.style.Theme_FileCleaner_BottomSheet)
+        val contentView = View.inflate(context, R.layout.dialog_file_context, null)
+
+        // Header
+        val tvName = contentView.findViewById<TextView>(R.id.tv_file_name)
+        val tvInfo = contentView.findViewById<TextView>(R.id.tv_file_info)
+        val ivIcon = contentView.findViewById<ImageView>(R.id.iv_file_icon)
+
+        tvName.text = item.name
+        tvInfo.text = "${UndoHelper.formatBytes(item.size)} \u2022 ${context.getString(item.category.displayNameRes)}"
+
+        val iconRes = when (item.category) {
+            FileCategory.IMAGE -> R.drawable.ic_image
+            FileCategory.VIDEO -> R.drawable.ic_video
+            FileCategory.AUDIO -> R.drawable.ic_audio
+            FileCategory.DOCUMENT -> R.drawable.ic_document
+            FileCategory.APK -> R.drawable.ic_apk
+            FileCategory.ARCHIVE -> R.drawable.ic_archive
+            FileCategory.DOWNLOAD -> R.drawable.ic_download
+            FileCategory.OTHER -> R.drawable.ic_file
+        }
+        ivIcon.setImageResource(iconRes)
+
+        val container = contentView.findViewById<LinearLayout>(R.id.menu_container)
+        val dp = context.resources.displayMetrics.density
+
+        fun addItem(label: String, iconDrawable: Int, action: () -> Unit) {
+            val row = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    (48 * dp).toInt()
+                )
+                setPadding((20 * dp).toInt(), 0, (20 * dp).toInt(), 0)
+                background = ContextCompat.getDrawable(context, android.R.drawable.list_selector_background)
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    dialog.dismiss()
+                    action()
                 }
             }
-            add(0, ID_MOVE_TO, order++, context.getString(R.string.ctx_move_to))
-            add(0, ID_RENAME, order++, context.getString(R.string.ctx_rename))
-            add(0, ID_SHARE, order++, context.getString(R.string.ctx_share))
-            add(0, ID_COMPRESS, order++, context.getString(R.string.ctx_compress))
-            if (item.category == FileCategory.ARCHIVE) {
-                add(0, ID_EXTRACT, order++, context.getString(R.string.ctx_extract))
+
+            val icon = ImageView(context).apply {
+                layoutParams = LinearLayout.LayoutParams((24 * dp).toInt(), (24 * dp).toInt())
+                setImageResource(iconDrawable)
+                setColorFilter(ContextCompat.getColor(context, R.color.textSecondary))
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
             }
-            val isFav = try { UserPreferences.isFavorite(item.path) } catch (_: Exception) { false }
-            add(0, ID_TOGGLE_FAVORITE, order++, context.getString(
-                if (isFav) R.string.ctx_unstar else R.string.ctx_star))
-            val isProt = try { UserPreferences.isProtected(item.path) } catch (_: Exception) { false }
-            add(0, ID_TOGGLE_PROTECTED, order++, context.getString(
-                if (isProt) R.string.ctx_unprotect else R.string.ctx_protect))
-            add(0, ID_DELETE, order++, context.getString(R.string.ctx_delete))
-            add(0, ID_OPEN_IN_TREE, order++, context.getString(R.string.ctx_open_in_tree))
-            add(0, ID_PROPERTIES, order++, context.getString(R.string.ctx_properties))
+            row.addView(icon)
+
+            val text = TextView(context).apply {
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    marginStart = (16 * dp).toInt()
+                }
+                this.text = label
+                setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
+                textSize = 15f
+            }
+            row.addView(text)
+
+            container.addView(row)
         }
 
-        popup.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                ID_OPEN -> {
-                    FileOpener.open(context, item.file)
-                    true
+        fun addDivider() {
+            val div = View(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, (1 * dp).toInt()
+                ).apply {
+                    topMargin = (4 * dp).toInt()
+                    bottomMargin = (4 * dp).toInt()
+                    marginStart = (20 * dp).toInt()
+                    marginEnd = (20 * dp).toInt()
                 }
-                ID_DELETE -> {
-                    AlertDialog.Builder(context)
-                        .setTitle(context.getString(R.string.confirm_delete_title))
-                        .setMessage(context.getString(R.string.confirm_delete_message))
-                        .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
-                            callback.onDelete(item)
-                        }
-                        .setNegativeButton(context.getString(R.string.cancel), null)
-                        .show()
-                    true
+                setBackgroundColor(ContextCompat.getColor(context, R.color.borderDefault))
+            }
+            container.addView(div)
+        }
+
+        // -- Menu items --
+        addItem(context.getString(R.string.ctx_open), android.R.drawable.ic_menu_view) {
+            FileOpener.open(context, item.file)
+        }
+        addItem(context.getString(R.string.ctx_preview), android.R.drawable.ic_menu_gallery) {
+            FilePreviewDialog.show(context, item)
+        }
+
+        addDivider()
+
+        addItem(context.getString(R.string.ctx_copy), R.drawable.ic_copy) {
+            callback.onCopy(item)
+            Toast.makeText(context, context.getString(R.string.copy_hint, item.name), Toast.LENGTH_SHORT).show()
+        }
+        addItem(context.getString(R.string.ctx_cut), android.R.drawable.ic_menu_edit) {
+            callback.onCut(item)
+            Toast.makeText(context, context.getString(R.string.cut_hint, item.name), Toast.LENGTH_SHORT).show()
+        }
+        if (hasClipboard) {
+            val targetDir = File(item.path).parent
+            if (targetDir != null) {
+                addItem(context.getString(R.string.ctx_paste_here), android.R.drawable.ic_menu_add) {
+                    callback.onPaste(targetDir)
                 }
-                ID_RENAME -> {
-                    val editText = EditText(context).apply {
-                        setText(item.name)
-                        selectAll()
-                    }
-                    AlertDialog.Builder(context)
-                        .setTitle(context.getString(R.string.ctx_rename))
-                        .setView(editText)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            val newName = editText.text.toString().trim()
-                            if (newName.isNotEmpty() && newName != item.name) {
-                                callback.onRename(item, newName)
-                            }
-                        }
-                        .setNegativeButton(context.getString(R.string.cancel), null)
-                        .show()
-                    true
-                }
-                ID_SHARE -> {
-                    val uri = FileProvider.getUriForFile(
-                        context, "${context.packageName}.fileprovider", item.file
-                    )
-                    val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(item.extension) ?: "*/*"
-                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = mimeType
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.ctx_share)))
-                    true
-                }
-                ID_CUT -> {
-                    callback.onCut(item)
-                    Toast.makeText(context,
-                        context.getString(R.string.cut_hint, item.name),
-                        Toast.LENGTH_SHORT).show()
-                    true
-                }
-                ID_COMPRESS -> {
-                    callback.onCompress(item)
-                    true
-                }
-                ID_EXTRACT -> {
-                    callback.onExtract(item)
-                    true
-                }
-                ID_OPEN_IN_TREE -> {
-                    callback.onOpenInTree(item)
-                    true
-                }
-                ID_PASTE -> {
-                    val targetDir = File(item.path).parent
-                    if (targetDir != null) {
-                        callback.onPaste(targetDir)
-                    }
-                    true
-                }
-                ID_COPY -> {
-                    callback.onCopy(item)
-                    Toast.makeText(context,
-                        context.getString(R.string.copy_hint, item.name),
-                        Toast.LENGTH_SHORT).show()
-                    true
-                }
-                ID_MOVE_TO -> {
-                    callback.onMoveTo(item)
-                    true
-                }
-                ID_PROPERTIES -> {
-                    showProperties(context, item)
-                    true
-                }
-                ID_TOGGLE_FAVORITE -> {
-                    UserPreferences.toggleFavorite(item.path)
-                    val nowFav = UserPreferences.isFavorite(item.path)
-                    Toast.makeText(context, context.getString(
-                        if (nowFav) R.string.favorite_added else R.string.favorite_removed, item.name),
-                        Toast.LENGTH_SHORT).show()
-                    true
-                }
-                ID_PREVIEW -> {
-                    FilePreviewDialog.show(context, item)
-                    true
-                }
-                ID_TOGGLE_PROTECTED -> {
-                    UserPreferences.toggleProtected(item.path)
-                    val nowProt = UserPreferences.isProtected(item.path)
-                    Toast.makeText(context, context.getString(
-                        if (nowProt) R.string.protected_added else R.string.protected_removed, item.name),
-                        Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> false
             }
         }
-        popup.show()
+        addItem(context.getString(R.string.ctx_move_to), android.R.drawable.ic_menu_send) {
+            callback.onMoveTo(item)
+        }
+        addItem(context.getString(R.string.ctx_rename), android.R.drawable.ic_menu_edit) {
+            val editText = EditText(context).apply {
+                setText(item.name)
+                selectAll()
+            }
+            AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.ctx_rename))
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    val newName = editText.text.toString().trim()
+                    if (newName.isNotEmpty() && newName != item.name) {
+                        callback.onRename(item, newName)
+                    }
+                }
+                .setNegativeButton(context.getString(R.string.cancel), null)
+                .show()
+        }
+
+        addDivider()
+
+        addItem(context.getString(R.string.ctx_share), android.R.drawable.ic_menu_share) {
+            val uri = FileProvider.getUriForFile(
+                context, "${context.packageName}.fileprovider", item.file
+            )
+            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(item.extension) ?: "*/*"
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = mimeType
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.ctx_share)))
+        }
+        addItem(context.getString(R.string.ctx_compress), R.drawable.ic_archive) {
+            callback.onCompress(item)
+        }
+        if (item.category == FileCategory.ARCHIVE) {
+            addItem(context.getString(R.string.ctx_extract), R.drawable.ic_archive) {
+                callback.onExtract(item)
+            }
+        }
+
+        addDivider()
+
+        val isFav = try { UserPreferences.isFavorite(item.path) } catch (_: Exception) { false }
+        addItem(context.getString(if (isFav) R.string.ctx_unstar else R.string.ctx_star),
+            android.R.drawable.btn_star) {
+            UserPreferences.toggleFavorite(item.path)
+            val nowFav = UserPreferences.isFavorite(item.path)
+            Toast.makeText(context, context.getString(
+                if (nowFav) R.string.favorite_added else R.string.favorite_removed, item.name),
+                Toast.LENGTH_SHORT).show()
+        }
+        val isProt = try { UserPreferences.isProtected(item.path) } catch (_: Exception) { false }
+        addItem(context.getString(if (isProt) R.string.ctx_unprotect else R.string.ctx_protect),
+            android.R.drawable.ic_secure) {
+            UserPreferences.toggleProtected(item.path)
+            val nowProt = UserPreferences.isProtected(item.path)
+            Toast.makeText(context, context.getString(
+                if (nowProt) R.string.protected_added else R.string.protected_removed, item.name),
+                Toast.LENGTH_SHORT).show()
+        }
+
+        addDivider()
+
+        addItem(context.getString(R.string.ctx_open_in_tree), R.drawable.ic_folder) {
+            callback.onOpenInTree(item)
+        }
+        addItem(context.getString(R.string.ctx_properties), android.R.drawable.ic_menu_info_details) {
+            showProperties(context, item)
+        }
+
+        // Delete at the end, styled distinctly
+        val deleteRow = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                (48 * dp).toInt()
+            )
+            setPadding((20 * dp).toInt(), 0, (20 * dp).toInt(), 0)
+            background = ContextCompat.getDrawable(context, android.R.drawable.list_selector_background)
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                dialog.dismiss()
+                AlertDialog.Builder(context)
+                    .setTitle(context.getString(R.string.confirm_delete_title))
+                    .setMessage(context.getString(R.string.confirm_delete_message))
+                    .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
+                        callback.onDelete(item)
+                    }
+                    .setNegativeButton(context.getString(R.string.cancel), null)
+                    .show()
+            }
+        }
+        val deleteIcon = ImageView(context).apply {
+            layoutParams = LinearLayout.LayoutParams((24 * dp).toInt(), (24 * dp).toInt())
+            setImageResource(R.drawable.ic_delete)
+            setColorFilter(ContextCompat.getColor(context, R.color.colorError))
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }
+        deleteRow.addView(deleteIcon)
+        val deleteText = TextView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                marginStart = (16 * dp).toInt()
+            }
+            text = context.getString(R.string.ctx_delete)
+            setTextColor(ContextCompat.getColor(context, R.color.colorError))
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        deleteRow.addView(deleteText)
+        container.addView(deleteRow)
+
+        dialog.setContentView(contentView)
+        dialog.show()
     }
 
     private fun showProperties(context: Context, item: FileItem) {

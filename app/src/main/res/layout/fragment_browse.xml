@@ -158,6 +158,8 @@
             android:text="@string/scan_storage"
             android:textAllCaps="false"
             android:visibility="gone"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             app:cornerRadius="@dimen/radius_pill" />
     </LinearLayout>
 

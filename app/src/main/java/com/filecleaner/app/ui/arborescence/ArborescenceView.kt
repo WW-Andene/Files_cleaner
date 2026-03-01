@@ -168,10 +168,12 @@ class ArborescenceView @JvmOverloads constructor(
     private val minScale = 0.15f
     private val maxScale = 3f
 
-    // ── Drag state for file move ──
+    // ── Drag state for file/folder move ──
     var dragFilePath: String? = null
         private set
     var dragFileName: String? = null
+        private set
+    var dragIsFolder: Boolean = false
         private set
     private var dragX = 0f
     private var dragY = 0f
@@ -182,9 +184,11 @@ class ArborescenceView @JvmOverloads constructor(
 
     // ── Callbacks ──
     var onFileMoveRequested: ((filePath: String, targetDirPath: String) -> Unit)? = null
+    var onFolderMoveRequested: ((folderPath: String, targetDirPath: String) -> Unit)? = null
     var onStatsUpdate: ((totalFiles: Int, totalSize: Long, visibleNodes: Int, zoom: Float) -> Unit)? = null
     var onNodeSelected: ((DirectoryNode?) -> Unit)? = null
     var onFileLongPress: ((filePath: String, fileName: String) -> Unit)? = null
+    var onItemDoubleTap: ((filePath: String, fileName: String, isFolder: Boolean) -> Unit)? = null
     var onFilterCleared: (() -> Unit)? = null
 
     // ── Gesture detectors ──
@@ -227,30 +231,52 @@ class ArborescenceView @JvmOverloads constructor(
 
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 val pt = screenToWorld(e.x, e.y)
-                val hit = hitTest(pt[0], pt[1])
-                if (hit != null) {
-                    zoomToFit(hit)
+                // Check file row first, then folder header
+                val fileHit = hitTestFile(pt[0], pt[1])
+                if (fileHit != null) {
+                    onItemDoubleTap?.invoke(fileHit.first, fileHit.second, false)
+                    return true
+                }
+                val headerHit = hitTestHeader(pt[0], pt[1])
+                if (headerHit != null) {
+                    val layout = layouts[headerHit]
+                    if (layout != null) {
+                        onItemDoubleTap?.invoke(layout.node.path, layout.node.name, true)
+                    }
+                    return true
                 }
                 return true
             }
 
             override fun onLongPress(e: MotionEvent) {
                 val pt = screenToWorld(e.x, e.y)
-                val hit = hitTestFile(pt[0], pt[1])
-                if (hit != null) {
+                // Try file row first
+                val fileHit = hitTestFile(pt[0], pt[1])
+                if (fileHit != null) {
                     performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                    // If context menu callback is set, use that; otherwise drag
-                    if (onFileLongPress != null) {
-                        onFileLongPress?.invoke(hit.first, hit.second)
-                    } else {
-                        isDragging = true
-                        dragFilePath = hit.first
-                        dragFileName = hit.second
-                        dragSourceBlock = hit.third
-                        dragX = e.x
-                        dragY = e.y
-                        invalidate()
-                    }
+                    isDragging = true
+                    dragFilePath = fileHit.first
+                    dragFileName = fileHit.second
+                    dragIsFolder = false
+                    dragSourceBlock = fileHit.third
+                    dragX = e.x
+                    dragY = e.y
+                    invalidate()
+                    return
+                }
+                // Try folder header
+                val headerHit = hitTestHeader(pt[0], pt[1])
+                if (headerHit != null) {
+                    val layout = layouts[headerHit] ?: return
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    isDragging = true
+                    dragFilePath = layout.node.path
+                    dragFileName = layout.node.name
+                    dragIsFolder = true
+                    dragSourceBlock = headerHit
+                    dragX = e.x
+                    dragY = e.y
+                    invalidate()
                 }
             }
         })
@@ -508,6 +534,18 @@ class ArborescenceView @JvmOverloads constructor(
         return null
     }
 
+    /** Returns blockPath if the folder header area was hit. */
+    private fun hitTestHeader(wx: Float, wy: Float): String? {
+        for ((path, layout) in layouts) {
+            if (wx >= layout.x && wx <= layout.x + layout.w &&
+                wy >= layout.y && wy <= layout.y + headerHeight
+            ) {
+                return path
+            }
+        }
+        return null
+    }
+
     /** Returns (filePath, fileName, blockPath) if a file row was hit. */
     private fun hitTestFile(wx: Float, wy: Float): Triple<String, String, String>? {
         for ((blockPath, layout) in layouts) {
@@ -557,16 +595,25 @@ class ArborescenceView @JvmOverloads constructor(
                     dragX = event.x
                     dragY = event.y
                     val pt = screenToWorld(dragX, dragY)
-                    dropTargetPath = hitTest(pt[0], pt[1])?.takeIf { it != dragSourceBlock }
+                    dropTargetPath = hitTest(pt[0], pt[1])?.takeIf { target ->
+                        target != dragSourceBlock &&
+                            // Prevent dropping a folder into itself or its descendants
+                            !(dragIsFolder && dragFilePath != null && target.startsWith(dragFilePath!!))
+                    }
                     invalidate()
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     if (dragFilePath != null && dropTargetPath != null) {
-                        onFileMoveRequested?.invoke(dragFilePath!!, dropTargetPath!!)
+                        if (dragIsFolder) {
+                            onFolderMoveRequested?.invoke(dragFilePath!!, dropTargetPath!!)
+                        } else {
+                            onFileMoveRequested?.invoke(dragFilePath!!, dropTargetPath!!)
+                        }
                     }
                     isDragging = false
                     dragFilePath = null
                     dragFileName = null
+                    dragIsFolder = false
                     dragSourceBlock = null
                     dropTargetPath = null
                     invalidate()
@@ -900,17 +947,12 @@ class ArborescenceView @JvmOverloads constructor(
         highlightedFilePath = filePath
         selectedPath = node.path
 
-        // Ensure highlighted file appears in the visible top-5 rows by promoting it
+        // Expand file list on the target block so the highlighted file is visible
         val layout = layouts[node.path]
-        if (layout != null) {
-            val idx = layout.cachedFiles.indexOfFirst { it.path == filePath }
-            if (idx >= 5) {
-                // Move the highlighted file to the top of the cached list
-                val mutable = layout.cachedFiles.toMutableList()
-                val item = mutable.removeAt(idx)
-                mutable.add(0, item)
-                layout.cachedFiles = mutable
-            }
+        if (layout != null && layout.cachedFiles.size > DEFAULT_MAX_FILES) {
+            layout.filesExpanded = true
+            recalcBlockHeight(layout)
+            computePositions()
         }
 
         // Defer zoom if view hasn't been laid out yet (e.g. just navigated to tab)

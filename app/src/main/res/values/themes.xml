@@ -176,4 +176,21 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/textSecondary</item>
     </style>
+
+    <!-- Bottom Sheet Dialog -->
+    <style name="Theme.FileCleaner.BottomSheet" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.FileCleaner.BottomSheet</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.FileCleaner.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.FileCleaner.BottomSheet</item>
+        <item name="backgroundTint">@color/surfaceColor</item>
+    </style>
+
+    <style name="ShapeAppearance.FileCleaner.BottomSheet" parent="">
+        <item name="cornerSizeTopLeft">@dimen/radius_modal</item>
+        <item name="cornerSizeTopRight">@dimen/radius_modal</item>
+    </style>
 </resources>

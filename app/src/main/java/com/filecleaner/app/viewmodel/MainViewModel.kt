@@ -423,7 +423,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // ── Navigate to tree highlight ──
-    private val _navigateToTree = SingleLiveEvent<String?>()
+    // Uses MutableLiveData (not SingleLiveEvent) so both MainActivity (tab switch)
+    // and ArborescenceFragment (highlight) can observe the same value.
+    private val _navigateToTree = MutableLiveData<String?>()
     val navigateToTree: LiveData<String?> = _navigateToTree
 
     fun requestTreeHighlight(filePath: String) {

@@ -15,6 +15,8 @@ import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentArborescenceBinding
+import com.filecleaner.app.ui.common.DirectoryPickerDialog
+import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -93,9 +95,37 @@ class ArborescenceFragment : Fragment() {
             }
         }
 
-        // Long-press on files triggers drag & drop for moving files between folders.
-        // File management (context menu) is available in the Browse, Duplicates,
-        // Large Files and Junk tabs instead.
+        // Folder move via drag & drop with confirmation
+        binding.arborescenceView.onFolderMoveRequested = { folderPath, targetDirPath ->
+            val folderName = File(folderPath).name
+            val targetName = File(targetDirPath).name
+            AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.confirm_move_title))
+                .setMessage(getString(R.string.confirm_move_message, folderName, targetName))
+                .setPositiveButton(getString(R.string.move)) { _, _ ->
+                    vm.moveFile(folderPath, targetDirPath)
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        }
+
+        // Double-tap on file or folder opens context menu
+        binding.arborescenceView.onItemDoubleTap = { filePath, fileName, isFolder ->
+            val file = File(filePath)
+            if (file.exists()) {
+                val ext = file.extension.lowercase()
+                val category = if (isFolder) FileCategory.OTHER else FileCategory.fromExtension(ext)
+                val item = FileItem(
+                    path = filePath,
+                    name = fileName,
+                    size = if (isFolder) 0L else file.length(),
+                    lastModified = file.lastModified(),
+                    category = category
+                )
+                FileContextMenu.show(requireContext(), binding.arborescenceView, item, contextMenuCallback,
+                    hasClipboard = vm.clipboardEntry.value != null)
+            }
+        }
 
         // Reset filter UI when highlight clears filters
         binding.arborescenceView.onFilterCleared = {
@@ -300,6 +330,19 @@ class ArborescenceFragment : Fragment() {
 
     private fun formatSize(bytes: Long): String =
         com.filecleaner.app.utils.UndoHelper.formatBytes(bytes)
+
+    private val contextMenuCallback by lazy {
+        FileContextMenu.defaultCallback(vm,
+            onOpenInTree = { binding.arborescenceView.highlightFilePath(it.path) },
+            onMoveTo = { item -> showDirectoryPicker(item) })
+    }
+
+    private fun showDirectoryPicker(item: FileItem) {
+        val tree = vm.directoryTree.value ?: return
+        DirectoryPickerDialog.show(requireContext(), tree, excludePath = File(item.path).parent) { targetDir ->
+            vm.moveFile(item.path, targetDir)
+        }
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
