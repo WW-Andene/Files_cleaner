@@ -82,7 +82,7 @@ object FileScanner {
 
             nodeMap[path] = DirectoryNode(
                 path = path,
-                name = info.file.name,
+                name = if (path == rootPath) "Internal Storage" else info.file.name,
                 files = info.files.toList(),
                 children = childNodes.toMutableList(),
                 totalSize = totalSize,
@@ -93,7 +93,7 @@ object FileScanner {
 
         val rootNode = nodeMap[rootPath] ?: DirectoryNode(
             path = rootPath,
-            name = root.name,
+            name = "Internal Storage",
             files = emptyList(),
             totalSize = 0,
             totalFileCount = 0,
