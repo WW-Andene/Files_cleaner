@@ -44,7 +44,7 @@ class ArborescenceView @JvmOverloads constructor(
     private val hGap = 48f * dp   // horizontal gap between depth levels
     private val vGap = 16f * dp   // vertical gap between sibling blocks
     private val cornerRadius = 10f * dp
-    private val headerHeight = 36f * dp
+    private val headerHeight = 48f * dp
 
     // ── Theme colors (resolved once — View is recreated on config change) ──
     private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }
@@ -183,6 +183,7 @@ class ArborescenceView @JvmOverloads constructor(
     var onStatsUpdate: ((totalFiles: Int, totalSize: Long, visibleNodes: Int, zoom: Float) -> Unit)? = null
     var onNodeSelected: ((DirectoryNode?) -> Unit)? = null
     var onFileLongPress: ((filePath: String, fileName: String) -> Unit)? = null
+    var onFilterCleared: (() -> Unit)? = null
 
     // ── Gesture detectors ──
     private val scaleDetector = ScaleGestureDetector(context,
@@ -852,9 +853,34 @@ class ArborescenceView @JvmOverloads constructor(
     fun highlightFilePath(filePath: String) {
         val root = rootNode ?: return
         val node = findNodeContainingFile(root, filePath) ?: return
+
+        // Clear filters so the file is guaranteed to be visible
+        if (filterCategory != null || filterExtensions.isNotEmpty()) {
+            filterCategory = null
+            filterExtensions = emptySet()
+            // Rebuild all layouts with cleared filters
+            val expandedPaths = layouts.filter { it.value.expanded }.keys
+            layouts.clear()
+            rebuildWithState(root, expandedPaths)
+            onFilterCleared?.invoke()
+        }
+
         expandToNode(node)
         highlightedFilePath = filePath
         selectedPath = node.path
+
+        // Ensure highlighted file appears in the visible top-5 rows by promoting it
+        val layout = layouts[node.path]
+        if (layout != null) {
+            val idx = layout.cachedFiles.indexOfFirst { it.path == filePath }
+            if (idx >= 5) {
+                // Move the highlighted file to the top of the cached list
+                val mutable = layout.cachedFiles.toMutableList()
+                val item = mutable.removeAt(idx)
+                mutable.add(0, item)
+                layout.cachedFiles = mutable
+            }
+        }
 
         // Defer zoom if view hasn't been laid out yet (e.g. just navigated to tab)
         if (width == 0 || height == 0) {

@@ -94,8 +94,20 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(destId, null, options)
             true
         }
-        // Reselect = do nothing (stay on current tab)
-        binding.bottomNav.setOnItemReselectedListener { /* no-op */ }
+        // Reselect: if on a non-tab fragment (e.g. tree view), pop back to the tab
+        binding.bottomNav.setOnItemReselectedListener { item ->
+            val currentDest = navController.currentDestination?.id
+            if (currentDest != null && currentDest !in bottomNavIds) {
+                navController.popBackStack(currentDest, true)
+                val destId = menuToNav[item.itemId] ?: return@setOnItemReselectedListener
+                val options = NavOptions.Builder()
+                    .setPopUpTo(R.id.browseFragment, inclusive = false, saveState = true)
+                    .setLaunchSingleTop(true)
+                    .setRestoreState(true)
+                    .build()
+                navController.navigate(destId, null, options)
+            }
+        }
 
         // Keep bottom nav selection in sync with current destination
         navController.addOnDestinationChangedListener { _, dest, _ ->
@@ -104,7 +116,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Navigate to tree on "Open in Raccoon Tab"
+        // Navigate to tree on "Show in Tree"
         viewModel.navigateToTree.observe(this) { filePath ->
             if (filePath != null) {
                 val currentDest = navController.currentDestination?.id

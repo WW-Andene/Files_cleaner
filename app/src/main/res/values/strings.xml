@@ -63,21 +63,21 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="no_files_found">No files found yet.\nGo to the Raccoon tab to scan.</string>
-    <string name="nothing_found">Nothing found yet.\nGo to the Raccoon tab to scan.</string>
-    <string name="scan_to_see_results">Go to the Raccoon tab to scan your storage</string>
+    <string name="no_files_found">No files found yet.\nGo to the Manager tab to scan.</string>
+    <string name="nothing_found">Nothing found yet.\nGo to the Manager tab to scan.</string>
+    <string name="scan_to_see_results">Go to the Manager tab to scan your storage</string>
 
     <!-- Context-aware empty states (Browse) -->
-    <string name="empty_browse_pre_scan">Go to the Raccoon tab and tap Scan Storage to browse your files.</string>
+    <string name="empty_browse_pre_scan">Go to the Manager tab and tap Scan Storage to browse your files.</string>
     <string name="empty_browse_post_scan">No files match your filters.\nTry a different category or clear the search.</string>
     <string name="empty_search_results">No results for \"%s\"</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
-    <string name="empty_junk_pre_scan">Go to the Raccoon tab and tap Scan Storage to find junk files.</string>
+    <string name="empty_junk_pre_scan">Go to the Manager tab and tap Scan Storage to find junk files.</string>
     <string name="empty_junk_post_scan">Your storage is clean! No junk files detected.</string>
-    <string name="empty_large_pre_scan">Go to the Raccoon tab and tap Scan Storage to find large files.</string>
+    <string name="empty_large_pre_scan">Go to the Manager tab and tap Scan Storage to find large files.</string>
     <string name="empty_large_post_scan">No large files found. Your storage looks well-managed!</string>
-    <string name="empty_duplicates_pre_scan">Go to the Raccoon tab and tap Scan Storage to find duplicates.</string>
+    <string name="empty_duplicates_pre_scan">Go to the Manager tab and tap Scan Storage to find duplicates.</string>
     <string name="empty_duplicates_post_scan">No duplicate files found. Everything is unique!</string>
 
     <!-- Sort options -->
@@ -293,7 +293,7 @@
     <string name="onboarding_title_1">Welcome to Raccoon</string>
     <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
-    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Raccoon \u2014 scan, clean, and manage\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 scan, clean, and manage\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
     <!-- Dashboard (P2) -->
     <string name="dashboard_title">Storage Dashboard</string>
     <string name="dashboard_storage_title">Device Storage</string>
@@ -305,10 +305,10 @@
     <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
 
     <string name="onboarding_title_3">Raccoon Manager</string>
-    <string name="onboarding_body_3">Tap the raccoon tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nYour one-stop control center for file management.</string>
+    <string name="onboarding_body_3">Tap the Manager tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nYour one-stop control center for file management.</string>
 
     <!-- Raccoon Manager Hub -->
-    <string name="nav_raccoon">Raccoon</string>
+    <string name="nav_raccoon">Manager</string>
     <string name="raccoon_manager_title">Raccoon Manager</string>
     <string name="raccoon_manager_subtitle">Your file management control center</string>
     <string name="raccoon_action_scan">Scan Storage</string>

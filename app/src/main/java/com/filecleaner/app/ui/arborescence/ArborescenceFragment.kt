@@ -113,6 +113,12 @@ class ArborescenceFragment : Fragment() {
             }
         }
 
+        // Reset filter UI when highlight clears filters
+        binding.arborescenceView.onFilterCleared = {
+            binding.spinnerTreeCategory.setSelection(0, false)
+            selectedTreeExtensions.clear()
+        }
+
         // Tree search
         binding.etSearchTree.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -181,12 +187,30 @@ class ArborescenceFragment : Fragment() {
         // Observe tree highlight navigation from other tabs
         vm.navigateToTree.observe(viewLifecycleOwner) { filePath ->
             if (filePath != null) {
-                // Defer highlight until the view is laid out and tree data is loaded
-                binding.arborescenceView.post {
-                    binding.arborescenceView.highlightFilePath(filePath)
-                    val fileName = File(filePath).name
-                    Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
-                    vm.clearTreeHighlight()
+                // Ensure tree data is loaded before attempting highlight
+                if (vm.directoryTree.value != null) {
+                    binding.arborescenceView.post {
+                        binding.arborescenceView.highlightFilePath(filePath)
+                        val fileName = File(filePath).name
+                        Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
+                        vm.clearTreeHighlight()
+                    }
+                } else {
+                    // Tree not loaded yet — wait for it
+                    val pendingPath = filePath
+                    vm.directoryTree.observe(viewLifecycleOwner, object : androidx.lifecycle.Observer<DirectoryNode?> {
+                        override fun onChanged(tree: DirectoryNode?) {
+                            if (tree != null) {
+                                vm.directoryTree.removeObserver(this)
+                                binding.arborescenceView.post {
+                                    binding.arborescenceView.highlightFilePath(pendingPath)
+                                    val fileName = File(pendingPath).name
+                                    Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
+                                    vm.clearTreeHighlight()
+                                }
+                            }
+                        }
+                    })
                 }
             }
         }
