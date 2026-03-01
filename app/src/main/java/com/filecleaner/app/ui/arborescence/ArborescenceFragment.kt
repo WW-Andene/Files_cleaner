@@ -91,17 +91,19 @@ class ArborescenceFragment : Fragment() {
         // File long-press context menu
         binding.arborescenceView.onFileLongPress = { filePath, fileName ->
             val file = File(filePath)
-            val ext = file.extension.lowercase()
-            val category = FileCategory.fromExtension(ext)
-            val item = FileItem(
-                path = filePath,
-                name = fileName,
-                size = file.length(),
-                lastModified = file.lastModified(),
-                category = category
-            )
-            FileContextMenu.show(requireContext(), binding.arborescenceView, item, contextMenuCallback,
-                hasClipboard = vm.clipboardEntry.value != null)
+            if (file.exists()) {
+                val ext = file.extension.lowercase()
+                val category = FileCategory.fromExtension(ext)
+                val item = FileItem(
+                    path = filePath,
+                    name = fileName,
+                    size = file.length(),
+                    lastModified = file.lastModified(),
+                    category = category
+                )
+                FileContextMenu.show(requireContext(), binding.arborescenceView, item, contextMenuCallback,
+                    hasClipboard = vm.clipboardEntry.value != null)
+            }
         }
 
         // Tree search

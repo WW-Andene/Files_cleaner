@@ -390,16 +390,23 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun renameFile(oldPath: String, newName: String) {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
+                // Validate filename for characters invalid on Android/Linux filesystems
+                if (newName.contains('/') || newName.contains('\u0000')) {
+                    return@withContext MoveResult(false, "Name contains invalid characters")
+                }
                 val src = File(oldPath)
                 if (!src.exists()) return@withContext MoveResult(false, "File not found")
-                val dst = File(src.parent, newName)
+                val parentDir = src.parent
+                    ?: return@withContext MoveResult(false, "Cannot determine parent directory")
+                val dst = File(parentDir, newName)
                 if (dst.exists()) return@withContext MoveResult(false, "File with that name already exists")
                 if (src.renameTo(dst)) MoveResult(true, "Renamed to $newName")
                 else MoveResult(false, "Rename failed")
             }
             _operationResult.postValue(result)
             if (result.success) {
-                refreshAfterFileChange(removedPath = oldPath, addedFile = File(File(oldPath).parent, newName))
+                val parentDir = File(oldPath).parent ?: return@launch
+                refreshAfterFileChange(removedPath = oldPath, addedFile = File(parentDir, newName))
             }
         }
     }
@@ -410,7 +417,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 try {
                     val src = File(filePath)
                     if (!src.exists()) return@withContext MoveResult(false, "File not found")
-                    val zipFile = File(src.parent, "${src.nameWithoutExtension}.zip")
+                    val parentDir = src.parent
+                        ?: return@withContext MoveResult(false, "Cannot determine parent directory")
+                    val zipFile = File(parentDir, "${src.nameWithoutExtension}.zip")
                     ZipOutputStream(zipFile.outputStream().buffered()).use { zos ->
                         zos.putNextEntry(ZipEntry(src.name))
                         src.inputStream().buffered().use { it.copyTo(zos) }
@@ -423,7 +432,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             }
             _operationResult.postValue(result)
             if (result.success) {
-                val zipFile = File(File(filePath).parent, "${File(filePath).nameWithoutExtension}.zip")
+                val src = File(filePath)
+                val parentDir = src.parent ?: return@launch
+                val zipFile = File(parentDir, "${src.nameWithoutExtension}.zip")
                 refreshAfterFileChange(addedFile = zipFile)
             }
         }
@@ -438,7 +449,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     if (!src.extension.equals("zip", ignoreCase = true)) {
                         return@withContext MoveResult(false, "Only ZIP archives can be extracted")
                     }
-                    val outDir = File(src.parent, src.nameWithoutExtension)
+                    val parentDir = src.parent
+                        ?: return@withContext MoveResult(false, "Cannot determine parent directory")
+                    val outDir = File(parentDir, src.nameWithoutExtension)
                     outDir.mkdirs()
                     ZipInputStream(src.inputStream().buffered()).use { zis ->
                         var entry = zis.nextEntry
