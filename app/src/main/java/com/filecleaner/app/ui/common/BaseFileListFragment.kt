@@ -16,6 +16,7 @@ import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentListActionBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.utils.FileOpener
+import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
@@ -101,6 +102,10 @@ abstract class BaseFileListFragment : Fragment() {
         }
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
+        // Disable stagger animation when user prefers reduced motion (§G4)
+        if (MotionUtil.isReducedMotion(requireContext())) {
+            binding.recyclerView.layoutAnimation = null
+        }
 
         binding.btnSelectAll.setOnClickListener { onSelectAll() }
         binding.btnDeselectAll.setOnClickListener { adapter.deselectAll() }

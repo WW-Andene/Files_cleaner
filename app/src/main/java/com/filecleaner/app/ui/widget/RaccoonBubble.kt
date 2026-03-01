@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import com.filecleaner.app.R
+import com.filecleaner.app.utils.MotionUtil
 
 /**
  * Attaches drag-to-move and edge-snap behavior to an existing ImageView.
@@ -69,8 +70,10 @@ object RaccoonBubble {
         // Cancel any previous pulse before starting a new one
         cancelPulse()
 
-        // Subtle pulse animation every 15 seconds
-        startPulse(bubble)
+        // Subtle pulse animation every 15 seconds (skip if reduced motion)
+        if (!MotionUtil.isReducedMotion(bubble.context)) {
+            startPulse(bubble)
+        }
 
         // Cancel animations when view is detached to prevent leaks
         bubble.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
@@ -87,7 +90,6 @@ object RaccoonBubble {
         val parent = view.parent as? ViewGroup ?: return
         val parentW = parent.width.toFloat()
         val centerX = view.x + view.width / 2f
-        val pageMotion = view.resources.getInteger(R.integer.motion_page).toLong()
 
         val targetX = if (centerX < parentW / 2f) {
             -view.left.toFloat() + EDGE_MARGIN_DP
@@ -95,10 +97,15 @@ object RaccoonBubble {
             parentW - view.left.toFloat() - view.width.toFloat() - EDGE_MARGIN_DP
         }
 
-        ObjectAnimator.ofFloat(view, "translationX", view.translationX, targetX).apply {
-            duration = pageMotion
-            interpolator = OvershootInterpolator(1.2f)
-            start()
+        if (MotionUtil.isReducedMotion(view.context)) {
+            view.translationX = targetX
+        } else {
+            val pageMotion = view.resources.getInteger(R.integer.motion_page).toLong()
+            ObjectAnimator.ofFloat(view, "translationX", view.translationX, targetX).apply {
+                duration = pageMotion
+                interpolator = OvershootInterpolator(1.2f)
+                start()
+            }
         }
     }
 

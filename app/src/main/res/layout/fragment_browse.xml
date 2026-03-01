@@ -118,7 +118,8 @@
         android:paddingHorizontal="@dimen/spacing_xl"
         android:paddingTop="@dimen/spacing_sm"
         android:paddingBottom="@dimen/spacing_xs"
-        android:fontFamily="sans-serif-medium" />
+        android:fontFamily="sans-serif-medium"
+        android:accessibilityLiveRegion="polite" />
 
     <!-- Empty state -->
     <LinearLayout

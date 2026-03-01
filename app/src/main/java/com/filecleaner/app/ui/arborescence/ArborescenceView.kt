@@ -18,6 +18,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.utils.MotionUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -853,8 +854,16 @@ class ArborescenceView @JvmOverloads constructor(
         highlightAnimator?.cancel()
         highlightAlpha = 1f
 
+        if (MotionUtil.isReducedMotion(context)) {
+            // Skip pulsing — just show highlight then fade out after delay
+            invalidate()
+            postDelayed({ fadeOutHighlight() }, 3000)
+            return
+        }
+
+        val emphasisDuration = resources.getInteger(R.integer.motion_emphasis).toLong()
         highlightAnimator = ValueAnimator.ofFloat(1f, 0.2f, 1f).apply {
-            duration = 600L
+            duration = emphasisDuration
             repeatCount = 4
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
@@ -873,8 +882,17 @@ class ArborescenceView @JvmOverloads constructor(
     private fun fadeOutHighlight() {
         if (highlightedFilePath == null) return
         highlightAnimator?.cancel()
-        val enterDuration = resources.getInteger(R.integer.motion_enter).toLong()
 
+        if (MotionUtil.isReducedMotion(context)) {
+            highlightedFilePath = null
+            highlightAlpha = 1f
+            highlightPaint.alpha = 255
+            highlightFillPaint.alpha = 64
+            invalidate()
+            return
+        }
+
+        val enterDuration = resources.getInteger(R.integer.motion_enter).toLong()
         highlightAnimator = ValueAnimator.ofFloat(1f, 0f).apply {
             duration = enterDuration
             addUpdateListener {

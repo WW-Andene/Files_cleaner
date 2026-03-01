@@ -42,6 +42,7 @@
                 android:alpha="0.8"
                 android:maxLines="2"
                 android:ellipsize="end"
+                android:accessibilityLiveRegion="polite"
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:text="@string/scan_to_see_results" />
 

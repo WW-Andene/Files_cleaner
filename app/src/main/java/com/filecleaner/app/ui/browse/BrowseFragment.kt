@@ -24,6 +24,7 @@ import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
+import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.chip.Chip
@@ -80,6 +81,10 @@ class BrowseFragment : Fragment() {
         applyLayoutManager()
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
+        // Disable stagger animation when user prefers reduced motion (§G4)
+        if (MotionUtil.isReducedMotion(requireContext())) {
+            binding.recyclerView.layoutAnimation = null
+        }
 
         // View mode toggle
         binding.btnViewMode.setOnClickListener { cycleViewMode() }

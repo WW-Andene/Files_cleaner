@@ -53,6 +53,7 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
             android:fontFamily="sans-serif-medium"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone" />
 
         <com.google.android.material.card.MaterialCardView
@@ -198,6 +199,7 @@
             android:maxLines="4"
             android:ellipsize="end"
             android:elevation="@dimen/elevation_raised"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone" />
 
         <!-- Back-to-root mini FAB (bottom-start) -->
