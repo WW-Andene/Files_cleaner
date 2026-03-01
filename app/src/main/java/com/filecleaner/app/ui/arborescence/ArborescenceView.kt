@@ -320,11 +320,11 @@ class ArborescenceView @JvmOverloads constructor(
         // Phase 1: collect all nodes in pre-order (parents before children)
         val ordered = mutableListOf<DirectoryNode>()
         val stack = ArrayDeque<DirectoryNode>()
-        stack.addLast(root)
+        stack.add(root)
         while (stack.isNotEmpty()) {
             val node = stack.removeLast()
             ordered.add(node)
-            for (child in node.children.asReversed()) stack.addLast(child)
+            for (child in node.children.asReversed()) stack.add(child)
         }
         // Phase 2: iterate in reverse (post-order) to propagate matches upward
         val matchSet = mutableSetOf<String>()
@@ -341,13 +341,13 @@ class ArborescenceView @JvmOverloads constructor(
     /** Iterative rebuild — avoids stack overflow on deeply nested trees. */
     private fun rebuildWithState(root: DirectoryNode, expandedPaths: Set<String>) {
         val stack = ArrayDeque<DirectoryNode>()
-        stack.addLast(root)
+        stack.add(root)
         while (stack.isNotEmpty()) {
             val node = stack.removeLast()
             val expanded = node.path in expandedPaths
             buildLayout(node, expanded = expanded, expandChildren = false)
             if (expanded) {
-                for (child in node.children.asReversed()) stack.addLast(child)
+                for (child in node.children.asReversed()) stack.add(child)
             }
         }
     }
@@ -971,7 +971,7 @@ class ArborescenceView @JvmOverloads constructor(
     private fun findPath(root: DirectoryNode, target: DirectoryNode, path: MutableList<DirectoryNode>): Boolean {
         // DFS with explicit stack; each frame tracks (node, childIndex)
         val stack = ArrayDeque<Pair<DirectoryNode, Int>>()
-        stack.addLast(root to 0)
+        stack.add(root to 0)
         path.add(root)
         if (root.path == target.path) return true
 
@@ -982,7 +982,7 @@ class ArborescenceView @JvmOverloads constructor(
                 val child = node.children[idx]
                 path.add(child)
                 if (child.path == target.path) return true
-                stack.addLast(child to 0)
+                stack.add(child to 0)
             } else {
                 stack.removeLast()
                 path.removeAt(path.lastIndex)
