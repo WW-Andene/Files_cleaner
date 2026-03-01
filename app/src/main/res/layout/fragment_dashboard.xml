@@ -41,7 +41,8 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Body"
                     android:textStyle="bold"
-                    android:textColor="@color/colorOnPrimaryContainer" />
+                    android:textColor="@color/colorOnPrimaryContainer"
+                    android:textAlignment="center" />
 
                 <ProgressBar
                     android:id="@+id/progress_storage"
@@ -58,7 +59,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                    android:textColor="@color/colorOnPrimaryContainer" />
+                    android:textColor="@color/colorOnPrimaryContainer"
+                    android:textAlignment="center" />
 
                 <TextView
                     android:id="@+id/tv_storage_free"
@@ -67,7 +69,8 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:alpha="0.8" />
+                    android:alpha="0.8"
+                    android:textAlignment="center" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
