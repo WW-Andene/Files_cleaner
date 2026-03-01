@@ -549,9 +549,9 @@ class ArborescenceView @JvmOverloads constructor(
         // Block background, semi-transparent if no matching files
         val hasMatchingFiles = filteredFiles(node).isNotEmpty() ||
             (filterCategory == null && filterExtensions.isEmpty())
-        val alpha = if (hasMatchingFiles) 255 else 80
+        val blockAlpha = if (hasMatchingFiles) 255 else 80
         blockPaint.color = colorSurface
-        blockPaint.alpha = alpha
+        blockPaint.alpha = blockAlpha
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockPaint)
         blockPaint.alpha = 255
 
