@@ -18,7 +18,7 @@ import com.filecleaner.app.ui.adapters.FileItemUtils.dpToPx
 class FileAdapter(
     private val selectable: Boolean = true,
     private val onSelectionChanged: (List<FileItem>) -> Unit = {}
-) : ListAdapter<FileItem, FileAdapter.FileVH>(DIFF) {
+) : ListAdapter<FileItem, FileAdapter.FileViewHolder>(DIFF) {
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<FileItem>() {
@@ -37,22 +37,17 @@ class FileAdapter(
         R.color.dupGroup3, R.color.dupGroup4, R.color.dupGroup5
     )
 
-    // Cached resolved colors (initialized on first bind, avoids repeated ContextCompat lookups)
-    private var colorSurface = 0
-    private var colorBorder = 0
-    private var colorSelectedBg = 0
-    private var colorSelectedBorder = 0
-    private var colorsResolved = false
+    // I3: Use shared base color resolution; duplicate group colors resolved locally
+    private var colors: FileItemUtils.AdapterColors? = null
     private var resolvedDupColors: IntArray? = null
 
     private fun resolveColors(ctx: android.content.Context) {
-        if (colorsResolved) return
-        colorSurface = ContextCompat.getColor(ctx, R.color.surfaceColor)
-        colorBorder = ContextCompat.getColor(ctx, R.color.borderDefault)
-        colorSelectedBg = ContextCompat.getColor(ctx, R.color.selectedBackground)
-        colorSelectedBorder = ContextCompat.getColor(ctx, R.color.selectedBorder)
-        resolvedDupColors = IntArray(DUPLICATE_GROUP_COLOR_RES.size) { ContextCompat.getColor(ctx, DUPLICATE_GROUP_COLOR_RES[it]) }
-        colorsResolved = true
+        if (colors == null) {
+            colors = FileItemUtils.resolveColorsWithSelection(ctx)
+        }
+        if (resolvedDupColors == null) {
+            resolvedDupColors = IntArray(DUPLICATE_GROUP_COLOR_RES.size) { ContextCompat.getColor(ctx, DUPLICATE_GROUP_COLOR_RES[it]) }
+        }
     }
 
     var viewMode: ViewMode = ViewMode.LIST
@@ -66,7 +61,7 @@ class FileAdapter(
     var onItemClick: ((FileItem) -> Unit)? = null
     var onItemLongClick: ((FileItem, View) -> Unit)? = null
 
-    inner class FileVH(view: View) : RecyclerView.ViewHolder(view) {
+    inner class FileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon: ImageView = view.findViewById(R.id.iv_file_icon)
         val name: TextView = view.findViewById(R.id.tv_file_name)
         val meta: TextView? = view.findViewById(R.id.tv_file_meta)
@@ -78,13 +73,13 @@ class FileAdapter(
         ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> TYPE_GRID
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileVH {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
         val layoutRes = if (viewType == TYPE_GRID) R.layout.item_file_grid else R.layout.item_file
         val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
-        return FileVH(view)
+        return FileViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: FileVH, position: Int) {
+    override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         val item = getItem(position)
         val isSelected = item.path in selectedPaths
         val ctx = holder.itemView.context
@@ -105,18 +100,19 @@ class FileAdapter(
         FileItemUtils.loadThumbnail(holder.icon, item, isGrid)
 
         // Visual state: duplicate group colouring → selection highlight → default
+        val c = colors!!
         val card = holder.itemView as? MaterialCardView
         if (item.duplicateGroup >= 0) {
-            val colors = resolvedDupColors ?: return
-            val color = colors[item.duplicateGroup % colors.size]
+            val dupColors = resolvedDupColors ?: return
+            val color = dupColors[item.duplicateGroup % dupColors.size]
             card?.setCardBackgroundColor(color) ?: holder.itemView.setBackgroundColor(color)
-            card?.strokeColor = colorBorder
+            card?.strokeColor = c.border
         } else if (isSelected) {
-            card?.setCardBackgroundColor(colorSelectedBg) ?: holder.itemView.setBackgroundColor(colorSelectedBg)
-            card?.strokeColor = colorSelectedBorder
+            card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
+            card?.strokeColor = c.selectedBorder
         } else {
-            card?.setCardBackgroundColor(colorSurface) ?: holder.itemView.setBackgroundColor(0x00000000)
-            card?.strokeColor = colorBorder
+            card?.setCardBackgroundColor(c.surface) ?: holder.itemView.setBackgroundColor(0x00000000)
+            card?.strokeColor = c.border
         }
 
         // Meta line (only in list layouts that have it)
@@ -137,11 +133,11 @@ class FileAdapter(
                 // Immediate card visual feedback for selection (§DP3)
                 if (item.duplicateGroup < 0) {
                     if (nowSelected) {
-                        card?.setCardBackgroundColor(colorSelectedBg)
-                        card?.strokeColor = colorSelectedBorder
+                        card?.setCardBackgroundColor(c.selectedBg)
+                        card?.strokeColor = c.selectedBorder
                     } else {
-                        card?.setCardBackgroundColor(colorSurface)
-                        card?.strokeColor = colorBorder
+                        card?.setCardBackgroundColor(c.surface)
+                        card?.strokeColor = c.border
                     }
                 }
                 notifySelectionChanged()

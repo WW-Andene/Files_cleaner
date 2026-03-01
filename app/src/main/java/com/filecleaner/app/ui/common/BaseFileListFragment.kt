@@ -216,24 +216,8 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     private fun applySearch() {
-        val searched = if (searchQuery.isEmpty()) rawItems
-        else if (SearchQueryParser.hasOperators(searchQuery)) {
-            val parsed = SearchQueryParser.parse(searchQuery)
-            rawItems.filter { SearchQueryParser.matches(it, parsed) }
-        } else {
-            val lowerQuery = searchQuery.lowercase()
-            rawItems.filter { it.name.lowercase().contains(lowerQuery) }
-        }
-
-        val filtered = when (binding.spinnerSort.selectedItemPosition) {
-            0 -> searched.sortedBy { it.name.lowercase() }
-            1 -> searched.sortedByDescending { it.name.lowercase() }
-            2 -> searched.sortedBy { it.size }
-            3 -> searched.sortedByDescending { it.size }
-            4 -> searched.sortedBy { it.lastModified }
-            5 -> searched.sortedByDescending { it.lastModified }
-            else -> searched
-        }
+        val searched = SearchQueryParser.filterItems(rawItems, searchQuery)
+        val filtered = SearchQueryParser.sortItems(searched, binding.spinnerSort.selectedItemPosition)
 
         binding.tvSummary.text = if (rawItems.isEmpty()) emptySummary
         else summaryText(rawItems.size, UndoHelper.totalSize(rawItems))

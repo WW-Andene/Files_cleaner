@@ -115,4 +115,35 @@ object SearchQueryParser {
                 EXT_PATTERN.containsMatchIn(query) ||
                 DATE_PATTERN.containsMatchIn(query)
     }
+
+    /**
+     * Applies search query filtering to a list of files.
+     * Supports both plain text search and operator-based advanced search.
+     * I2: Extracted from BrowseFragment and BaseFileListFragment to eliminate duplication.
+     */
+    fun filterItems(items: List<FileItem>, query: String): List<FileItem> {
+        if (query.isEmpty()) return items
+        return if (hasOperators(query)) {
+            val parsed = parse(query)
+            items.filter { matches(it, parsed) }
+        } else {
+            val lowerQuery = query.lowercase()
+            items.filter { it.name.lowercase().contains(lowerQuery) }
+        }
+    }
+
+    /**
+     * Sorts a list of files based on a spinner position index.
+     * 0=name asc, 1=name desc, 2=size asc, 3=size desc, 4=date asc, 5=date desc.
+     * I2: Extracted from BrowseFragment and BaseFileListFragment to eliminate duplication.
+     */
+    fun sortItems(items: List<FileItem>, sortIndex: Int): List<FileItem> = when (sortIndex) {
+        0 -> items.sortedBy { it.name.lowercase() }
+        1 -> items.sortedByDescending { it.name.lowercase() }
+        2 -> items.sortedBy { it.size }
+        3 -> items.sortedByDescending { it.size }
+        4 -> items.sortedBy { it.lastModified }
+        5 -> items.sortedByDescending { it.lastModified }
+        else -> items
+    }
 }

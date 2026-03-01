@@ -40,16 +40,35 @@ class ArborescenceView @JvmOverloads constructor(
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     // ── Layout constants (dp-based, scaled by screen density) ──
+    // I5: Named constants extracted from magic numbers for readability and maintainability
+    companion object {
+        private const val BLOCK_WIDTH_DP = 220f
+        private const val BLOCK_MIN_HEIGHT_DP = 64f
+        private const val FILE_LINE_HEIGHT_DP = 24f
+        private const val H_GAP_DP = 48f       // horizontal gap between depth levels
+        private const val V_GAP_DP = 16f        // vertical gap between sibling blocks
+        private const val CORNER_RADIUS_DP = 10f
+        private const val HEADER_HEIGHT_DP = 48f
+        private const val GHOST_TEXT_SIZE_DP = 12f
+        private const val DEFAULT_MAX_FILES = 5
+        private const val EXPANDED_MAX_FILES = 50
+        private const val STROKE_WIDTH_THIN = 1.5f
+        private const val STROKE_WIDTH_MEDIUM = 2f
+        private const val STROKE_WIDTH_THICK = 4f
+        private const val STROKE_WIDTH_GLOW = 6f
+        private const val TITLE_LETTER_SPACING = -0.01f
+        private const val MIN_SCALE = 0.15f
+        private const val MAX_SCALE = 3f
+    }
+
     private val dp = context.resources.displayMetrics.density
-    private val blockWidth = 220f * dp
-    private val blockMinHeight = 64f * dp
-    private val fileLineHeight = 24f * dp
-    private val hGap = 48f * dp   // horizontal gap between depth levels
-    private val vGap = 16f * dp   // vertical gap between sibling blocks
-    private val cornerRadius = 10f * dp
-    private val headerHeight = 48f * dp
-    private val DEFAULT_MAX_FILES = 5
-    private val EXPANDED_MAX_FILES = 50
+    private val blockWidth = BLOCK_WIDTH_DP * dp
+    private val blockMinHeight = BLOCK_MIN_HEIGHT_DP * dp
+    private val fileLineHeight = FILE_LINE_HEIGHT_DP * dp
+    private val hGap = H_GAP_DP * dp
+    private val vGap = V_GAP_DP * dp
+    private val cornerRadius = CORNER_RADIUS_DP * dp
+    private val headerHeight = HEADER_HEIGHT_DP * dp
 
     // ── Theme colors (resolved once — View is recreated on config change) ──
     private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }
@@ -68,7 +87,7 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val blockStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 1.5f
+        strokeWidth = STROKE_WIDTH_THIN
     }
     private val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -77,7 +96,7 @@ class ArborescenceView @JvmOverloads constructor(
         textSize = context.resources.getDimension(R.dimen.text_subtitle)
         typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
         color = Color.WHITE
-        letterSpacing = -0.01f
+        letterSpacing = TITLE_LETTER_SPACING
     }
     private val subtitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_body_small)
@@ -91,7 +110,7 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 2f
+        strokeWidth = STROKE_WIDTH_MEDIUM
     }
     private val expandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_title)
@@ -99,7 +118,7 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 4f
+        strokeWidth = STROKE_WIDTH_THICK
     }
     private val highlightFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -113,7 +132,7 @@ class ArborescenceView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val ghostTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 12f * dp
+        textSize = GHOST_TEXT_SIZE_DP * dp
     }
     private var highlightAnimator: ValueAnimator? = null
     private var highlightAlpha = 1f
@@ -161,11 +180,11 @@ class ArborescenceView @JvmOverloads constructor(
     // ── Reusable draw objects (avoid allocations in onDraw) ──
     private val selectionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 4f
+        strokeWidth = STROKE_WIDTH_THICK
     }
     private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 6f
+        strokeWidth = STROKE_WIDTH_GLOW
     }
     private val tempPath = Path()
 
@@ -194,8 +213,6 @@ class ArborescenceView @JvmOverloads constructor(
     private val viewMatrix = Matrix()
     private val inverseMatrix = Matrix()
     private var scaleFactor = 1f
-    private val minScale = 0.15f
-    private val maxScale = 3f
 
     // ── Drag state for file/folder move ──
     var dragFilePath: String? = null
@@ -216,7 +233,6 @@ class ArborescenceView @JvmOverloads constructor(
     var onFolderMoveRequested: ((folderPath: String, targetDirPath: String) -> Unit)? = null
     var onStatsUpdate: ((totalFiles: Int, totalSize: Long, visibleNodes: Int, zoom: Float) -> Unit)? = null
     var onNodeSelected: ((DirectoryNode?) -> Unit)? = null
-    var onFileLongPress: ((filePath: String, fileName: String) -> Unit)? = null
     var onItemDoubleTap: ((filePath: String, fileName: String, isFolder: Boolean) -> Unit)? = null
     var onFilterCleared: (() -> Unit)? = null
 
@@ -225,7 +241,7 @@ class ArborescenceView @JvmOverloads constructor(
         object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val oldScale = scaleFactor
-                scaleFactor = (scaleFactor * detector.scaleFactor).coerceIn(minScale, maxScale)
+                scaleFactor = (scaleFactor * detector.scaleFactor).coerceIn(MIN_SCALE, MAX_SCALE)
                 val ratio = scaleFactor / oldScale
                 viewMatrix.postScale(ratio, ratio, detector.focusX, detector.focusY)
                 invalidate()
@@ -598,7 +614,7 @@ class ArborescenceView @JvmOverloads constructor(
         val layout = layouts[path] ?: return
         val cw = width.toFloat()
         val ch = height.toFloat()
-        val targetScale = min(cw / (layout.w + 40f), ch / (layout.h + 40f)).coerceIn(minScale, maxScale)
+        val targetScale = min(cw / (layout.w + 40f), ch / (layout.h + 40f)).coerceIn(MIN_SCALE, MAX_SCALE)
         scaleFactor = targetScale
         viewMatrix.reset()
         viewMatrix.postScale(scaleFactor, scaleFactor)

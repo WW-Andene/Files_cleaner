@@ -236,15 +236,7 @@ class BrowseFragment : Fragment() {
         }
 
         // Apply search filter (with operator support for advanced queries)
-        val searched = if (searchQuery.isEmpty()) {
-            raw
-        } else if (SearchQueryParser.hasOperators(searchQuery)) {
-            val parsed = SearchQueryParser.parse(searchQuery)
-            raw.filter { SearchQueryParser.matches(it, parsed) }
-        } else {
-            val lowerQuery = searchQuery.lowercase()
-            raw.filter { it.name.lowercase().contains(lowerQuery) }
-        }
+        val searched = SearchQueryParser.filterItems(raw, searchQuery)
 
         // Build extension chips from searched file set
         updateExtensionChips(searched)
@@ -256,14 +248,7 @@ class BrowseFragment : Fragment() {
             searched.filter { it.extension in selectedExtensions }
         }
 
-        val sorted = when (binding.spinnerSort.selectedItemPosition) {
-            0 -> filtered.sortedBy { it.name.lowercase() }
-            1 -> filtered.sortedByDescending { it.name.lowercase() }
-            2 -> filtered.sortedBy { it.size }
-            3 -> filtered.sortedByDescending { it.size }
-            4 -> filtered.sortedBy { it.lastModified }
-            else -> filtered.sortedByDescending { it.lastModified }
-        }
+        val sorted = SearchQueryParser.sortItems(filtered, binding.spinnerSort.selectedItemPosition)
 
         // Group files by parent folder and build list with section headers
         val browseItems = buildGroupedList(sorted)

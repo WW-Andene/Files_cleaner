@@ -13,6 +13,7 @@ import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.utils.DuplicateFinder
+import com.filecleaner.app.utils.FileOperationService
 import com.filecleaner.app.utils.FileScanner
 import com.filecleaner.app.utils.JunkFinder
 import com.filecleaner.app.utils.ScanCache
@@ -27,9 +28,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 
 enum class ScanPhase { INDEXING, DUPLICATES, ANALYZING, JUNK }
 
@@ -44,14 +42,8 @@ sealed class ScanState {
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     companion object {
-        private const val MAX_EXTRACT_BYTES = 2L * 1024 * 1024 * 1024 // 2 GB
-        private const val MAX_EXTRACT_ENTRIES = 10_000
-        private const val IO_BUFFER_SIZE = 8192
         // D5: Debounce interval for cache writes after file operations
         private const val SAVE_CACHE_DEBOUNCE_MS = 3000L
-
-        // Characters invalid on FAT32/exFAT or that can cause shell injection issues
-        private val INVALID_FILENAME_CHARS = charArrayOf('/', '\u0000', ':', '*', '?', '"', '<', '>', '|')
     }
 
     // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
@@ -60,19 +52,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         Environment.getExternalStorageDirectory().absolutePath
     }
 
-    /**
-     * Validates that a file path is within external storage (not app-private dirs,
-     * /data, /system, etc.) to prevent path traversal attacks.
-     */
-    private fun isPathWithinStorage(path: String): Boolean {
-        val canonical = File(path).canonicalPath
-        return canonical.startsWith(storagePath)
-    }
-
-    /** Returns true if the filename contains characters invalid on common filesystems. */
-    private fun hasInvalidFilenameChars(name: String): Boolean {
-        return INVALID_FILENAME_CHARS.any { it in name } || name.isBlank() || name.trim() != name
-    }
+    // I4: File operations delegated to dedicated service
+    private val fileOps by lazy { FileOperationService(app, storagePath) }
 
     private val _scanState = MutableLiveData<ScanState>(ScanState.Idle)
     val scanState: LiveData<ScanState> = _scanState
@@ -308,24 +289,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     /** Move a file to a different directory and update lists incrementally. */
     fun moveFile(filePath: String, targetDirPath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                val src = File(filePath)
-                val dst = File(targetDirPath, src.name)
-                // C2: Validate both source and target are within external storage
-                if (!isPathWithinStorage(filePath) || !isPathWithinStorage(targetDirPath)) {
-                    return@withContext MoveResult(false, str(R.string.op_invalid_path))
-                }
-                if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_source_not_found))
-                if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_file_exists_in_target))
-                if (src.renameTo(dst)) MoveResult(true, str(R.string.op_moved, src.name))
-                else MoveResult(false, str(R.string.op_move_failed))
-            }
+            val opResult = withContext(Dispatchers.IO) { fileOps.moveFile(filePath, targetDirPath) }
+            val result = MoveResult(opResult.success, opResult.message)
             _moveResult.postValue(result)
             if (result.success) {
                 val dst = File(targetDirPath, File(filePath).name)
                 refreshAfterFileChange(removedPath = filePath, addedFile = dst)
-                // Tree will be stale until next scan, but showing scanning UI
-                // for a single file move is disruptive — prefer incremental update
             }
         }
     }
@@ -479,22 +448,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     /** Copy a file to a target directory (for paste after copy). */
     fun copyFile(filePath: String, targetDirPath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                val src = File(filePath)
-                val dst = File(targetDirPath, src.name)
-                // C2: Validate both source and target are within external storage
-                if (!isPathWithinStorage(filePath) || !isPathWithinStorage(targetDirPath)) {
-                    return@withContext MoveResult(false, str(R.string.op_invalid_path))
-                }
-                if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_source_not_found))
-                if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_file_exists_in_target))
-                try {
-                    src.copyTo(dst)
-                    MoveResult(true, str(R.string.op_copied, src.name))
-                } catch (e: Exception) {
-                    MoveResult(false, str(R.string.op_copy_failed, e.localizedMessage ?: ""))
-                }
-            }
+            val opResult = withContext(Dispatchers.IO) { fileOps.copyFile(filePath, targetDirPath) }
+            val result = MoveResult(opResult.success, opResult.message)
             _moveResult.postValue(result)
             if (result.success) {
                 val dst = File(targetDirPath, File(filePath).name)
@@ -535,20 +490,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun renameFile(oldPath: String, newName: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                // C2: Validate filename for characters invalid on common filesystems
-                if (hasInvalidFilenameChars(newName)) {
-                    return@withContext MoveResult(false, str(R.string.op_invalid_name))
-                }
-                val src = File(oldPath)
-                if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
-                val parentDir = src.parent
-                    ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
-                val dst = File(parentDir, newName)
-                if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_name_exists))
-                if (src.renameTo(dst)) MoveResult(true, str(R.string.op_renamed, newName))
-                else MoveResult(false, str(R.string.op_rename_failed))
-            }
+            val opResult = withContext(Dispatchers.IO) { fileOps.renameFile(oldPath, newName) }
+            val result = MoveResult(opResult.success, opResult.message)
             _operationResult.postValue(result)
             if (result.success) {
                 val parentDir = File(oldPath).parent ?: return@launch
@@ -566,8 +509,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     val src = File(item.path)
                     val parentDir = src.parent ?: continue
                     val dst = File(parentDir, newName)
-                    // C2: Validate filename for invalid filesystem characters
-                    if (!src.exists() || dst.exists() || hasInvalidFilenameChars(newName)) {
+                    if (!src.exists() || dst.exists() || fileOps.hasInvalidFilenameChars(newName)) {
                         failed++
                         continue
                     }
@@ -620,27 +562,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun compressFile(filePath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                try {
-                    // C2: Validate path is within external storage
-                    if (!isPathWithinStorage(filePath)) {
-                        return@withContext MoveResult(false, str(R.string.op_invalid_path))
-                    }
-                    val src = File(filePath)
-                    if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
-                    val parentDir = src.parent
-                        ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
-                    val zipFile = File(parentDir, "${src.nameWithoutExtension}.zip")
-                    ZipOutputStream(zipFile.outputStream().buffered()).use { zos ->
-                        zos.putNextEntry(ZipEntry(src.name))
-                        src.inputStream().buffered().use { it.copyTo(zos) }
-                        zos.closeEntry()
-                    }
-                    MoveResult(true, str(R.string.op_compressed, zipFile.name))
-                } catch (e: Exception) {
-                    MoveResult(false, str(R.string.op_compress_failed, e.localizedMessage ?: ""))
-                }
-            }
+            val opResult = withContext(Dispatchers.IO) { fileOps.compressFile(filePath) }
+            val result = MoveResult(opResult.success, opResult.message)
             _operationResult.postValue(result)
             if (result.success) {
                 val src = File(filePath)
@@ -653,73 +576,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun extractArchive(filePath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                try {
-                    // C2: Validate path is within external storage
-                    if (!isPathWithinStorage(filePath)) {
-                        return@withContext MoveResult(false, str(R.string.op_invalid_path))
-                    }
-                    val src = File(filePath)
-                    if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
-                    if (!src.extension.equals("zip", ignoreCase = true)) {
-                        return@withContext MoveResult(false, str(R.string.op_zip_only))
-                    }
-                    val parentDir = src.parent
-                        ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
-                    val outDir = File(parentDir, src.nameWithoutExtension)
-                    outDir.mkdirs()
-                    // Guard against zip bombs
-                    var totalExtracted = 0L
-                    var entryCount = 0
-                    ZipInputStream(src.inputStream().buffered()).use { zis ->
-                        val outDirCanonical = outDir.canonicalPath + File.separator
-                        var entry = zis.nextEntry
-                        while (entry != null) {
-                            // C2: Reject entries with path traversal components before resolving
-                            if (entry.name.contains("..")) {
-                                entry = zis.nextEntry
-                                continue
-                            }
-                            val outFile = File(outDir, entry.name)
-                            // Prevent zip slip — verify canonical path starts with output dir
-                            if (!outFile.canonicalPath.startsWith(outDirCanonical) &&
-                                outFile.canonicalPath != outDir.canonicalPath) {
-                                entry = zis.nextEntry
-                                continue
-                            }
-                            entryCount++
-                            if (entryCount > MAX_EXTRACT_ENTRIES) {
-                                return@withContext MoveResult(false,
-                                    str(R.string.op_too_many_entries, MAX_EXTRACT_ENTRIES))
-                            }
-                            if (entry.isDirectory) {
-                                outFile.mkdirs()
-                            } else {
-                                outFile.parentFile?.mkdirs()
-                                outFile.outputStream().buffered().use { out ->
-                                    val buf = ByteArray(IO_BUFFER_SIZE)
-                                    var len: Int
-                                    while (zis.read(buf).also { len = it } > 0) {
-                                        totalExtracted += len
-                                        if (totalExtracted > MAX_EXTRACT_BYTES) {
-                                            // Clean up partial file before returning
-                                            out.close()
-                                            outFile.delete()
-                                            return@withContext MoveResult(false,
-                                                str(R.string.op_archive_too_large))
-                                        }
-                                        out.write(buf, 0, len)
-                                    }
-                                }
-                            }
-                            entry = zis.nextEntry
-                        }
-                    }
-                    MoveResult(true, str(R.string.op_extracted, "${outDir.name}/"))
-                } catch (e: Exception) {
-                    MoveResult(false, str(R.string.op_extract_failed, e.localizedMessage ?: ""))
-                }
-            }
+            val opResult = withContext(Dispatchers.IO) { fileOps.extractArchive(filePath) }
+            val result = MoveResult(opResult.success, opResult.message)
             _operationResult.postValue(result)
             if (result.success) {
                 // Extract creates many files — rescan is appropriate here

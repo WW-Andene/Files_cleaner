@@ -70,4 +70,40 @@ object FileItemUtils {
 
     fun Int.dpToPx(view: View): Int =
         (this * view.resources.displayMetrics.density).toInt()
+
+    /**
+     * Cached adapter color palette — resolves theme colors once per context.
+     * I3: Extracted from FileAdapter and BrowseAdapter to eliminate duplication.
+     */
+    data class AdapterColors(
+        val surface: Int,
+        val border: Int,
+        val selectedBg: Int = 0,
+        val selectedBorder: Int = 0
+    )
+
+    private var cachedColors: AdapterColors? = null
+    private var cachedColorsWithSelection: AdapterColors? = null
+
+    fun resolveColors(ctx: android.content.Context): AdapterColors {
+        cachedColors?.let { return it }
+        val colors = AdapterColors(
+            surface = androidx.core.content.ContextCompat.getColor(ctx, R.color.surfaceColor),
+            border = androidx.core.content.ContextCompat.getColor(ctx, R.color.borderDefault)
+        )
+        cachedColors = colors
+        return colors
+    }
+
+    fun resolveColorsWithSelection(ctx: android.content.Context): AdapterColors {
+        cachedColorsWithSelection?.let { return it }
+        val colors = AdapterColors(
+            surface = androidx.core.content.ContextCompat.getColor(ctx, R.color.surfaceColor),
+            border = androidx.core.content.ContextCompat.getColor(ctx, R.color.borderDefault),
+            selectedBg = androidx.core.content.ContextCompat.getColor(ctx, R.color.selectedBackground),
+            selectedBorder = androidx.core.content.ContextCompat.getColor(ctx, R.color.selectedBorder)
+        )
+        cachedColorsWithSelection = colors
+        return colors
+    }
 }

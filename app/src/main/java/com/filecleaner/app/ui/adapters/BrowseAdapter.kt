@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -46,17 +45,8 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     var onItemClick: ((FileItem) -> Unit)? = null
     var onItemLongClick: ((FileItem, View) -> Unit)? = null
 
-    // Cached resolved colors (initialized on first bind)
-    private var colorSurface = 0
-    private var colorBorder = 0
-    private var colorsResolved = false
-
-    private fun resolveColors(ctx: android.content.Context) {
-        if (colorsResolved) return
-        colorSurface = ContextCompat.getColor(ctx, R.color.surfaceColor)
-        colorBorder = ContextCompat.getColor(ctx, R.color.borderDefault)
-        colorsResolved = true
-    }
+    // I3: Use shared color resolution from FileItemUtils
+    private var colors: FileItemUtils.AdapterColors? = null
 
     fun getFileCount(): Int = currentList.count { it is Item.File }
 
@@ -73,29 +63,29 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_HEADER -> HeaderVH(inflater.inflate(R.layout.item_folder_header, parent, false))
+            TYPE_HEADER -> HeaderViewHolder(inflater.inflate(R.layout.item_folder_header, parent, false))
             else -> {
                 val layoutRes = if (viewType == TYPE_FILE) R.layout.item_file else R.layout.item_file_grid
-                FileVH(inflater.inflate(layoutRes, parent, false))
+                FileViewHolder(inflater.inflate(layoutRes, parent, false))
             }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
-            is Item.Header -> bindHeader(holder as HeaderVH, item)
-            is Item.File -> bindFile(holder as FileVH, item.fileItem)
+            is Item.Header -> bindHeader(holder as HeaderViewHolder, item)
+            is Item.File -> bindFile(holder as FileViewHolder, item.fileItem)
         }
     }
 
-    private fun bindHeader(holder: HeaderVH, header: Item.Header) {
+    private fun bindHeader(holder: HeaderViewHolder, header: Item.Header) {
         holder.folderName.text = header.displayName
         holder.folderCount.text = holder.itemView.context.resources.getQuantityString(R.plurals.n_files, header.fileCount, header.fileCount)
     }
 
-    private fun bindFile(holder: FileVH, item: FileItem) {
+    private fun bindFile(holder: FileViewHolder, item: FileItem) {
         holder.name.text = item.name
-        resolveColors(holder.itemView.context)
+        val c = colors ?: FileItemUtils.resolveColors(holder.itemView.context).also { colors = it }
 
         if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
             val lp = holder.icon.layoutParams
@@ -108,10 +98,10 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         val isGrid = viewMode != ViewMode.LIST && viewMode != ViewMode.LIST_WITH_THUMBNAILS
         FileItemUtils.loadThumbnail(holder.icon, item, isGrid)
 
-        // Default card colors (using cached resolved colors)
+        // Default card colors (using shared resolved colors)
         val card = holder.itemView as? com.google.android.material.card.MaterialCardView
-        card?.setCardBackgroundColor(colorSurface)
-        card?.strokeColor = colorBorder
+        card?.setCardBackgroundColor(c.surface)
+        card?.strokeColor = c.border
 
         // Meta line
         holder.meta?.let { FileItemUtils.buildMeta(it, item) }
@@ -131,12 +121,12 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
             R.string.a11y_file_info, item.name, holder.meta?.text ?: item.sizeReadable)
     }
 
-    class HeaderVH(view: View) : RecyclerView.ViewHolder(view) {
+    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val folderName: TextView = view.findViewById(R.id.tv_folder_name)
         val folderCount: TextView = view.findViewById(R.id.tv_folder_count)
     }
 
-    class FileVH(view: View) : RecyclerView.ViewHolder(view) {
+    class FileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon: ImageView = view.findViewById(R.id.iv_file_icon)
         val name: TextView = view.findViewById(R.id.tv_file_name)
         val meta: TextView? = view.findViewById(R.id.tv_file_meta)
