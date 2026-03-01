@@ -105,11 +105,18 @@ object FileScanner {
 
     fun fileToItem(file: File): FileItem = file.toFileItem()
 
+    private val downloadPath: String by lazy {
+        Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS
+        ).absolutePath
+    }
+
     fun File.toFileItem(): FileItem {
         val ext = extension.lowercase()
         val rawCategory = FileCategory.fromExtension(ext)
+        // Only assign DOWNLOAD to unrecognized files in the actual Downloads folder
         val category = if (rawCategory == FileCategory.OTHER &&
-            absolutePath.contains("/Download/", ignoreCase = true)) FileCategory.DOWNLOAD
+            absolutePath.startsWith(downloadPath)) FileCategory.DOWNLOAD
         else rawCategory
 
         return FileItem(
