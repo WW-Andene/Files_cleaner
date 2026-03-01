@@ -256,10 +256,25 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 latestFiles = remaining
                 _allFiles.postValue(remaining)
                 _filesByCategory.postValue(remaining.groupBy { it.category })
-                _duplicates.postValue(_duplicates.value?.filter { it.path !in deletedPaths })
-                _largeFiles.postValue(_largeFiles.value?.filter { it.path !in deletedPaths })
-                _junkFiles.postValue(_junkFiles.value?.filter { it.path !in deletedPaths })
-                recalcStats(remaining)
+
+                // Filter deleted paths, then remove orphan groups (< 2 files remaining)
+                val filteredDupes = (_duplicates.value ?: emptyList())
+                    .filter { it.path !in deletedPaths }
+                    .let { dupes ->
+                        val validGroups = dupes.groupBy { it.duplicateGroup }
+                            .filter { it.value.size >= 2 }
+                            .keys
+                        dupes.filter { it.duplicateGroup in validGroups }
+                    }
+                val filteredLarge = (_largeFiles.value ?: emptyList())
+                    .filter { it.path !in deletedPaths }
+                val filteredJunk = (_junkFiles.value ?: emptyList())
+                    .filter { it.path !in deletedPaths }
+
+                _duplicates.postValue(filteredDupes)
+                _largeFiles.postValue(filteredLarge)
+                _junkFiles.postValue(filteredJunk)
+                recalcStats(remaining, filteredDupes, filteredLarge, filteredJunk)
             }
             saveCache()
         }
@@ -290,10 +305,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _filesByCategory.postValue(updated.groupBy { it.category })
                     // Re-run classification for restored files
                     val dupes = DuplicateFinder.findDuplicates(updated)
+                    val large = JunkFinder.findLargeFiles(updated)
+                    val junk = JunkFinder.findJunk(updated)
                     _duplicates.postValue(dupes)
-                    _largeFiles.postValue(JunkFinder.findLargeFiles(updated))
-                    _junkFiles.postValue(JunkFinder.findJunk(updated))
-                    recalcStats(updated)
+                    _largeFiles.postValue(large)
+                    _junkFiles.postValue(junk)
+                    recalcStats(updated, dupes, large, junk)
                 }
                 saveCache()
             }
@@ -463,10 +480,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 latestFiles = files
                 _allFiles.postValue(files)
                 _filesByCategory.postValue(files.groupBy { it.category })
-                _duplicates.postValue(DuplicateFinder.findDuplicates(files))
-                _largeFiles.postValue(JunkFinder.findLargeFiles(files))
-                _junkFiles.postValue(JunkFinder.findJunk(files))
-                recalcStats(files)
+                val dupes = DuplicateFinder.findDuplicates(files)
+                val large = JunkFinder.findLargeFiles(files)
+                val junk = JunkFinder.findJunk(files)
+                _duplicates.postValue(dupes)
+                _largeFiles.postValue(large)
+                _junkFiles.postValue(junk)
+                recalcStats(files, dupes, large, junk)
             }
             saveCache()
         }
@@ -485,10 +505,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun recalcStats(remaining: List<FileItem>) {
-        val dupes = _duplicates.value ?: emptyList()
-        val large = _largeFiles.value ?: emptyList()
-        val junk = _junkFiles.value ?: emptyList()
+    private fun recalcStats(
+        remaining: List<FileItem>,
+        dupes: List<FileItem>,
+        large: List<FileItem>,
+        junk: List<FileItem>
+    ) {
         _storageStats.postValue(StorageStats(
             totalFiles    = remaining.size,
             totalSize     = remaining.sumOf { it.size },

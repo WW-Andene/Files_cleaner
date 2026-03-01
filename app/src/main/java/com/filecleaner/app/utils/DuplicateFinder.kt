@@ -62,7 +62,7 @@ object DuplicateFinder {
             }
         }
 
-        result.sortWith(compareBy({ it.duplicateGroup }, { -it.size }))
+        result.sortWith(compareBy({ it.duplicateGroup }, { it.name.lowercase() }))
         result
     }
 
