@@ -26,6 +26,7 @@ import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
+import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.utils.SearchQueryParser
 import com.filecleaner.app.viewmodel.MainViewModel
@@ -46,6 +47,7 @@ class BrowseFragment : Fragment() {
     private var searchQuery = ""
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+    private var shouldScrollToTop = false
 
     // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
     @Suppress("DEPRECATION")
@@ -117,6 +119,7 @@ class BrowseFragment : Fragment() {
                 val query = s?.toString()?.trim() ?: ""
                 searchRunnable = Runnable {
                     searchQuery = query
+                    shouldScrollToTop = true
                     refresh()
                 }
                 handler.postDelayed(searchRunnable!!, BaseFileListFragment.SEARCH_DEBOUNCE_MS)
@@ -144,6 +147,7 @@ class BrowseFragment : Fragment() {
         binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
                 selectedExtensions.clear()
+                shouldScrollToTop = true
                 refresh()
             }
             override fun onNothingSelected(p: AdapterView<*>?) {}
@@ -164,6 +168,10 @@ class BrowseFragment : Fragment() {
 
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+        }
+
+        vm.deleteResult.observe(viewLifecycleOwner) { result ->
+            UndoHelper.showUndoSnackbar(binding.root, result, vm)
         }
 
         // Observe "Browse folder" navigation from other tabs (e.g. arborescence)
@@ -273,9 +281,10 @@ class BrowseFragment : Fragment() {
         }
 
         adapter.submitList(browseItems) {
-            // Scroll after DiffUtil finishes and layout is settled
-            // Guard against _binding being null if fragment is destroyed before callback fires
-            _binding?.recyclerView?.scrollToPosition(0)
+            if (shouldScrollToTop) {
+                _binding?.recyclerView?.scrollToPosition(0)
+                shouldScrollToTop = false
+            }
         }
         binding.tvCount.text = resources.getQuantityString(R.plurals.n_files, fileCount, fileCount)
     }

@@ -53,6 +53,23 @@ object OnboardingDialog {
         }
         container.addView(stepIndicator)
 
+        val iconRes = when (step) {
+            0 -> R.drawable.ic_raccoon_logo
+            1 -> R.drawable.ic_nav_browse
+            2 -> R.drawable.ic_scan
+            else -> R.drawable.ic_raccoon_logo
+        }
+        val iconView = android.widget.ImageView(context).apply {
+            setImageResource(iconRes)
+            val size = (64 * context.resources.displayMetrics.density).toInt()
+            layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                topMargin = padding / 2
+            }
+            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+        }
+        container.addView(iconView)
+
         val bodyView = TextView(context).apply {
             text = current.body
             setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
@@ -69,10 +86,16 @@ object OnboardingDialog {
         if (isLast) {
             builder.setPositiveButton(context.getString(R.string.onboarding_done)) { _, _ ->
                 UserPreferences.hasSeenOnboarding = true
+                (context as? com.filecleaner.app.MainActivity)?.requestPermissionsAndScan()
             }
         } else {
             builder.setPositiveButton(context.getString(R.string.onboarding_next)) { _, _ ->
                 show(context, step + 1)
+            }
+            if (step > 0) {
+                builder.setNeutralButton(context.getString(R.string.onboarding_back)) { _, _ ->
+                    show(context, step - 1)
+                }
             }
             builder.setNegativeButton(context.getString(R.string.onboarding_skip)) { _, _ ->
                 UserPreferences.hasSeenOnboarding = true

@@ -107,6 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:accessibilityLiveRegion="polite"
                     android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

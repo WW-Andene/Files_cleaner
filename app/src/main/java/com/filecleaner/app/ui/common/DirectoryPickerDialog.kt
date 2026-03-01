@@ -31,7 +31,10 @@ object DirectoryPickerDialog {
         var currentNode = rootNode
         val dp = context.resources.displayMetrics.density
 
+        var currentDialog: AlertDialog? = null
+
         fun buildDialog() {
+            currentDialog?.dismiss()
             val container = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(
@@ -106,7 +109,7 @@ object DirectoryPickerDialog {
             scrollView.addView(listLayout)
             container.addView(scrollView)
 
-            AlertDialog.Builder(context)
+            currentDialog = AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.move_to_title))
                 .setView(container)
                 .setPositiveButton(context.getString(R.string.select_directory)) { _, _ ->

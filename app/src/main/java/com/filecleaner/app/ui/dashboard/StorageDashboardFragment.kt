@@ -57,6 +57,8 @@ class StorageDashboardFragment : Fragment() {
         }
 
         // Scan stats
+        binding.tvStatsDetail.text = getString(R.string.dashboard_scan_stats_empty)
+        binding.tvStatsDetail.visibility = View.VISIBLE
         vm.storageStats.observe(viewLifecycleOwner) { stats ->
             if (stats != null) {
                 binding.tvStatsDetail.text = getString(R.string.dashboard_stats_detail,

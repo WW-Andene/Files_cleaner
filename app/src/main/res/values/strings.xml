@@ -4,7 +4,7 @@
 
     <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
-    <string name="scan_prompt">Tap Scan to analyze your storage</string>
+    <string name="scan_prompt">Tap here to scan your storage</string>
     <string name="scanning_progress">Scanning\u2026 %d files found</string>
     <plurals name="scan_complete">
         <item quantity="one">Scan complete \u2014 %1$d file found (%2$s)</item>
@@ -65,7 +65,7 @@
     </plurals>
     <string name="no_files_found">No files found yet.\nGo to the Manager tab to scan.</string>
     <string name="nothing_found">Nothing found yet.\nGo to the Manager tab to scan.</string>
-    <string name="scan_to_see_results">Go to the Manager tab to scan your storage</string>
+    <string name="scan_to_see_results">Scan your storage to see your files</string>
 
     <!-- Context-aware empty states (Browse) -->
     <string name="empty_browse_pre_scan">Go to the Manager tab and tap Scan Storage to browse your files.</string>
@@ -119,8 +119,8 @@
     <!-- Bottom nav -->
     <string name="nav_browse">Browse</string>
     <string name="nav_duplicates">Duplicates</string>
-    <string name="nav_large">Large</string>
-    <string name="nav_junk">Junk</string>
+    <string name="nav_large">Large Files</string>
+    <string name="nav_junk">Junk Files</string>
 
     <!-- Accessibility -->
     <string name="a11y_select_file">Select %s</string>
@@ -131,14 +131,14 @@
     <string name="a11y_sort_order">Sort order</string>
     <string name="a11y_tree_view">File tree view, %1$d files, %2$s total</string>
     <string name="a11y_tree_view_default">File tree visualization</string>
-    <string name="a11y_raccoon_bubble">Open tree view \u2014 tap to visualize your file structure</string>
+    <string name="a11y_raccoon_bubble">Open Tree View \u2014 tap to visualize your file structure</string>
     <string name="a11y_node_expanded">%1$s expanded, %2$d sub-folders</string>
     <string name="a11y_node_collapsed">%s collapsed</string>
 
     <!-- Arborescence -->
-    <string name="open_arborescence">Open tree view</string>
+    <string name="open_arborescence">Open Tree View</string>
     <string name="tree_view">Tree View</string>
-    <string name="reset_view">Reset view</string>
+    <string name="reset_view">Reset View</string>
     <string name="node_detail">%1$s\n%2$d files \u2022 %3$s\n%4$d sub-folders</string>
     <string name="nav_tree">Tree</string>
     <string name="confirm_move_title">Move file?</string>
@@ -152,19 +152,19 @@
     <string name="located_file">Found: %s</string>
 
     <!-- View mode -->
-    <string name="view_mode">View mode</string>
+    <string name="view_mode">View Mode</string>
 
     <!-- Extension filter -->
-    <string name="filter_by_extension">Filter by extension</string>
-    <string name="toggle_filters">Toggle filters</string>
+    <string name="filter_by_extension">Filter by Extension</string>
+    <string name="toggle_filters">Toggle Filters</string>
 
     <!-- Search -->
     <string name="search_files_hint">Search\u2026 (try &gt;50mb or ext:pdf)</string>
     <string name="search_tree_hint">Search in tree\u2026</string>
-    <string name="search_not_found">No match found</string>
+    <string name="search_not_found">No matching files found</string>
 
     <!-- File opening -->
-    <string name="open_with">Open with</string>
+    <string name="open_with">Open With</string>
     <string name="no_app_found">No app found to open this file</string>
 
     <!-- Context menu -->
@@ -190,18 +190,18 @@
     <string name="preview_error">Cannot preview: %s</string>
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
-    <string name="ctx_protect">Protect from cleanup</string>
-    <string name="ctx_unprotect">Remove protection</string>
+    <string name="ctx_protect">Exclude from cleanup</string>
+    <string name="ctx_unprotect">Allow cleanup</string>
     <string name="favorite_added">%s starred</string>
     <string name="favorite_removed">%s unstarred</string>
     <string name="protected_added">%s protected from cleanup</string>
-    <string name="protected_removed">%s protection removed</string>
+    <string name="protected_removed">%s cleanup protection removed</string>
     <!-- File operation feedback (used by ViewModel → Snackbar) -->
     <string name="op_source_not_found">Source file not found</string>
     <string name="op_file_not_found">File not found</string>
     <string name="op_file_exists_in_target">File already exists in target</string>
     <string name="op_no_parent_dir">Cannot determine parent folder</string>
-    <string name="op_invalid_name">Name contains invalid characters</string>
+    <string name="op_invalid_name">File names can\u0027t contain / : * ? \" &lt; &gt; or |</string>
     <string name="op_name_exists">A file with that name already exists</string>
     <string name="op_moved">Moved %s</string>
     <string name="op_move_failed">Failed to move file</string>
@@ -214,7 +214,7 @@
     <string name="op_extracted">Extracted to %s</string>
     <string name="op_extract_failed">Extraction failed: %s</string>
     <string name="op_zip_only">Only ZIP archives can be extracted</string>
-    <string name="op_too_many_entries">Archive has too many entries (limit: %d)</string>
+    <string name="op_too_many_entries">This archive has too many files to extract safely.</string>
     <string name="op_archive_too_large">Archive too large (exceeds 2 GB extracted)</string>
     <string name="op_invalid_path">Path is outside accessible storage</string>
     <string name="op_scan_failed">Scan failed</string>
@@ -281,22 +281,25 @@
     <string name="settings_scan_section">Scan Settings</string>
     <string name="settings_large_file_label">Large file threshold</string>
     <string name="settings_large_file_value">%d MB</string>
-    <string name="settings_stale_age_label">Old download age</string>
+    <string name="settings_stale_age_label">Flag downloads older than</string>
     <string name="settings_stale_age_value">%d days</string>
-    <string name="settings_undo_label">Undo timeout</string>
+    <string name="settings_undo_label">Undo window after delete</string>
     <string name="settings_undo_value">%d sec</string>
     <string name="settings_hidden_files">Show hidden files</string>
     <string name="settings_rescan_note">Changes apply on next scan.</string>
+    <string name="settings_safety_section">Safety</string>
+    <string name="settings_display_section">Display</string>
 
     <!-- Onboarding (P13) -->
     <string name="onboarding_step">Step %1$d of %2$d</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
-    <string name="onboarding_done">Get Started</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_done">Scan My Storage</string>
     <string name="onboarding_title_1">Welcome to Raccoon</string>
     <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
-    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 scan, clean, and manage\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 scan, clean, and manage\n\u2022 Large Files \u2014 files over 50 MB\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
     <!-- Dashboard (P2) -->
     <string name="dashboard_title">Storage Dashboard</string>
     <string name="dashboard_storage_title">Device Storage</string>
@@ -315,7 +318,7 @@
     <string name="raccoon_manager_title">Raccoon Manager</string>
     <string name="raccoon_manager_subtitle">Your file management control center</string>
     <string name="raccoon_action_scan">Scan Storage</string>
-    <string name="raccoon_action_scan_desc">Scan your device for files, duplicates, and junk</string>
+    <string name="raccoon_action_scan_desc">Scan your storage for duplicates, junk, and large files</string>
     <string name="raccoon_action_analysis">Analysis</string>
     <string name="raccoon_action_analysis_desc">View storage dashboard and category breakdown</string>
     <string name="raccoon_action_quick_clean">Quick Clean</string>
@@ -329,10 +332,26 @@
         <item quantity="one">Clean %1$d junk file (%2$s)?</item>
         <item quantity="other">Clean %1$d junk files (%2$s)?</item>
     </plurals>
-    <string name="raccoon_no_junk">No junk to clean! Your storage is tidy.</string>
+    <string name="raccoon_no_junk">Sparkling clean! Nothing to sweep up.</string>
     <string name="raccoon_janitor_title">Janitor</string>
     <string name="raccoon_janitor_desc">Deep clean finds duplicate files, oversized downloads, and old caches across your entire storage. Review and select what to remove.</string>
     <string name="raccoon_janitor_start">Start Deep Clean</string>
     <string name="raccoon_janitor_started">Starting deep clean\u2026 Review results in the Duplicates, Large, and Junk tabs.</string>
     <string name="raccoon_scan_needed">Run a scan first to enable this feature.</string>
+
+    <!-- F1: Section labels -->
+    <string name="raccoon_section_advanced">Advanced</string>
+
+    <!-- F4: Improved copy -->
+    <string name="raccoon_action_quick_clean_desc_dynamic">%s in junk files can be freed</string>
+
+    <!-- F5: Accessibility -->
+    <string name="a11y_settings_toggle_hidden">Toggle show hidden files</string>
+
+    <!-- F6: Engagement & reward moments -->
+    <string name="scan_complete_celebration">All done! Found %1$d files using %2$s.</string>
+    <string name="clean_success">Cleaned up %s. Nice work!</string>
+    <string name="raccoon_greeting_pre_scan">Ready to tidy up? Tap Scan to get started.</string>
+    <string name="raccoon_greeting_post_scan">Looking good! %s free on your device.</string>
+    <string name="dashboard_scan_stats_empty">Scan your storage to see a summary here.</string>
 </resources>

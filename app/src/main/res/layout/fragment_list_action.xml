@@ -146,7 +146,8 @@
             android:layout_weight="1"
             android:background="@drawable/bg_spinner"
             android:popupBackground="@drawable/bg_spinner_dropdown"
-            android:paddingHorizontal="@dimen/spacing_md" />
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:contentDescription="@string/a11y_sort_order" />
 
         <ImageButton
             android:id="@+id/btn_view_mode"
@@ -160,6 +161,16 @@
             app:tint="@color/textSecondary"
             android:layout_marginStart="@dimen/spacing_sm" />
     </LinearLayout>
+
+    <!-- F5: Scan progress indicator -->
+    <ProgressBar
+        android:id="@+id/progress_scan"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:indeterminate="true"
+        android:visibility="gone" />
 
     <!-- Empty state -->
     <LinearLayout

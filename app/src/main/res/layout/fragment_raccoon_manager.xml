@@ -22,6 +22,7 @@
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <ImageView
+                android:id="@+id/iv_raccoon_avatar"
                 android:layout_width="@dimen/icon_raccoon"
                 android:layout_height="@dimen/icon_raccoon"
                 android:src="@drawable/ic_raccoon_logo"
@@ -54,6 +55,15 @@
             </LinearLayout>
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/progress_scan"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/spacing_sm" />
+
         <!-- Scan Storage card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_scan"
@@ -62,6 +72,7 @@
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
             android:foreground="?attr/selectableItemBackground"
+            android:contentDescription="@string/raccoon_action_scan"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_raised"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -117,6 +128,7 @@
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
             android:foreground="?attr/selectableItemBackground"
+            android:contentDescription="@string/raccoon_action_analysis"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/surfaceColor"
@@ -181,6 +193,7 @@
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
             android:foreground="?attr/selectableItemBackground"
+            android:contentDescription="@string/raccoon_action_quick_clean"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/surfaceColor"
@@ -245,6 +258,7 @@
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
             android:foreground="?attr/selectableItemBackground"
+            android:contentDescription="@string/raccoon_action_arborescence"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/surfaceColor"
@@ -268,7 +282,7 @@
                         android:layout_width="@dimen/icon_nav"
                         android:layout_height="@dimen/icon_nav"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_nav_browse"
+                        android:src="@drawable/ic_tree_structure"
                         android:scaleType="centerInside"
                         android:importantForAccessibility="no"
                         app:tint="@color/colorPrimary" />
@@ -300,6 +314,18 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- F1: Advanced tools section label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/raccoon_section_advanced"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textTertiary"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:layout_marginBottom="@dimen/spacing_sm" />
+
         <!-- Janitor card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_janitor"
@@ -308,6 +334,7 @@
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
             android:foreground="?attr/selectableItemBackground"
+            android:contentDescription="@string/raccoon_action_janitor"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/surfaceColor"
@@ -331,7 +358,7 @@
                         android:layout_width="@dimen/icon_nav"
                         android:layout_height="@dimen/icon_nav"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_settings"
+                        android:src="@drawable/ic_janitor"
                         android:scaleType="centerInside"
                         android:importantForAccessibility="no"
                         app:tint="@color/catDocument" />

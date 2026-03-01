@@ -23,6 +23,7 @@
             android:paddingBottom="@dimen/spacing_xs">
 
             <ImageView
+                android:id="@+id/iv_raccoon_header"
                 android:layout_width="@dimen/icon_raccoon"
                 android:layout_height="@dimen/icon_raccoon"
                 android:src="@drawable/ic_raccoon_logo"

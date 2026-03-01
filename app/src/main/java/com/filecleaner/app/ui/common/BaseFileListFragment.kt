@@ -213,6 +213,10 @@ abstract class BaseFileListFragment : Fragment() {
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
         }
+
+        vm.scanState.observe(viewLifecycleOwner) { state ->
+            binding.progressScan.visibility = if (state is ScanState.Scanning) View.VISIBLE else View.GONE
+        }
     }
 
     private fun applySearch() {
@@ -227,13 +231,16 @@ abstract class BaseFileListFragment : Fragment() {
         if (filtered.isEmpty()) {
             binding.tvEmpty.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-            val isPreScan = vm.scanState.value !is ScanState.Done
+            val scanState = vm.scanState.value
+            val isPreScan = scanState !is ScanState.Done
+            val isScanning = scanState is ScanState.Scanning
             binding.tvEmptyText.text = when {
                 searchQuery.isNotEmpty() -> getString(com.filecleaner.app.R.string.empty_search_results, searchQuery)
+                isScanning -> getString(com.filecleaner.app.R.string.scanning_in_progress)
                 !isPreScan -> emptyPostScan
                 else -> emptyPreScan
             }
-            binding.btnScanNow.visibility = if (isPreScan && searchQuery.isEmpty()) View.VISIBLE else View.GONE
+            binding.btnScanNow.visibility = if (isPreScan && !isScanning && searchQuery.isEmpty()) View.VISIBLE else View.GONE
         } else {
             binding.tvEmpty.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE

@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                 navController.popBackStack(currentDest, true)
             }
             val options = NavOptions.Builder()
-                .setPopUpTo(R.id.browseFragment, inclusive = false, saveState = true)
+                .setPopUpTo(R.id.raccoonManagerFragment, inclusive = false, saveState = true)
                 .setLaunchSingleTop(true)
                 .setRestoreState(true)
                 .build()
@@ -100,12 +100,17 @@ class MainActivity : AppCompatActivity() {
                 navController.popBackStack(currentDest, true)
                 val destId = menuToNav[item.itemId] ?: return@setOnItemReselectedListener
                 val options = NavOptions.Builder()
-                    .setPopUpTo(R.id.browseFragment, inclusive = false, saveState = true)
+                    .setPopUpTo(R.id.raccoonManagerFragment, inclusive = false, saveState = true)
                     .setLaunchSingleTop(true)
                     .setRestoreState(true)
                     .build()
                 navController.navigate(destId, null, options)
             }
+        }
+
+        // F1/F3: Select Manager tab on first launch to match startDestination
+        if (savedInstanceState == null) {
+            binding.bottomNav.selectedItemId = R.id.raccoonManagerFragment
         }
 
         // Keep bottom nav selection in sync with current destination
@@ -145,6 +150,10 @@ class MainActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                     binding.btnCancelScan.visibility = View.GONE
                     binding.tvScanStatus.text = getString(R.string.scan_prompt)
+                    // F3: Make scan bar tappable to start scan
+                    binding.tvScanStatus.setOnClickListener {
+                        requestPermissionsAndScan()
+                    }
                 }
                 is ScanState.Scanning -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -208,16 +217,25 @@ class MainActivity : AppCompatActivity() {
         // Bottom nav badges — show count of actionable items per tab
         viewModel.duplicates.observe(this) { dupes ->
             val badge = binding.bottomNav.getOrCreateBadge(R.id.duplicatesFragment)
+            badge.backgroundColor = ContextCompat.getColor(this, R.color.colorPrimary)
+            badge.badgeTextColor = ContextCompat.getColor(this, R.color.textOnPrimary)
+            badge.maxCharacterCount = 3
             badge.isVisible = dupes.isNotEmpty()
             if (dupes.isNotEmpty()) badge.number = dupes.size
         }
         viewModel.largeFiles.observe(this) { large ->
             val badge = binding.bottomNav.getOrCreateBadge(R.id.largeFilesFragment)
+            badge.backgroundColor = ContextCompat.getColor(this, R.color.colorPrimary)
+            badge.badgeTextColor = ContextCompat.getColor(this, R.color.textOnPrimary)
+            badge.maxCharacterCount = 3
             badge.isVisible = large.isNotEmpty()
             if (large.isNotEmpty()) badge.number = large.size
         }
         viewModel.junkFiles.observe(this) { junk ->
             val badge = binding.bottomNav.getOrCreateBadge(R.id.junkFragment)
+            badge.backgroundColor = ContextCompat.getColor(this, R.color.colorPrimary)
+            badge.badgeTextColor = ContextCompat.getColor(this, R.color.textOnPrimary)
+            badge.maxCharacterCount = 3
             badge.isVisible = junk.isNotEmpty()
             if (junk.isNotEmpty()) badge.number = junk.size
         }

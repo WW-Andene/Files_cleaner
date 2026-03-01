@@ -57,15 +57,20 @@ class RaccoonManagerFragment : Fragment() {
             }
             val junk = vm.junkFiles.value ?: emptyList()
             if (junk.isEmpty()) {
-                Snackbar.make(binding.root, getString(R.string.raccoon_no_junk), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, getString(R.string.raccoon_no_junk), Snackbar.LENGTH_SHORT)
+                    .setBackgroundTint(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorPrimaryContainer))
+                    .setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorOnPrimaryContainer))
+                    .show()
                 return@setOnClickListener
             }
             val totalSize = UndoHelper.totalSize(junk)
+            val undoSeconds = try { com.filecleaner.app.data.UserPreferences.undoTimeoutMs / 1000 } catch (_: Exception) { 8 }
+            val detail = resources.getQuantityString(
+                R.plurals.confirm_delete_detail,
+                junk.size, junk.size, totalSize, undoSeconds)
             AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.raccoon_quick_clean_title))
-                .setMessage(resources.getQuantityString(
-                    R.plurals.raccoon_quick_clean_confirm,
-                    junk.size, junk.size, totalSize))
+                .setMessage(detail)
                 .setPositiveButton(getString(R.string.clean)) { _, _ ->
                     vm.deleteFiles(junk)
                 }
@@ -94,6 +99,7 @@ class RaccoonManagerFragment : Fragment() {
         // Update subtitle and card states based on scan state
         vm.scanState.observe(viewLifecycleOwner) { state ->
             val hasData = state is ScanState.Done
+            binding.progressScan.visibility = if (state is ScanState.Scanning) View.VISIBLE else View.GONE
             binding.tvSubtitle.text = when (state) {
                 is ScanState.Done -> {
                     val stats = vm.storageStats.value
@@ -115,6 +121,15 @@ class RaccoonManagerFragment : Fragment() {
             binding.cardQuickClean.alpha = alpha
             binding.cardArborescence.alpha = alpha
             binding.cardJanitor.alpha = alpha
+            binding.tvAnalysisDesc.text = if (hasData)
+                getString(R.string.raccoon_action_analysis_desc)
+            else getString(R.string.raccoon_scan_needed)
+            binding.tvQuickCleanDesc.text = if (hasData)
+                getString(R.string.raccoon_action_quick_clean_desc)
+            else getString(R.string.raccoon_scan_needed)
+            binding.tvJanitorDesc.text = if (hasData)
+                getString(R.string.raccoon_action_janitor_desc)
+            else getString(R.string.raccoon_scan_needed)
         }
 
         // Observe delete result for undo snackbar
