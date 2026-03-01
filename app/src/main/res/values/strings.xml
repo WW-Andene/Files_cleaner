@@ -57,6 +57,7 @@
 
     <!-- Browse -->
     <string name="all_files">All files</string>
+    <string name="cat_recent">\uD83D\uDD52 Recent (7 days)</string>
     <plurals name="n_files">
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>

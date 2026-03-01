@@ -51,10 +51,14 @@ class BrowseFragment : Fragment() {
         Environment.getExternalStorageDirectory().absolutePath
     }
 
+    // VIRTUAL_RECENT is a sentinel — not a real FileCategory, handled in refresh()
+    private val VIRTUAL_RECENT = "RECENT"
+
     private val categories by lazy {
         listOf(
             getString(R.string.all_files) to null,
-            *FileCategory.entries.map { "${it.emoji} ${getString(it.displayNameRes)}" to it }.toTypedArray()
+            getString(R.string.cat_recent) to VIRTUAL_RECENT,
+            *FileCategory.entries.map { "${it.emoji} ${getString(it.displayNameRes)}" to it as Any }.toTypedArray()
         )
     }
 
@@ -185,10 +189,15 @@ class BrowseFragment : Fragment() {
         val catEntry = categories[binding.spinnerCategory.selectedItemPosition]
         val selectedCat = catEntry.second
 
-        val raw: List<FileItem> = if (selectedCat == null) {
-            vm.filesByCategory.value?.values?.flatten() ?: emptyList()
-        } else {
-            vm.filesByCategory.value?.get(selectedCat) ?: emptyList()
+        val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
+        val raw: List<FileItem> = when {
+            selectedCat == null -> allFiles
+            selectedCat === VIRTUAL_RECENT -> {
+                val cutoff = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L
+                allFiles.filter { it.lastModified >= cutoff }.sortedByDescending { it.lastModified }
+            }
+            selectedCat is FileCategory -> vm.filesByCategory.value?.get(selectedCat) ?: emptyList()
+            else -> allFiles
         }
 
         // Apply search filter
