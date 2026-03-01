@@ -216,6 +216,7 @@
     <string name="op_zip_only">Only ZIP archives can be extracted</string>
     <string name="op_too_many_entries">Archive has too many entries (limit: %d)</string>
     <string name="op_archive_too_large">Archive too large (exceeds 2 GB extracted)</string>
+    <string name="op_invalid_path">Path is outside accessible storage</string>
     <string name="op_scan_failed">Scan failed</string>
 
     <!-- Undo / Delete feedback -->

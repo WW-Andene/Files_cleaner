@@ -210,7 +210,11 @@ object FileContextMenu {
                 .setView(editText)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     val newName = editText.text.toString().trim()
-                    if (newName.isNotEmpty() && newName != item.name) {
+                    // C2: UI-layer defense-in-depth for invalid filesystem characters
+                    val invalidChars = charArrayOf('/', '\u0000', ':', '*', '?', '"', '<', '>', '|')
+                    if (newName.isNotEmpty() && invalidChars.any { it in newName }) {
+                        Toast.makeText(context, context.getString(R.string.op_invalid_name), Toast.LENGTH_SHORT).show()
+                    } else if (newName.isNotEmpty() && newName != item.name) {
                         callback.onRename(item, newName)
                     }
                 }

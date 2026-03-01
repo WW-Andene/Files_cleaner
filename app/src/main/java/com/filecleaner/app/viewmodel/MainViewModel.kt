@@ -46,6 +46,29 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         private const val MAX_EXTRACT_BYTES = 2L * 1024 * 1024 * 1024 // 2 GB
         private const val MAX_EXTRACT_ENTRIES = 10_000
         private const val IO_BUFFER_SIZE = 8192
+
+        // Characters invalid on FAT32/exFAT or that can cause shell injection issues
+        private val INVALID_FILENAME_CHARS = charArrayOf('/', '\u0000', ':', '*', '?', '"', '<', '>', '|')
+    }
+
+    // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
+    @Suppress("DEPRECATION")
+    private val storagePath: String by lazy {
+        Environment.getExternalStorageDirectory().absolutePath
+    }
+
+    /**
+     * Validates that a file path is within external storage (not app-private dirs,
+     * /data, /system, etc.) to prevent path traversal attacks.
+     */
+    private fun isPathWithinStorage(path: String): Boolean {
+        val canonical = File(path).canonicalPath
+        return canonical.startsWith(storagePath)
+    }
+
+    /** Returns true if the filename contains characters invalid on common filesystems. */
+    private fun hasInvalidFilenameChars(name: String): Boolean {
+        return INVALID_FILENAME_CHARS.any { it in name } || name.isBlank() || name.trim() != name
     }
 
     private val _scanState = MutableLiveData<ScanState>(ScanState.Idle)
@@ -264,6 +287,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 val src = File(filePath)
                 val dst = File(targetDirPath, src.name)
+                // C2: Validate both source and target are within external storage
+                if (!isPathWithinStorage(filePath) || !isPathWithinStorage(targetDirPath)) {
+                    return@withContext MoveResult(false, str(R.string.op_invalid_path))
+                }
                 if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_source_not_found))
                 if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_file_exists_in_target))
                 if (src.renameTo(dst)) MoveResult(true, str(R.string.op_moved, src.name))
@@ -425,6 +452,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 val src = File(filePath)
                 val dst = File(targetDirPath, src.name)
+                // C2: Validate both source and target are within external storage
+                if (!isPathWithinStorage(filePath) || !isPathWithinStorage(targetDirPath)) {
+                    return@withContext MoveResult(false, str(R.string.op_invalid_path))
+                }
                 if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_source_not_found))
                 if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_file_exists_in_target))
                 try {
@@ -475,8 +506,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun renameFile(oldPath: String, newName: String) {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
-                // Validate filename for characters invalid on Android/Linux filesystems
-                if (newName.contains('/') || newName.contains('\u0000')) {
+                // C2: Validate filename for characters invalid on common filesystems
+                if (hasInvalidFilenameChars(newName)) {
                     return@withContext MoveResult(false, str(R.string.op_invalid_name))
                 }
                 val src = File(oldPath)
@@ -505,8 +536,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     val src = File(item.path)
                     val parentDir = src.parent ?: continue
                     val dst = File(parentDir, newName)
-                    if (!src.exists() || dst.exists() ||
-                        newName.contains('/') || newName.contains('\u0000')) {
+                    // C2: Validate filename for invalid filesystem characters
+                    if (!src.exists() || dst.exists() || hasInvalidFilenameChars(newName)) {
                         failed++
                         continue
                     }
@@ -537,6 +568,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                 try {
+                    // C2: Validate path is within external storage
+                    if (!isPathWithinStorage(filePath)) {
+                        return@withContext MoveResult(false, str(R.string.op_invalid_path))
+                    }
                     val src = File(filePath)
                     if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
                     val parentDir = src.parent
@@ -566,6 +601,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                 try {
+                    // C2: Validate path is within external storage
+                    if (!isPathWithinStorage(filePath)) {
+                        return@withContext MoveResult(false, str(R.string.op_invalid_path))
+                    }
                     val src = File(filePath)
                     if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
                     if (!src.extension.equals("zip", ignoreCase = true)) {
@@ -579,11 +618,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     var totalExtracted = 0L
                     var entryCount = 0
                     ZipInputStream(src.inputStream().buffered()).use { zis ->
+                        val outDirCanonical = outDir.canonicalPath + File.separator
                         var entry = zis.nextEntry
                         while (entry != null) {
+                            // C2: Reject entries with path traversal components before resolving
+                            if (entry.name.contains("..")) {
+                                entry = zis.nextEntry
+                                continue
+                            }
                             val outFile = File(outDir, entry.name)
-                            // Prevent zip slip
-                            if (!outFile.canonicalPath.startsWith(outDir.canonicalPath)) {
+                            // Prevent zip slip — verify canonical path starts with output dir
+                            if (!outFile.canonicalPath.startsWith(outDirCanonical) &&
+                                outFile.canonicalPath != outDir.canonicalPath) {
                                 entry = zis.nextEntry
                                 continue
                             }

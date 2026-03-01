@@ -104,8 +104,13 @@ object BatchRenameDialog {
                 val padWidth = files.size.toString().length.coerceAtLeast(3)
                 val renames = files.mapIndexed { index, file ->
                     file to applyPattern(file, pattern, startNum + index, padWidth)
+                }.filter { (_, newName) ->
+                    // C2: Skip renames that produce invalid filenames
+                    newName.isNotBlank() && newName.none { c ->
+                        c in charArrayOf('/', '\u0000', ':', '*', '?', '"', '<', '>', '|')
+                    }
                 }
-                onConfirm(renames)
+                if (renames.isNotEmpty()) onConfirm(renames)
             }
             .setNegativeButton(context.getString(R.string.cancel), null)
             .show()

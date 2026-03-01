@@ -15,6 +15,8 @@ object ScanCache {
 
     private const val CACHE_FILE = "scan_cache.json"
     private const val CACHE_VERSION = 1
+    // C3: Guard against deeply nested JSON trees that could cause stack overflow
+    private const val MAX_TREE_DEPTH = 100
 
     suspend fun save(context: Context, files: List<FileItem>, tree: DirectoryNode) =
         withContext(Dispatchers.IO) {
@@ -62,7 +64,7 @@ object ScanCache {
                 // missing.  Stale entries are harmless (they show "file not found"
                 // if opened) and will be refreshed on the next scan.
 
-                val tree = jsonToDirectoryNode(root.getJSONObject("tree"))
+                val tree = jsonToDirectoryNode(root.getJSONObject("tree"), depth = 0)
 
                 Pair(files, tree)
             } catch (e: Exception) {
@@ -136,17 +138,20 @@ object ScanCache {
         put("children", childrenArray)
     }
 
-    private fun jsonToDirectoryNode(json: JSONObject): DirectoryNode {
+    private fun jsonToDirectoryNode(json: JSONObject, depth: Int): DirectoryNode {
         val filesArray = json.getJSONArray("files")
         val files = mutableListOf<FileItem>()
         for (i in 0 until filesArray.length()) {
             files.add(jsonToFileItem(filesArray.getJSONObject(i)))
         }
 
-        val childrenArray = json.getJSONArray("children")
         val children = mutableListOf<DirectoryNode>()
-        for (i in 0 until childrenArray.length()) {
-            children.add(jsonToDirectoryNode(childrenArray.getJSONObject(i)))
+        // C3: Stop recursion beyond MAX_TREE_DEPTH to prevent stack overflow
+        if (depth < MAX_TREE_DEPTH) {
+            val childrenArray = json.getJSONArray("children")
+            for (i in 0 until childrenArray.length()) {
+                children.add(jsonToDirectoryNode(childrenArray.getJSONObject(i), depth + 1))
+            }
         }
 
         return DirectoryNode(
