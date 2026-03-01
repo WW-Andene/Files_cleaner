@@ -20,6 +20,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.databinding.ActivityMainBinding
+import com.filecleaner.app.ui.onboarding.OnboardingDialog
 import com.filecleaner.app.ui.widget.RaccoonBubble
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
@@ -207,6 +208,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnSettings.setOnClickListener {
             findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
         }
+
+        // First-launch onboarding
+        OnboardingDialog.showIfNeeded(this)
     }
 
     fun requestPermissionsAndScan() {

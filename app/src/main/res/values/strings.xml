@@ -284,4 +284,16 @@
     <string name="settings_undo_value">%d sec</string>
     <string name="settings_hidden_files">Show hidden files</string>
     <string name="settings_rescan_note">Changes apply on next scan.</string>
+
+    <!-- Onboarding (P13) -->
+    <string name="onboarding_step">Step %1$d of %2$d</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_done">Get Started</string>
+    <string name="onboarding_title_1">Welcome to Raccoon</string>
+    <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
+    <string name="onboarding_title_2">Navigate with Tabs</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_title_3">Tree View</string>
+    <string name="onboarding_body_3">Tap the raccoon bubble to see your file tree as an interactive visualization.\n\nDrag and drop files between folders, and pinch to zoom.</string>
 </resources>
