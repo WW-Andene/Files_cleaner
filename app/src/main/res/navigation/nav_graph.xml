@@ -34,4 +34,9 @@
         android:name="com.filecleaner.app.ui.settings.SettingsFragment"
         android:label="@string/settings" />
 
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.filecleaner.app.ui.dashboard.StorageDashboardFragment"
+        android:label="@string/dashboard_title" />
+
 </navigation>

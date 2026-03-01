@@ -294,6 +294,16 @@
     <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
     <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
+    <!-- Dashboard (P2) -->
+    <string name="dashboard_title">Storage Dashboard</string>
+    <string name="dashboard_storage_title">Device Storage</string>
+    <string name="dashboard_storage_used">%1$s of %2$s used (%3$d%%)</string>
+    <string name="dashboard_storage_free">%s free</string>
+    <string name="dashboard_scan_stats">Scan Summary</string>
+    <string name="dashboard_stats_detail">%1$d files scanned\nDuplicates: %2$s\nJunk: %3$s\nLarge files: %4$s</string>
+    <string name="dashboard_category_title">By Category</string>
+    <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
+
     <string name="onboarding_title_3">Tree View</string>
     <string name="onboarding_body_3">Tap the raccoon bubble to see your file tree as an interactive visualization.\n\nDrag and drop files between folders, and pinch to zoom.</string>
 </resources>

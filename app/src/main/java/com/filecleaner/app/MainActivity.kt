@@ -170,6 +170,10 @@ class MainActivity : AppCompatActivity() {
                             ),
                             Snackbar.LENGTH_LONG
                         ).show()
+                        // Make scan status tappable to open dashboard
+                        binding.tvScanStatus.setOnClickListener {
+                            findNavController(R.id.nav_host_fragment).navigate(R.id.dashboardFragment)
+                        }
                     } else {
                         binding.tvScanStatus.text = getString(R.string.scan_complete_simple)
                     }
