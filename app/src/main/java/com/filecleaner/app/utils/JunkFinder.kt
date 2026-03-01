@@ -14,6 +14,8 @@ object JunkFinder {
         "tmp", "temp", "log", "bak", "old", "dmp", "crdownload", "part", "partial"
     )
 
+    private const val STALE_DOWNLOAD_DAYS = 90L
+
     private val JUNK_DIR_KEYWORDS = listOf(
         ".cache", "cache", "temp", "tmp", "thumbnail", ".thumbnails", "lost+found"
     )
@@ -25,7 +27,7 @@ object JunkFinder {
      * - Old downloads (> 90 days, not media)
      */
     suspend fun findJunk(files: List<FileItem>): List<FileItem> = withContext(Dispatchers.IO) {
-        val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(90)
+        val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(STALE_DOWNLOAD_DAYS)
         // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
         @Suppress("DEPRECATION")
         val downloadPath = Environment.getExternalStoragePublicDirectory(

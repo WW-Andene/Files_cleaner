@@ -23,6 +23,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     companion object {
         private const val TYPE_HEADER = 0
         private const val TYPE_FILE = 1
+        private const val TYPE_FILE_GRID = 11
 
         private val DIFF = object : DiffUtil.ItemCallback<Item>() {
             override fun areItemsTheSame(a: Item, b: Item): Boolean = when {
@@ -51,7 +52,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         is Item.Header -> TYPE_HEADER
         is Item.File -> when (viewMode) {
             ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> TYPE_FILE
-            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> TYPE_FILE + 10 // grid type
+            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> TYPE_FILE_GRID
         }
     }
 

@@ -14,8 +14,6 @@ import kotlin.coroutines.coroutineContext
 
 object FileScanner {
 
-    // Use FileCategory's single source of truth for extension mapping
-
     private val SKIP_DIRS = setOf(
         "Android/data", "Android/obb", ".thumbnails", ".cache",
         "lost+found", "proc", "sys", "dev"

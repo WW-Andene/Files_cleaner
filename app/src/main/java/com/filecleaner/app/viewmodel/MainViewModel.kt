@@ -39,6 +39,12 @@ sealed class ScanState {
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
+    companion object {
+        private const val MAX_EXTRACT_BYTES = 2L * 1024 * 1024 * 1024 // 2 GB
+        private const val MAX_EXTRACT_ENTRIES = 10_000
+        private const val IO_BUFFER_SIZE = 8192
+    }
+
     private val _scanState = MutableLiveData<ScanState>(ScanState.Idle)
     val scanState: LiveData<ScanState> = _scanState
 
@@ -477,10 +483,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                         ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
                     val outDir = File(parentDir, src.nameWithoutExtension)
                     outDir.mkdirs()
-                    // Guard against zip bombs: limit total extracted size to 2 GB
-                    // and total entry count to 10,000 files
-                    val maxExtractedBytes = 2L * 1024 * 1024 * 1024
-                    val maxEntries = 10_000
+                    // Guard against zip bombs
                     var totalExtracted = 0L
                     var entryCount = 0
                     ZipInputStream(src.inputStream().buffered()).use { zis ->
@@ -493,20 +496,20 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                                 continue
                             }
                             entryCount++
-                            if (entryCount > maxEntries) {
+                            if (entryCount > MAX_EXTRACT_ENTRIES) {
                                 return@withContext MoveResult(false,
-                                    str(R.string.op_too_many_entries, maxEntries))
+                                    str(R.string.op_too_many_entries, MAX_EXTRACT_ENTRIES))
                             }
                             if (entry.isDirectory) {
                                 outFile.mkdirs()
                             } else {
                                 outFile.parentFile?.mkdirs()
                                 outFile.outputStream().buffered().use { out ->
-                                    val buf = ByteArray(8192)
+                                    val buf = ByteArray(IO_BUFFER_SIZE)
                                     var len: Int
                                     while (zis.read(buf).also { len = it } > 0) {
                                         totalExtracted += len
-                                        if (totalExtracted > maxExtractedBytes) {
+                                        if (totalExtracted > MAX_EXTRACT_BYTES) {
                                             return@withContext MoveResult(false,
                                                 str(R.string.op_archive_too_large))
                                         }

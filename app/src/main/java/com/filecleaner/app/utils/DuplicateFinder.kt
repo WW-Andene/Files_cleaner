@@ -10,6 +10,7 @@ import java.security.MessageDigest
 object DuplicateFinder {
 
     private const val PARTIAL_HASH_BYTES = 4096L // 4 KB from head + tail
+    private const val HASH_BUFFER_SIZE = 8192
 
     /**
      * Multi-stage duplicate detection (F-017):
@@ -91,7 +92,7 @@ object DuplicateFinder {
     private fun fullMd5(file: File): String? = runCatching {
         val md = MessageDigest.getInstance("MD5")
         file.inputStream().use { input ->
-            val buffer = ByteArray(8192)
+            val buffer = ByteArray(HASH_BUFFER_SIZE)
             var read: Int
             while (input.read(buffer).also { read = it } != -1) {
                 md.update(buffer, 0, read)
