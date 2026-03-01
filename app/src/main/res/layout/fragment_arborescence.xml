@@ -33,7 +33,8 @@
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionSearch"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+            android:lineSpacingMultiplier="1.0" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Stats row + filter toggle + zoom info -->

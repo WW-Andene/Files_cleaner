@@ -171,10 +171,13 @@ class ArborescenceFragment : Fragment() {
         // Observe tree highlight navigation from other tabs
         vm.navigateToTree.observe(viewLifecycleOwner) { filePath ->
             if (filePath != null) {
-                binding.arborescenceView.highlightFilePath(filePath)
-                val fileName = File(filePath).name
-                Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
-                vm.clearTreeHighlight()
+                // Defer highlight until the view is laid out and tree data is loaded
+                binding.arborescenceView.post {
+                    binding.arborescenceView.highlightFilePath(filePath)
+                    val fileName = File(filePath).name
+                    Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
+                    vm.clearTreeHighlight()
+                }
             }
         }
     }

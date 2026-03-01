@@ -23,8 +23,8 @@
             android:paddingBottom="4dp">
 
             <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_raccoon_logo"
                 android:scaleType="fitCenter"
                 android:importantForAccessibility="no" />

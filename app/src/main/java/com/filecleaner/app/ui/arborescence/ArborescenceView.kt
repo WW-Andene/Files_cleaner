@@ -34,7 +34,7 @@ class ArborescenceView @JvmOverloads constructor(
     private val blockMinHeight = 80f
     private val fileLineHeight = 28f
     private val hGap = 100f  // horizontal gap between depth levels
-    private val vGap = 24f   // vertical gap between sibling blocks
+    private val vGap = 32f   // vertical gap between sibling blocks
     private val cornerRadius = 16f
     private val headerHeight = 48f
 
@@ -618,19 +618,32 @@ class ArborescenceView @JvmOverloads constructor(
                     layout.x + 2f, fileRowTop,
                     layout.x + layout.w - 2f, fileRowTop + fileLineHeight
                 )
-                // Strong fill + border
-                highlightFillPaint.alpha = (120 * highlightAlpha).toInt()
+
+                // Glow outline around the entire containing block
+                val blockGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    style = Paint.Style.STROKE
+                    strokeWidth = 6f
+                    color = colorAccent
+                    alpha = (160 * highlightAlpha).toInt()
+                }
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockGlowPaint)
+
+                // Strong fill + border on the file row
+                highlightFillPaint.color = colorAccent
+                highlightFillPaint.alpha = (180 * highlightAlpha).toInt()
+                highlightPaint.strokeWidth = 3f
                 highlightPaint.alpha = (255 * highlightAlpha).toInt()
                 canvas.drawRoundRect(highlightRect, 6f, 6f, highlightFillPaint)
                 canvas.drawRoundRect(highlightRect, 6f, 6f, highlightPaint)
-                // Arrow indicator on the left edge
+
+                // Large arrow indicator on the left edge
                 highlightArrowPaint.color = colorAccent
                 highlightArrowPaint.alpha = (255 * highlightAlpha).toInt()
                 val arrowPath = Path().apply {
                     val cy = fileRowTop + fileLineHeight / 2f
-                    moveTo(layout.x - 12f, cy - 8f)
-                    lineTo(layout.x - 2f, cy)
-                    lineTo(layout.x - 12f, cy + 8f)
+                    moveTo(layout.x - 20f, cy - 12f)
+                    lineTo(layout.x - 4f, cy)
+                    lineTo(layout.x - 20f, cy + 12f)
                     close()
                 }
                 canvas.drawPath(arrowPath, highlightArrowPaint)
@@ -725,10 +738,19 @@ class ArborescenceView @JvmOverloads constructor(
         expandToNode(node)
         highlightedFilePath = filePath
         selectedPath = node.path
-        // Center on the specific file row, not just the block
-        zoomToFileRow(node.path, filePath)
-        startHighlightAnimation()
-        invalidate()
+
+        // Defer zoom if view hasn't been laid out yet (e.g. just navigated to tab)
+        if (width == 0 || height == 0) {
+            post {
+                zoomToFileRow(node.path, filePath)
+                startHighlightAnimation()
+                invalidate()
+            }
+        } else {
+            zoomToFileRow(node.path, filePath)
+            startHighlightAnimation()
+            invalidate()
+        }
     }
 
     /** Zoom and center so the specific file row is in the middle of the screen. */
@@ -736,6 +758,7 @@ class ArborescenceView @JvmOverloads constructor(
         val layout = layouts[blockPath] ?: return
         val cw = width.toFloat()
         val ch = height.toFloat()
+        if (cw <= 0f || ch <= 0f) return
 
         // Find the Y position of the specific file row
         val files = filteredFiles(layout.node).take(5)
@@ -746,9 +769,9 @@ class ArborescenceView @JvmOverloads constructor(
             layout.y + layout.h / 2f
         }
 
-        // Use a scale that shows the block comfortably (not too zoomed)
-        val targetScale = min(cw / (layout.w + 120f), ch / (layout.h + 120f))
-            .coerceIn(0.8f, 2.0f)
+        // Use a scale that shows the block comfortably — slightly zoomed in
+        val targetScale = min(cw / (layout.w + 80f), ch / (layout.h + 80f))
+            .coerceIn(1.0f, 2.5f)
         scaleFactor = targetScale
         viewMatrix.reset()
         viewMatrix.postScale(scaleFactor, scaleFactor)
@@ -771,11 +794,10 @@ class ArborescenceView @JvmOverloads constructor(
     private fun startHighlightAnimation() {
         highlightAnimator?.cancel()
         highlightAlpha = 1f
-        val emphasisDuration = resources.getInteger(R.integer.motion_emphasis).toLong()
 
-        highlightAnimator = ValueAnimator.ofFloat(1f, 0.3f, 1f).apply {
-            duration = emphasisDuration
-            repeatCount = 2
+        highlightAnimator = ValueAnimator.ofFloat(1f, 0.2f, 1f).apply {
+            duration = 600L
+            repeatCount = 4
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
                 highlightAlpha = it.animatedValue as Float
@@ -783,7 +805,7 @@ class ArborescenceView @JvmOverloads constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    postDelayed({ fadeOutHighlight() }, 2000)
+                    postDelayed({ fadeOutHighlight() }, 3000)
                 }
             })
             start()
