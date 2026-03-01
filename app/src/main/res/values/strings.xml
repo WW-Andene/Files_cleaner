@@ -263,6 +263,14 @@
     <string name="prop_type">Type</string>
     <string name="prop_folder">Folder</string>
 
+    <!-- Batch rename (P5) -->
+    <string name="batch_rename_title">Rename %d files</string>
+    <string name="batch_rename_hint">Use {name}, {ext}, {n} as placeholders</string>
+    <string name="batch_rename_pattern_hint">Pattern e.g. {name}_{n}.{ext}</string>
+    <string name="batch_rename_start_hint">Start number</string>
+    <string name="batch_rename_result">Renamed %1$d files (%2$d failed)</string>
+    <string name="batch_rename">Batch Rename</string>
+
     <!-- Accessibility -->
     <string name="a11y_view_mode">Toggle view mode</string>
 </resources>

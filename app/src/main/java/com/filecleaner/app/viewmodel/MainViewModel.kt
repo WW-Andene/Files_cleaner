@@ -449,6 +449,43 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun batchRename(renames: List<Pair<FileItem, String>>) {
+        viewModelScope.launch {
+            val results = withContext(Dispatchers.IO) {
+                var success = 0
+                var failed = 0
+                for ((item, newName) in renames) {
+                    val src = File(item.path)
+                    val parentDir = src.parent ?: continue
+                    val dst = File(parentDir, newName)
+                    if (!src.exists() || dst.exists() ||
+                        newName.contains('/') || newName.contains('\u0000')) {
+                        failed++
+                        continue
+                    }
+                    if (src.renameTo(dst)) success++ else failed++
+                }
+                success to failed
+            }
+            val (success, failed) = results
+            val msg = str(R.string.batch_rename_result, success, failed)
+            _operationResult.postValue(MoveResult(true, msg))
+
+            // Rebuild file lists after batch rename
+            stateMutex.withLock {
+                val renamedPaths = renames.map { it.first.path }.toSet()
+                val remaining = latestFiles.filter { it.path !in renamedPaths }
+                val newItems = renames.mapNotNull { (_, newName) ->
+                    val orig = File(renames.first().first.path).parent ?: return@mapNotNull null
+                    val newFile = File(orig, newName)
+                    if (newFile.exists()) FileScanner.fileToItem(newFile) else null
+                }
+                latestFiles = remaining + newItems
+                _filesByCategory.postValue(latestFiles.groupBy { it.category })
+            }
+        }
+    }
+
     fun compressFile(filePath: String) {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {

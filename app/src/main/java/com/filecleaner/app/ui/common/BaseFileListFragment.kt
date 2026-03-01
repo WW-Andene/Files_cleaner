@@ -112,6 +112,7 @@ abstract class BaseFileListFragment : Fragment() {
             selected = sel
             binding.btnAction.isEnabled = sel.isNotEmpty()
             binding.btnAction.text = actionLabel(sel.size, UndoHelper.totalSize(sel))
+            binding.btnBatchRename.visibility = if (sel.size >= 2) View.VISIBLE else View.GONE
         }
         adapter.viewMode = currentViewMode
         adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
@@ -129,6 +130,14 @@ abstract class BaseFileListFragment : Fragment() {
 
         binding.btnSelectAll.setOnClickListener { onSelectAll() }
         binding.btnDeselectAll.setOnClickListener { adapter.deselectAll() }
+        binding.btnBatchRename.setOnClickListener {
+            if (selected.size >= 2) {
+                BatchRenameDialog.show(requireContext(), selected) { renames ->
+                    vm.batchRename(renames)
+                    adapter.deselectAll()
+                }
+            }
+        }
 
         binding.btnAction.text = defaultActionLabel
         binding.btnAction.isEnabled = false

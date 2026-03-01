@@ -76,6 +76,19 @@
                     app:strokeColor="@color/colorOnPrimaryContainer"
                     android:textColor="@color/colorOnPrimaryContainer"
                     app:cornerRadius="@dimen/radius_pill" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_batch_rename"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/batch_rename"
+                    android:textSize="@dimen/text_body_small"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:visibility="gone"
+                    app:strokeColor="@color/colorOnPrimaryContainer"
+                    android:textColor="@color/colorOnPrimaryContainer"
+                    app:cornerRadius="@dimen/radius_pill" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
