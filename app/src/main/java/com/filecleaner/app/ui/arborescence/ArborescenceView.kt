@@ -36,14 +36,15 @@ class ArborescenceView @JvmOverloads constructor(
         get() = (context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-    // ── Layout constants ──
-    private val blockWidth = 340f
-    private val blockMinHeight = 100f
-    private val fileLineHeight = 32f
-    private val hGap = 100f  // horizontal gap between depth levels
-    private val vGap = 32f   // vertical gap between sibling blocks
-    private val cornerRadius = 16f
-    private val headerHeight = 52f
+    // ── Layout constants (dp-based, scaled by screen density) ──
+    private val dp = context.resources.displayMetrics.density
+    private val blockWidth = 220f * dp
+    private val blockMinHeight = 64f * dp
+    private val fileLineHeight = 24f * dp
+    private val hGap = 48f * dp   // horizontal gap between depth levels
+    private val vGap = 16f * dp   // vertical gap between sibling blocks
+    private val cornerRadius = 10f * dp
+    private val headerHeight = 36f * dp
 
     // ── Theme colors (resolved once — View is recreated on config change) ──
     private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }
@@ -370,7 +371,7 @@ class ArborescenceView @JvmOverloads constructor(
         val maxFiles = 5
         val displayFiles = min(filtered.size, maxFiles)
         val h = headerHeight + displayFiles * fileLineHeight +
-            (if (filtered.size > maxFiles) fileLineHeight else 0f) + 12f
+            (if (filtered.size > maxFiles) fileLineHeight else 0f) + 8f * dp
         val dominant = node.files.groupBy { it.category }
             .maxByOrNull { it.value.size }?.key ?: FileCategory.OTHER
         layouts[node.path] = NodeLayout(
@@ -624,23 +625,25 @@ class ArborescenceView @JvmOverloads constructor(
         canvas.drawRect(layout.x, layout.y + headerHeight - cornerRadius,
             layout.x + layout.w, layout.y + headerHeight, headerPaint)
 
-        // Title (folder name) — pixel-based truncation to fit within block
-        val titleMaxWidth = layout.w - 24f - (if (node.children.isNotEmpty()) 28f else 0f)
+        // Title (folder name) — density-aware truncation to fit within block
+        val pad = 8f * dp
+        val indicatorW = if (node.children.isNotEmpty()) 18f * dp else 0f
+        val titleMaxWidth = layout.w - pad * 2 - indicatorW
         val displayName = ellipsizeText(node.name, titlePaint, titleMaxWidth)
-        canvas.drawText(displayName, layout.x + 12f, layout.y + 22f, titlePaint)
+        canvas.drawText(displayName, layout.x + pad, layout.y + headerHeight * 0.45f, titlePaint)
 
         // Subtitle (file count + size) — also truncated to block width
         val sizeStr = formatSize(node.totalSize)
         val subtitleText = context.resources.getQuantityString(
             R.plurals.tree_node_subtitle, node.totalFileCount, node.totalFileCount, sizeStr)
-        val subtitleMaxWidth = layout.w - 24f
+        val subtitleMaxWidth = layout.w - pad * 2
         canvas.drawText(ellipsizeText(subtitleText, subtitlePaint, subtitleMaxWidth),
-            layout.x + 12f, layout.y + 40f, subtitlePaint)
+            layout.x + pad, layout.y + headerHeight * 0.82f, subtitlePaint)
 
         // Expand/collapse indicator
         if (node.children.isNotEmpty()) {
             val indicator = if (layout.expanded) "\u25BC" else "\u25B6"
-            canvas.drawText(indicator, layout.x + layout.w - 28f, layout.y + 30f, expandPaint)
+            canvas.drawText(indicator, layout.x + layout.w - 18f * dp, layout.y + headerHeight * 0.6f, expandPaint)
         }
 
         // File list (filtered) — clip to file area within block
@@ -648,25 +651,29 @@ class ArborescenceView @JvmOverloads constructor(
         val maxFiles = 5
         val files = filtered.take(maxFiles)
         var highlightFileRowTop = -1f // Track for drawing arrow outside clip
+        val dotR = 3f * dp
+        val fileXStart = 18f * dp
+        val fileTextX = 28f * dp
+        val fileSizeEndPad = 6f * dp
 
         canvas.save()
         canvas.clipRect(layout.x, layout.y + headerHeight, layout.x + layout.w, layout.y + layout.h)
         for ((i, file) in files.withIndex()) {
-            val fy = layout.y + headerHeight + i * fileLineHeight + 20f
+            val fy = layout.y + headerHeight + (i + 0.65f) * fileLineHeight
 
             // Category dot
             dotPaint.color = categoryColors[file.category] ?: categoryColors[FileCategory.OTHER]!!
-            canvas.drawCircle(layout.x + 16f, fy - 5f, 4f, dotPaint)
+            canvas.drawCircle(layout.x + fileXStart * 0.6f, fy - dotR, dotR, dotPaint)
 
             // File name (truncated to fit before file size)
             val fsz = formatSize(file.size)
             val fszWidth = fileSizePaint.measureText(fsz)
-            val maxNameWidth = layout.w - 28f - fszWidth - 16f
+            val maxNameWidth = layout.w - fileTextX - fszWidth - fileSizeEndPad * 3
             val fname = ellipsizeText(file.name, filePaint, maxNameWidth)
-            canvas.drawText(fname, layout.x + 28f, fy, filePaint)
+            canvas.drawText(fname, layout.x + fileTextX, fy, filePaint)
 
             // File size
-            canvas.drawText(fsz, layout.x + layout.w - fszWidth - 8f, fy, fileSizePaint)
+            canvas.drawText(fsz, layout.x + layout.w - fszWidth - fileSizeEndPad, fy, fileSizePaint)
 
             // Highlight matched file row fill + border
             if (file.path == highlightedFilePath) {
@@ -691,13 +698,13 @@ class ArborescenceView @JvmOverloads constructor(
 
         // "and N more..." label
         if (filtered.size > maxFiles) {
-            val moreY = layout.y + headerHeight + maxFiles * fileLineHeight + 20f
+            val moreY = layout.y + headerHeight + (maxFiles + 0.65f) * fileLineHeight
             val remaining = filtered.size - maxFiles
             val moreText = context.resources.getQuantityString(
                 R.plurals.tree_more_files, remaining, remaining)
             val savedColor = fileSizePaint.color
             fileSizePaint.color = colorTextTertiary
-            canvas.drawText(moreText, layout.x + 28f, moreY, fileSizePaint)
+            canvas.drawText(moreText, layout.x + fileTextX, moreY, fileSizePaint)
             fileSizePaint.color = savedColor
         }
 
@@ -765,14 +772,15 @@ class ArborescenceView @JvmOverloads constructor(
         }
         val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorTextPrimary
-            textSize = 16f
+            textSize = 12f * dp
         }
-        val tw = textPaint.measureText(name) + 24f
+        val tw = textPaint.measureText(name) + 16f * dp
+        val th = 20f * dp
         canvas.drawRoundRect(
-            RectF(dragX - tw / 2, dragY - 24f, dragX + tw / 2, dragY + 8f),
-            12f, 12f, ghostPaint
+            RectF(dragX - tw / 2, dragY - th, dragX + tw / 2, dragY + 6f * dp),
+            8f * dp, 8f * dp, ghostPaint
         )
-        canvas.drawText(name, dragX - tw / 2 + 12f, dragY - 4f, textPaint)
+        canvas.drawText(name, dragX - tw / 2 + 8f * dp, dragY - 3f * dp, textPaint)
     }
 
     // ── Search + highlight ──

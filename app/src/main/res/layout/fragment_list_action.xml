@@ -164,7 +164,7 @@
         <ImageView
             android:layout_width="@dimen/icon_empty_state"
             android:layout_height="@dimen/icon_empty_state"
-            android:src="@drawable/ic_raccoon_brand"
+            android:src="@drawable/ic_raccoon_logo"
             android:alpha="0.55"
             android:importantForAccessibility="no" />
 

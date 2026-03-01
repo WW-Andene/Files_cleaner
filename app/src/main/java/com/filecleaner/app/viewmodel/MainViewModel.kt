@@ -19,7 +19,9 @@ import com.filecleaner.app.utils.ScanCache
 import com.filecleaner.app.utils.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -182,6 +184,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 File(trashPath).delete()
             }
             pendingTrash.clear()
+        }
+        // Last-resort synchronous cache save — ensures scan data is persisted
+        // even when the app is killed (viewModelScope is already cancelled here)
+        val files = latestFiles
+        val tree = latestTree
+        if (files.isNotEmpty() && tree != null) {
+            runBlocking(Dispatchers.IO) {
+                try {
+                    ScanCache.save(getApplication(), files, tree)
+                } catch (_: Exception) { }
+            }
         }
     }
 
@@ -605,15 +618,19 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Persist current in-memory scan data to disk cache. */
+    /** Persist current in-memory scan data to disk cache.
+     *  Uses NonCancellable so the write finishes even if the scope is cancelled
+     *  (e.g., app going to background or ViewModel being cleared). */
     private fun saveCache() {
         val files = latestFiles.ifEmpty { return }
         val tree = latestTree ?: return
         viewModelScope.launch {
-            try {
-                ScanCache.save(getApplication(), files, tree)
-            } catch (_: Exception) {
-                // Non-critical — cache will be rebuilt on next scan
+            withContext(NonCancellable + Dispatchers.IO) {
+                try {
+                    ScanCache.save(getApplication(), files, tree)
+                } catch (_: Exception) {
+                    // Non-critical — cache will be rebuilt on next scan
+                }
             }
         }
     }

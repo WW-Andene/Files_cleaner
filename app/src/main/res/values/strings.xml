@@ -63,21 +63,21 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="no_files_found">No files found yet.\nTap Scan Storage to get started.</string>
-    <string name="nothing_found">Nothing found yet.\nTap Scan Storage to get started.</string>
-    <string name="scan_to_see_results">Tap Scan Storage to get started</string>
+    <string name="no_files_found">No files found yet.\nGo to the Raccoon tab to scan.</string>
+    <string name="nothing_found">Nothing found yet.\nGo to the Raccoon tab to scan.</string>
+    <string name="scan_to_see_results">Go to the Raccoon tab to scan your storage</string>
 
     <!-- Context-aware empty states (Browse) -->
-    <string name="empty_browse_pre_scan">Tap the Scan button to browse your files.</string>
+    <string name="empty_browse_pre_scan">Go to the Raccoon tab and tap Scan Storage to browse your files.</string>
     <string name="empty_browse_post_scan">No files match your filters.\nTry a different category or clear the search.</string>
     <string name="empty_search_results">No results for \"%s\"</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
-    <string name="empty_junk_pre_scan">Tap Scan Storage to find junk files like caches, temp files, and leftovers.</string>
+    <string name="empty_junk_pre_scan">Go to the Raccoon tab and tap Scan Storage to find junk files.</string>
     <string name="empty_junk_post_scan">Your storage is clean! No junk files detected.</string>
-    <string name="empty_large_pre_scan">Tap Scan Storage to find files larger than 50 MB.</string>
+    <string name="empty_large_pre_scan">Go to the Raccoon tab and tap Scan Storage to find large files.</string>
     <string name="empty_large_post_scan">No large files found. Your storage looks well-managed!</string>
-    <string name="empty_duplicates_pre_scan">Tap Scan Storage to find duplicate files across your storage.</string>
+    <string name="empty_duplicates_pre_scan">Go to the Raccoon tab and tap Scan Storage to find duplicates.</string>
     <string name="empty_duplicates_post_scan">No duplicate files found. Everything is unique!</string>
 
     <!-- Sort options -->
