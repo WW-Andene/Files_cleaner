@@ -11,6 +11,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.utils.DuplicateFinder
 import com.filecleaner.app.utils.FileScanner
 import com.filecleaner.app.utils.JunkFinder
@@ -183,7 +184,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun startScan(minLargeFileMb: Int = 50) {
+    fun startScan(minLargeFileMb: Int = try { UserPreferences.largeFileThresholdMb } catch (_: Exception) { 50 }) {
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             _scanState.value = ScanState.Scanning(0)

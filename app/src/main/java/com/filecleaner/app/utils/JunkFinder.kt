@@ -3,6 +3,7 @@ package com.filecleaner.app.utils
 import android.os.Environment
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -14,7 +15,7 @@ object JunkFinder {
         "tmp", "temp", "log", "bak", "old", "dmp", "crdownload", "part", "partial"
     )
 
-    private const val STALE_DOWNLOAD_DAYS = 90L
+    private const val DEFAULT_STALE_DOWNLOAD_DAYS = 90L
 
     private val JUNK_DIR_KEYWORDS = listOf(
         ".cache", "cache", "temp", "tmp", "thumbnail", ".thumbnails", "lost+found"
@@ -27,7 +28,8 @@ object JunkFinder {
      * - Old downloads (> 90 days, not media)
      */
     suspend fun findJunk(files: List<FileItem>): List<FileItem> = withContext(Dispatchers.IO) {
-        val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(STALE_DOWNLOAD_DAYS)
+        val staleDays = try { UserPreferences.staleDownloadDays.toLong() } catch (_: Exception) { DEFAULT_STALE_DOWNLOAD_DAYS }
+        val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(staleDays)
         // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
         @Suppress("DEPRECATION")
         val downloadPath = Environment.getExternalStoragePublicDirectory(

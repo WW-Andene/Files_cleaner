@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.databinding.ActivityMainBinding
 import com.filecleaner.app.ui.widget.RaccoonBubble
 import com.filecleaner.app.utils.UndoHelper
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        UserPreferences.init(applicationContext)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

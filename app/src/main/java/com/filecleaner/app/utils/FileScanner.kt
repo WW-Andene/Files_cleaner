@@ -6,6 +6,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -52,10 +53,11 @@ object FileScanner {
             val dirPath = dir.absolutePath
             val children = dir.listFiles() ?: continue
 
+            val showHidden = try { UserPreferences.showHiddenFiles } catch (_: Exception) { false }
             for (child in children) {
                 if (child.isDirectory) {
                     val relative = child.absolutePath.substringAfter("$rootPath/")
-                    if (SKIP_DIRS.any { relative.startsWith(it) } || child.name.startsWith(".")) continue
+                    if (SKIP_DIRS.any { relative.startsWith(it) } || (!showHidden && child.name.startsWith("."))) continue
                     val childPath = child.absolutePath
                     dirMap[childPath] = DirInfo(child, depth = depth + 1)
                     dirMap[dirPath]?.childPaths?.add(childPath)

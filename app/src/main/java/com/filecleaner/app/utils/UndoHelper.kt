@@ -2,6 +2,7 @@ package com.filecleaner.app.utils
 
 import android.view.View
 import com.filecleaner.app.R
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -10,7 +11,7 @@ import com.google.android.material.snackbar.Snackbar
  */
 object UndoHelper {
 
-    private const val UNDO_TIMEOUT_MS = 8000
+    private const val DEFAULT_UNDO_TIMEOUT_MS = 8000
 
     fun showUndoSnackbar(
         view: View,
@@ -29,8 +30,9 @@ object UndoHelper {
         }
 
         if (result.canUndo && result.moved > 0) {
+            val timeoutMs = try { UserPreferences.undoTimeoutMs } catch (_: Exception) { DEFAULT_UNDO_TIMEOUT_MS }
             Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
-                .setDuration(UNDO_TIMEOUT_MS)
+                .setDuration(timeoutMs)
                 .setAction(ctx.getString(R.string.undo)) { vm.undoDelete() }
                 .addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(bar: Snackbar?, event: Int) {
