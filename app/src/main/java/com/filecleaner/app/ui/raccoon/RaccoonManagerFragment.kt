@@ -91,8 +91,9 @@ class RaccoonManagerFragment : Fragment() {
             showJanitorDialog()
         }
 
-        // Update subtitle with scan state
+        // Update subtitle and card states based on scan state
         vm.scanState.observe(viewLifecycleOwner) { state ->
+            val hasData = state is ScanState.Done
             binding.tvSubtitle.text = when (state) {
                 is ScanState.Done -> {
                     val stats = vm.storageStats.value
@@ -108,6 +109,12 @@ class RaccoonManagerFragment : Fragment() {
                 is ScanState.Scanning -> getString(R.string.scanning_phase_indexing, state.filesFound)
                 else -> getString(R.string.raccoon_manager_subtitle)
             }
+            // F5: Dim cards that require scan data when none is available
+            val alpha = if (hasData) 1.0f else 0.5f
+            binding.cardAnalysis.alpha = alpha
+            binding.cardQuickClean.alpha = alpha
+            binding.cardArborescence.alpha = alpha
+            binding.cardJanitor.alpha = alpha
         }
 
         // Observe delete result for undo snackbar
@@ -131,7 +138,7 @@ class RaccoonManagerFragment : Fragment() {
                 (activity as? MainActivity)?.requestPermissionsAndScan()
                 // After scan completes, user can review duplicates/junk/large tabs
                 Snackbar.make(binding.root,
-                    getString(R.string.raccoon_action_janitor_desc),
+                    getString(R.string.raccoon_janitor_started),
                     Snackbar.LENGTH_LONG).show()
             }
             .setNegativeButton(getString(R.string.cancel), null)

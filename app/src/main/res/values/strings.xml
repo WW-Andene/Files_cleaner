@@ -33,10 +33,10 @@
 
     <!-- Confirm dialog -->
     <string name="confirm_delete_title">Confirm Delete</string>
-    <string name="confirm_delete_message">Files will be moved to trash. You can undo within 8 seconds.</string>
+    <string name="confirm_delete_message">Files will be moved to trash. You can undo within %d seconds.</string>
     <plurals name="confirm_delete_detail">
-        <item quantity="one">%1$d file (%2$s) will be moved to trash.\nYou can undo within 8 seconds.</item>
-        <item quantity="other">%1$d files (%2$s) will be moved to trash.\nYou can undo within 8 seconds.</item>
+        <item quantity="one">%1$d file (%2$s) will be moved to trash.\nYou can undo within %3$d seconds.</item>
+        <item quantity="other">%1$d files (%2$s) will be moved to trash.\nYou can undo within %3$d seconds.</item>
     </plurals>
     <plurals name="delete_n_files_title">
         <item quantity="one">Delete %d file?</item>
@@ -323,15 +323,16 @@
     <string name="raccoon_action_arborescence">Tree View</string>
     <string name="raccoon_action_arborescence_desc">Interactive file tree visualization</string>
     <string name="raccoon_action_janitor">Janitor</string>
-    <string name="raccoon_action_janitor_desc">Deep clean and file restructuration</string>
+    <string name="raccoon_action_janitor_desc">Deep clean and file restructuring</string>
     <string name="raccoon_quick_clean_title">Quick Clean</string>
     <plurals name="raccoon_quick_clean_confirm">
-        <item quantity="one">Remove %1$d junk file (%2$s)?</item>
-        <item quantity="other">Remove %1$d junk files (%2$s)?</item>
+        <item quantity="one">Clean %1$d junk file (%2$s)?</item>
+        <item quantity="other">Clean %1$d junk files (%2$s)?</item>
     </plurals>
     <string name="raccoon_no_junk">No junk to clean! Your storage is tidy.</string>
     <string name="raccoon_janitor_title">Janitor</string>
     <string name="raccoon_janitor_desc">Deep clean finds duplicate files, oversized downloads, and old caches across your entire storage. Review and select what to remove.</string>
     <string name="raccoon_janitor_start">Start Deep Clean</string>
+    <string name="raccoon_janitor_started">Starting deep clean\u2026 Review results in the Duplicates, Large, and Junk tabs.</string>
     <string name="raccoon_scan_needed">Run a scan first to enable this feature.</string>
 </resources>

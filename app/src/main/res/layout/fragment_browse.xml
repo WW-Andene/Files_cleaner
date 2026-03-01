@@ -130,6 +130,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="@dimen/spacing_4xl"
+        android:accessibilityLiveRegion="polite"
         android:visibility="gone">
 
         <ImageView

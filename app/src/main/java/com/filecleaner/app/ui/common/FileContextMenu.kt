@@ -11,7 +11,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -23,6 +22,7 @@ import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
 import java.io.File
 import java.text.DateFormat
 import java.util.Date
@@ -183,11 +183,11 @@ object FileContextMenu {
 
         addItem(context.getString(R.string.ctx_copy), R.drawable.ic_copy) {
             callback.onCopy(item)
-            Toast.makeText(context, context.getString(R.string.copy_hint, item.name), Toast.LENGTH_SHORT).show()
+            Snackbar.make(anchor, context.getString(R.string.copy_hint, item.name), Snackbar.LENGTH_SHORT).show()
         }
         addItem(context.getString(R.string.ctx_cut), android.R.drawable.ic_menu_edit) {
             callback.onCut(item)
-            Toast.makeText(context, context.getString(R.string.cut_hint, item.name), Toast.LENGTH_SHORT).show()
+            Snackbar.make(anchor, context.getString(R.string.cut_hint, item.name), Snackbar.LENGTH_SHORT).show()
         }
         if (hasClipboard) {
             val targetDir = File(item.path).parent
@@ -213,7 +213,7 @@ object FileContextMenu {
                     // C2: UI-layer defense-in-depth for invalid filesystem characters
                     val invalidChars = charArrayOf('/', '\u0000', ':', '*', '?', '"', '<', '>', '|')
                     if (newName.isNotEmpty() && invalidChars.any { it in newName }) {
-                        Toast.makeText(context, context.getString(R.string.op_invalid_name), Toast.LENGTH_SHORT).show()
+                        Snackbar.make(anchor, context.getString(R.string.op_invalid_name), Snackbar.LENGTH_SHORT).show()
                     } else if (newName.isNotEmpty() && newName != item.name) {
                         callback.onRename(item, newName)
                     }
@@ -252,18 +252,18 @@ object FileContextMenu {
             android.R.drawable.btn_star) {
             UserPreferences.toggleFavorite(item.path)
             val nowFav = UserPreferences.isFavorite(item.path)
-            Toast.makeText(context, context.getString(
+            Snackbar.make(anchor, context.getString(
                 if (nowFav) R.string.favorite_added else R.string.favorite_removed, item.name),
-                Toast.LENGTH_SHORT).show()
+                Snackbar.LENGTH_SHORT).show()
         }
         val isProt = try { UserPreferences.isProtected(item.path) } catch (_: Exception) { false }
         addItem(context.getString(if (isProt) R.string.ctx_unprotect else R.string.ctx_protect),
             android.R.drawable.ic_secure) {
             UserPreferences.toggleProtected(item.path)
             val nowProt = UserPreferences.isProtected(item.path)
-            Toast.makeText(context, context.getString(
+            Snackbar.make(anchor, context.getString(
                 if (nowProt) R.string.protected_added else R.string.protected_removed, item.name),
-                Toast.LENGTH_SHORT).show()
+                Snackbar.LENGTH_SHORT).show()
         }
 
         addDivider()
@@ -289,9 +289,12 @@ object FileContextMenu {
             isFocusable = true
             setOnClickListener {
                 dialog.dismiss()
+                val undoSec = try { UserPreferences.undoTimeoutMs / 1000 } catch (_: Exception) { 8 }
+                val detail = context.resources.getQuantityString(
+                    R.plurals.confirm_delete_detail, 1, 1, UndoHelper.formatBytes(item.size), undoSec)
                 AlertDialog.Builder(context)
-                    .setTitle(context.getString(R.string.confirm_delete_title))
-                    .setMessage(context.getString(R.string.confirm_delete_message))
+                    .setTitle(context.resources.getQuantityString(R.plurals.delete_n_files_title, 1, 1))
+                    .setMessage("${item.name}\n\n$detail")
                     .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
                         callback.onDelete(item)
                     }

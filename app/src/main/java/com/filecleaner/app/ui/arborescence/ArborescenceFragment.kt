@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.filecleaner.app.MainActivity
 import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
@@ -168,6 +169,11 @@ class ArborescenceFragment : Fragment() {
         binding.filterPanel.visibility = if (filterPanelVisible) View.VISIBLE else View.GONE
         savedInstanceState?.getInt(KEY_CATEGORY_POS, 0)?.let { pos ->
             if (pos > 0) binding.spinnerTreeCategory.setSelection(pos)
+        }
+
+        // Empty state "Scan Now" button
+        binding.btnScanNow.setOnClickListener {
+            (activity as? MainActivity)?.requestPermissionsAndScan()
         }
 
         // Reset view button

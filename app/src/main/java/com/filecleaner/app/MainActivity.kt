@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -198,7 +197,10 @@ class MainActivity : AppCompatActivity() {
                 is ScanState.Error    -> {
                     binding.progressBar.visibility = View.GONE
                     binding.btnCancelScan.visibility = View.GONE
-                    Toast.makeText(this, getString(R.string.error_prefix, state.message), Toast.LENGTH_LONG).show()
+                    binding.tvScanStatus.text = getString(R.string.error_scan_failed)
+                    Snackbar.make(binding.root,
+                        getString(R.string.error_prefix, state.message),
+                        Snackbar.LENGTH_LONG).show()
                 }
             }
         }

@@ -1,12 +1,14 @@
 package com.filecleaner.app.utils
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.webkit.MimeTypeMap
-import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.filecleaner.app.R
+import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
 object FileOpener {
@@ -28,7 +30,10 @@ object FileOpener {
         try {
             context.startActivity(Intent.createChooser(intent, context.getString(R.string.open_with)))
         } catch (_: ActivityNotFoundException) {
-            Toast.makeText(context, context.getString(R.string.no_app_found), Toast.LENGTH_SHORT).show()
+            val rootView = (context as? Activity)?.findViewById<View>(android.R.id.content)
+            if (rootView != null) {
+                Snackbar.make(rootView, context.getString(R.string.no_app_found), Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 }
