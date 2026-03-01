@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -10,35 +11,40 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:cardCornerRadius="@dimen/radius_header"
-        app:cardElevation="0dp"
+        app:cardElevation="@dimen/elevation_none"
         app:cardBackgroundColor="@color/colorPrimaryContainer"
-        app:strokeWidth="0dp">
+        app:strokeWidth="@dimen/stroke_none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="@dimen/spacing_lg">
 
             <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Title"
                 android:textColor="@color/colorOnPrimaryContainer"
-                android:text="Title" />
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Title" />
 
             <TextView
                 android:id="@+id/tv_summary"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                 android:textColor="@color/colorOnPrimaryContainer"
                 android:alpha="0.8"
-                android:layout_marginTop="4dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:accessibilityLiveRegion="polite"
+                android:layout_marginTop="@dimen/spacing_xs"
                 android:text="@string/scan_to_see_results" />
 
             <!-- Select All / Deselect All -->
@@ -46,30 +52,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="@dimen/spacing_md">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_select_all"
                     style="@style/Widget.FileCleaner.Button.Outlined"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_height="@dimen/button_height_sm"
                     android:text="@string/select_all"
-                    android:textSize="12sp"
-                    android:layout_marginEnd="8dp"
+                    android:textSize="@dimen/text_body_small"
+                    android:layout_marginEnd="@dimen/spacing_sm"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     app:strokeColor="@color/colorOnPrimaryContainer"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    app:cornerRadius="20dp" />
+                    app:cornerRadius="@dimen/radius_pill" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_deselect_all"
                     style="@style/Widget.FileCleaner.Button.Outlined"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_height="@dimen/button_height_sm"
                     android:text="@string/deselect_all"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_body_small"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     app:strokeColor="@color/colorOnPrimaryContainer"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    app:cornerRadius="20dp" />
+                    app:cornerRadius="@dimen/radius_pill" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_batch_rename"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/batch_rename"
+                    android:textSize="@dimen/text_body_small"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:visibility="gone"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:strokeColor="@color/colorOnPrimaryContainer"
+                    android:textColor="@color/colorOnPrimaryContainer"
+                    app:cornerRadius="@dimen/radius_pill" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -79,8 +104,8 @@
         android:id="@+id/til_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_md"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -101,8 +126,35 @@
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionSearch"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+            android:lineSpacingMultiplier="1.0" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Sort row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm">
+
+        <Spinner
+            android:id="@+id/spinner_sort"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btn_view_mode"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_view_list"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/a11y_view_mode"
+            android:scaleType="centerInside"
+            android:layout_marginStart="@dimen/spacing_sm" />
+    </LinearLayout>
 
     <!-- Empty state -->
     <LinearLayout
@@ -111,13 +163,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="48dp"
+        android:padding="@dimen/spacing_4xl"
+        android:accessibilityLiveRegion="polite"
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_raccoon_face"
+            android:layout_width="@dimen/icon_empty_state"
+            android:layout_height="@dimen/icon_empty_state"
+            android:src="@drawable/ic_raccoon_logo"
             android:alpha="0.55"
             android:importantForAccessibility="no" />
 
@@ -125,12 +178,24 @@
             android:id="@+id/tv_empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/spacing_lg"
             android:text="@string/nothing_found"
             android:textAppearance="@style/TextAppearance.FileCleaner.Body"
             android:textColor="@color/textSecondary"
             android:gravity="center"
-            android:lineSpacingExtra="4dp" />
+            android:lineSpacingExtra="@dimen/spacing_xs" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_scan_now"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_sm"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="@string/scan_storage"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="@dimen/radius_pill" />
     </LinearLayout>
 
     <!-- File list -->
@@ -140,25 +205,24 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="80dp"
-        android:layoutAnimation="@anim/layout_item_stagger"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_above_nav"
+        android:layoutAnimation="@anim/layout_item_stagger" />
 
     <!-- Action button — not full-width for better visual proportion (§DBI3 #10) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_action"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/button_height"
         android:layout_gravity="center_horizontal"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="12dp"
-        android:minWidth="200dp"
-        android:paddingHorizontal="32dp"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginBottom="@dimen/spacing_bottom_inset"
+        android:minWidth="@dimen/button_min_width"
+        android:paddingHorizontal="@dimen/spacing_3xl"
         android:text="@string/delete_selected"
         android:backgroundTint="@color/colorError"
-        android:textColor="@android:color/white"
+        android:textColor="@color/textOnPrimary"
         android:enabled="false"
         app:cornerRadius="@dimen/radius_btn"
         android:textAllCaps="false"

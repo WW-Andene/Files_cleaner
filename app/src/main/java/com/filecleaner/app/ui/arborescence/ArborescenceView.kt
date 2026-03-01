@@ -18,6 +18,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.utils.MotionUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -25,28 +26,59 @@ class ArborescenceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
 
+    init {
+        isFocusable = true
+        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
+        contentDescription = context.getString(R.string.a11y_tree_view_default)
+        // D1: Set theme-dependent paint colors once at construction.
+        // View is recreated on configuration change, so this is sufficient.
+        initPaintColors()
+    }
+
     private val isDarkMode: Boolean
         get() = (context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-    // ── Layout constants ──
-    private val blockWidth = 260f
-    private val blockMinHeight = 80f
-    private val fileLineHeight = 28f
-    private val hGap = 100f  // horizontal gap between depth levels
-    private val vGap = 24f   // vertical gap between sibling blocks
-    private val cornerRadius = 16f
-    private val headerHeight = 48f
+    // ── Layout constants (dp-based, scaled by screen density) ──
+    // I5: Named constants extracted from magic numbers for readability and maintainability
+    companion object {
+        private const val BLOCK_WIDTH_DP = 220f
+        private const val BLOCK_MIN_HEIGHT_DP = 64f
+        private const val FILE_LINE_HEIGHT_DP = 24f
+        private const val H_GAP_DP = 48f       // horizontal gap between depth levels
+        private const val V_GAP_DP = 16f        // vertical gap between sibling blocks
+        private const val CORNER_RADIUS_DP = 10f
+        private const val HEADER_HEIGHT_DP = 48f
+        private const val GHOST_TEXT_SIZE_DP = 12f
+        private const val DEFAULT_MAX_FILES = 5
+        private const val EXPANDED_MAX_FILES = 50
+        private const val STROKE_WIDTH_THIN = 1.5f
+        private const val STROKE_WIDTH_MEDIUM = 2f
+        private const val STROKE_WIDTH_THICK = 4f
+        private const val STROKE_WIDTH_GLOW = 6f
+        private const val TITLE_LETTER_SPACING = -0.01f
+        private const val MIN_SCALE = 0.15f
+        private const val MAX_SCALE = 3f
+    }
 
-    // ── Theme colors (resolved from resources) ──
-    private val colorPrimary get() = ContextCompat.getColor(context, R.color.colorPrimary)
-    private val colorAccent get() = ContextCompat.getColor(context, R.color.colorAccent)
-    private val colorSurface get() = ContextCompat.getColor(context, R.color.surfaceColor)
-    private val colorSurfaceDim get() = ContextCompat.getColor(context, R.color.surfaceDim)
-    private val colorBorder get() = ContextCompat.getColor(context, R.color.borderDefault)
-    private val colorTextPrimary get() = ContextCompat.getColor(context, R.color.textPrimary)
-    private val colorTextSecondary get() = ContextCompat.getColor(context, R.color.textSecondary)
-    private val colorTextTertiary get() = ContextCompat.getColor(context, R.color.textTertiary)
+    private val dp = context.resources.displayMetrics.density
+    private val blockWidth = BLOCK_WIDTH_DP * dp
+    private val blockMinHeight = BLOCK_MIN_HEIGHT_DP * dp
+    private val fileLineHeight = FILE_LINE_HEIGHT_DP * dp
+    private val hGap = H_GAP_DP * dp
+    private val vGap = V_GAP_DP * dp
+    private val cornerRadius = CORNER_RADIUS_DP * dp
+    private val headerHeight = HEADER_HEIGHT_DP * dp
+
+    // ── Theme colors (resolved once — View is recreated on config change) ──
+    private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }
+    private val colorAccent by lazy { ContextCompat.getColor(context, R.color.colorAccent) }
+    private val colorSurface by lazy { ContextCompat.getColor(context, R.color.surfaceColor) }
+    private val colorSurfaceDim by lazy { ContextCompat.getColor(context, R.color.surfaceDim) }
+    private val colorBorder by lazy { ContextCompat.getColor(context, R.color.borderDefault) }
+    private val colorTextPrimary by lazy { ContextCompat.getColor(context, R.color.textPrimary) }
+    private val colorTextSecondary by lazy { ContextCompat.getColor(context, R.color.textSecondary) }
+    private val colorTextTertiary by lazy { ContextCompat.getColor(context, R.color.textTertiary) }
 
 
     // ── Paints ──
@@ -55,7 +87,7 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val blockStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 1.5f
+        strokeWidth = STROKE_WIDTH_THIN
     }
     private val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -64,11 +96,11 @@ class ArborescenceView @JvmOverloads constructor(
         textSize = context.resources.getDimension(R.dimen.text_subtitle)
         typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
         color = Color.WHITE
-        letterSpacing = -0.01f
+        letterSpacing = TITLE_LETTER_SPACING
     }
     private val subtitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_body_small)
-        color = 0xCCFFFFFF.toInt()
+        color = ContextCompat.getColor(context, R.color.textOnColor)
     }
     private val filePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_body)
@@ -78,7 +110,7 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 2f
+        strokeWidth = STROKE_WIDTH_MEDIUM
     }
     private val expandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_title)
@@ -86,25 +118,75 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 6f
+        strokeWidth = STROKE_WIDTH_THICK
     }
     private val highlightFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
+    private val highlightArrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+    }
+    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    // D1: Pre-allocated drag ghost paints (avoid allocation in onDraw during 60 FPS drag)
+    private val ghostPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+    }
+    private val ghostTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = GHOST_TEXT_SIZE_DP * dp
+    }
     private var highlightAnimator: ValueAnimator? = null
     private var highlightAlpha = 1f
+    // B5: Track pending fade-out runnable so it can be cancelled on detach
+    private val fadeOutRunnable = Runnable { fadeOutHighlight() }
 
-    // ── Category colors (resolved from resources for theme support) ──
-    private val categoryColors: Map<FileCategory, Int> get() = mapOf(
-        FileCategory.IMAGE to ContextCompat.getColor(context, R.color.catImage),
-        FileCategory.VIDEO to ContextCompat.getColor(context, R.color.catVideo),
-        FileCategory.AUDIO to ContextCompat.getColor(context, R.color.catAudio),
-        FileCategory.DOCUMENT to ContextCompat.getColor(context, R.color.catDocument),
-        FileCategory.APK to ContextCompat.getColor(context, R.color.catApk),
-        FileCategory.ARCHIVE to ContextCompat.getColor(context, R.color.catArchive),
-        FileCategory.DOWNLOAD to ContextCompat.getColor(context, R.color.catDownload),
-        FileCategory.OTHER to ContextCompat.getColor(context, R.color.catOther)
-    )
+    // D1: Cache ellipsis width — constant for a given paint, avoid measuring on every call
+    private var cachedEllipsisWidth = -1f
+    private var cachedEllipsisPaint: Paint? = null
+
+    /** Set theme-dependent paint colors once (View is recreated on config change). */
+    private fun initPaintColors() {
+        filePaint.color = colorTextPrimary
+        fileSizePaint.color = colorTextSecondary
+        blockStrokePaint.color = colorBorder
+        linePaint.color = (colorPrimary and 0x00FFFFFF) or 0x66000000
+        expandPaint.color = colorPrimary
+        highlightPaint.color = colorAccent
+        highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
+        ghostTextPaint.color = colorTextPrimary
+    }
+
+    // ── Category colors (resolved once — View is recreated on config change) ──
+    // Maps each FileCategory to its corresponding color resource; auto-populated
+    // from enum entries so new categories can't be silently missed.
+    private val categoryColorRes = mapOf(
+        FileCategory.IMAGE to R.color.catImage,
+        FileCategory.VIDEO to R.color.catVideo,
+        FileCategory.AUDIO to R.color.catAudio,
+        FileCategory.DOCUMENT to R.color.catDocument,
+        FileCategory.APK to R.color.catApk,
+        FileCategory.ARCHIVE to R.color.catArchive,
+        FileCategory.DOWNLOAD to R.color.catDownload,
+        FileCategory.OTHER to R.color.catOther
+    ).also { map ->
+        // Fail-fast if a FileCategory is added without a color mapping
+        require(map.keys == FileCategory.entries.toSet()) {
+            "categoryColorRes missing entries: ${FileCategory.entries.toSet() - map.keys}"
+        }
+    }
+    private val categoryColors: Map<FileCategory, Int> by lazy {
+        categoryColorRes.mapValues { (_, resId) -> ContextCompat.getColor(context, resId) }
+    }
+
+    // ── Reusable draw objects (avoid allocations in onDraw) ──
+    private val selectionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = STROKE_WIDTH_THICK
+    }
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = STROKE_WIDTH_GLOW
+    }
+    private val tempPath = Path()
 
     // ── Node layout data ──
     data class NodeLayout(
@@ -113,7 +195,10 @@ class ArborescenceView @JvmOverloads constructor(
         var y: Float = 0f,
         var w: Float = 0f,
         var h: Float = 0f,
-        var expanded: Boolean = false
+        var expanded: Boolean = false,
+        var filesExpanded: Boolean = false,
+        var cachedFiles: List<FileItem> = emptyList(),
+        var dominantCategory: FileCategory = FileCategory.OTHER
     )
 
     private var rootNode: DirectoryNode? = null
@@ -128,13 +213,13 @@ class ArborescenceView @JvmOverloads constructor(
     private val viewMatrix = Matrix()
     private val inverseMatrix = Matrix()
     private var scaleFactor = 1f
-    private val minScale = 0.15f
-    private val maxScale = 3f
 
-    // ── Drag state for file move ──
+    // ── Drag state for file/folder move ──
     var dragFilePath: String? = null
         private set
     var dragFileName: String? = null
+        private set
+    var dragIsFolder: Boolean = false
         private set
     private var dragX = 0f
     private var dragY = 0f
@@ -145,16 +230,18 @@ class ArborescenceView @JvmOverloads constructor(
 
     // ── Callbacks ──
     var onFileMoveRequested: ((filePath: String, targetDirPath: String) -> Unit)? = null
+    var onFolderMoveRequested: ((folderPath: String, targetDirPath: String) -> Unit)? = null
     var onStatsUpdate: ((totalFiles: Int, totalSize: Long, visibleNodes: Int, zoom: Float) -> Unit)? = null
     var onNodeSelected: ((DirectoryNode?) -> Unit)? = null
-    var onFileLongPress: ((filePath: String, fileName: String) -> Unit)? = null
+    var onItemDoubleTap: ((filePath: String, fileName: String, isFolder: Boolean) -> Unit)? = null
+    var onFilterCleared: (() -> Unit)? = null
 
     // ── Gesture detectors ──
     private val scaleDetector = ScaleGestureDetector(context,
         object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val oldScale = scaleFactor
-                scaleFactor = (scaleFactor * detector.scaleFactor).coerceIn(minScale, maxScale)
+                scaleFactor = (scaleFactor * detector.scaleFactor).coerceIn(MIN_SCALE, MAX_SCALE)
                 val ratio = scaleFactor / oldScale
                 viewMatrix.postScale(ratio, ratio, detector.focusX, detector.focusY)
                 invalidate()
@@ -189,33 +276,63 @@ class ArborescenceView @JvmOverloads constructor(
 
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 val pt = screenToWorld(e.x, e.y)
-                val hit = hitTest(pt[0], pt[1])
-                if (hit != null) {
-                    zoomToFit(hit)
+                // Check file row first, then folder header
+                val fileHit = hitTestFile(pt[0], pt[1])
+                if (fileHit != null) {
+                    onItemDoubleTap?.invoke(fileHit.first, fileHit.second, false)
+                    return true
+                }
+                val headerHit = hitTestHeader(pt[0], pt[1])
+                if (headerHit != null) {
+                    val layout = layouts[headerHit]
+                    if (layout != null) {
+                        onItemDoubleTap?.invoke(layout.node.path, layout.node.name, true)
+                    }
+                    return true
                 }
                 return true
             }
 
             override fun onLongPress(e: MotionEvent) {
                 val pt = screenToWorld(e.x, e.y)
-                val hit = hitTestFile(pt[0], pt[1])
-                if (hit != null) {
+                // Try file row first
+                val fileHit = hitTestFile(pt[0], pt[1])
+                if (fileHit != null) {
                     performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                    // If context menu callback is set, use that; otherwise drag
-                    if (onFileLongPress != null) {
-                        onFileLongPress?.invoke(hit.first, hit.second)
-                    } else {
-                        isDragging = true
-                        dragFilePath = hit.first
-                        dragFileName = hit.second
-                        dragSourceBlock = hit.third
-                        dragX = e.x
-                        dragY = e.y
-                        invalidate()
-                    }
+                    isDragging = true
+                    dragFilePath = fileHit.first
+                    dragFileName = fileHit.second
+                    dragIsFolder = false
+                    dragSourceBlock = fileHit.third
+                    dragX = e.x
+                    dragY = e.y
+                    invalidate()
+                    return
+                }
+                // Try folder header
+                val headerHit = hitTestHeader(pt[0], pt[1])
+                if (headerHit != null) {
+                    val layout = layouts[headerHit] ?: return
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    isDragging = true
+                    dragFilePath = layout.node.path
+                    dragFileName = layout.node.name
+                    dragIsFolder = true
+                    dragSourceBlock = headerHit
+                    dragX = e.x
+                    dragY = e.y
+                    invalidate()
                 }
             }
         })
+
+    // B5: Cancel all animations and pending callbacks to prevent leaks and post-detach crashes
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        highlightAnimator?.cancel()
+        highlightAnimator = null
+        removeCallbacks(fadeOutRunnable)
+    }
 
     fun getExpandedPaths(): Set<String> =
         layouts.filter { it.value.expanded }.keys.toSet()
@@ -275,26 +392,39 @@ class ArborescenceView @JvmOverloads constructor(
         notifyStats()
     }
 
-    /** Recursively finds nodes with matching filtered files and adds their paths + ancestors. */
-    private fun collectMatchingPaths(node: DirectoryNode, paths: MutableSet<String>): Boolean {
-        var hasMatch = filteredFiles(node).isNotEmpty()
-        for (child in node.children) {
-            if (collectMatchingPaths(child, paths)) {
-                hasMatch = true
+    /** Iterative post-order traversal — marks nodes with matching files + their ancestors. */
+    private fun collectMatchingPaths(root: DirectoryNode, paths: MutableSet<String>) {
+        // Phase 1: collect all nodes in pre-order (parents before children)
+        val ordered = mutableListOf<DirectoryNode>()
+        val stack = ArrayDeque<DirectoryNode>()
+        stack.add(root)
+        while (stack.isNotEmpty()) {
+            val node = stack.removeLast()
+            ordered.add(node)
+            for (child in node.children.asReversed()) stack.add(child)
+        }
+        // Phase 2: iterate in reverse (post-order) to propagate matches upward
+        val matchSet = mutableSetOf<String>()
+        for (node in ordered.asReversed()) {
+            val hasOwnMatch = filteredFiles(node).isNotEmpty()
+            val childMatch = node.children.any { it.path in matchSet }
+            if (hasOwnMatch || childMatch) {
+                matchSet.add(node.path)
+                paths.add(node.path)
             }
         }
-        if (hasMatch) {
-            paths.add(node.path)
-        }
-        return hasMatch
     }
 
-    private fun rebuildWithState(node: DirectoryNode, expandedPaths: Set<String>) {
-        val expanded = node.path in expandedPaths
-        buildLayout(node, expanded = expanded, expandChildren = false)
-        if (expanded) {
-            for (child in node.children) {
-                rebuildWithState(child, expandedPaths)
+    /** Iterative rebuild — avoids stack overflow on deeply nested trees. */
+    private fun rebuildWithState(root: DirectoryNode, expandedPaths: Set<String>) {
+        val stack = ArrayDeque<DirectoryNode>()
+        stack.add(root)
+        while (stack.isNotEmpty()) {
+            val node = stack.removeLast()
+            val expanded = node.path in expandedPaths
+            buildLayout(node, expanded = expanded, expandChildren = false)
+            if (expanded) {
+                for (child in node.children.asReversed()) stack.add(child)
             }
         }
     }
@@ -306,7 +436,7 @@ class ArborescenceView @JvmOverloads constructor(
         }
         if (filterExtensions.isNotEmpty()) {
             files = files.filter { file ->
-                file.name.substringAfterLast('.', "").lowercase() in filterExtensions
+                file.extension in filterExtensions
             }
         }
         return files
@@ -314,15 +444,22 @@ class ArborescenceView @JvmOverloads constructor(
 
     private fun buildLayout(node: DirectoryNode, expanded: Boolean, expandChildren: Boolean) {
         val filtered = filteredFiles(node)
-        val maxFiles = 5
-        val displayFiles = min(filtered.size, maxFiles)
+        val existing = layouts[node.path]
+        val filesExp = existing?.filesExpanded ?: false
+        val displayFiles = if (filesExp) min(filtered.size, EXPANDED_MAX_FILES) else min(filtered.size, DEFAULT_MAX_FILES)
+        val hasMore = filtered.size > displayFiles
         val h = headerHeight + displayFiles * fileLineHeight +
-            (if (filtered.size > maxFiles) fileLineHeight else 0f) + 12f
+            (if (hasMore) fileLineHeight else 0f) + 8f * dp
+        val dominant = node.files.groupBy { it.category }
+            .maxByOrNull { it.value.size }?.key ?: FileCategory.OTHER
         layouts[node.path] = NodeLayout(
             node = node,
             w = blockWidth,
             h = max(blockMinHeight, h),
-            expanded = expanded
+            expanded = expanded,
+            filesExpanded = filesExp,
+            cachedFiles = filtered,
+            dominantCategory = dominant
         )
         if (expanded) {
             for (child in node.children) {
@@ -369,10 +506,27 @@ class ArborescenceView @JvmOverloads constructor(
         val layout = layouts[path] ?: return
         val node = layout.node
 
+        // Collapse file list on previously selected block
+        val prevSelected = selectedPath
+        if (prevSelected != null && prevSelected != path) {
+            val prevLayout = layouts[prevSelected]
+            if (prevLayout != null && prevLayout.filesExpanded) {
+                prevLayout.filesExpanded = false
+                recalcBlockHeight(prevLayout)
+            }
+        }
+
         selectedPath = path
         onNodeSelected?.invoke(node)
 
+        // Toggle file list expansion on the selected block
+        if (layout.cachedFiles.size > DEFAULT_MAX_FILES) {
+            layout.filesExpanded = !layout.filesExpanded
+            recalcBlockHeight(layout)
+        }
+
         if (node.children.isEmpty()) {
+            computePositions()
             invalidate()
             return
         }
@@ -386,14 +540,27 @@ class ArborescenceView @JvmOverloads constructor(
                     buildLayout(child, expanded = false, expandChildren = false)
                 }
             }
+            announceForAccessibility(context.getString(
+                R.string.a11y_node_expanded, node.name, node.children.size))
         } else {
             // Remove all descendant layouts
             removeDescendantLayouts(node)
+            announceForAccessibility(context.getString(
+                R.string.a11y_node_collapsed, node.name))
         }
 
         computePositions()
         invalidate()
         notifyStats()
+    }
+
+    private fun recalcBlockHeight(layout: NodeLayout) {
+        val fileCount = layout.cachedFiles.size
+        val displayFiles = if (layout.filesExpanded) min(fileCount, EXPANDED_MAX_FILES) else min(fileCount, DEFAULT_MAX_FILES)
+        val hasMore = fileCount > displayFiles
+        val h = headerHeight + displayFiles * fileLineHeight +
+            (if (hasMore) fileLineHeight else 0f) + 8f * dp
+        layout.h = max(blockMinHeight, h)
     }
 
     private fun removeDescendantLayouts(node: DirectoryNode) {
@@ -414,14 +581,25 @@ class ArborescenceView @JvmOverloads constructor(
         return null
     }
 
+    /** Returns blockPath if the folder header area was hit. */
+    private fun hitTestHeader(wx: Float, wy: Float): String? {
+        for ((path, layout) in layouts) {
+            if (wx >= layout.x && wx <= layout.x + layout.w &&
+                wy >= layout.y && wy <= layout.y + headerHeight
+            ) {
+                return path
+            }
+        }
+        return null
+    }
+
     /** Returns (filePath, fileName, blockPath) if a file row was hit. */
     private fun hitTestFile(wx: Float, wy: Float): Triple<String, String, String>? {
         for ((blockPath, layout) in layouts) {
             if (wx < layout.x || wx > layout.x + layout.w) continue
             val fileStartY = layout.y + headerHeight
-            val maxFiles = 5
-            // Use filteredFiles() to match what drawBlock() actually renders
-            val files = filteredFiles(layout.node).take(maxFiles)
+            val maxFiles = if (layout.filesExpanded) min(layout.cachedFiles.size, EXPANDED_MAX_FILES) else DEFAULT_MAX_FILES
+            val files = layout.cachedFiles.take(maxFiles)
             for ((i, file) in files.withIndex()) {
                 val rowTop = fileStartY + i * fileLineHeight
                 if (wy >= rowTop && wy <= rowTop + fileLineHeight) {
@@ -436,7 +614,7 @@ class ArborescenceView @JvmOverloads constructor(
         val layout = layouts[path] ?: return
         val cw = width.toFloat()
         val ch = height.toFloat()
-        val targetScale = min(cw / (layout.w + 40f), ch / (layout.h + 40f)).coerceIn(minScale, maxScale)
+        val targetScale = min(cw / (layout.w + 40f), ch / (layout.h + 40f)).coerceIn(MIN_SCALE, MAX_SCALE)
         scaleFactor = targetScale
         viewMatrix.reset()
         viewMatrix.postScale(scaleFactor, scaleFactor)
@@ -464,16 +642,25 @@ class ArborescenceView @JvmOverloads constructor(
                     dragX = event.x
                     dragY = event.y
                     val pt = screenToWorld(dragX, dragY)
-                    dropTargetPath = hitTest(pt[0], pt[1])?.takeIf { it != dragSourceBlock }
+                    dropTargetPath = hitTest(pt[0], pt[1])?.takeIf { target ->
+                        target != dragSourceBlock &&
+                            // Prevent dropping a folder into itself or its descendants
+                            !(dragIsFolder && dragFilePath != null && target.startsWith(dragFilePath!!))
+                    }
                     invalidate()
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     if (dragFilePath != null && dropTargetPath != null) {
-                        onFileMoveRequested?.invoke(dragFilePath!!, dropTargetPath!!)
+                        if (dragIsFolder) {
+                            onFolderMoveRequested?.invoke(dragFilePath!!, dropTargetPath!!)
+                        } else {
+                            onFileMoveRequested?.invoke(dragFilePath!!, dropTargetPath!!)
+                        }
                     }
                     isDragging = false
                     dragFilePath = null
                     dragFileName = null
+                    dragIsFolder = false
                     dragSourceBlock = null
                     dropTargetPath = null
                     invalidate()
@@ -489,6 +676,8 @@ class ArborescenceView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (rootNode == null) return
+
+        // D1: Paint colors set once in initPaintColors() — no per-frame work needed.
 
         canvas.save()
         canvas.concat(viewMatrix)
@@ -522,136 +711,214 @@ class ArborescenceView @JvmOverloads constructor(
         val endY = child.y + child.h / 2f
         val midX = (startX + endX) / 2f
 
-        val path = Path().apply {
-            moveTo(startX, startY)
-            cubicTo(midX, startY, midX, endY, endX, endY)
-        }
-        canvas.drawPath(path, linePaint)
+        tempPath.rewind()
+        tempPath.moveTo(startX, startY)
+        tempPath.cubicTo(midX, startY, midX, endY, endX, endY)
+        canvas.drawPath(tempPath, linePaint)
     }
 
     private fun drawBlock(canvas: Canvas, layout: NodeLayout, isSelected: Boolean, isDropTarget: Boolean) {
         val node = layout.node
         val rect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + layout.h)
 
-        // Theme-aware colors from resources
-        filePaint.color = colorTextPrimary
-        fileSizePaint.color = colorTextSecondary
-        blockStrokePaint.color = colorBorder
-        linePaint.color = (colorPrimary and 0x00FFFFFF) or 0x66000000
-        expandPaint.color = colorPrimary
-        highlightPaint.color = colorAccent
-        highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
-
-
         // Block background, semi-transparent if no matching files
-        val hasMatchingFiles = filteredFiles(node).isNotEmpty() ||
+        val hasMatchingFiles = layout.cachedFiles.isNotEmpty() ||
             (filterCategory == null && filterExtensions.isEmpty())
-        val alpha = if (hasMatchingFiles) 255 else 80
+        val blockAlpha = if (hasMatchingFiles) 255 else 80
         blockPaint.color = colorSurface
-        blockPaint.alpha = alpha
+        blockPaint.alpha = blockAlpha
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockPaint)
         blockPaint.alpha = 255
 
-        // Drop target highlight
-        if (isDropTarget) {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, highlightPaint)
-        }
+        // Clip to rounded block bounds to prevent text overflow / superposition
+        canvas.save()
+        tempPath.rewind()
+        tempPath.addRoundRect(rect, cornerRadius, cornerRadius, Path.Direction.CW)
+        canvas.clipPath(tempPath)
 
-        // Selection highlight
-        if (isSelected) {
-            val selPaint = Paint(highlightPaint).apply { color = colorPrimary }
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, selPaint)
-        }
-
-        // Header bar with category-based color
-        val dominant = node.files.groupBy { it.category }
-            .maxByOrNull { it.value.size }?.key ?: FileCategory.OTHER
-        headerPaint.color = categoryColors[dominant] ?: 0xFF78909C.toInt()
+        // Header bar with category-based color (dominant cached at layout build time)
+        headerPaint.color = categoryColors[layout.dominantCategory] ?: categoryColors[FileCategory.OTHER]!!
         val headerRect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + headerHeight)
         canvas.drawRoundRect(headerRect, cornerRadius, cornerRadius, headerPaint)
         // Square off bottom corners of header
         canvas.drawRect(layout.x, layout.y + headerHeight - cornerRadius,
             layout.x + layout.w, layout.y + headerHeight, headerPaint)
 
-        // Title (folder name)
-        val displayName = if (node.name.length > 18) node.name.take(16) + "\u2026" else node.name
-        canvas.drawText(displayName, layout.x + 12f, layout.y + 22f, titlePaint)
+        // Title (folder name) — use font metrics to vertically center in header
+        val pad = 8f * dp
+        val indicatorW = if (node.children.isNotEmpty()) 18f * dp else 0f
+        val titleMaxWidth = layout.w - pad * 2 - indicatorW
+        val displayName = ellipsizeText(node.name, titlePaint, titleMaxWidth)
+        // Place title baseline so text is centered in the top half of the header
+        val titleMetrics = titlePaint.fontMetrics
+        val titleTextH = titleMetrics.descent - titleMetrics.ascent
+        val titleBaseline = layout.y + (headerHeight * 0.5f - titleTextH) / 2f - titleMetrics.ascent
+        canvas.drawText(displayName, layout.x + pad, titleBaseline, titlePaint)
 
-        // Subtitle (file count + size)
+        // Subtitle (file count + size) — centered in the bottom half of the header
         val sizeStr = formatSize(node.totalSize)
-        canvas.drawText("${node.totalFileCount} files \u2022 $sizeStr",
-            layout.x + 12f, layout.y + 40f, subtitlePaint)
+        val subtitleText = context.resources.getQuantityString(
+            R.plurals.tree_node_subtitle, node.totalFileCount, node.totalFileCount, sizeStr)
+        val subtitleMaxWidth = layout.w - pad * 2
+        val subMetrics = subtitlePaint.fontMetrics
+        val subTextH = subMetrics.descent - subMetrics.ascent
+        val subBaseline = layout.y + headerHeight * 0.5f + (headerHeight * 0.5f - subTextH) / 2f - subMetrics.ascent
+        canvas.drawText(ellipsizeText(subtitleText, subtitlePaint, subtitleMaxWidth),
+            layout.x + pad, subBaseline, subtitlePaint)
 
-        // Expand/collapse indicator
+        // Expand/collapse indicator — vertically centered in header
         if (node.children.isNotEmpty()) {
             val indicator = if (layout.expanded) "\u25BC" else "\u25B6"
-            canvas.drawText(indicator, layout.x + layout.w - 28f, layout.y + 30f, expandPaint)
+            val expMetrics = expandPaint.fontMetrics
+            val expBaseline = layout.y + (headerHeight - (expMetrics.descent - expMetrics.ascent)) / 2f - expMetrics.ascent
+            canvas.drawText(indicator, layout.x + layout.w - 18f * dp, expBaseline, expandPaint)
         }
 
-        // File list (filtered)
-        val filtered = filteredFiles(node)
-        val maxFiles = 5
+        // File list (filtered) — clip to file area within block
+        val filtered = layout.cachedFiles
+        val maxFiles = if (layout.filesExpanded) min(filtered.size, EXPANDED_MAX_FILES) else DEFAULT_MAX_FILES
         val files = filtered.take(maxFiles)
+        var highlightFileRowTop = -1f // Track for drawing arrow outside clip
+        val dotR = 3f * dp
+        val fileXStart = 18f * dp
+        val fileTextX = 28f * dp
+        val fileSizeEndPad = 6f * dp
+
+        // Compute file text baseline offset once (vertically centered in fileLineHeight)
+        val fileMetrics = filePaint.fontMetrics
+        val fileTextH = fileMetrics.descent - fileMetrics.ascent
+        val fileBaselineOffset = (fileLineHeight - fileTextH) / 2f - fileMetrics.ascent
+
+        canvas.save()
+        canvas.clipRect(layout.x, layout.y + headerHeight, layout.x + layout.w, layout.y + layout.h)
         for ((i, file) in files.withIndex()) {
-            val fy = layout.y + headerHeight + i * fileLineHeight + 20f
+            val rowTop = layout.y + headerHeight + i * fileLineHeight
+            val fy = rowTop + fileBaselineOffset
 
-            // Category dot
-            val dotColor = categoryColors[file.category] ?: 0xFF78909C.toInt()
-            val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = dotColor }
-            canvas.drawCircle(layout.x + 16f, fy - 5f, 4f, dotPaint)
+            // Category dot — vertically centered in row
+            dotPaint.color = categoryColors[file.category] ?: categoryColors[FileCategory.OTHER]!!
+            canvas.drawCircle(layout.x + fileXStart * 0.6f, rowTop + fileLineHeight / 2f, dotR, dotPaint)
 
-            // File name (truncated)
-            val fname = if (file.name.length > 22) file.name.take(20) + "\u2026" else file.name
-            canvas.drawText(fname, layout.x + 28f, fy, filePaint)
+            // File name (truncated to fit before file size)
+            val fsz = formatSize(file.size)
+            val fszWidth = fileSizePaint.measureText(fsz)
+            val maxNameWidth = layout.w - fileTextX - fszWidth - fileSizeEndPad * 3
+            val fname = ellipsizeText(file.name, filePaint, maxNameWidth)
+            canvas.drawText(fname, layout.x + fileTextX, fy, filePaint)
 
             // File size
-            val fsz = formatSize(file.size)
-            canvas.drawText(fsz, layout.x + layout.w - fileSizePaint.measureText(fsz) - 8f, fy, fileSizePaint)
+            canvas.drawText(fsz, layout.x + layout.w - fszWidth - fileSizeEndPad, fy, fileSizePaint)
 
-            // Highlight matched file
+            // Highlight matched file row fill + border
             if (file.path == highlightedFilePath) {
                 val fileRowTop = layout.y + headerHeight + i * fileLineHeight
+                highlightFileRowTop = fileRowTop
                 val highlightRect = RectF(
-                    layout.x + 4f, fileRowTop,
-                    layout.x + layout.w - 4f, fileRowTop + fileLineHeight
+                    layout.x + 2f, fileRowTop,
+                    layout.x + layout.w - 2f, fileRowTop + fileLineHeight
                 )
-                highlightFillPaint.alpha = (64 * highlightAlpha).toInt()
-                highlightPaint.alpha = (255 * highlightAlpha).toInt()
-                canvas.drawRoundRect(highlightRect, 4f, 4f, highlightFillPaint)
-                canvas.drawRoundRect(highlightRect, 4f, 4f, highlightPaint)
+
+                // Strong fill + border on the file row
+                highlightFillPaint.color = colorAccent
+                highlightFillPaint.setAlpha((180 * highlightAlpha).toInt())
+                val savedStrokeWidth = highlightPaint.strokeWidth
+                highlightPaint.strokeWidth = 3f
+                highlightPaint.setAlpha((255 * highlightAlpha).toInt())
+                canvas.drawRoundRect(highlightRect, 6f, 6f, highlightFillPaint)
+                canvas.drawRoundRect(highlightRect, 6f, 6f, highlightPaint)
+                highlightPaint.strokeWidth = savedStrokeWidth
             }
         }
 
         // "and N more..." label
         if (filtered.size > maxFiles) {
-            val moreY = layout.y + headerHeight + maxFiles * fileLineHeight + 20f
-            val moreText = "+${filtered.size - maxFiles} more\u2026"
+            val moreRowTop = layout.y + headerHeight + maxFiles * fileLineHeight
+            val moreBaseline = moreRowTop + fileBaselineOffset
+            val remaining = filtered.size - maxFiles
+            val moreText = context.resources.getQuantityString(
+                R.plurals.tree_more_files, remaining, remaining)
             val savedColor = fileSizePaint.color
             fileSizePaint.color = colorTextTertiary
-            canvas.drawText(moreText, layout.x + 28f, moreY, fileSizePaint)
+            canvas.drawText(moreText, layout.x + fileTextX, moreBaseline, fileSizePaint)
             fileSizePaint.color = savedColor
         }
 
+        canvas.restore() // Restore from file list clip
+        canvas.restore() // Restore from block-level clip
+
+        // --- Draw elements outside clip (borders, highlights, arrows) ---
+
         // Border
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockStrokePaint)
+
+        // Drop target highlight
+        if (isDropTarget) {
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, highlightPaint)
+        }
+
+        // Selection highlight (reuse pre-allocated selectionPaint)
+        if (isSelected) {
+            selectionPaint.color = colorPrimary
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, selectionPaint)
+        }
+
+        // Highlight glow + arrow (drawn outside clip so arrow extends left of block)
+        if (highlightFileRowTop >= 0f) {
+            // Glow outline around the entire containing block (reuse pre-allocated glowPaint)
+            glowPaint.color = colorAccent
+            glowPaint.setAlpha((160 * highlightAlpha).toInt())
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, glowPaint)
+
+            // Large arrow indicator on the left edge
+            highlightArrowPaint.color = colorAccent
+            highlightArrowPaint.alpha = (255 * highlightAlpha).toInt()
+            tempPath.rewind()
+            val cy = highlightFileRowTop + fileLineHeight / 2f
+            tempPath.moveTo(layout.x - 20f, cy - 12f)
+            tempPath.lineTo(layout.x - 4f, cy)
+            tempPath.lineTo(layout.x - 20f, cy + 12f)
+            tempPath.close()
+            canvas.drawPath(tempPath, highlightArrowPaint)
+        }
     }
 
+    // D1: Cache ellipsis width per paint to avoid measuring "…" on every binary search iteration
+    private fun ellipsisWidth(paint: Paint): Float {
+        if (paint === cachedEllipsisPaint && cachedEllipsisWidth >= 0f) return cachedEllipsisWidth
+        cachedEllipsisWidth = paint.measureText("\u2026")
+        cachedEllipsisPaint = paint
+        return cachedEllipsisWidth
+    }
+
+    private fun ellipsizeText(text: String, paint: Paint, maxWidth: Float): String {
+        if (maxWidth <= 0f) return "\u2026"
+        if (paint.measureText(text) <= maxWidth) return text
+        val ew = ellipsisWidth(paint)
+        // Binary search for the longest prefix that fits (O(log n) measureText calls)
+        var lo = 1
+        var hi = text.length - 1
+        while (lo < hi) {
+            val mid = (lo + hi + 1) / 2
+            if (paint.measureText(text, 0, mid) + ew <= maxWidth) {
+                lo = mid
+            } else {
+                hi = mid - 1
+            }
+        }
+        return if (lo > 0) text.substring(0, lo) + "\u2026" else "\u2026"
+    }
+
+    // D1: Uses pre-allocated ghostPaint/ghostTextPaint — zero allocations during drag
     private fun drawDragGhost(canvas: Canvas) {
         val name = dragFileName ?: return
-        val ghostPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = (colorAccent and 0x00FFFFFF) or 0xDD000000.toInt()
-            style = Paint.Style.FILL
-        }
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = colorTextPrimary
-            textSize = 16f
-        }
-        val tw = textPaint.measureText(name) + 24f
+        ghostPaint.color = (colorAccent and 0x00FFFFFF) or 0xDD000000.toInt()
+        val tw = ghostTextPaint.measureText(name) + 16f * dp
+        val th = 20f * dp
         canvas.drawRoundRect(
-            RectF(dragX - tw / 2, dragY - 24f, dragX + tw / 2, dragY + 8f),
-            12f, 12f, ghostPaint
+            RectF(dragX - tw / 2, dragY - th, dragX + tw / 2, dragY + 6f * dp),
+            8f * dp, 8f * dp, ghostPaint
         )
-        canvas.drawText(name, dragX - tw / 2 + 12f, dragY - 4f, textPaint)
+        canvas.drawText(name, dragX - tw / 2 + 8f * dp, dragY - 3f * dp, ghostTextPaint)
     }
 
     // ── Search + highlight ──
@@ -707,12 +974,71 @@ class ArborescenceView @JvmOverloads constructor(
     fun highlightFilePath(filePath: String) {
         val root = rootNode ?: return
         val node = findNodeContainingFile(root, filePath) ?: return
+
+        // Clear filters so the file is guaranteed to be visible
+        if (filterCategory != null || filterExtensions.isNotEmpty()) {
+            filterCategory = null
+            filterExtensions = emptySet()
+            // Rebuild all layouts with cleared filters
+            val expandedPaths = layouts.filter { it.value.expanded }.keys
+            layouts.clear()
+            rebuildWithState(root, expandedPaths)
+            onFilterCleared?.invoke()
+        }
+
         expandToNode(node)
         highlightedFilePath = filePath
         selectedPath = node.path
-        zoomToFit(node.path)
-        startHighlightAnimation()
-        invalidate()
+
+        // Expand file list on the target block so the highlighted file is visible
+        val layout = layouts[node.path]
+        if (layout != null && layout.cachedFiles.size > DEFAULT_MAX_FILES) {
+            layout.filesExpanded = true
+            recalcBlockHeight(layout)
+            computePositions()
+        }
+
+        // Defer zoom if view hasn't been laid out yet (e.g. just navigated to tab)
+        if (width == 0 || height == 0) {
+            post {
+                zoomToFileRow(node.path, filePath)
+                startHighlightAnimation()
+                invalidate()
+            }
+        } else {
+            zoomToFileRow(node.path, filePath)
+            startHighlightAnimation()
+            invalidate()
+        }
+    }
+
+    /** Zoom and center so the specific file row is in the middle of the screen. */
+    private fun zoomToFileRow(blockPath: String, filePath: String) {
+        val layout = layouts[blockPath] ?: return
+        val cw = width.toFloat()
+        val ch = height.toFloat()
+        if (cw <= 0f || ch <= 0f) return
+
+        // Find the Y position of the specific file row
+        val visibleMax = if (layout.filesExpanded) min(layout.cachedFiles.size, EXPANDED_MAX_FILES) else DEFAULT_MAX_FILES
+        val files = layout.cachedFiles.take(visibleMax)
+        val fileIndex = files.indexOfFirst { it.path == filePath }
+        val fileRowCenterY = if (fileIndex >= 0) {
+            layout.y + headerHeight + fileIndex * fileLineHeight + fileLineHeight / 2f
+        } else {
+            layout.y + layout.h / 2f
+        }
+
+        // Use a scale that shows the block comfortably — zoomed out enough to see context
+        val targetScale = min(cw / (layout.w + 200f), ch / (layout.h + 200f))
+            .coerceIn(0.5f, 1.2f)
+        scaleFactor = targetScale
+        viewMatrix.reset()
+        viewMatrix.postScale(scaleFactor, scaleFactor)
+        viewMatrix.postTranslate(
+            cw / 2f - (layout.x + layout.w / 2f) * scaleFactor,
+            ch / 2f - fileRowCenterY * scaleFactor
+        )
     }
 
     fun clearHighlight() {
@@ -728,11 +1054,19 @@ class ArborescenceView @JvmOverloads constructor(
     private fun startHighlightAnimation() {
         highlightAnimator?.cancel()
         highlightAlpha = 1f
-        val emphasisDuration = resources.getInteger(R.integer.motion_emphasis).toLong()
 
-        highlightAnimator = ValueAnimator.ofFloat(1f, 0.3f, 1f).apply {
+        if (MotionUtil.isReducedMotion(context)) {
+            // Skip pulsing — just show highlight then fade out after delay
+            invalidate()
+            removeCallbacks(fadeOutRunnable)
+            postDelayed(fadeOutRunnable, 3000)
+            return
+        }
+
+        val emphasisDuration = resources.getInteger(R.integer.motion_emphasis).toLong()
+        highlightAnimator = ValueAnimator.ofFloat(1f, 0.2f, 1f).apply {
             duration = emphasisDuration
-            repeatCount = 2
+            repeatCount = 4
             repeatMode = ValueAnimator.RESTART
             addUpdateListener {
                 highlightAlpha = it.animatedValue as Float
@@ -740,7 +1074,8 @@ class ArborescenceView @JvmOverloads constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    postDelayed({ fadeOutHighlight() }, 2000)
+                    removeCallbacks(fadeOutRunnable)
+            postDelayed(fadeOutRunnable, 3000)
                 }
             })
             start()
@@ -750,8 +1085,17 @@ class ArborescenceView @JvmOverloads constructor(
     private fun fadeOutHighlight() {
         if (highlightedFilePath == null) return
         highlightAnimator?.cancel()
-        val enterDuration = resources.getInteger(R.integer.motion_enter).toLong()
 
+        if (MotionUtil.isReducedMotion(context)) {
+            highlightedFilePath = null
+            highlightAlpha = 1f
+            highlightPaint.alpha = 255
+            highlightFillPaint.alpha = 64
+            invalidate()
+            return
+        }
+
+        val enterDuration = resources.getInteger(R.integer.motion_enter).toLong()
         highlightAnimator = ValueAnimator.ofFloat(1f, 0f).apply {
             duration = enterDuration
             addUpdateListener {
@@ -792,23 +1136,38 @@ class ArborescenceView @JvmOverloads constructor(
         notifyStats()
     }
 
-    private fun findPath(current: DirectoryNode, target: DirectoryNode, path: MutableList<DirectoryNode>): Boolean {
-        path.add(current)
-        if (current.path == target.path) return true
-        for (child in current.children) {
-            if (findPath(child, target, path)) return true
+    /** Iterative DFS path-finding — avoids stack overflow on deeply nested trees. */
+    private fun findPath(root: DirectoryNode, target: DirectoryNode, path: MutableList<DirectoryNode>): Boolean {
+        // DFS with explicit stack; each frame tracks (node, childIndex)
+        val stack = ArrayDeque<Pair<DirectoryNode, Int>>()
+        stack.add(root to 0)
+        path.add(root)
+        if (root.path == target.path) return true
+
+        while (stack.isNotEmpty()) {
+            val (node, idx) = stack.last()
+            if (idx < node.children.size) {
+                stack[stack.lastIndex] = node to (idx + 1)
+                val child = node.children[idx]
+                path.add(child)
+                if (child.path == target.path) return true
+                stack.add(child to 0)
+            } else {
+                stack.removeLast()
+                path.removeAt(path.lastIndex)
+            }
         }
-        path.removeAt(path.lastIndex)
         return false
     }
 
-    private fun findNodeContainingFile(node: DirectoryNode, filePath: String): DirectoryNode? {
-        for (file in node.files) {
-            if (file.path == filePath) return node
-        }
-        for (child in node.children) {
-            val result = findNodeContainingFile(child, filePath)
-            if (result != null) return result
+    /** Iterative BFS search — avoids stack overflow on deeply nested trees. */
+    private fun findNodeContainingFile(root: DirectoryNode, filePath: String): DirectoryNode? {
+        val queue = ArrayDeque<DirectoryNode>()
+        queue.add(root)
+        while (queue.isNotEmpty()) {
+            val node = queue.removeFirst()
+            if (node.files.any { it.path == filePath }) return node
+            queue.addAll(node.children)
         }
         return null
     }

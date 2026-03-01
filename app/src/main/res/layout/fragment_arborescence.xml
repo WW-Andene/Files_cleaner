@@ -11,8 +11,8 @@
         android:id="@+id/til_search_tree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -33,35 +33,26 @@
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionSearch"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+            android:lineSpacingMultiplier="1.0" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Stats row + filter toggle + zoom info -->
+    <!-- Filter toggle row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="6dp">
-
-        <TextView
-            android:id="@+id/tv_stats_header"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:fontFamily="sans-serif-medium"
-            android:visibility="gone" />
+        android:gravity="center_vertical|end"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_sm">
 
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="0dp"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            app:cardCornerRadius="@dimen/radius_btn"
+            app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="0dp"
-            android:layout_marginHorizontal="4dp">
+            app:strokeWidth="@dimen/stroke_none">
 
             <ImageButton
                 android:id="@+id/btn_toggle_filters"
@@ -70,17 +61,10 @@
                 android:src="@drawable/ic_view_list"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:padding="6dp"
+                android:padding="@dimen/spacing_md"
                 android:contentDescription="@string/toggle_filters"
                 app:tint="@color/textSecondary" />
         </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/tv_zoom_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Filter panel (collapsible) -->
@@ -89,8 +73,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="4dp"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_xs"
         android:visibility="gone">
 
         <LinearLayout
@@ -103,21 +87,23 @@
                 android:id="@+id/spinner_tree_category"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="44dp"
-                android:layout_marginEnd="6dp"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginEnd="@dimen/spacing_sm"
                 android:background="@drawable/bg_spinner"
-                android:popupBackground="@color/surfaceColor"
-                android:paddingHorizontal="12dp" />
+                android:popupBackground="@drawable/bg_spinner_dropdown"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:contentDescription="@string/filter_by_extension" />
 
             <Spinner
                 android:id="@+id/spinner_tree_sort"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="44dp"
-                android:layout_marginStart="6dp"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginStart="@dimen/spacing_sm"
                 android:background="@drawable/bg_spinner"
-                android:popupBackground="@color/surfaceColor"
-                android:paddingHorizontal="12dp" />
+                android:popupBackground="@drawable/bg_spinner_dropdown"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:contentDescription="@string/a11y_sort_order" />
         </LinearLayout>
 
         <HorizontalScrollView
@@ -125,7 +111,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:paddingTop="4dp"
+            android:paddingTop="@dimen/spacing_xs"
             android:visibility="gone">
 
             <com.google.android.material.chip.ChipGroup
@@ -133,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:singleLine="true"
-                app:chipSpacingHorizontal="6dp" />
+                app:chipSpacingHorizontal="@dimen/spacing_chip" />
         </HorizontalScrollView>
     </LinearLayout>
 
@@ -141,12 +127,46 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:clipChildren="true"
+        android:clipToPadding="true">
 
         <com.filecleaner.app.ui.arborescence.ArborescenceView
             android:id="@+id/arborescence_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <!-- Stats overlay (top-left corner) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:orientation="vertical"
+            android:background="@drawable/bg_stats_overlay"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:elevation="@dimen/elevation_raised">
+
+            <TextView
+                android:id="@+id/tv_stats_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textOnPrimary"
+                android:fontFamily="sans-serif-medium"
+                android:accessibilityLiveRegion="polite"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_zoom_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textOnPrimary"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <!-- Empty state -->
         <LinearLayout
@@ -156,23 +176,35 @@
             android:layout_gravity="center"
             android:orientation="vertical"
             android:gravity="center"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/ic_raccoon_face"
+                android:layout_width="@dimen/icon_empty_state"
+                android:layout_height="@dimen/icon_empty_state"
+                android:src="@drawable/ic_raccoon_logo"
                 android:alpha="0.55"
                 android:importantForAccessibility="no" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_lg"
                 android:text="@string/scan_to_see_results"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Body"
                 android:textColor="@color/textSecondary"
                 android:gravity="center" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_scan_now"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height_sm"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/scan_storage"
+                android:textAllCaps="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
         </LinearLayout>
 
         <!-- Selected node detail (bottom-right) -->
@@ -180,16 +212,20 @@
             android:id="@+id/tv_node_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="@dimen/node_detail_max_width"
             android:layout_gravity="bottom|end"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:layout_marginBottom="@dimen/spacing_bottom_inset"
             android:background="@drawable/bg_stats_overlay"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="10dp"
-            android:textColor="@android:color/white"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_md"
+            android:textColor="@color/textOnPrimary"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:fontFamily="sans-serif-medium"
-            android:elevation="4dp"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:elevation="@dimen/elevation_raised"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone" />
 
         <!-- Back-to-root mini FAB (bottom-start) -->
@@ -198,13 +234,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginStart="@dimen/spacing_lg"
+            android:layout_marginBottom="@dimen/spacing_bottom_inset"
             android:contentDescription="@string/reset_view"
-            android:src="@drawable/ic_raccoon_face"
+            android:src="@drawable/ic_recenter"
             app:fabSize="mini"
-            app:backgroundTint="@color/colorPrimary"
-            app:tint="@android:color/white"
+            app:backgroundTint="@color/surfaceDim"
+            app:tint="@color/colorPrimary"
             app:shapeAppearance="@style/ShapeSmall" />
     </FrameLayout>
 
