@@ -167,4 +167,5 @@
 
     <!-- Date format -->
     <string name="date_format_short">dd MMM yyyy</string>
+    <string name="unknown_date">Unknown date</string>
 </resources>

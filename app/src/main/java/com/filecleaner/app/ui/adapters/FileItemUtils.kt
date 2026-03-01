@@ -47,9 +47,13 @@ object FileItemUtils {
 
     /** Builds and sets the "size  ·  date" meta text. Returns the formatted string. */
     fun buildMeta(metaView: TextView, item: FileItem): String {
-        val pattern = android.text.format.DateFormat.getBestDateTimePattern(
-            metaView.resources.configuration.locales[0], DATE_SKELETON)
-        val date = android.text.format.DateFormat.format(pattern, item.lastModified)
+        val date = if (item.lastModified > 0L) {
+            val pattern = android.text.format.DateFormat.getBestDateTimePattern(
+                metaView.resources.configuration.locales[0], DATE_SKELETON)
+            android.text.format.DateFormat.format(pattern, item.lastModified)
+        } else {
+            metaView.context.getString(R.string.unknown_date)
+        }
         val text = "${item.sizeReadable}  \u2022  $date"
         metaView.text = text
         return text
