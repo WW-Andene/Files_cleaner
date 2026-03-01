@@ -207,7 +207,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="72dp"
             android:contentDescription="@string/reset_view"
-            android:src="@drawable/ic_raccoon_logo"
+            android:src="@drawable/ic_recenter"
             app:fabSize="mini"
             app:backgroundTint="@color/surfaceDim"
             app:tint="@color/colorPrimary"
