@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -113,7 +114,7 @@
         android:id="@+id/tv_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/n_files"
+        tools:text="3 files"
         android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
         android:paddingHorizontal="@dimen/spacing_xl"
         android:paddingTop="@dimen/spacing_sm"
