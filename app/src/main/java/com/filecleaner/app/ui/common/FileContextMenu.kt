@@ -3,6 +3,7 @@ package com.filecleaner.app.ui.common
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -113,7 +114,9 @@ object FileContextMenu {
                     (48 * dp).toInt()
                 )
                 setPadding((20 * dp).toInt(), 0, (20 * dp).toInt(), 0)
-                background = ContextCompat.getDrawable(context, android.R.drawable.list_selector_background)
+                val outValue = TypedValue()
+                context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
+                setBackgroundResource(outValue.resourceId)
                 isClickable = true
                 isFocusable = true
                 setOnClickListener {
@@ -130,13 +133,14 @@ object FileContextMenu {
             }
             row.addView(icon)
 
+            val bodySize = context.resources.getDimension(R.dimen.text_body)
             val text = TextView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
                     marginStart = (16 * dp).toInt()
                 }
                 this.text = label
                 setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
-                textSize = 15f
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, bodySize)
             }
             row.addView(text)
 
@@ -165,10 +169,10 @@ object FileContextMenu {
                 callback.onBrowseFolder(item.path)
             }
         } else {
-            addItem(context.getString(R.string.ctx_open), android.R.drawable.ic_menu_view) {
+            addItem(context.getString(R.string.ctx_open), R.drawable.ic_open) {
                 FileOpener.open(context, item.file)
             }
-            addItem(context.getString(R.string.ctx_preview), android.R.drawable.ic_menu_gallery) {
+            addItem(context.getString(R.string.ctx_preview), R.drawable.ic_preview) {
                 FilePreviewDialog.show(context, item)
             }
             val parentDir = item.file.parent
@@ -185,22 +189,22 @@ object FileContextMenu {
             callback.onCopy(item)
             Snackbar.make(anchor, context.getString(R.string.copy_hint, item.name), Snackbar.LENGTH_SHORT).show()
         }
-        addItem(context.getString(R.string.ctx_cut), android.R.drawable.ic_menu_edit) {
+        addItem(context.getString(R.string.ctx_cut), R.drawable.ic_cut) {
             callback.onCut(item)
             Snackbar.make(anchor, context.getString(R.string.cut_hint, item.name), Snackbar.LENGTH_SHORT).show()
         }
         if (hasClipboard) {
             val targetDir = File(item.path).parent
             if (targetDir != null) {
-                addItem(context.getString(R.string.ctx_paste_here), android.R.drawable.ic_menu_add) {
+                addItem(context.getString(R.string.ctx_paste_here), R.drawable.ic_paste) {
                     callback.onPaste(targetDir)
                 }
             }
         }
-        addItem(context.getString(R.string.ctx_move_to), android.R.drawable.ic_menu_send) {
+        addItem(context.getString(R.string.ctx_move_to), R.drawable.ic_move) {
             callback.onMoveTo(item)
         }
-        addItem(context.getString(R.string.ctx_rename), android.R.drawable.ic_menu_edit) {
+        addItem(context.getString(R.string.ctx_rename), R.drawable.ic_edit) {
             val editText = EditText(context).apply {
                 setText(item.name)
                 selectAll()
@@ -224,7 +228,7 @@ object FileContextMenu {
 
         addDivider()
 
-        addItem(context.getString(R.string.ctx_share), android.R.drawable.ic_menu_share) {
+        addItem(context.getString(R.string.ctx_share), R.drawable.ic_share) {
             val uri = FileProvider.getUriForFile(
                 context, "${context.packageName}.fileprovider", item.file
             )
@@ -249,7 +253,7 @@ object FileContextMenu {
 
         val isFav = try { UserPreferences.isFavorite(item.path) } catch (_: Exception) { false }
         addItem(context.getString(if (isFav) R.string.ctx_unstar else R.string.ctx_star),
-            android.R.drawable.btn_star) {
+            R.drawable.ic_star) {
             UserPreferences.toggleFavorite(item.path)
             val nowFav = UserPreferences.isFavorite(item.path)
             Snackbar.make(anchor, context.getString(
@@ -258,7 +262,7 @@ object FileContextMenu {
         }
         val isProt = try { UserPreferences.isProtected(item.path) } catch (_: Exception) { false }
         addItem(context.getString(if (isProt) R.string.ctx_unprotect else R.string.ctx_protect),
-            android.R.drawable.ic_secure) {
+            R.drawable.ic_lock) {
             UserPreferences.toggleProtected(item.path)
             val nowProt = UserPreferences.isProtected(item.path)
             Snackbar.make(anchor, context.getString(
@@ -271,7 +275,7 @@ object FileContextMenu {
         addItem(context.getString(R.string.ctx_open_in_tree), R.drawable.ic_folder) {
             callback.onOpenInTree(item)
         }
-        addItem(context.getString(R.string.ctx_properties), android.R.drawable.ic_menu_info_details) {
+        addItem(context.getString(R.string.ctx_properties), R.drawable.ic_info) {
             showProperties(context, item)
         }
 
@@ -284,7 +288,9 @@ object FileContextMenu {
                 (48 * dp).toInt()
             )
             setPadding((20 * dp).toInt(), 0, (20 * dp).toInt(), 0)
-            background = ContextCompat.getDrawable(context, android.R.drawable.list_selector_background)
+            val outValue = TypedValue()
+            context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
+            setBackgroundResource(outValue.resourceId)
             isClickable = true
             isFocusable = true
             setOnClickListener {
@@ -315,7 +321,7 @@ object FileContextMenu {
             }
             text = context.getString(R.string.ctx_delete)
             setTextColor(ContextCompat.getColor(context, R.color.colorError))
-            textSize = 15f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             typeface = Typeface.DEFAULT_BOLD
         }
         deleteRow.addView(deleteText)

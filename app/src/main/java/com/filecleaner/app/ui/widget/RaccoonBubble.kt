@@ -1,5 +1,7 @@
 package com.filecleaner.app.ui.widget
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.view.MotionEvent
@@ -122,6 +124,14 @@ object RaccoonBubble {
             startDelay = PULSE_DELAY_MS
             repeatCount = 2
             repeatMode = ObjectAnimator.RESTART
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    if (view.isAttachedToWindow && !MotionUtil.isReducedMotion(view.context)) {
+                        cancelPulse()
+                        startPulse(view)
+                    }
+                }
+            })
         }
         pulseAnimatorX?.start()
         pulseAnimatorY?.start()

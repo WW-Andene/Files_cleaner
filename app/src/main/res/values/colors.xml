@@ -16,11 +16,13 @@
     <color name="colorErrorLight">#FFF0EE</color>
     <color name="colorSuccess">#2E7D42</color>
     <color name="colorWarning">#E8A830</color>
+    <color name="colorSuccessLight">#EEF8F0</color>
+    <color name="colorWarningLight">#FFF8E6</color>
 
     <!-- Surface elevation ladder (chromatic warm-whites) -->
     <color name="surfaceBase">#F8F6F2</color>
     <color name="surfaceColor">#FEFDFB</color>
-    <color name="surfaceElevated">#FFFFFF</color>
+    <color name="surfaceElevated">#FFFEFA</color>
     <color name="surfaceDim">#EEEAE4</color>
 
     <!-- Text hierarchy (chromatic, not pure gray) -->
@@ -40,7 +42,7 @@
     <color name="selectedBorder">#A8D5BF</color>
 
     <!-- Bottom nav -->
-    <color name="bottomNavBackground">#FFFFFF</color>
+    <color name="bottomNavBackground">#FEFDFB</color>
 
     <!-- Scan bar -->
     <color name="scanBarBackground">#EBF5F0</color>

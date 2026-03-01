@@ -16,6 +16,8 @@
     <color name="colorErrorLight">#3D1F1A</color>
     <color name="colorSuccess">#66BB78</color>
     <color name="colorWarning">#FFCA5F</color>
+    <color name="colorSuccessLight">#1A3D1F</color>
+    <color name="colorWarningLight">#3D331A</color>
 
     <!-- Surface elevation ladder (chromatic near-blacks, ~3-4% lightness steps) -->
     <color name="surfaceBase">#0E1311</color>

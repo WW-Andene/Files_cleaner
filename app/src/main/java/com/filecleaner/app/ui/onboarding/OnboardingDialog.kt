@@ -1,6 +1,7 @@
 package com.filecleaner.app.ui.onboarding
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -47,14 +48,14 @@ object OnboardingDialog {
 
         val stepIndicator = TextView(context).apply {
             text = context.getString(R.string.onboarding_step, step + 1, steps.size)
-            textSize = 12f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
             setTextColor(context.getColor(R.color.textTertiary))
         }
         container.addView(stepIndicator)
 
         val bodyView = TextView(context).apply {
             text = current.body
-            textSize = 15f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             setPadding(0, padding / 2, 0, 0)
             setLineSpacing(4f, 1.2f)
         }

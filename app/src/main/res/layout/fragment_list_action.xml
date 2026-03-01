@@ -143,12 +143,14 @@
             android:id="@+id/spinner_sort"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@drawable/bg_spinner"
+            android:popupBackground="@drawable/bg_spinner_dropdown" />
 
         <ImageButton
             android:id="@+id/btn_view_mode"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
             android:src="@drawable/ic_view_list"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/a11y_view_mode"

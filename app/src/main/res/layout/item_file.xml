@@ -45,7 +45,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
+            android:gravity="start"
             android:layout_marginStart="@dimen/spacing_md"
             android:layout_marginEnd="@dimen/spacing_sm">
 
@@ -58,7 +58,7 @@
                 android:maxLines="1"
                 android:ellipsize="middle"
                 android:fontFamily="sans-serif-medium"
-                android:textAlignment="center" />
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/tv_file_meta"
@@ -68,7 +68,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginTop="@dimen/spacing_xs"
-                android:textAlignment="center" />
+                android:textAlignment="viewStart" />
 
         </LinearLayout>
 
