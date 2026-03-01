@@ -86,9 +86,12 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 6f
+        strokeWidth = 4f
     }
     private val highlightFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+    }
+    private val highlightArrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
     private var highlightAnimator: ValueAnimator? = null
@@ -608,17 +611,29 @@ class ArborescenceView @JvmOverloads constructor(
             val fsz = formatSize(file.size)
             canvas.drawText(fsz, layout.x + layout.w - fileSizePaint.measureText(fsz) - 8f, fy, fileSizePaint)
 
-            // Highlight matched file
+            // Highlight matched file with prominent indicator
             if (file.path == highlightedFilePath) {
                 val fileRowTop = layout.y + headerHeight + i * fileLineHeight
                 val highlightRect = RectF(
-                    layout.x + 4f, fileRowTop,
-                    layout.x + layout.w - 4f, fileRowTop + fileLineHeight
+                    layout.x + 2f, fileRowTop,
+                    layout.x + layout.w - 2f, fileRowTop + fileLineHeight
                 )
-                highlightFillPaint.alpha = (64 * highlightAlpha).toInt()
+                // Strong fill + border
+                highlightFillPaint.alpha = (120 * highlightAlpha).toInt()
                 highlightPaint.alpha = (255 * highlightAlpha).toInt()
-                canvas.drawRoundRect(highlightRect, 4f, 4f, highlightFillPaint)
-                canvas.drawRoundRect(highlightRect, 4f, 4f, highlightPaint)
+                canvas.drawRoundRect(highlightRect, 6f, 6f, highlightFillPaint)
+                canvas.drawRoundRect(highlightRect, 6f, 6f, highlightPaint)
+                // Arrow indicator on the left edge
+                highlightArrowPaint.color = colorAccent
+                highlightArrowPaint.alpha = (255 * highlightAlpha).toInt()
+                val arrowPath = Path().apply {
+                    val cy = fileRowTop + fileLineHeight / 2f
+                    moveTo(layout.x - 12f, cy - 8f)
+                    lineTo(layout.x - 2f, cy)
+                    lineTo(layout.x - 12f, cy + 8f)
+                    close()
+                }
+                canvas.drawPath(arrowPath, highlightArrowPaint)
             }
         }
 
@@ -710,9 +725,37 @@ class ArborescenceView @JvmOverloads constructor(
         expandToNode(node)
         highlightedFilePath = filePath
         selectedPath = node.path
-        zoomToFit(node.path)
+        // Center on the specific file row, not just the block
+        zoomToFileRow(node.path, filePath)
         startHighlightAnimation()
         invalidate()
+    }
+
+    /** Zoom and center so the specific file row is in the middle of the screen. */
+    private fun zoomToFileRow(blockPath: String, filePath: String) {
+        val layout = layouts[blockPath] ?: return
+        val cw = width.toFloat()
+        val ch = height.toFloat()
+
+        // Find the Y position of the specific file row
+        val files = filteredFiles(layout.node).take(5)
+        val fileIndex = files.indexOfFirst { it.path == filePath }
+        val fileRowCenterY = if (fileIndex >= 0) {
+            layout.y + headerHeight + fileIndex * fileLineHeight + fileLineHeight / 2f
+        } else {
+            layout.y + layout.h / 2f
+        }
+
+        // Use a scale that shows the block comfortably (not too zoomed)
+        val targetScale = min(cw / (layout.w + 120f), ch / (layout.h + 120f))
+            .coerceIn(0.8f, 2.0f)
+        scaleFactor = targetScale
+        viewMatrix.reset()
+        viewMatrix.postScale(scaleFactor, scaleFactor)
+        viewMatrix.postTranslate(
+            cw / 2f - (layout.x + layout.w / 2f) * scaleFactor,
+            ch / 2f - fileRowCenterY * scaleFactor
+        )
     }
 
     fun clearHighlight() {

@@ -15,8 +15,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.filecleaner.app.databinding.ActivityMainBinding
 import com.filecleaner.app.ui.widget.RaccoonBubble
 import com.filecleaner.app.utils.UndoHelper
@@ -51,30 +51,56 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Bottom navigation
+        // Navigation setup
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        binding.bottomNav.setupWithNavController(navHost.navController)
+        val navController = navHost.navController
+
+        val bottomNavIds = setOf(
+            R.id.browseFragment, R.id.duplicatesFragment,
+            R.id.largeFilesFragment, R.id.junkFragment
+        )
+
+        // Map menu item IDs to nav destination IDs
+        val menuToNav = mapOf(
+            R.id.browseFragment to R.id.browseFragment,
+            R.id.duplicatesFragment to R.id.duplicatesFragment,
+            R.id.largeFilesFragment to R.id.largeFilesFragment,
+            R.id.junkFragment to R.id.junkFragment
+        )
+
+        // Manual bottom nav handling — ensures arborescence is popped before navigating
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            val destId = menuToNav[item.itemId] ?: return@setOnItemSelectedListener false
+            // Pop arborescence if currently showing
+            if (navController.currentDestination?.id == R.id.arborescenceFragment) {
+                navController.popBackStack(R.id.arborescenceFragment, true)
+            }
+            val options = NavOptions.Builder()
+                .setPopUpTo(R.id.browseFragment, inclusive = false, saveState = true)
+                .setLaunchSingleTop(true)
+                .setRestoreState(true)
+                .build()
+            navController.navigate(destId, null, options)
+            true
+        }
+        // Reselect = do nothing (stay on current tab)
+        binding.bottomNav.setOnItemReselectedListener { /* no-op */ }
+
+        // Keep bottom nav selection in sync with current destination
+        navController.addOnDestinationChangedListener { _, dest, _ ->
+            if (dest.id in bottomNavIds) {
+                binding.bottomNav.menu.findItem(dest.id)?.isChecked = true
+            }
+        }
 
         // Raccoon bubble → toggle arborescence
-        val navController = navHost.navController
         RaccoonBubble.attach(binding.raccoonBubbleCard) {
             val currentDest = navController.currentDestination?.id
             if (currentDest == R.id.arborescenceFragment) {
                 navController.popBackStack()
             } else {
                 navController.navigate(R.id.arborescenceFragment)
-            }
-        }
-
-        // Pop arborescence from back stack when navigating via bottom nav
-        val bottomNavIds = setOf(
-            R.id.browseFragment, R.id.duplicatesFragment,
-            R.id.largeFilesFragment, R.id.junkFragment
-        )
-        navController.addOnDestinationChangedListener { _, dest, _ ->
-            if (dest.id in bottomNavIds) {
-                navController.popBackStack(R.id.arborescenceFragment, true)
             }
         }
 

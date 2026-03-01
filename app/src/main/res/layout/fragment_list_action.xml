@@ -117,7 +117,7 @@
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/ic_raccoon_face"
+            android:src="@drawable/ic_raccoon_brand"
             android:alpha="0.55"
             android:importantForAccessibility="no" />
 

@@ -183,8 +183,8 @@ class ArborescenceFragment : Fragment() {
         // Category spinner
         val labels = treeCategories.map { it.first }
         val catAdapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_spinner_item, labels)
-        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            R.layout.item_spinner, labels)
+        catAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         binding.spinnerTreeCategory.adapter = catAdapter
 
         // Sort spinner (not used for tree sorting, but shows filter category)
@@ -194,8 +194,8 @@ class ArborescenceFragment : Fragment() {
             getString(R.string.sort_date_asc), getString(R.string.sort_date_desc)
         )
         val sortAdapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_spinner_item, sortOptions)
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            R.layout.item_spinner, sortOptions)
+        sortAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         binding.spinnerTreeSort.adapter = sortAdapter
 
         binding.spinnerTreeCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

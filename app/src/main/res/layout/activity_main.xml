@@ -23,9 +23,10 @@
             android:paddingBottom="4dp">
 
             <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@drawable/ic_raccoon_face"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_raccoon_logo"
+                android:scaleType="fitCenter"
                 android:importantForAccessibility="no" />
 
             <TextView
@@ -144,10 +145,11 @@
 
         <ImageView
             android:id="@+id/raccoon_bubble"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_raccoon_bubble"
+            android:src="@drawable/ic_raccoon_logo"
+            android:scaleType="centerCrop"
             android:contentDescription="@string/open_arborescence"
             android:importantForAccessibility="yes" />
     </com.google.android.material.card.MaterialCardView>

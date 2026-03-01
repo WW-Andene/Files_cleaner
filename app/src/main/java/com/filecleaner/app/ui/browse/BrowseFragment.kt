@@ -87,8 +87,8 @@ class BrowseFragment : Fragment() {
         // Category spinner
         val labels = categories.map { it.first }
         val spinnerAdapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_spinner_item, labels)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            R.layout.item_spinner, labels)
+        spinnerAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         binding.spinnerCategory.adapter = spinnerAdapter
 
         // Sort spinner
@@ -98,8 +98,8 @@ class BrowseFragment : Fragment() {
             getString(R.string.sort_date_asc), getString(R.string.sort_date_desc)
         )
         val sortAdapter = ArrayAdapter(requireContext(),
-            android.R.layout.simple_spinner_item, sortOptions)
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            R.layout.item_spinner, sortOptions)
+        sortAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         binding.spinnerSort.adapter = sortAdapter
 
         binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

@@ -52,7 +52,7 @@
             android:layout_height="44dp"
             android:layout_marginEnd="6dp"
             android:background="@drawable/bg_spinner"
-            android:popupBackground="@color/surfaceColor"
+            android:popupBackground="@drawable/bg_spinner_dropdown"
             android:paddingHorizontal="12dp" />
 
         <Spinner
@@ -63,7 +63,7 @@
             android:layout_marginStart="6dp"
             android:layout_marginEnd="6dp"
             android:background="@drawable/bg_spinner"
-            android:popupBackground="@color/surfaceColor"
+            android:popupBackground="@drawable/bg_spinner_dropdown"
             android:paddingHorizontal="12dp" />
 
         <com.google.android.material.card.MaterialCardView
@@ -130,7 +130,7 @@
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/ic_raccoon_face"
+            android:src="@drawable/ic_raccoon_brand"
             android:alpha="0.55"
             android:importantForAccessibility="no" />
 

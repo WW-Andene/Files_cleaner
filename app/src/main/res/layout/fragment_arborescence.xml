@@ -106,7 +106,7 @@
                 android:layout_height="44dp"
                 android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_spinner"
-                android:popupBackground="@color/surfaceColor"
+                android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:paddingHorizontal="12dp" />
 
             <Spinner
@@ -116,7 +116,7 @@
                 android:layout_height="44dp"
                 android:layout_marginStart="6dp"
                 android:background="@drawable/bg_spinner"
-                android:popupBackground="@color/surfaceColor"
+                android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:paddingHorizontal="12dp" />
         </LinearLayout>
 
@@ -141,7 +141,9 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:clipChildren="true"
+        android:clipToPadding="true">
 
         <com.filecleaner.app.ui.arborescence.ArborescenceView
             android:id="@+id/arborescence_view"
@@ -161,7 +163,7 @@
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@drawable/ic_raccoon_face"
+                android:src="@drawable/ic_raccoon_brand"
                 android:alpha="0.55"
                 android:importantForAccessibility="no" />
 
@@ -180,6 +182,7 @@
             android:id="@+id/tv_node_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="240dp"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="12dp"
@@ -201,7 +204,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
             android:contentDescription="@string/reset_view"
-            android:src="@drawable/ic_raccoon_face"
+            android:src="@drawable/ic_raccoon_logo"
             app:fabSize="mini"
             app:backgroundTint="@color/colorPrimary"
             app:tint="@android:color/white"
