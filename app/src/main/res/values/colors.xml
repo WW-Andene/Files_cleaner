@@ -26,7 +26,7 @@
     <!-- Text hierarchy (chromatic, not pure gray) -->
     <color name="textPrimary">#1C1E1C</color>
     <color name="textSecondary">#515854</color>
-    <color name="textTertiary">#838A86</color>
+    <color name="textTertiary">#6B7370</color>
     <color name="textOnPrimary">#FFFFFF</color>
     <color name="textDisabled">#B0B5B2</color>
 
@@ -45,6 +45,9 @@
     <!-- Scan bar -->
     <color name="scanBarBackground">#EBF5F0</color>
     <color name="scanBarText">#1B5E42</color>
+
+    <!-- Text on colored backgrounds (e.g. tree view headers) -->
+    <color name="textOnColor">#CCFFFFFF</color>
 
     <!-- File category tints -->
     <color name="catImage">#7C4DFF</color>
