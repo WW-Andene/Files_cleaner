@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestPermissionsAndScan() {
+    fun requestPermissionsAndScan() {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 // Android 11+ needs MANAGE_EXTERNAL_STORAGE

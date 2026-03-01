@@ -149,6 +149,16 @@
             android:textColor="@color/textSecondary"
             android:gravity="center"
             android:lineSpacingExtra="@dimen/spacing_xs" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_scan_now"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_sm"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="@string/scan_storage"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="@dimen/radius_pill" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

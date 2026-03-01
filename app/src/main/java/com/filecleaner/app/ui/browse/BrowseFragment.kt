@@ -13,6 +13,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.filecleaner.app.MainActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.filecleaner.app.R
@@ -91,6 +92,11 @@ class BrowseFragment : Fragment() {
         // View mode toggle
         binding.btnViewMode.setOnClickListener { cycleViewMode() }
         updateViewModeIcon()
+
+        // Empty state "Scan Now" button
+        binding.btnScanNow.setOnClickListener {
+            (activity as? MainActivity)?.requestPermissionsAndScan()
+        }
 
         // Search with 300ms debounce
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -220,11 +226,13 @@ class BrowseFragment : Fragment() {
         val fileCount = adapter.getFileCount()
         if (fileCount == 0) {
             binding.tvEmpty.visibility = View.VISIBLE
+            val isPreScan = vm.scanState.value !is ScanState.Done
             binding.tvEmptyText.text = when {
                 searchQuery.isNotEmpty() -> getString(R.string.empty_search_results, searchQuery)
-                vm.scanState.value is ScanState.Done -> getString(R.string.empty_browse_post_scan)
+                !isPreScan -> getString(R.string.empty_browse_post_scan)
                 else -> getString(R.string.empty_browse_pre_scan)
             }
+            binding.btnScanNow.visibility = if (isPreScan && searchQuery.isEmpty()) View.VISIBLE else View.GONE
         } else {
             binding.tvEmpty.visibility = View.GONE
         }
