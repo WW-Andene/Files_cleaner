@@ -181,6 +181,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Bottom nav badges — show count of actionable items per tab
+        viewModel.duplicates.observe(this) { dupes ->
+            val badge = binding.bottomNav.getOrCreateBadge(R.id.duplicatesFragment)
+            badge.isVisible = dupes.isNotEmpty()
+            if (dupes.isNotEmpty()) badge.number = dupes.size
+        }
+        viewModel.largeFiles.observe(this) { large ->
+            val badge = binding.bottomNav.getOrCreateBadge(R.id.largeFilesFragment)
+            badge.isVisible = large.isNotEmpty()
+            if (large.isNotEmpty()) badge.number = large.size
+        }
+        viewModel.junkFiles.observe(this) { junk ->
+            val badge = binding.bottomNav.getOrCreateBadge(R.id.junkFragment)
+            badge.isVisible = junk.isNotEmpty()
+            if (junk.isNotEmpty()) badge.number = junk.size
+        }
     }
 
     private fun requestPermissionsAndScan() {
