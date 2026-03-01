@@ -2,10 +2,12 @@ package com.filecleaner.app.viewmodel
 
 import android.app.Application
 import android.os.Environment
+import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
@@ -79,7 +81,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         val moved: Int,
         val failed: Int,
         val freedBytes: Long,
-        val canUndo: Boolean
+        val canUndo: Boolean,
+        val singleFileName: String? = null
     )
 
     data class MoveResult(val success: Boolean, val message: String)
@@ -100,6 +103,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private var latestTree: DirectoryNode? = null
 
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
+
+    private fun str(@StringRes id: Int): String = getApplication<Application>().getString(id)
+    private fun str(@StringRes id: Int, vararg args: Any): String =
+        getApplication<Application>().getString(id, *args)
 
     fun cancelScan() {
         scanJob?.cancel()
@@ -209,7 +216,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _scanState.postValue(ScanState.Done)
             }.onFailure { e ->
                 if (e is kotlinx.coroutines.CancellationException) throw e
-                _scanState.postValue(ScanState.Error(e.localizedMessage ?: "Scan failed"))
+                _scanState.postValue(ScanState.Error(e.localizedMessage ?: str(R.string.op_scan_failed)))
             }
 
             // Cache results to disk — outside runCatching so save failure
@@ -224,10 +231,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 val src = File(filePath)
                 val dst = File(targetDirPath, src.name)
-                if (!src.exists()) return@withContext MoveResult(false, "Source file not found")
-                if (dst.exists()) return@withContext MoveResult(false, "File already exists in target")
-                if (src.renameTo(dst)) MoveResult(true, "Moved ${src.name}")
-                else MoveResult(false, "Failed to move file")
+                if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_source_not_found))
+                if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_file_exists_in_target))
+                if (src.renameTo(dst)) MoveResult(true, str(R.string.op_moved, src.name))
+                else MoveResult(false, str(R.string.op_move_failed))
             }
             _moveResult.postValue(result)
             if (result.success) {
@@ -273,7 +280,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             pendingTrash = movedPaths.toMutableMap()
 
             val failed = toDelete.size - movedPaths.size
-            _deleteResult.postValue(DeleteResult(movedPaths.size, failed, freedBytes, canUndo = true))
+            val singleName = if (toDelete.size == 1) toDelete[0].name else null
+            _deleteResult.postValue(DeleteResult(movedPaths.size, failed, freedBytes, canUndo = true, singleFileName = singleName))
 
             stateMutex.withLock {
                 val deletedPaths = movedPaths.keys
@@ -370,13 +378,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 val src = File(filePath)
                 val dst = File(targetDirPath, src.name)
-                if (!src.exists()) return@withContext MoveResult(false, "Source file not found")
-                if (dst.exists()) return@withContext MoveResult(false, "File already exists in target")
+                if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_source_not_found))
+                if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_file_exists_in_target))
                 try {
                     src.copyTo(dst)
-                    MoveResult(true, "Copied ${src.name}")
+                    MoveResult(true, str(R.string.op_copied, src.name))
                 } catch (e: Exception) {
-                    MoveResult(false, "Copy failed: ${e.localizedMessage ?: "Unknown error"}")
+                    MoveResult(false, str(R.string.op_copy_failed, e.localizedMessage ?: ""))
                 }
             }
             _moveResult.postValue(result)
@@ -408,16 +416,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 // Validate filename for characters invalid on Android/Linux filesystems
                 if (newName.contains('/') || newName.contains('\u0000')) {
-                    return@withContext MoveResult(false, "Name contains invalid characters")
+                    return@withContext MoveResult(false, str(R.string.op_invalid_name))
                 }
                 val src = File(oldPath)
-                if (!src.exists()) return@withContext MoveResult(false, "File not found")
+                if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
                 val parentDir = src.parent
-                    ?: return@withContext MoveResult(false, "Cannot determine parent directory")
+                    ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
                 val dst = File(parentDir, newName)
-                if (dst.exists()) return@withContext MoveResult(false, "File with that name already exists")
-                if (src.renameTo(dst)) MoveResult(true, "Renamed to $newName")
-                else MoveResult(false, "Rename failed")
+                if (dst.exists()) return@withContext MoveResult(false, str(R.string.op_name_exists))
+                if (src.renameTo(dst)) MoveResult(true, str(R.string.op_renamed, newName))
+                else MoveResult(false, str(R.string.op_rename_failed))
             }
             _operationResult.postValue(result)
             if (result.success) {
@@ -432,18 +440,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 try {
                     val src = File(filePath)
-                    if (!src.exists()) return@withContext MoveResult(false, "File not found")
+                    if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
                     val parentDir = src.parent
-                        ?: return@withContext MoveResult(false, "Cannot determine parent directory")
+                        ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
                     val zipFile = File(parentDir, "${src.nameWithoutExtension}.zip")
                     ZipOutputStream(zipFile.outputStream().buffered()).use { zos ->
                         zos.putNextEntry(ZipEntry(src.name))
                         src.inputStream().buffered().use { it.copyTo(zos) }
                         zos.closeEntry()
                     }
-                    MoveResult(true, "Compressed to ${zipFile.name}")
+                    MoveResult(true, str(R.string.op_compressed, zipFile.name))
                 } catch (e: Exception) {
-                    MoveResult(false, "Compression failed: ${e.localizedMessage ?: "Unknown error"}")
+                    MoveResult(false, str(R.string.op_compress_failed, e.localizedMessage ?: ""))
                 }
             }
             _operationResult.postValue(result)
@@ -461,12 +469,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val result = withContext(Dispatchers.IO) {
                 try {
                     val src = File(filePath)
-                    if (!src.exists()) return@withContext MoveResult(false, "File not found")
+                    if (!src.exists()) return@withContext MoveResult(false, str(R.string.op_file_not_found))
                     if (!src.extension.equals("zip", ignoreCase = true)) {
-                        return@withContext MoveResult(false, "Only ZIP archives can be extracted")
+                        return@withContext MoveResult(false, str(R.string.op_zip_only))
                     }
                     val parentDir = src.parent
-                        ?: return@withContext MoveResult(false, "Cannot determine parent directory")
+                        ?: return@withContext MoveResult(false, str(R.string.op_no_parent_dir))
                     val outDir = File(parentDir, src.nameWithoutExtension)
                     outDir.mkdirs()
                     // Guard against zip bombs: limit total extracted size to 2 GB
@@ -487,7 +495,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                             entryCount++
                             if (entryCount > maxEntries) {
                                 return@withContext MoveResult(false,
-                                    "Archive has too many entries (limit: $maxEntries)")
+                                    str(R.string.op_too_many_entries, maxEntries))
                             }
                             if (entry.isDirectory) {
                                 outFile.mkdirs()
@@ -500,7 +508,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                                         totalExtracted += len
                                         if (totalExtracted > maxExtractedBytes) {
                                             return@withContext MoveResult(false,
-                                                "Archive too large (exceeds 2 GB extracted)")
+                                                str(R.string.op_archive_too_large))
                                         }
                                         out.write(buf, 0, len)
                                     }
@@ -509,9 +517,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                             entry = zis.nextEntry
                         }
                     }
-                    MoveResult(true, "Extracted to ${outDir.name}/")
+                    MoveResult(true, str(R.string.op_extracted, "${outDir.name}/"))
                 } catch (e: Exception) {
-                    MoveResult(false, "Extraction failed: ${e.localizedMessage ?: "Unknown error"}")
+                    MoveResult(false, str(R.string.op_extract_failed, e.localizedMessage ?: ""))
                 }
             }
             _operationResult.postValue(result)

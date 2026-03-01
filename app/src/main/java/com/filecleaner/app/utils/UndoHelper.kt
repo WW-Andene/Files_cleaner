@@ -23,7 +23,7 @@ object UndoHelper {
         val msg = if (result.failed > 0) {
             ctx.getString(R.string.delete_partial_failure, result.moved, result.failed)
         } else if (result.moved == 1) {
-            ctx.getString(R.string.undo_deleted_single, "file", sizeText)
+            ctx.getString(R.string.undo_deleted_single, result.singleFileName ?: "file", sizeText)
         } else {
             ctx.getString(R.string.undo_deleted_multiple, result.moved, sizeText)
         }

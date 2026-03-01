@@ -146,17 +146,31 @@
     <string name="cut_hint">%s cut \u2014 long-press a file to paste into its folder</string>
     <string name="move_to_title">Move to\u2026</string>
     <string name="select_directory">Select this folder</string>
-    <string name="no_subdirectories">No subdirectories</string>
+    <string name="no_subdirectories">No sub-folders</string>
     <string name="ctx_compress">Compress</string>
     <string name="ctx_extract">Extract</string>
     <string name="ctx_open_in_tree">Show in Tree</string>
-    <string name="rename_success">Renamed successfully</string>
-    <string name="rename_failed">Rename failed. The file may be in use or the name contains invalid characters.</string>
-    <string name="compress_success">Compressed successfully</string>
-    <string name="compress_failed">Compression failed. Check available storage space and try again.</string>
-    <string name="extract_success">Extracted successfully</string>
-    <string name="extract_failed">Extraction failed. The archive may be corrupted.</string>
-    <string name="extract_unsupported">Only ZIP archives can be extracted</string>
+    <!-- File operation feedback (used by ViewModel → Snackbar) -->
+    <string name="op_source_not_found">Source file not found</string>
+    <string name="op_file_not_found">File not found</string>
+    <string name="op_file_exists_in_target">File already exists in target</string>
+    <string name="op_no_parent_dir">Cannot determine parent folder</string>
+    <string name="op_invalid_name">Name contains invalid characters</string>
+    <string name="op_name_exists">A file with that name already exists</string>
+    <string name="op_moved">Moved %s</string>
+    <string name="op_move_failed">Failed to move file</string>
+    <string name="op_copied">Copied %s</string>
+    <string name="op_copy_failed">Copy failed: %s</string>
+    <string name="op_renamed">Renamed to %s</string>
+    <string name="op_rename_failed">Rename failed</string>
+    <string name="op_compressed">Compressed to %s</string>
+    <string name="op_compress_failed">Compression failed: %s</string>
+    <string name="op_extracted">Extracted to %s</string>
+    <string name="op_extract_failed">Extraction failed: %s</string>
+    <string name="op_zip_only">Only ZIP archives can be extracted</string>
+    <string name="op_too_many_entries">Archive has too many entries (limit: %d)</string>
+    <string name="op_archive_too_large">Archive too large (exceeds 2 GB extracted)</string>
+    <string name="op_scan_failed">Scan failed</string>
 
     <!-- Undo / Delete feedback -->
     <string name="undo_deleted_single">Deleted %1$s (%2$s). Undo?</string>
