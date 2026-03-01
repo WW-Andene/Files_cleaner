@@ -152,6 +152,14 @@
         <item name="android:lineSpacingMultiplier">1.4</item>
     </style>
 
+    <!-- Body medium-weight: file names in compact contexts (e.g. grid cards) -->
+    <style name="TextAppearance.FileCleaner.BodyMedium" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.005</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
     <!-- Body small: secondary info -->
     <style name="TextAppearance.FileCleaner.BodySmall" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:textSize">@dimen/text_body_small</item>

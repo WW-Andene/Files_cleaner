@@ -60,7 +60,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="80dp"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_raised"
             app:cardBackgroundColor="@color/colorPrimary"
@@ -114,11 +115,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="80dp"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none">
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -127,13 +130,21 @@
                 android:gravity="center_vertical"
                 android:padding="@dimen/spacing_lg">
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="@dimen/icon_button"
                     android:layout_height="@dimen/icon_button"
-                    android:src="@drawable/ic_dashboard"
-                    android:scaleType="centerInside"
-                    android:importantForAccessibility="no"
-                    app:tint="@color/colorPrimary" />
+                    android:background="@drawable/bg_icon_circle"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_nav"
+                        android:layout_height="@dimen/icon_nav"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_dashboard"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"
+                        app:tint="@color/colorAccent" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -168,11 +179,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="80dp"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none">
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -181,13 +194,21 @@
                 android:gravity="center_vertical"
                 android:padding="@dimen/spacing_lg">
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="@dimen/icon_button"
                     android:layout_height="@dimen/icon_button"
-                    android:src="@drawable/ic_nav_junk"
-                    android:scaleType="centerInside"
-                    android:importantForAccessibility="no"
-                    app:tint="@color/colorPrimary" />
+                    android:background="@drawable/bg_icon_circle"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_nav"
+                        android:layout_height="@dimen/icon_nav"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_nav_junk"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"
+                        app:tint="@color/colorError" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -222,11 +243,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="80dp"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none">
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -235,13 +258,21 @@
                 android:gravity="center_vertical"
                 android:padding="@dimen/spacing_lg">
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="@dimen/icon_button"
                     android:layout_height="@dimen/icon_button"
-                    android:src="@drawable/ic_nav_browse"
-                    android:scaleType="centerInside"
-                    android:importantForAccessibility="no"
-                    app:tint="@color/colorPrimary" />
+                    android:background="@drawable/bg_icon_circle"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_nav"
+                        android:layout_height="@dimen/icon_nav"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_nav_browse"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"
+                        app:tint="@color/colorPrimary" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -275,11 +306,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="80dp"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none">
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -288,13 +321,21 @@
                 android:gravity="center_vertical"
                 android:padding="@dimen/spacing_lg">
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="@dimen/icon_button"
                     android:layout_height="@dimen/icon_button"
-                    android:src="@drawable/ic_settings"
-                    android:scaleType="centerInside"
-                    android:importantForAccessibility="no"
-                    app:tint="@color/colorPrimary" />
+                    android:background="@drawable/bg_icon_circle"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_nav"
+                        android:layout_height="@dimen/icon_nav"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_settings"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"
+                        app:tint="@color/catDocument" />
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"

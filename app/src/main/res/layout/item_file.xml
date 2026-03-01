@@ -11,7 +11,10 @@
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
     app:strokeColor="@color/borderDefault"
-    app:rippleColor="@color/colorPrimaryContainer">
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,7 +60,6 @@
                 android:textColor="@color/textPrimary"
                 android:maxLines="1"
                 android:ellipsize="middle"
-                android:fontFamily="sans-serif-medium"
                 android:textAlignment="viewStart" />
 
             <TextView

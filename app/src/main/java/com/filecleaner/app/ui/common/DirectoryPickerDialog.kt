@@ -2,6 +2,7 @@ package com.filecleaner.app.ui.common
 
 import android.content.Context
 import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -33,7 +34,12 @@ object DirectoryPickerDialog {
         fun buildDialog() {
             val container = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                setPadding((16 * dp).toInt(), (12 * dp).toInt(), (16 * dp).toInt(), (4 * dp).toInt())
+                setPadding(
+                    context.resources.getDimensionPixelSize(R.dimen.spacing_lg),
+                    context.resources.getDimensionPixelSize(R.dimen.spacing_md),
+                    context.resources.getDimensionPixelSize(R.dimen.spacing_lg),
+                    context.resources.getDimensionPixelSize(R.dimen.spacing_xs)
+                )
             }
 
             // Current path display
@@ -41,9 +47,9 @@ object DirectoryPickerDialog {
                 text = currentNode.path.removePrefix(storagePath)
                     .ifEmpty { "/" }
                 setTextColor(ContextCompat.getColor(context, R.color.textSecondary))
-                textSize = 13f
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_chip))
                 typeface = Typeface.MONOSPACE
-                setPadding(0, 0, 0, (8 * dp).toInt())
+                setPadding(0, 0, 0, context.resources.getDimensionPixelSize(R.dimen.spacing_sm))
             }
             container.addView(pathLabel)
 
@@ -60,7 +66,7 @@ object DirectoryPickerDialog {
 
             // Back / parent entry (if not root)
             if (currentNode != rootNode) {
-                val backRow = createRow(context, dp, context.getString(R.string.dir_picker_back), isBack = true)
+                val backRow = createRow(context, context.getString(R.string.dir_picker_back), isBack = true)
                 backRow.setOnClickListener {
                     val parentPath = currentNode.path.substringBeforeLast('/')
                     val parent = findNode(rootNode, parentPath)
@@ -79,9 +85,10 @@ object DirectoryPickerDialog {
                 val emptyLabel = TextView(context).apply {
                     text = context.getString(R.string.no_subdirectories)
                     setTextColor(ContextCompat.getColor(context, R.color.textTertiary))
-                    textSize = 14f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
                     gravity = Gravity.CENTER
-                    setPadding(0, (24 * dp).toInt(), 0, (24 * dp).toInt())
+                    val verticalPad = context.resources.getDimensionPixelSize(R.dimen.spacing_xxl)
+                    setPadding(0, verticalPad, 0, verticalPad)
                 }
                 listLayout.addView(emptyLabel)
             } else {
@@ -112,14 +119,16 @@ object DirectoryPickerDialog {
         buildDialog()
     }
 
-    private fun createRow(context: Context, dp: Float, label: String, isBack: Boolean): TextView {
+    private fun createRow(context: Context, label: String, isBack: Boolean): TextView {
         return TextView(context).apply {
             text = if (isBack) label else context.getString(R.string.dir_picker_folder, label)
-            textSize = 15f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
             setTextColor(ContextCompat.getColor(context,
                 if (isBack) R.color.colorPrimary else R.color.textPrimary))
             if (isBack) typeface = Typeface.DEFAULT_BOLD
-            setPadding((8 * dp).toInt(), (14 * dp).toInt(), (8 * dp).toInt(), (14 * dp).toInt())
+            val hPad = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
+            val vPad = context.resources.getDimensionPixelSize(R.dimen.spacing_md)
+            setPadding(hPad, vPad, hPad, vPad)
             setBackgroundResource(android.R.attr.selectableItemBackground.let {
                 val attrs = intArrayOf(it)
                 val ta = context.obtainStyledAttributes(attrs)

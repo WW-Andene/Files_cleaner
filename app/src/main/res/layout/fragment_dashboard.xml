@@ -26,7 +26,9 @@
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/colorPrimaryContainer"
-            app:strokeWidth="@dimen/stroke_none"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:foreground="?attr/selectableItemBackground"
             android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
@@ -48,7 +50,7 @@
                     android:id="@+id/progress_storage"
                     style="@android:style/Widget.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="12dp"
+                    android:layout_height="@dimen/spacing_md"
                     android:layout_marginTop="@dimen/spacing_md"
                     android:progressTint="@color/colorPrimary"
                     android:progressBackgroundTint="@color/borderDefault" />
@@ -80,8 +82,10 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:foreground="?attr/selectableItemBackground"
             android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
@@ -113,8 +117,10 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none">
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:foreground="?attr/selectableItemBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -135,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                    android:lineSpacingExtra="4dp" />
+                    android:lineSpacingExtra="@dimen/spacing_xs" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

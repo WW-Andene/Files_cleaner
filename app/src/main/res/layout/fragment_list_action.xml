@@ -145,7 +145,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bg_spinner"
-            android:popupBackground="@drawable/bg_spinner_dropdown" />
+            android:popupBackground="@drawable/bg_spinner_dropdown"
+            android:paddingHorizontal="@dimen/spacing_md" />
 
         <ImageButton
             android:id="@+id/btn_view_mode"
@@ -155,6 +156,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/a11y_view_mode"
             android:scaleType="centerInside"
+            android:padding="@dimen/spacing_md"
+            app:tint="@color/textSecondary"
             android:layout_marginStart="@dimen/spacing_sm" />
     </LinearLayout>
 

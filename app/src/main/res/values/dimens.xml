@@ -41,6 +41,7 @@
     <dimen name="icon_small">16dp</dimen>
     <dimen name="icon_inline">20dp</dimen>
     <dimen name="icon_file_list">64dp</dimen>
+    <dimen name="icon_file_list_large">72dp</dimen>
     <dimen name="icon_file_grid">140dp</dimen>
     <dimen name="icon_nav">24dp</dimen>
     <dimen name="icon_raccoon_bubble">36dp</dimen>
@@ -53,6 +54,8 @@
     <dimen name="spacing_chip">6dp</dimen>
     <dimen name="button_min_width">200dp</dimen>
     <dimen name="node_detail_max_width">240dp</dimen>
+    <dimen name="card_min_height">80dp</dimen>
+    <dimen name="seekbar_value_width">64dp</dimen>
 
     <!-- Button heights -->
     <dimen name="button_height_sm">36dp</dimen>

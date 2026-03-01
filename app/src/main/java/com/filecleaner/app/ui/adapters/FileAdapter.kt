@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
-import com.filecleaner.app.ui.adapters.FileItemUtils.dpToPx
 
 class FileAdapter(
     private val selectable: Boolean = true,
@@ -89,9 +88,10 @@ class FileAdapter(
 
         // Larger thumbnails for LIST_WITH_THUMBNAILS mode
         if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
+            val thumbSize = ctx.resources.getDimensionPixelSize(R.dimen.icon_file_list_large)
             val lp = holder.icon.layoutParams
-            lp.width = 72.dpToPx(holder.itemView)
-            lp.height = 72.dpToPx(holder.itemView)
+            lp.width = thumbSize
+            lp.height = thumbSize
             holder.icon.layoutParams = lp
         }
 
@@ -111,7 +111,7 @@ class FileAdapter(
             card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
             card?.strokeColor = c.selectedBorder
         } else {
-            card?.setCardBackgroundColor(c.surface) ?: holder.itemView.setBackgroundColor(0x00000000)
+            card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
             card?.strokeColor = c.border
         }
 

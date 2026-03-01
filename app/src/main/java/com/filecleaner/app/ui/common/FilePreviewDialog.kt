@@ -2,6 +2,7 @@ package com.filecleaner.app.ui.common
 
 import android.content.Context
 import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ScrollView
@@ -78,11 +79,11 @@ object FilePreviewDialog {
             context.getString(R.string.preview_error, e.localizedMessage ?: "")
         }
 
-        val padding = (16 * context.resources.displayMetrics.density).toInt()
+        val padding = context.resources.getDimensionPixelSize(R.dimen.spacing_lg)
         val textView = TextView(context).apply {
             text = content
             typeface = Typeface.MONOSPACE
-            textSize = 12f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
             setPadding(padding, padding, padding, padding)
             setTextIsSelectable(true)
         }

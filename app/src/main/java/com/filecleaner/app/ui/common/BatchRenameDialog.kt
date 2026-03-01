@@ -3,6 +3,7 @@ package com.filecleaner.app.ui.common
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -28,7 +29,7 @@ object BatchRenameDialog {
         files: List<FileItem>,
         onConfirm: (List<Pair<FileItem, String>>) -> Unit
     ) {
-        val padding = (16 * context.resources.displayMetrics.density).toInt()
+        val padding = context.resources.getDimensionPixelSize(R.dimen.spacing_lg)
 
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -37,7 +38,7 @@ object BatchRenameDialog {
 
         val hintText = TextView(context).apply {
             text = context.getString(R.string.batch_rename_hint)
-            textSize = 12f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
         }
         container.addView(hintText)
 
@@ -63,9 +64,9 @@ object BatchRenameDialog {
         container.addView(startNumInput)
 
         val previewText = TextView(context).apply {
-            textSize = 11f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_label))
             setTypeface(null, android.graphics.Typeface.ITALIC)
-            setPadding(0, padding / 2, 0, 0)
+            setPadding(0, context.resources.getDimensionPixelSize(R.dimen.spacing_sm), 0, 0)
         }
         container.addView(previewText)
 
