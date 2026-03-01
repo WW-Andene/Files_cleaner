@@ -37,24 +37,14 @@
             android:lineSpacingMultiplier="1.0" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Stats row + filter toggle + zoom info -->
+    <!-- Filter toggle row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|end"
         android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_sm">
-
-        <TextView
-            android:id="@+id/tv_stats_header"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:fontFamily="sans-serif-medium"
-            android:accessibilityLiveRegion="polite"
-            android:visibility="gone" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="@dimen/icon_button"
@@ -62,8 +52,7 @@
             app:cardCornerRadius="@dimen/radius_btn"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/surfaceDim"
-            app:strokeWidth="@dimen/stroke_none"
-            android:layout_marginHorizontal="@dimen/spacing_xs">
+            app:strokeWidth="@dimen/stroke_none">
 
             <ImageButton
                 android:id="@+id/btn_toggle_filters"
@@ -76,13 +65,6 @@
                 android:contentDescription="@string/toggle_filters"
                 app:tint="@color/textSecondary" />
         </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/tv_zoom_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Filter panel (collapsible) -->
@@ -153,6 +135,38 @@
             android:id="@+id/arborescence_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <!-- Stats overlay (top-right corner) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:orientation="vertical"
+            android:background="@drawable/bg_stats_overlay"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:elevation="@dimen/elevation_raised">
+
+            <TextView
+                android:id="@+id/tv_stats_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textOnPrimary"
+                android:fontFamily="sans-serif-medium"
+                android:accessibilityLiveRegion="polite"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_zoom_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textOnPrimary"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <!-- Empty state -->
         <LinearLayout

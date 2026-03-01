@@ -37,13 +37,13 @@ class ArborescenceView @JvmOverloads constructor(
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     // ── Layout constants ──
-    private val blockWidth = 260f
-    private val blockMinHeight = 80f
-    private val fileLineHeight = 28f
+    private val blockWidth = 340f
+    private val blockMinHeight = 100f
+    private val fileLineHeight = 32f
     private val hGap = 100f  // horizontal gap between depth levels
     private val vGap = 32f   // vertical gap between sibling blocks
     private val cornerRadius = 16f
-    private val headerHeight = 48f
+    private val headerHeight = 52f
 
     // ── Theme colors (resolved once — View is recreated on config change) ──
     private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }

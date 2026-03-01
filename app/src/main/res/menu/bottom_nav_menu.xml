@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/raccoonManagerFragment"
-        android:icon="@drawable/ic_nav_raccoon"
+        android:icon="@drawable/ic_raccoon_logo"
         android:title="@string/nav_raccoon" />
 
     <item
