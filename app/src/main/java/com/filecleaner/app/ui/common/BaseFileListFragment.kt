@@ -225,23 +225,27 @@ abstract class BaseFileListFragment : Fragment() {
             else -> searched
         }
 
-        adapter.submitList(filtered)
         binding.tvSummary.text = if (rawItems.isEmpty()) emptySummary
         else summaryText(rawItems.size, UndoHelper.totalSize(rawItems))
 
+        // Toggle empty/list visibility BEFORE submitting items so the RecyclerView
+        // measures at its correct height (fixes items appearing too low on first scan).
         if (filtered.isEmpty()) {
             binding.tvEmpty.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
             val isPreScan = vm.scanState.value !is ScanState.Done
             binding.tvEmptyText.text = when {
                 searchQuery.isNotEmpty() -> getString(com.filecleaner.app.R.string.empty_search_results, searchQuery)
                 !isPreScan -> emptyPostScan
                 else -> emptyPreScan
             }
-            // Show "Scan Now" button only in pre-scan empty state
             binding.btnScanNow.visibility = if (isPreScan && searchQuery.isEmpty()) View.VISIBLE else View.GONE
         } else {
             binding.tvEmpty.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
         }
+
+        adapter.submitList(filtered)
     }
 
     private fun confirmDelete() {

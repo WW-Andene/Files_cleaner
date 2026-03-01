@@ -25,6 +25,11 @@
         android:label="Junk" />
 
     <fragment
+        android:id="@+id/raccoonManagerFragment"
+        android:name="com.filecleaner.app.ui.raccoon.RaccoonManagerFragment"
+        android:label="@string/nav_raccoon" />
+
+    <fragment
         android:id="@+id/arborescenceFragment"
         android:name="com.filecleaner.app.ui.arborescence.ArborescenceFragment"
         android:label="@string/tree_view" />

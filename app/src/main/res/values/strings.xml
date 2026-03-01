@@ -293,7 +293,7 @@
     <string name="onboarding_title_1">Welcome to Raccoon</string>
     <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
-    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Raccoon \u2014 scan, clean, and manage\n\u2022 Large \u2014 files over 50 MB\n\u2022 Junk \u2014 caches, temp files, old downloads</string>
     <!-- Dashboard (P2) -->
     <string name="dashboard_title">Storage Dashboard</string>
     <string name="dashboard_storage_title">Device Storage</string>
@@ -304,6 +304,31 @@
     <string name="dashboard_category_title">By Category</string>
     <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
 
-    <string name="onboarding_title_3">Tree View</string>
-    <string name="onboarding_body_3">Tap the raccoon bubble to see your file tree as an interactive visualization.\n\nDrag and drop files between folders, and pinch to zoom.</string>
+    <string name="onboarding_title_3">Raccoon Manager</string>
+    <string name="onboarding_body_3">Tap the raccoon tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nYour one-stop control center for file management.</string>
+
+    <!-- Raccoon Manager Hub -->
+    <string name="nav_raccoon">Raccoon</string>
+    <string name="raccoon_manager_title">Raccoon Manager</string>
+    <string name="raccoon_manager_subtitle">Your file management control center</string>
+    <string name="raccoon_action_scan">Scan Storage</string>
+    <string name="raccoon_action_scan_desc">Scan your device for files, duplicates, and junk</string>
+    <string name="raccoon_action_analysis">Analysis</string>
+    <string name="raccoon_action_analysis_desc">View storage dashboard and category breakdown</string>
+    <string name="raccoon_action_quick_clean">Quick Clean</string>
+    <string name="raccoon_action_quick_clean_desc">One-tap removal of junk files and caches</string>
+    <string name="raccoon_action_arborescence">Tree View</string>
+    <string name="raccoon_action_arborescence_desc">Interactive file tree visualization</string>
+    <string name="raccoon_action_janitor">Janitor</string>
+    <string name="raccoon_action_janitor_desc">Deep clean and file restructuration</string>
+    <string name="raccoon_quick_clean_title">Quick Clean</string>
+    <plurals name="raccoon_quick_clean_confirm">
+        <item quantity="one">Remove %1$d junk file (%2$s)?</item>
+        <item quantity="other">Remove %1$d junk files (%2$s)?</item>
+    </plurals>
+    <string name="raccoon_no_junk">No junk to clean! Your storage is tidy.</string>
+    <string name="raccoon_janitor_title">Janitor</string>
+    <string name="raccoon_janitor_desc">Deep clean finds duplicate files, oversized downloads, and old caches across your entire storage. Review and select what to remove.</string>
+    <string name="raccoon_janitor_start">Start Deep Clean</string>
+    <string name="raccoon_scan_needed">Run a scan first to enable this feature.</string>
 </resources>

@@ -21,7 +21,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.databinding.ActivityMainBinding
 import com.filecleaner.app.ui.onboarding.OnboardingDialog
-import com.filecleaner.app.ui.widget.RaccoonBubble
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanPhase
@@ -63,8 +62,10 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHost.navController
 
+        // All bottom nav tab destination IDs (including the raccoon manager hub)
         val bottomNavIds = setOf(
             R.id.browseFragment, R.id.duplicatesFragment,
+            R.id.raccoonManagerFragment,
             R.id.largeFilesFragment, R.id.junkFragment
         )
 
@@ -72,16 +73,18 @@ class MainActivity : AppCompatActivity() {
         val menuToNav = mapOf(
             R.id.browseFragment to R.id.browseFragment,
             R.id.duplicatesFragment to R.id.duplicatesFragment,
+            R.id.raccoonManagerFragment to R.id.raccoonManagerFragment,
             R.id.largeFilesFragment to R.id.largeFilesFragment,
             R.id.junkFragment to R.id.junkFragment
         )
 
-        // Manual bottom nav handling — ensures arborescence is popped before navigating
+        // Manual bottom nav handling — pops any non-tab fragment before navigating
         binding.bottomNav.setOnItemSelectedListener { item ->
             val destId = menuToNav[item.itemId] ?: return@setOnItemSelectedListener false
-            // Pop arborescence if currently showing
-            if (navController.currentDestination?.id == R.id.arborescenceFragment) {
-                navController.popBackStack(R.id.arborescenceFragment, true)
+            val currentDest = navController.currentDestination?.id
+            // Pop non-tab fragments (arborescence, settings, dashboard) from back stack
+            if (currentDest != null && currentDest !in bottomNavIds) {
+                navController.popBackStack(currentDest, true)
             }
             val options = NavOptions.Builder()
                 .setPopUpTo(R.id.browseFragment, inclusive = false, saveState = true)
@@ -101,16 +104,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Raccoon bubble → toggle arborescence
-        RaccoonBubble.attach(binding.raccoonBubbleCard) {
-            val currentDest = navController.currentDestination?.id
-            if (currentDest == R.id.arborescenceFragment) {
-                navController.popBackStack()
-            } else {
-                navController.navigate(R.id.arborescenceFragment)
-            }
-        }
-
         // Navigate to tree on "Open in Raccoon Tab"
         viewModel.navigateToTree.observe(this) { filePath ->
             if (filePath != null) {
@@ -120,9 +113,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        // Scan button
-        binding.fabScan.setOnClickListener { requestPermissionsAndScan() }
 
         // Cancel scan button
         binding.btnCancelScan.setOnClickListener { viewModel.cancelScan() }

@@ -55,17 +55,14 @@ object ScanCache {
                 val files = mutableListOf<FileItem>()
                 for (i in 0 until filesArray.length()) {
                     if (i % 500 == 0) ensureActive()
-                    val item = jsonToFileItem(filesArray.getJSONObject(i))
-                    // Validate file still exists on disk — prevents ghost entries
-                    if (File(item.path).exists()) {
-                        files.add(item)
-                    }
+                    files.add(jsonToFileItem(filesArray.getJSONObject(i)))
                 }
+                // Skip File.exists() validation here — on app restart the storage
+                // permission may not yet be active, causing all files to appear
+                // missing.  Stale entries are harmless (they show "file not found"
+                // if opened) and will be refreshed on the next scan.
 
-                // Prune tree using the already-validated path set (avoids
-                // redundant File.exists() calls for every file in the tree)
-                val validPaths = files.mapTo(HashSet(files.size)) { it.path }
-                val tree = pruneTreeByPaths(jsonToDirectoryNode(root.getJSONObject("tree")), validPaths)
+                val tree = jsonToDirectoryNode(root.getJSONObject("tree"))
 
                 Pair(files, tree)
             } catch (e: Exception) {

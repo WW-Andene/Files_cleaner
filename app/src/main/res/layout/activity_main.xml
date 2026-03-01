@@ -135,48 +135,6 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-    <!-- Raccoon bubble: draggable floating toggle for tree view -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/raccoon_bubble_card"
-        android:layout_width="@dimen/icon_raccoon"
-        android:layout_height="@dimen/icon_raccoon"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="@dimen/spacing_lg"
-        android:layout_marginBottom="@dimen/spacing_above_nav"
-        app:cardCornerRadius="@dimen/radius_pill"
-        app:cardElevation="@dimen/elevation_floating"
-        app:cardBackgroundColor="@color/colorPrimary"
-        app:strokeWidth="@dimen/stroke_none">
-
-        <ImageView
-            android:id="@+id/raccoon_bubble"
-            android:layout_width="@dimen/icon_raccoon_inner"
-            android:layout_height="@dimen/icon_raccoon_inner"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_raccoon_logo"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/open_arborescence"
-            android:importantForAccessibility="yes" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- FAB scan button -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_scan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginStart="@dimen/spacing_lg"
-        android:layout_marginEnd="@dimen/spacing_lg"
-        android:layout_marginTop="@dimen/spacing_lg"
-        android:layout_marginBottom="@dimen/spacing_above_nav"
-        android:text="@string/scan_storage"
-        app:icon="@drawable/ic_scan"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@color/textOnPrimary"
-        app:iconTint="@color/textOnPrimary"
-        app:shapeAppearance="@style/ShapeMedium"
-        app:elevation="@dimen/elevation_raised" />
-
     <!-- Bottom nav -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"

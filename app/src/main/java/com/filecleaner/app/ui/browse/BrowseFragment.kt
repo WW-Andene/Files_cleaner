@@ -240,12 +240,14 @@ class BrowseFragment : Fragment() {
 
         // Group files by parent folder and build list with section headers
         val browseItems = buildGroupedList(sorted)
-        adapter.submitList(browseItems)
-        binding.recyclerView.scrollToPosition(0)
+        val fileCount = browseItems.count { it is BrowseAdapter.Item.File }
 
-        val fileCount = adapter.getFileCount()
+        // Toggle empty/list visibility BEFORE submitting items so the RecyclerView
+        // measures at its correct height before items are laid out (fixes items
+        // appearing too low on first scan).
         if (fileCount == 0) {
             binding.tvEmpty.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
             val isPreScan = vm.scanState.value !is ScanState.Done
             binding.tvEmptyText.text = when {
                 searchQuery.isNotEmpty() -> getString(R.string.empty_search_results, searchQuery)
@@ -255,6 +257,12 @@ class BrowseFragment : Fragment() {
             binding.btnScanNow.visibility = if (isPreScan && searchQuery.isEmpty()) View.VISIBLE else View.GONE
         } else {
             binding.tvEmpty.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+        }
+
+        adapter.submitList(browseItems) {
+            // Scroll after DiffUtil finishes and layout is settled
+            binding.recyclerView.scrollToPosition(0)
         }
         binding.tvCount.text = resources.getQuantityString(R.plurals.n_files, fileCount, fileCount)
     }

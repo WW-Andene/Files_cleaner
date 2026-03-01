@@ -12,6 +12,11 @@
         android:title="@string/nav_duplicates" />
 
     <item
+        android:id="@+id/raccoonManagerFragment"
+        android:icon="@drawable/ic_nav_raccoon"
+        android:title="@string/nav_raccoon" />
+
+    <item
         android:id="@+id/largeFilesFragment"
         android:icon="@drawable/ic_nav_large"
         android:title="@string/nav_large" />
