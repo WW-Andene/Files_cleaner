@@ -12,6 +12,7 @@ import androidx.core.content.FileProvider
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
@@ -34,6 +35,8 @@ object FileContextMenu {
     private const val ID_COPY = 10
     private const val ID_MOVE_TO = 11
     private const val ID_PROPERTIES = 12
+    private const val ID_TOGGLE_FAVORITE = 13
+    private const val ID_TOGGLE_PROTECTED = 14
 
     interface Callback {
         fun onDelete(item: FileItem)
@@ -102,6 +105,12 @@ object FileContextMenu {
             if (item.category == FileCategory.ARCHIVE) {
                 add(0, ID_EXTRACT, order++, context.getString(R.string.ctx_extract))
             }
+            val isFav = try { UserPreferences.isFavorite(item.path) } catch (_: Exception) { false }
+            add(0, ID_TOGGLE_FAVORITE, order++, context.getString(
+                if (isFav) R.string.ctx_unstar else R.string.ctx_star))
+            val isProt = try { UserPreferences.isProtected(item.path) } catch (_: Exception) { false }
+            add(0, ID_TOGGLE_PROTECTED, order++, context.getString(
+                if (isProt) R.string.ctx_unprotect else R.string.ctx_protect))
             add(0, ID_DELETE, order++, context.getString(R.string.ctx_delete))
             add(0, ID_OPEN_IN_TREE, order++, context.getString(R.string.ctx_open_in_tree))
             add(0, ID_PROPERTIES, order++, context.getString(R.string.ctx_properties))
@@ -194,6 +203,22 @@ object FileContextMenu {
                 }
                 ID_PROPERTIES -> {
                     showProperties(context, item)
+                    true
+                }
+                ID_TOGGLE_FAVORITE -> {
+                    UserPreferences.toggleFavorite(item.path)
+                    val nowFav = UserPreferences.isFavorite(item.path)
+                    Toast.makeText(context, context.getString(
+                        if (nowFav) R.string.favorite_added else R.string.favorite_removed, item.name),
+                        Toast.LENGTH_SHORT).show()
+                    true
+                }
+                ID_TOGGLE_PROTECTED -> {
+                    UserPreferences.toggleProtected(item.path)
+                    val nowProt = UserPreferences.isProtected(item.path)
+                    Toast.makeText(context, context.getString(
+                        if (nowProt) R.string.protected_added else R.string.protected_removed, item.name),
+                        Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false

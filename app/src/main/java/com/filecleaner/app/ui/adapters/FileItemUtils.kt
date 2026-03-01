@@ -8,6 +8,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 
 /** Shared adapter utilities — single source of truth for file display logic. */
 object FileItemUtils {
@@ -56,7 +57,13 @@ object FileItemUtils {
         } else {
             metaView.context.getString(R.string.unknown_date)
         }
-        val text = metaView.context.getString(R.string.file_meta_format, item.sizeReadable, date)
+        val prefix = buildString {
+            try {
+                if (UserPreferences.isFavorite(item.path)) append("\u2B50 ")
+                if (UserPreferences.isProtected(item.path)) append("\uD83D\uDEE1\uFE0F ")
+            } catch (_: Exception) { /* prefs not initialized */ }
+        }
+        val text = prefix + metaView.context.getString(R.string.file_meta_format, item.sizeReadable, date)
         metaView.text = text
         return text
     }

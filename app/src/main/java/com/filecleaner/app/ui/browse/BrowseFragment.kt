@@ -20,6 +20,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentBrowseBinding
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.ui.adapters.BrowseAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
@@ -51,13 +52,15 @@ class BrowseFragment : Fragment() {
         Environment.getExternalStorageDirectory().absolutePath
     }
 
-    // VIRTUAL_RECENT is a sentinel — not a real FileCategory, handled in refresh()
+    // Virtual categories — sentinels, handled in refresh()
     private val VIRTUAL_RECENT = "RECENT"
+    private val VIRTUAL_FAVORITES = "FAVORITES"
 
     private val categories by lazy {
         listOf(
             getString(R.string.all_files) to null,
             getString(R.string.cat_recent) to VIRTUAL_RECENT,
+            getString(R.string.cat_favorites) to VIRTUAL_FAVORITES,
             *FileCategory.entries.map { "${it.emoji} ${getString(it.displayNameRes)}" to it as Any }.toTypedArray()
         )
     }
@@ -195,6 +198,10 @@ class BrowseFragment : Fragment() {
             selectedCat === VIRTUAL_RECENT -> {
                 val cutoff = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L
                 allFiles.filter { it.lastModified >= cutoff }.sortedByDescending { it.lastModified }
+            }
+            selectedCat === VIRTUAL_FAVORITES -> {
+                val favPaths = try { UserPreferences.favoritePaths } catch (_: Exception) { emptySet() }
+                allFiles.filter { it.path in favPaths }
             }
             selectedCat is FileCategory -> vm.filesByCategory.value?.get(selectedCat) ?: emptyList()
             else -> allFiles

@@ -201,8 +201,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _directoryTree.postValue(tree)
                     _filesByCategory.postValue(files.groupBy { it.category })
 
+                    val protectedPaths = try { UserPreferences.protectedPaths } catch (_: Exception) { emptySet<String>() }
+
                     _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.DUPLICATES))
                     val dupes = DuplicateFinder.findDuplicates(files)
+                        .filter { it.path !in protectedPaths }
                     _duplicates.postValue(dupes)
 
                     _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING))
@@ -211,6 +214,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
                     _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.JUNK))
                     val junk = JunkFinder.findJunk(files)
+                        .filter { it.path !in protectedPaths }
                     _junkFiles.postValue(junk)
 
                     _storageStats.postValue(StorageStats(

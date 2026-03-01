@@ -58,6 +58,7 @@
     <!-- Browse -->
     <string name="all_files">All files</string>
     <string name="cat_recent">\uD83D\uDD52 Recent (7 days)</string>
+    <string name="cat_favorites">\u2B50 Favorites</string>
     <plurals name="n_files">
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
@@ -183,6 +184,14 @@
     <string name="ctx_extract">Extract</string>
     <string name="ctx_open_in_tree">Show in Tree</string>
     <string name="ctx_properties">Properties</string>
+    <string name="ctx_star">Star</string>
+    <string name="ctx_unstar">Unstar</string>
+    <string name="ctx_protect">Protect from cleanup</string>
+    <string name="ctx_unprotect">Remove protection</string>
+    <string name="favorite_added">%s starred</string>
+    <string name="favorite_removed">%s unstarred</string>
+    <string name="protected_added">%s protected from cleanup</string>
+    <string name="protected_removed">%s protection removed</string>
     <!-- File operation feedback (used by ViewModel → Snackbar) -->
     <string name="op_source_not_found">Source file not found</string>
     <string name="op_file_not_found">File not found</string>
