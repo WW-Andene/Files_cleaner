@@ -181,6 +181,7 @@
     <string name="ctx_compress">Compress</string>
     <string name="ctx_extract">Extract</string>
     <string name="ctx_open_in_tree">Show in Tree</string>
+    <string name="ctx_properties">Properties</string>
     <!-- File operation feedback (used by ViewModel → Snackbar) -->
     <string name="op_source_not_found">Source file not found</string>
     <string name="op_file_not_found">File not found</string>
@@ -240,4 +241,16 @@
     <string name="cat_archives">Archives</string>
     <string name="cat_downloads">Downloads</string>
     <string name="cat_other">Other</string>
+
+    <!-- File properties dialog -->
+    <string name="prop_name">Name</string>
+    <string name="prop_path">Path</string>
+    <string name="prop_size">Size</string>
+    <string name="prop_modified">Modified</string>
+    <string name="prop_category">Category</string>
+    <string name="prop_type">Type</string>
+    <string name="prop_folder">Folder</string>
+
+    <!-- Accessibility -->
+    <string name="a11y_view_mode">Toggle view mode</string>
 </resources>

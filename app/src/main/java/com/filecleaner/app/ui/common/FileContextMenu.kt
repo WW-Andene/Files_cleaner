@@ -13,8 +13,12 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.utils.FileOpener
+import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object FileContextMenu {
 
@@ -29,6 +33,7 @@ object FileContextMenu {
     private const val ID_PASTE = 9
     private const val ID_COPY = 10
     private const val ID_MOVE_TO = 11
+    private const val ID_PROPERTIES = 12
 
     interface Callback {
         fun onDelete(item: FileItem)
@@ -99,6 +104,7 @@ object FileContextMenu {
             }
             add(0, ID_DELETE, order++, context.getString(R.string.ctx_delete))
             add(0, ID_OPEN_IN_TREE, order++, context.getString(R.string.ctx_open_in_tree))
+            add(0, ID_PROPERTIES, order++, context.getString(R.string.ctx_properties))
         }
 
         popup.setOnMenuItemClickListener { menuItem ->
@@ -186,9 +192,35 @@ object FileContextMenu {
                     callback.onMoveTo(item)
                     true
                 }
+                ID_PROPERTIES -> {
+                    showProperties(context, item)
+                    true
+                }
                 else -> false
             }
         }
         popup.show()
+    }
+
+    private fun showProperties(context: Context, item: FileItem) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(item.extension) ?: "unknown"
+        val parentDir = File(item.path).parent ?: "/"
+
+        val info = buildString {
+            appendLine("${context.getString(R.string.prop_name)}: ${item.name}")
+            appendLine("${context.getString(R.string.prop_path)}: ${item.path}")
+            appendLine("${context.getString(R.string.prop_size)}: ${UndoHelper.formatBytes(item.size)} (${item.size} bytes)")
+            appendLine("${context.getString(R.string.prop_modified)}: ${dateFormat.format(Date(item.lastModified))}")
+            appendLine("${context.getString(R.string.prop_category)}: ${context.getString(item.category.displayNameRes)}")
+            appendLine("${context.getString(R.string.prop_type)}: $mimeType")
+            appendLine("${context.getString(R.string.prop_folder)}: $parentDir")
+        }
+
+        AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.ctx_properties))
+            .setMessage(info)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 }
