@@ -27,6 +27,7 @@ import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.MotionUtil
+import com.filecleaner.app.utils.SearchQueryParser
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.chip.Chip
@@ -207,9 +208,12 @@ class BrowseFragment : Fragment() {
             else -> allFiles
         }
 
-        // Apply search filter
+        // Apply search filter (with operator support for advanced queries)
         val searched = if (searchQuery.isEmpty()) {
             raw
+        } else if (SearchQueryParser.hasOperators(searchQuery)) {
+            val parsed = SearchQueryParser.parse(searchQuery)
+            raw.filter { SearchQueryParser.matches(it, parsed) }
         } else {
             val lowerQuery = searchQuery.lowercase()
             raw.filter { it.name.lowercase().contains(lowerQuery) }

@@ -24,6 +24,7 @@ import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.MotionUtil
+import com.filecleaner.app.utils.SearchQueryParser
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
@@ -197,7 +198,10 @@ abstract class BaseFileListFragment : Fragment() {
 
     private fun applySearch() {
         val searched = if (searchQuery.isEmpty()) rawItems
-        else {
+        else if (SearchQueryParser.hasOperators(searchQuery)) {
+            val parsed = SearchQueryParser.parse(searchQuery)
+            rawItems.filter { SearchQueryParser.matches(it, parsed) }
+        } else {
             val lowerQuery = searchQuery.lowercase()
             rawItems.filter { it.name.lowercase().contains(lowerQuery) }
         }
