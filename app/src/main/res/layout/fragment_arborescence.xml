@@ -195,14 +195,14 @@
                 android:gravity="center" />
         </LinearLayout>
 
-        <!-- Selected node detail (bottom-left, next to reset FAB) -->
+        <!-- Selected node detail (bottom-right) -->
         <TextView
             android:id="@+id/tv_node_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxWidth="@dimen/node_detail_max_width"
-            android:layout_gravity="bottom|start"
-            android:layout_marginStart="@dimen/icon_file_list"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="@dimen/spacing_md"
             android:layout_marginBottom="@dimen/spacing_bottom_inset"
             android:background="@drawable/bg_stats_overlay"
             android:paddingHorizontal="@dimen/spacing_lg"

@@ -625,25 +625,34 @@ class ArborescenceView @JvmOverloads constructor(
         canvas.drawRect(layout.x, layout.y + headerHeight - cornerRadius,
             layout.x + layout.w, layout.y + headerHeight, headerPaint)
 
-        // Title (folder name) — density-aware truncation to fit within block
+        // Title (folder name) — use font metrics to vertically center in header
         val pad = 8f * dp
         val indicatorW = if (node.children.isNotEmpty()) 18f * dp else 0f
         val titleMaxWidth = layout.w - pad * 2 - indicatorW
         val displayName = ellipsizeText(node.name, titlePaint, titleMaxWidth)
-        canvas.drawText(displayName, layout.x + pad, layout.y + headerHeight * 0.45f, titlePaint)
+        // Place title baseline so text is centered in the top half of the header
+        val titleMetrics = titlePaint.fontMetrics
+        val titleTextH = titleMetrics.descent - titleMetrics.ascent
+        val titleBaseline = layout.y + (headerHeight * 0.5f - titleTextH) / 2f - titleMetrics.ascent
+        canvas.drawText(displayName, layout.x + pad, titleBaseline, titlePaint)
 
-        // Subtitle (file count + size) — also truncated to block width
+        // Subtitle (file count + size) — centered in the bottom half of the header
         val sizeStr = formatSize(node.totalSize)
         val subtitleText = context.resources.getQuantityString(
             R.plurals.tree_node_subtitle, node.totalFileCount, node.totalFileCount, sizeStr)
         val subtitleMaxWidth = layout.w - pad * 2
+        val subMetrics = subtitlePaint.fontMetrics
+        val subTextH = subMetrics.descent - subMetrics.ascent
+        val subBaseline = layout.y + headerHeight * 0.5f + (headerHeight * 0.5f - subTextH) / 2f - subMetrics.ascent
         canvas.drawText(ellipsizeText(subtitleText, subtitlePaint, subtitleMaxWidth),
-            layout.x + pad, layout.y + headerHeight * 0.82f, subtitlePaint)
+            layout.x + pad, subBaseline, subtitlePaint)
 
-        // Expand/collapse indicator
+        // Expand/collapse indicator — vertically centered in header
         if (node.children.isNotEmpty()) {
             val indicator = if (layout.expanded) "\u25BC" else "\u25B6"
-            canvas.drawText(indicator, layout.x + layout.w - 18f * dp, layout.y + headerHeight * 0.6f, expandPaint)
+            val expMetrics = expandPaint.fontMetrics
+            val expBaseline = layout.y + (headerHeight - (expMetrics.descent - expMetrics.ascent)) / 2f - expMetrics.ascent
+            canvas.drawText(indicator, layout.x + layout.w - 18f * dp, expBaseline, expandPaint)
         }
 
         // File list (filtered) — clip to file area within block
@@ -656,14 +665,20 @@ class ArborescenceView @JvmOverloads constructor(
         val fileTextX = 28f * dp
         val fileSizeEndPad = 6f * dp
 
+        // Compute file text baseline offset once (vertically centered in fileLineHeight)
+        val fileMetrics = filePaint.fontMetrics
+        val fileTextH = fileMetrics.descent - fileMetrics.ascent
+        val fileBaselineOffset = (fileLineHeight - fileTextH) / 2f - fileMetrics.ascent
+
         canvas.save()
         canvas.clipRect(layout.x, layout.y + headerHeight, layout.x + layout.w, layout.y + layout.h)
         for ((i, file) in files.withIndex()) {
-            val fy = layout.y + headerHeight + (i + 0.65f) * fileLineHeight
+            val rowTop = layout.y + headerHeight + i * fileLineHeight
+            val fy = rowTop + fileBaselineOffset
 
-            // Category dot
+            // Category dot — vertically centered in row
             dotPaint.color = categoryColors[file.category] ?: categoryColors[FileCategory.OTHER]!!
-            canvas.drawCircle(layout.x + fileXStart * 0.6f, fy - dotR, dotR, dotPaint)
+            canvas.drawCircle(layout.x + fileXStart * 0.6f, rowTop + fileLineHeight / 2f, dotR, dotPaint)
 
             // File name (truncated to fit before file size)
             val fsz = formatSize(file.size)
@@ -698,13 +713,14 @@ class ArborescenceView @JvmOverloads constructor(
 
         // "and N more..." label
         if (filtered.size > maxFiles) {
-            val moreY = layout.y + headerHeight + (maxFiles + 0.65f) * fileLineHeight
+            val moreRowTop = layout.y + headerHeight + maxFiles * fileLineHeight
+            val moreBaseline = moreRowTop + fileBaselineOffset
             val remaining = filtered.size - maxFiles
             val moreText = context.resources.getQuantityString(
                 R.plurals.tree_more_files, remaining, remaining)
             val savedColor = fileSizePaint.color
             fileSizePaint.color = colorTextTertiary
-            canvas.drawText(moreText, layout.x + fileTextX, moreY, fileSizePaint)
+            canvas.drawText(moreText, layout.x + fileTextX, moreBaseline, fileSizePaint)
             fileSizePaint.color = savedColor
         }
 
