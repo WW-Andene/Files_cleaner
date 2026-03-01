@@ -184,6 +184,8 @@
     <string name="ctx_extract">Extract</string>
     <string name="ctx_open_in_tree">Show in Tree</string>
     <string name="ctx_properties">Properties</string>
+    <string name="ctx_preview">Preview</string>
+    <string name="preview_error">Cannot preview: %s</string>
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
     <string name="ctx_protect">Protect from cleanup</string>

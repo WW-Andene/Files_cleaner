@@ -37,6 +37,7 @@ object FileContextMenu {
     private const val ID_PROPERTIES = 12
     private const val ID_TOGGLE_FAVORITE = 13
     private const val ID_TOGGLE_PROTECTED = 14
+    private const val ID_PREVIEW = 15
 
     interface Callback {
         fun onDelete(item: FileItem)
@@ -90,6 +91,7 @@ object FileContextMenu {
         var order = 0
         popup.menu.apply {
             add(0, ID_OPEN, order++, context.getString(R.string.ctx_open))
+            add(0, ID_PREVIEW, order++, context.getString(R.string.ctx_preview))
             add(0, ID_COPY, order++, context.getString(R.string.ctx_copy))
             add(0, ID_CUT, order++, context.getString(R.string.ctx_cut))
             if (hasClipboard) {
@@ -211,6 +213,10 @@ object FileContextMenu {
                     Toast.makeText(context, context.getString(
                         if (nowFav) R.string.favorite_added else R.string.favorite_removed, item.name),
                         Toast.LENGTH_SHORT).show()
+                    true
+                }
+                ID_PREVIEW -> {
+                    FilePreviewDialog.show(context, item)
                     true
                 }
                 ID_TOGGLE_PROTECTED -> {
