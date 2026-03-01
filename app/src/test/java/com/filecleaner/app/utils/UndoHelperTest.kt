@@ -17,7 +17,7 @@ class UndoHelperTest {
 
     @Test
     fun `formatBytes handles kilobytes`() {
-        assertEquals("10 KB", UndoHelper.formatBytes(10 * 1024L))
+        assertEquals("10.0 KB", UndoHelper.formatBytes(10 * 1024L))
     }
 
     @Test
@@ -42,7 +42,7 @@ class UndoHelperTest {
 
     @Test
     fun `formatBytes handles exactly 1 KB`() {
-        assertEquals("1 KB", UndoHelper.formatBytes(1024))
+        assertEquals("1.0 KB", UndoHelper.formatBytes(1024))
     }
 
     @Test

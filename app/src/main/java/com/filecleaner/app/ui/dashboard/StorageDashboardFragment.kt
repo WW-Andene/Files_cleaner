@@ -36,7 +36,7 @@ class StorageDashboardFragment : Fragment() {
         val totalBytes = statFs.totalBytes
         val freeBytes = statFs.freeBytes
         val usedBytes = totalBytes - freeBytes
-        val usedPct = if (totalBytes > 0) (usedBytes * 100 / totalBytes).toInt() else 0
+        val usedPct = if (totalBytes > 0) ((usedBytes * 100.0) / totalBytes).toInt() else 0
 
         binding.tvStorageTitle.text = getString(R.string.dashboard_storage_title)
         binding.tvStorageUsed.text = getString(R.string.dashboard_storage_used,

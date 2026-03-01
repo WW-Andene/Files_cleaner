@@ -216,10 +216,11 @@ class ArborescenceFragment : Fragment() {
                         override fun onChanged(tree: DirectoryNode?) {
                             if (tree != null) {
                                 vm.directoryTree.removeObserver(this)
-                                binding.arborescenceView.post {
-                                    binding.arborescenceView.highlightFilePath(pendingPath)
+                                _binding?.arborescenceView?.post {
+                                    val b = _binding ?: return@post
+                                    b.arborescenceView.highlightFilePath(pendingPath)
                                     val fileName = File(pendingPath).name
-                                    Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
+                                    Snackbar.make(b.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
                                     vm.clearTreeHighlight()
                                 }
                             }

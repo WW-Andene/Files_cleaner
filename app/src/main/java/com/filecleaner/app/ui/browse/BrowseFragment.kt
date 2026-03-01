@@ -112,8 +112,9 @@ class BrowseFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 searchRunnable?.let { handler.removeCallbacks(it) }
+                val query = s?.toString()?.trim() ?: ""
                 searchRunnable = Runnable {
-                    searchQuery = s?.toString()?.trim() ?: ""
+                    searchQuery = query
                     refresh()
                 }
                 handler.postDelayed(searchRunnable!!, BaseFileListFragment.SEARCH_DEBOUNCE_MS)

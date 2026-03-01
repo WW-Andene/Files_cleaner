@@ -54,7 +54,7 @@ object ScanCache {
                 val filesArray = root.getJSONArray("files")
                 val files = mutableListOf<FileItem>()
                 for (i in 0 until filesArray.length()) {
-                    if (i % 500 == 0) ensureActive()
+                    if (i % 100 == 0) ensureActive()
                     files.add(jsonToFileItem(filesArray.getJSONObject(i)))
                 }
                 // Skip File.exists() validation here — on app restart the storage

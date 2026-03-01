@@ -105,6 +105,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         )
 
     // Map of original path -> trash path for pending undo
+    private val trashMutex = Mutex()
     private var pendingTrash = mutableMapOf<String, String>()
 
     // In-memory copies for reliable cache saving (postValue is async,
@@ -179,11 +180,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     override fun onCleared() {
         super.onCleared()
         // Commit any pending trash — the undo window has expired since the UI is gone
-        if (pendingTrash.isNotEmpty()) {
-            for ((_, trashPath) in pendingTrash) {
-                File(trashPath).delete()
+        // Use runBlocking since onCleared is synchronous and viewModelScope is cancelled
+        runBlocking {
+            trashMutex.withLock {
+                if (pendingTrash.isNotEmpty()) {
+                    for ((_, trashPath) in pendingTrash) {
+                        File(trashPath).delete()
+                    }
+                    pendingTrash.clear()
+                }
             }
-            pendingTrash.clear()
         }
         // Last-resort synchronous cache save — ensures scan data is persisted
         // even when the app is killed (viewModelScope is already cancelled here)
@@ -284,8 +290,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         if (isScanning) return
         viewModelScope.launch {
             // Commit any previous pending trash since its undo window is being replaced
-            if (pendingTrash.isNotEmpty()) {
-                commitPendingTrash()
+            trashMutex.withLock {
+                if (pendingTrash.isNotEmpty()) {
+                    commitPendingTrashLocked()
+                }
             }
 
             val (movedPaths, freedBytes) = withContext(Dispatchers.IO) {
@@ -304,7 +312,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 moved to freed
             }
 
-            pendingTrash = movedPaths.toMutableMap()
+            trashMutex.withLock {
+                pendingTrash = movedPaths.toMutableMap()
+            }
 
             val failed = toDelete.size - movedPaths.size
             val singleName = if (toDelete.size == 1) toDelete[0].name else null
@@ -341,11 +351,15 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Undo the last delete — move files back from trash to original locations. */
     fun undoDelete() {
-        if (pendingTrash.isEmpty() || isScanning) return
+        if (isScanning) return
         viewModelScope.launch {
+            val snapshot = trashMutex.withLock {
+                if (pendingTrash.isEmpty()) return@launch
+                pendingTrash.toMap().also { pendingTrash.clear() }
+            }
             val restored = withContext(Dispatchers.IO) {
                 val items = mutableListOf<FileItem>()
-                for ((origPath, trashPath) in pendingTrash) {
+                for ((origPath, trashPath) in snapshot) {
                     val trashFile = File(trashPath)
                     val origFile = File(origPath)
                     if (trashFile.renameTo(origFile)) {
@@ -354,7 +368,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 items
             }
-            pendingTrash.clear()
 
             if (restored.isNotEmpty()) {
                 stateMutex.withLock {
@@ -377,10 +390,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Permanently delete trashed files (called when undo window expires). */
     fun confirmDelete() {
-        viewModelScope.launch { commitPendingTrash() }
+        viewModelScope.launch {
+            trashMutex.withLock {
+                if (pendingTrash.isNotEmpty()) {
+                    commitPendingTrashLocked()
+                }
+            }
+        }
     }
 
-    private suspend fun commitPendingTrash() = withContext(Dispatchers.IO) {
+    /** Must be called while holding trashMutex. */
+    private suspend fun commitPendingTrashLocked() = withContext(Dispatchers.IO) {
         for ((_, trashPath) in pendingTrash) {
             File(trashPath).delete()
         }
@@ -502,9 +522,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             stateMutex.withLock {
                 val renamedPaths = renames.map { it.first.path }.toSet()
                 val remaining = latestFiles.filter { it.path !in renamedPaths }
-                val newItems = renames.mapNotNull { (_, newName) ->
-                    val orig = File(renames.first().first.path).parent ?: return@mapNotNull null
-                    val newFile = File(orig, newName)
+                val newItems = renames.mapNotNull { (item, newName) ->
+                    val parentDir = File(item.path).parent ?: return@mapNotNull null
+                    val newFile = File(parentDir, newName)
                     if (newFile.exists()) FileScanner.fileToItem(newFile) else null
                 }
                 latestFiles = remaining + newItems
@@ -582,6 +602,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                                     while (zis.read(buf).also { len = it } > 0) {
                                         totalExtracted += len
                                         if (totalExtracted > MAX_EXTRACT_BYTES) {
+                                            // Clean up partial file before returning
+                                            out.close()
+                                            outFile.delete()
                                             return@withContext MoveResult(false,
                                                 str(R.string.op_archive_too_large))
                                         }

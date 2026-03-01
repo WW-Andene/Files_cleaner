@@ -38,7 +38,7 @@ object JunkFinder {
 
         val result = mutableListOf<FileItem>()
         for ((index, item) in files.withIndex()) {
-            if (index % 500 == 0) ensureActive()
+            if (index % 100 == 0) ensureActive()
             val ext = item.extension
             val path = item.path.lowercase()
 
@@ -52,7 +52,9 @@ object JunkFinder {
                 // Old download (> 90 days old, only truly disposable types)
                 // Excludes documents, media, archives, APKs — only flags
                 // files with no recognized extension (F-002)
+                // Guard: skip files with unknown date (lastModified == 0)
                 item.path.startsWith(downloadPath) &&
+                        item.lastModified > 0L &&
                         item.lastModified < cutoff90Days &&
                         !isMedia(ext) && !isDocument(ext) &&
                         !isArchiveOrApk(ext) -> true

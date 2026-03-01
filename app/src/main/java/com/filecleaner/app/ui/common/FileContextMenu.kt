@@ -24,9 +24,8 @@ import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.File
-import java.text.SimpleDateFormat
+import java.text.DateFormat
 import java.util.Date
-import java.util.Locale
 
 object FileContextMenu {
 
@@ -320,7 +319,7 @@ object FileContextMenu {
     }
 
     private fun showProperties(context: Context, item: FileItem) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM)
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(item.extension) ?: "unknown"
         val parentDir = File(item.path).parent ?: "/"
 

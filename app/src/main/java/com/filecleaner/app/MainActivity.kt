@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         // Navigation setup
         val navHost = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment ?: return
         val navController = navHost.navController
 
         // All bottom nav tab destination IDs (including the raccoon manager hub)

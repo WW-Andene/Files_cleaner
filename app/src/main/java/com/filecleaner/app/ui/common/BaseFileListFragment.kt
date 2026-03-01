@@ -173,8 +173,9 @@ abstract class BaseFileListFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 searchRunnable?.let { handler.removeCallbacks(it) }
+                val query = s?.toString()?.trim() ?: ""
                 searchRunnable = Runnable {
-                    searchQuery = s?.toString()?.trim() ?: ""
+                    searchQuery = query
                     applySearch()
                 }
                 handler.postDelayed(searchRunnable!!, SEARCH_DEBOUNCE_MS)

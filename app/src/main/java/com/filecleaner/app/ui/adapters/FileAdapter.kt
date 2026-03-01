@@ -107,7 +107,8 @@ class FileAdapter(
         // Visual state: duplicate group colouring → selection highlight → default
         val card = holder.itemView as? MaterialCardView
         if (item.duplicateGroup >= 0) {
-            val color = resolvedDupColors!![item.duplicateGroup % resolvedDupColors!!.size]
+            val colors = resolvedDupColors ?: return
+            val color = colors[item.duplicateGroup % colors.size]
             card?.setCardBackgroundColor(color) ?: holder.itemView.setBackgroundColor(color)
             card?.strokeColor = colorBorder
         } else if (isSelected) {
@@ -184,7 +185,8 @@ class FileAdapter(
         for ((_, group) in groups) {
             // Keep the newest file (highest lastModified); select the rest for deletion
             val best = group.maxByOrNull { it.lastModified }
-            group.forEach { if (it !== best) selectedPaths.add(it.path) }
+            val bestPath = best?.path
+            group.forEach { if (it.path != bestPath) selectedPaths.add(it.path) }
         }
         notifyDataSetChanged()
         notifySelectionChanged()

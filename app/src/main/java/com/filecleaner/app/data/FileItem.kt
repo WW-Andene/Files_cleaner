@@ -20,10 +20,10 @@ enum class FileCategory(@StringRes val displayNameRes: Int, val emoji: String) {
 
     companion object {
         private val extMap = mapOf(
-            IMAGE to setOf("jpg","jpeg","png","gif","bmp","webp","heic","heif","tiff","svg","raw","cr2","nef","ico","avif"),
-            VIDEO to setOf("mp4","mkv","avi","mov","wmv","flv","webm","m4v","3gp","ts","mpeg","mpg"),
-            AUDIO to setOf("mp3","aac","flac","wav","ogg","m4a","wma","opus","aiff","mid","amr"),
-            DOCUMENT to setOf("pdf","doc","docx","xls","xlsx","ppt","pptx","txt","csv","odt","ods","odp","epub","mobi","rtf","md","html","htm","xml","json"),
+            IMAGE to setOf("jpg","jpeg","png","gif","bmp","webp","heic","heif","tiff","svg","raw","cr2","nef","ico","avif","jxl","jp2"),
+            VIDEO to setOf("mp4","mkv","avi","mov","wmv","flv","webm","m4v","3gp","ts","mpeg","mpg","mts","m2ts","ogv","rmvb"),
+            AUDIO to setOf("mp3","aac","flac","wav","ogg","m4a","wma","opus","aiff","mid","amr","ape","wv","m4b","dsf"),
+            DOCUMENT to setOf("pdf","doc","docx","xls","xlsx","ppt","pptx","txt","csv","odt","ods","odp","epub","mobi","rtf","md","html","htm","xml","json","yaml","yml","azw","azw3","key","numbers"),
             APK to setOf("apk","xapk","apks"),
             ARCHIVE to setOf("zip","rar","7z","tar","gz","bz2","xz","cab","iso","tgz","zst")
         )
