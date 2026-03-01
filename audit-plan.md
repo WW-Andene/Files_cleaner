@@ -3,14 +3,14 @@
 ## Context
 
 Comprehensive audit of the Raccoon File Manager Android app using two audit skill documents:
-1. **app-audit-SKILL** — 15 categories (A–O) covering logic, state, security, performance, visual design, UX, accessibility, platform, code quality, data, domain depths, polish, deployment, i18n, and future scenarios
+1. **app-audit-SKILL** — 16 categories (A–P) covering logic, state, security, performance, visual design, UX, accessibility, platform, code quality, data, domain depths, polish, deployment, i18n, future scenarios, and R&D improvement
 2. **design-aesthetic-audit-SKILL** — 21 deep design sections covering style classification, color science, typography, motion, hierarchy, surfaces, iconography, trends, brand identity, competitive positioning, character systems, state design, responsive character, component character, copy-visual alignment, illustration, data viz, and token architecture
 
 The goal is to execute every applicable section, fix the issues found, and produce a polished, professional app.
 
 ---
 
-## App-Audit Sections (A–O)
+## App-Audit Sections (A–P)
 
 ### Section A — Domain Logic & Correctness (§A1–A7)
 
@@ -190,6 +190,46 @@ The goal is to execute every applicable section, fix the issues found, and produ
 
 ---
 
+### Section P — Research, Development & Improvement (§P1–P12)
+
+#### Features
+
+- **P1: Smart Cleanup Scheduling & Automation** — Background WorkManager-based scheduled scans (daily/weekly/monthly), auto-clean rules (e.g. "delete cache older than 7 days"), notification summaries after background cleanup, battery-aware scheduling, configurable thresholds per category, opt-in auto-delete for junk with user-defined confidence levels
+- **P2: Storage Health Dashboard** — At-a-glance storage overview on app open (total/used/free as animated ring chart), category breakdown with proportional bars (images, videos, audio, documents, APKs, other), trend over time (storage usage history graph), largest growth category highlighting, "space saved" lifetime counter, quick-action cards ("You have 12 duplicates — clean now")
+- **P3: Favorites, Starred & Protected Files** — Pin/star important files to prevent accidental deletion, protected-file list persisted across scans (excluded from junk/duplicate/large suggestions), quick-access "Favorites" view or section in Browse, visual badge on protected items in all list views, import/export favorites list
+- **P4: Recent Files & Activity Log** — "Recents" view showing last-opened/modified/created files, operation history log (deleted X, moved Y, compressed Z) with timestamps, filterable by operation type, undo support extended to history (re-restore from log), exportable activity report
+- **P5: Batch Rename Tool** — Pattern-based renaming (prefix, suffix, sequential numbering, date insertion), preview before apply showing old → new names, regex support for advanced users, template presets (e.g. "IMG_{date}_{seq}"), undo for batch renames, conflict detection (duplicate names after rename)
+- **P6: Similar & Near-Duplicate Detection** — Perceptual image hashing (pHash/dHash) to find visually similar photos beyond byte-identical duplicates, configurable similarity threshold (e.g. 90% match), side-by-side comparison UI for review, group similar images for bulk cleanup, extend to audio fingerprinting (Chromaprint) as a stretch goal
+- **P7: App Cache & Data Manager** — Per-app cache size breakdown (read from `/data/data/` or `UsageStatsManager`), one-tap cache clear for individual apps, "top cache offenders" ranking, total app cache vs. file cache distinction, safe-to-clear recommendations, integration with system storage settings intent as fallback
+- **P8: File Preview & Quick Look** — In-app image viewer with pinch-to-zoom, basic text/code file viewer with syntax highlighting, audio waveform preview with playback, video thumbnail filmstrip, PDF first-page render, document metadata inspector (EXIF for images, ID3 for audio, dimensions for video), share-from-preview action
+- **P9: Cloud Awareness & Backup Integration** — Detect cloud-synced folders (Google Drive, Dropbox, OneDrive local mirrors), flag locally-cached cloud files that can be safely evicted, optional backup-before-delete to a user-chosen cloud provider via SAF/DocumentProvider, display sync status badges on cloud-backed files
+- **P10: Advanced Search & Smart Filters** — Full-text filename search across all storage (already partial — extend with saved searches), filter combinations (size range + date range + category + extension), natural language hints ("files larger than 100MB modified this month"), search result pinning, search history with suggestions
+
+#### Research & Exploration
+
+- **P11: Machine-Learning Cleanup Suggestions** — Research on-device ML models (TFLite) for categorizing "importance" of files based on access frequency, age, and type; explore screenshot text extraction (OCR) to identify redundant screenshots; investigate clustering algorithms for photo organization; assess feasibility of a lightweight recommendation engine ("You haven't opened these 47 files in 6 months")
+- **P12: Scoped Storage Deep Compliance** — Research Android 11+ scoped storage edge cases and MediaStore-first patterns, investigate `MANAGE_EXTERNAL_STORAGE` Play Store policy changes and timeline for migration, prototype MediaStore-based scanning as a parallel path, document which features break under scoped-only access and mitigation strategies
+
+#### Quality-of-Life Improvements
+
+- **P13: Onboarding & First-Run Experience** — Guided walkthrough on first launch (permission rationale screens, feature highlights), interactive tutorial for arborescence view (gesture hints overlay), progressive disclosure of advanced features (context menu, batch operations), "What's new" dialog on version upgrades, skip option for power users
+- **P14: Customization & User Preferences** — User-configurable thresholds (large file size cutoff, junk age cutoff, download age), theme selection beyond system default (always light, always dark, AMOLED black), sort order preferences per tab (persisted), default view mode preference, configurable scan exclusion paths, notification preferences for background operations
+
+#### Development Infrastructure
+
+- **P15: Testing Framework & CI Hardening** — Unit tests for core algorithms (`DuplicateFinder`, `JunkFinder`, `FileScanner`, `ScanCache`), instrumentation tests for critical user flows (scan → select → delete → undo), snapshot/screenshot tests for visual regression on key screens, CI pipeline expansion (lint checks, test execution, coverage reporting), mock filesystem for deterministic test scenarios
+- **P16: Analytics & Crash Reporting Foundation** — Integrate Firebase Crashlytics (or open-source alternative like Sentry) for production crash visibility, anonymous usage analytics for feature prioritization (which tabs are used most, average scan size, most-used file operations), performance traces for scan duration benchmarking, opt-in telemetry with clear user consent dialog
+- **P17: Modularization & Build Performance** — Evaluate splitting into Gradle modules (`:core`, `:scan`, `:ui:browse`, `:ui:tree`, `:ui:common`) for build parallelism, extract `DuplicateFinder`/`JunkFinder`/`FileScanner` into a `:scan` module, move data models to a `:data` module, assess Kotlin version upgrade path (1.9.0 → 2.0+) and K2 compiler benefits, evaluate Jetpack Compose migration roadmap for new screens
+
+#### Documentation & Knowledge
+
+- **P18: Architecture Decision Records** — Document key decisions (why Canvas-based tree instead of RecyclerView, why MD5 for duplicates instead of SHA-256, why JSON scan cache instead of Room DB), record trade-off rationale for future contributors, maintain a living ADR file updated with each major change
+- **P19: User-Facing Help & Support** — In-app FAQ or help section (what counts as "junk"? how are duplicates detected? is deletion permanent?), contextual tooltips on first use of each feature, link to issue tracker or feedback form, storage permission explanation page for users who deny and want to understand why
+
+- **Key files**: Cross-cutting — all source files, `build.gradle`, `AndroidManifest.xml`, `res/` resources, CI workflows, potential new modules
+
+---
+
 ## Design-Aesthetic-Audit Sections
 
 Per the general aesthetic audit execution order (§XII of the design-aesthetic-audit skill):
@@ -319,6 +359,7 @@ Each section will follow this workflow:
 5. Data & Domain: J, K
 6. Polish & Standardization: L
 7. Operations & Future-Proofing: M, N, O
+8. Research, Development & Improvement: P
 
 ---
 
