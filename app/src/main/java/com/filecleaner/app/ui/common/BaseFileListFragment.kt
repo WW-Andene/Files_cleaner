@@ -8,13 +8,19 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentListActionBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
+import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.utils.UndoHelper
@@ -31,6 +37,8 @@ abstract class BaseFileListFragment : Fragment() {
     companion object {
         const val SEARCH_DEBOUNCE_MS = 300L
         private const val KEY_SELECTED_PATHS = "base_selected_paths"
+        private const val KEY_VIEW_MODE = "base_view_mode"
+        private const val KEY_SORT_ORDER = "base_sort_order"
     }
 
     private var _binding: FragmentListActionBinding? = null
@@ -39,6 +47,7 @@ abstract class BaseFileListFragment : Fragment() {
     protected lateinit var adapter: FileAdapter
     private var selected = listOf<FileItem>()
     private var pendingSelectionRestore: Set<String>? = null
+    private var currentViewMode = ViewMode.LIST
 
     // Search state
     private var searchQuery = ""
@@ -90,16 +99,25 @@ abstract class BaseFileListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.tvTitle.text = screenTitle
 
+        // Restore view mode & sort from config change
+        savedInstanceState?.let { state ->
+            state.getInt(KEY_VIEW_MODE, -1).let { ordinal ->
+                if (ordinal in ViewMode.entries.indices) currentViewMode = ViewMode.entries[ordinal]
+            }
+        }
+
         adapter = FileAdapter(selectable = true) { sel ->
             selected = sel
             binding.btnAction.isEnabled = sel.isNotEmpty()
             binding.btnAction.text = actionLabel(sel.size, UndoHelper.totalSize(sel))
         }
+        adapter.viewMode = currentViewMode
         adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
         adapter.onItemLongClick = { item, anchor ->
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
                 hasClipboard = vm.clipboardEntry.value != null)
         }
+        applyLayoutManager()
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
         // Disable stagger animation when user prefers reduced motion (§G4)
@@ -113,6 +131,25 @@ abstract class BaseFileListFragment : Fragment() {
         binding.btnAction.text = defaultActionLabel
         binding.btnAction.isEnabled = false
         binding.btnAction.setOnClickListener { confirmDelete() }
+
+        // Sort spinner
+        val sortOptions = listOf(
+            getString(R.string.sort_name_asc), getString(R.string.sort_name_desc),
+            getString(R.string.sort_size_asc), getString(R.string.sort_size_desc),
+            getString(R.string.sort_date_asc), getString(R.string.sort_date_desc)
+        )
+        val sortAdapter = ArrayAdapter(requireContext(), R.layout.item_spinner, sortOptions)
+        sortAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
+        binding.spinnerSort.adapter = sortAdapter
+        savedInstanceState?.getInt(KEY_SORT_ORDER, 0)?.let { binding.spinnerSort.setSelection(it) }
+        binding.spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = applySearch()
+            override fun onNothingSelected(p: AdapterView<*>?) {}
+        }
+
+        // View mode toggle
+        binding.btnViewMode.setOnClickListener { cycleViewMode() }
+        updateViewModeIcon()
 
         // Search with 300ms debounce
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -153,10 +190,20 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     private fun applySearch() {
-        val filtered = if (searchQuery.isEmpty()) rawItems
+        val searched = if (searchQuery.isEmpty()) rawItems
         else {
             val lowerQuery = searchQuery.lowercase()
             rawItems.filter { it.name.lowercase().contains(lowerQuery) }
+        }
+
+        val filtered = when (binding.spinnerSort.selectedItemPosition) {
+            0 -> searched.sortedBy { it.name.lowercase() }
+            1 -> searched.sortedByDescending { it.name.lowercase() }
+            2 -> searched.sortedBy { it.size }
+            3 -> searched.sortedByDescending { it.size }
+            4 -> searched.sortedBy { it.lastModified }
+            5 -> searched.sortedByDescending { it.lastModified }
+            else -> searched
         }
 
         adapter.submitList(filtered)
@@ -204,11 +251,39 @@ abstract class BaseFileListFragment : Fragment() {
         }
     }
 
+    private fun cycleViewMode() {
+        val modes = ViewMode.entries
+        val nextIndex = (modes.indexOf(currentViewMode) + 1) % modes.size
+        currentViewMode = modes[nextIndex]
+        adapter.viewMode = currentViewMode
+        applyLayoutManager()
+        updateViewModeIcon()
+    }
+
+    private fun applyLayoutManager() {
+        val spanCount = currentViewMode.spanCount
+        binding.recyclerView.layoutManager = if (spanCount == 1) {
+            LinearLayoutManager(requireContext())
+        } else {
+            GridLayoutManager(requireContext(), spanCount)
+        }
+    }
+
+    private fun updateViewModeIcon() {
+        val iconRes = when (currentViewMode) {
+            ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> R.drawable.ic_view_list
+            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> R.drawable.ic_view_grid
+        }
+        binding.btnViewMode.setImageResource(iconRes)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (::adapter.isInitialized) {
             outState.putStringArrayList(KEY_SELECTED_PATHS, ArrayList(adapter.getSelectedPaths()))
         }
+        outState.putInt(KEY_VIEW_MODE, currentViewMode.ordinal)
+        outState.putInt(KEY_SORT_ORDER, binding.spinnerSort.selectedItemPosition)
     }
 
     override fun onDestroyView() {
