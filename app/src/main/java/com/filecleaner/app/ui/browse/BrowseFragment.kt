@@ -74,11 +74,13 @@ class BrowseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Restore view mode from config change
-        savedInstanceState?.getInt(KEY_VIEW_MODE, -1)?.let { ordinal ->
-            if (ordinal in ViewMode.entries.indices) {
-                currentViewMode = ViewMode.entries[ordinal]
+        // B5: Restore all UI state from config change
+        savedInstanceState?.let { state ->
+            state.getInt(KEY_VIEW_MODE, -1).let { ordinal ->
+                if (ordinal in ViewMode.entries.indices) currentViewMode = ViewMode.entries[ordinal]
             }
+            state.getString(KEY_SEARCH_QUERY)?.let { searchQuery = it }
+            state.getStringArrayList(KEY_EXTENSIONS)?.let { selectedExtensions.addAll(it) }
         }
 
         // RecyclerView with BrowseAdapter (supports folder headers)
@@ -149,6 +151,13 @@ class BrowseFragment : Fragment() {
         binding.spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = refresh()
             override fun onNothingSelected(p: AdapterView<*>?) {}
+        }
+
+        // B5: Restore spinner positions and search text after setup
+        savedInstanceState?.let { state ->
+            binding.spinnerSort.setSelection(state.getInt(KEY_SORT_ORDER, 0))
+            binding.spinnerCategory.setSelection(state.getInt(KEY_CATEGORY_POS, 0))
+            if (searchQuery.isNotEmpty()) binding.etSearch.setText(searchQuery)
         }
 
         vm.filesByCategory.observe(viewLifecycleOwner) { refresh() }
@@ -379,9 +388,14 @@ class BrowseFragment : Fragment() {
         }
     }
 
+    // B5: Save all user-visible state for config change survival
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(KEY_VIEW_MODE, currentViewMode.ordinal)
+        outState.putString(KEY_SEARCH_QUERY, searchQuery)
+        outState.putInt(KEY_SORT_ORDER, _binding?.spinnerSort?.selectedItemPosition ?: 0)
+        outState.putInt(KEY_CATEGORY_POS, _binding?.spinnerCategory?.selectedItemPosition ?: 0)
+        outState.putStringArrayList(KEY_EXTENSIONS, ArrayList(selectedExtensions))
     }
 
     override fun onDestroyView() {
@@ -392,5 +406,9 @@ class BrowseFragment : Fragment() {
 
     companion object {
         private const val KEY_VIEW_MODE = "browse_view_mode"
+        private const val KEY_SEARCH_QUERY = "browse_search_query"
+        private const val KEY_SORT_ORDER = "browse_sort_order"
+        private const val KEY_CATEGORY_POS = "browse_category_pos"
+        private const val KEY_EXTENSIONS = "browse_extensions"
     }
 }

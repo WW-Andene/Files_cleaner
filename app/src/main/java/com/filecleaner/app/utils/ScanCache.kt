@@ -17,15 +17,19 @@ object ScanCache {
     private const val CACHE_VERSION = 1
     // C3: Guard against deeply nested JSON trees that could cause stack overflow
     private const val MAX_TREE_DEPTH = 100
+    // B2: Limit cached entries to prevent unbounded cache file growth
+    private const val MAX_CACHED_FILES = 50_000
 
     suspend fun save(context: Context, files: List<FileItem>, tree: DirectoryNode) =
         withContext(Dispatchers.IO) {
             val root = JSONObject()
             root.put("version", CACHE_VERSION)
 
+            // B2: Cap cached file count to prevent multi-MB JSON files
+            val capped = if (files.size > MAX_CACHED_FILES) files.take(MAX_CACHED_FILES) else files
             // Serialize file list
             val filesArray = JSONArray()
-            for (item in files) {
+            for (item in capped) {
                 filesArray.put(fileItemToJson(item))
             }
             root.put("files", filesArray)

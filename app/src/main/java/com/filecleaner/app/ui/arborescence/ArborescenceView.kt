@@ -107,6 +107,8 @@ class ArborescenceView @JvmOverloads constructor(
     private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var highlightAnimator: ValueAnimator? = null
     private var highlightAlpha = 1f
+    // B5: Track pending fade-out runnable so it can be cancelled on detach
+    private val fadeOutRunnable = Runnable { fadeOutHighlight() }
 
     // ── Category colors (resolved once — View is recreated on config change) ──
     // Maps each FileCategory to its corresponding color resource; auto-populated
@@ -282,10 +284,12 @@ class ArborescenceView @JvmOverloads constructor(
             }
         })
 
+    // B5: Cancel all animations and pending callbacks to prevent leaks and post-detach crashes
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         highlightAnimator?.cancel()
         highlightAnimator = null
+        removeCallbacks(fadeOutRunnable)
     }
 
     fun getExpandedPaths(): Set<String> =
@@ -1016,7 +1020,8 @@ class ArborescenceView @JvmOverloads constructor(
         if (MotionUtil.isReducedMotion(context)) {
             // Skip pulsing — just show highlight then fade out after delay
             invalidate()
-            postDelayed({ fadeOutHighlight() }, 3000)
+            removeCallbacks(fadeOutRunnable)
+            postDelayed(fadeOutRunnable, 3000)
             return
         }
 
@@ -1031,7 +1036,8 @@ class ArborescenceView @JvmOverloads constructor(
             }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    postDelayed({ fadeOutHighlight() }, 3000)
+                    removeCallbacks(fadeOutRunnable)
+            postDelayed(fadeOutRunnable, 3000)
                 }
             })
             start()

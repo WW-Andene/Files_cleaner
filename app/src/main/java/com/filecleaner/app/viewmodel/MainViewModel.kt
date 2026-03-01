@@ -136,6 +136,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private var latestFiles: List<FileItem> = emptyList()
     private var latestTree: DirectoryNode? = null
 
+    // B4: Guard against concurrent delete operations (rapid double-taps)
+    private val deleteMutex = Mutex()
+
     val isScanning: Boolean get() = _scanState.value is ScanState.Scanning
 
     private fun str(@StringRes id: Int): String = getApplication<Application>().getString(id)
@@ -145,7 +148,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun cancelScan() {
         scanJob?.cancel()
         scanJob = null
-        _scanState.value = ScanState.Cancelled
+        // B1: Use postValue for thread-safety (cancelScan can be called from any thread)
+        _scanState.postValue(ScanState.Cancelled)
     }
 
     init {
@@ -231,6 +235,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             _scanState.value = ScanState.Scanning(0)
+            // B1: Reset derived state so stale data from previous scan isn't visible
+            _duplicates.value = emptyList()
+            _largeFiles.value = emptyList()
+            _junkFiles.value = emptyList()
             val scanStartMs = System.currentTimeMillis()
             runCatching {
                 val (files, tree) = FileScanner.scanWithTree(getApplication()) { count ->
@@ -316,6 +324,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteFiles(toDelete: List<FileItem>) {
         if (isScanning) return
         viewModelScope.launch {
+            // B4: Prevent concurrent delete operations from rapid double-taps
+            if (!deleteMutex.tryLock()) return@launch
+            try {
             // Commit any previous pending trash since its undo window is being replaced
             trashMutex.withLock {
                 if (pendingTrash.isNotEmpty()) {
@@ -373,6 +384,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 recalcStats(remaining, filteredDupes, filteredLarge, filteredJunk)
             }
             saveCache()
+            } finally {
+                deleteMutex.unlock()
+            }
         }
     }
 
@@ -549,7 +563,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val msg = str(R.string.batch_rename_result, success, failed)
             _operationResult.postValue(MoveResult(true, msg))
 
-            // Rebuild file lists after batch rename
+            // B1: Rebuild all derived state after batch rename (not just filesByCategory)
             stateMutex.withLock {
                 val renamedPaths = renames.map { it.first.path }.toSet()
                 val remaining = latestFiles.filter { it.path !in renamedPaths }
@@ -560,6 +574,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 latestFiles = remaining + newItems
                 _filesByCategory.postValue(latestFiles.groupBy { it.category })
+                val dupes = DuplicateFinder.findDuplicates(latestFiles)
+                val large = JunkFinder.findLargeFiles(latestFiles)
+                val junk = JunkFinder.findJunk(latestFiles)
+                _duplicates.postValue(dupes)
+                _largeFiles.postValue(large)
+                _junkFiles.postValue(junk)
+                recalcStats(latestFiles, dupes, large, junk)
             }
         }
     }

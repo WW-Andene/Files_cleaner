@@ -32,6 +32,8 @@ class ArborescenceFragment : Fragment() {
     private val selectedTreeExtensions = mutableSetOf<String>()
     private var savedExpandedPaths: Set<String>? = null
     private var lastTreeRef: DirectoryNode? = null
+    // B3: Pending highlight path (replaces leaked nested observer)
+    private var pendingHighlightPath: String? = null
 
     private val treeCategories by lazy {
         listOf(
@@ -48,11 +50,15 @@ class ArborescenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Restore expanded paths from config change (rotation)
+        // B5: Restore all state from config change (rotation)
         if (savedExpandedPaths == null) {
             savedInstanceState?.getStringArrayList(KEY_EXPANDED_PATHS)?.let {
                 savedExpandedPaths = it.toSet()
             }
+        }
+        savedInstanceState?.let { state ->
+            filterPanelVisible = state.getBoolean(KEY_FILTER_VISIBLE, false)
+            state.getStringArrayList(KEY_EXTENSIONS)?.let { selectedTreeExtensions.addAll(it) }
         }
 
         // Wire file move callback with confirmation dialog
@@ -158,6 +164,12 @@ class ArborescenceFragment : Fragment() {
         // Filter spinners
         setupTreeFilterSpinners()
 
+        // B5: Restore filter panel and spinner state after spinners are set up
+        binding.filterPanel.visibility = if (filterPanelVisible) View.VISIBLE else View.GONE
+        savedInstanceState?.getInt(KEY_CATEGORY_POS, 0)?.let { pos ->
+            if (pos > 0) binding.spinnerTreeCategory.setSelection(pos)
+        }
+
         // Reset view button
         binding.fabResetView.setOnClickListener {
             lastTreeRef = null
@@ -182,6 +194,10 @@ class ArborescenceFragment : Fragment() {
                 }
                 lastTreeRef = tree
                 updateTreeExtensionChips()
+                // B3: Handle pending highlight when tree data arrives (replaces nested observer)
+                if (pendingHighlightPath != null) {
+                    tryHighlightPendingPath()
+                }
             } else {
                 binding.arborescenceView.visibility = View.GONE
                 binding.tvEmpty.visibility = View.VISIBLE
@@ -199,34 +215,11 @@ class ArborescenceFragment : Fragment() {
         }
 
         // Observe tree highlight navigation from other tabs
+        // B3: Track pending highlight path to avoid nested observer leaks
         vm.navigateToTree.observe(viewLifecycleOwner) { filePath ->
             if (filePath != null) {
-                // Ensure tree data is loaded before attempting highlight
-                if (vm.directoryTree.value != null) {
-                    binding.arborescenceView.post {
-                        binding.arborescenceView.highlightFilePath(filePath)
-                        val fileName = File(filePath).name
-                        Snackbar.make(binding.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
-                        vm.clearTreeHighlight()
-                    }
-                } else {
-                    // Tree not loaded yet — wait for it
-                    val pendingPath = filePath
-                    vm.directoryTree.observe(viewLifecycleOwner, object : androidx.lifecycle.Observer<DirectoryNode?> {
-                        override fun onChanged(tree: DirectoryNode?) {
-                            if (tree != null) {
-                                vm.directoryTree.removeObserver(this)
-                                _binding?.arborescenceView?.post {
-                                    val b = _binding ?: return@post
-                                    b.arborescenceView.highlightFilePath(pendingPath)
-                                    val fileName = File(pendingPath).name
-                                    Snackbar.make(b.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
-                                    vm.clearTreeHighlight()
-                                }
-                            }
-                        }
-                    })
-                }
+                pendingHighlightPath = filePath
+                tryHighlightPendingPath()
             }
         }
     }
@@ -329,6 +322,21 @@ class ArborescenceFragment : Fragment() {
         return result
     }
 
+    /** B3: Attempt to highlight a pending path — only succeeds when tree is loaded and view exists. */
+    private fun tryHighlightPendingPath() {
+        val path = pendingHighlightPath ?: return
+        if (vm.directoryTree.value == null) return  // Tree not loaded yet — will retry when tree arrives
+        val b = _binding ?: return  // View destroyed
+        b.arborescenceView.post {
+            val b2 = _binding ?: return@post
+            b2.arborescenceView.highlightFilePath(path)
+            val fileName = File(path).name
+            Snackbar.make(b2.root, getString(R.string.located_file, fileName), Snackbar.LENGTH_SHORT).show()
+            vm.clearTreeHighlight()
+            pendingHighlightPath = null
+        }
+    }
+
     private fun formatSize(bytes: Long): String =
         com.filecleaner.app.utils.UndoHelper.formatBytes(bytes)
 
@@ -345,12 +353,16 @@ class ArborescenceFragment : Fragment() {
         }
     }
 
+    // B5: Save all user-visible state for config change survival
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         val paths = _binding?.arborescenceView?.getExpandedPaths() ?: savedExpandedPaths
         if (paths != null) {
             outState.putStringArrayList(KEY_EXPANDED_PATHS, ArrayList(paths))
         }
+        outState.putBoolean(KEY_FILTER_VISIBLE, filterPanelVisible)
+        outState.putStringArrayList(KEY_EXTENSIONS, ArrayList(selectedTreeExtensions))
+        outState.putInt(KEY_CATEGORY_POS, _binding?.spinnerTreeCategory?.selectedItemPosition ?: 0)
     }
 
     override fun onDestroyView() {
@@ -361,5 +373,8 @@ class ArborescenceFragment : Fragment() {
 
     companion object {
         private const val KEY_EXPANDED_PATHS = "arborescence_expanded_paths"
+        private const val KEY_FILTER_VISIBLE = "arborescence_filter_visible"
+        private const val KEY_EXTENSIONS = "arborescence_extensions"
+        private const val KEY_CATEGORY_POS = "arborescence_category_pos"
     }
 }

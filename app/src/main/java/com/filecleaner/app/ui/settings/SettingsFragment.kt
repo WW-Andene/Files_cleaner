@@ -93,7 +93,12 @@ class SettingsFragment : Fragment() {
         binding.tvUndoValue.text = getString(R.string.settings_undo_value, UserPreferences.undoTimeoutMs / 1000)
     }
 
+    // B5: Remove listeners to prevent callbacks on destroyed binding
     override fun onDestroyView() {
+        binding.seekLargeFile.setOnSeekBarChangeListener(null)
+        binding.seekStaleAge.setOnSeekBarChangeListener(null)
+        binding.seekUndoTimeout.setOnSeekBarChangeListener(null)
+        binding.switchHiddenFiles.setOnCheckedChangeListener(null)
         super.onDestroyView()
         _binding = null
     }

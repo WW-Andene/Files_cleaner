@@ -41,6 +41,7 @@ abstract class BaseFileListFragment : Fragment() {
         private const val KEY_SELECTED_PATHS = "base_selected_paths"
         private const val KEY_VIEW_MODE = "base_view_mode"
         private const val KEY_SORT_ORDER = "base_sort_order"
+        private const val KEY_SEARCH_QUERY = "base_search_query"
     }
 
     private var _binding: FragmentListActionBinding? = null
@@ -182,6 +183,14 @@ abstract class BaseFileListFragment : Fragment() {
             }
         })
 
+        // B5: Restore search query from config change
+        savedInstanceState?.getString(KEY_SEARCH_QUERY)?.let { query ->
+            if (query.isNotEmpty()) {
+                searchQuery = query
+                binding.etSearch.setText(query)
+            }
+        }
+
         // Restore selection from config change
         savedInstanceState?.getStringArrayList(KEY_SELECTED_PATHS)?.let { paths ->
             pendingSelectionRestore = paths.toSet()
@@ -304,13 +313,15 @@ abstract class BaseFileListFragment : Fragment() {
         binding.btnViewMode.setImageResource(iconRes)
     }
 
+    // B5: Save all user-visible state for config change survival
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (::adapter.isInitialized) {
             outState.putStringArrayList(KEY_SELECTED_PATHS, ArrayList(adapter.getSelectedPaths()))
         }
         outState.putInt(KEY_VIEW_MODE, currentViewMode.ordinal)
-        outState.putInt(KEY_SORT_ORDER, binding.spinnerSort.selectedItemPosition)
+        outState.putInt(KEY_SORT_ORDER, _binding?.spinnerSort?.selectedItemPosition ?: 0)
+        outState.putString(KEY_SEARCH_QUERY, searchQuery)
     }
 
     override fun onDestroyView() {
