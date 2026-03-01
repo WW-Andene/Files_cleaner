@@ -148,12 +148,15 @@ class MainActivity : AppCompatActivity() {
                     binding.btnCancelScan.visibility = View.GONE
                     val stats = viewModel.storageStats.value
                     if (stats != null) {
+                        val durationText = if (stats.scanDurationMs > 0) {
+                            " in %.1fs".format(stats.scanDurationMs / 1000.0)
+                        } else ""
                         binding.tvScanStatus.text = resources.getQuantityString(
                             R.plurals.scan_complete,
                             stats.totalFiles,
                             stats.totalFiles,
                             UndoHelper.formatBytes(stats.totalSize)
-                        )
+                        ) + durationText
                         Snackbar.make(
                             binding.root,
                             getString(R.string.scan_summary,

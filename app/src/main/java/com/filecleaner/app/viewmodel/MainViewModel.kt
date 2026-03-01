@@ -81,7 +81,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         val totalSize: Long,
         val junkSize: Long,
         val duplicateSize: Long,
-        val largeSize: Long
+        val largeSize: Long,
+        val scanDurationMs: Long = 0
     )
 
     data class DeleteResult(
@@ -188,6 +189,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             _scanState.value = ScanState.Scanning(0)
+            val scanStartMs = System.currentTimeMillis()
             runCatching {
                 val (files, tree) = FileScanner.scanWithTree(getApplication()) { count ->
                     _scanState.postValue(ScanState.Scanning(count, ScanPhase.INDEXING))
@@ -216,7 +218,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                         totalSize     = files.sumOf { it.size },
                         junkSize      = junk.sumOf { it.size },
                         duplicateSize = dupes.sumOf { it.size },
-                        largeSize     = large.sumOf { it.size }
+                        largeSize     = large.sumOf { it.size },
+                        scanDurationMs = System.currentTimeMillis() - scanStartMs
                     ))
                 }
 
