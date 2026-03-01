@@ -146,8 +146,9 @@ class MainActivity : AppCompatActivity() {
                     binding.btnCancelScan.visibility = View.GONE
                     val stats = viewModel.storageStats.value
                     if (stats != null) {
-                        binding.tvScanStatus.text = getString(
-                            R.string.scan_complete,
+                        binding.tvScanStatus.text = resources.getQuantityString(
+                            R.plurals.scan_complete,
+                            stats.totalFiles,
                             stats.totalFiles,
                             UndoHelper.formatBytes(stats.totalSize)
                         )

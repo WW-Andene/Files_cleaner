@@ -31,11 +31,13 @@ object FileItemUtils {
     fun loadThumbnail(icon: ImageView, item: FileItem, isGridMode: Boolean) {
         if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
             val thumbSize = if (isGridMode) THUMB_SIZE_GRID else THUMB_SIZE_LIST
+            val fallback = categoryDrawable(item.category)
             Glide.with(icon)
                 .load(item.file)
                 .override(thumbSize, thumbSize)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .placeholder(categoryDrawable(item.category))
+                .placeholder(fallback)
+                .error(fallback)
                 .centerCrop()
                 .into(icon)
         } else {

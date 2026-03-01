@@ -228,7 +228,7 @@ class BrowseFragment : Fragment() {
         } else {
             binding.tvEmpty.visibility = View.GONE
         }
-        binding.tvCount.text = getString(R.string.n_files, fileCount)
+        binding.tvCount.text = resources.getQuantityString(R.plurals.n_files, fileCount, fileCount)
     }
 
     /** Groups files by their parent folder and creates a list with folder headers. */

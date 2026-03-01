@@ -78,7 +78,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
 
     private fun bindHeader(holder: HeaderVH, header: Item.Header) {
         holder.folderName.text = header.displayName
-        holder.folderCount.text = holder.itemView.context.getString(R.string.n_files, header.fileCount)
+        holder.folderCount.text = holder.itemView.context.resources.getQuantityString(R.plurals.n_files, header.fileCount, header.fileCount)
     }
 
     private fun bindFile(holder: FileVH, item: FileItem) {

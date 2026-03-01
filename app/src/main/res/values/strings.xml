@@ -6,7 +6,10 @@
     <string name="scan_storage">Scan Storage</string>
     <string name="scan_prompt">Tap Scan to analyze your storage</string>
     <string name="scanning_progress">Scanning\u2026 %d files found</string>
-    <string name="scan_complete">Scan complete \u2014 %1$d files found (%2$s)</string>
+    <plurals name="scan_complete">
+        <item quantity="one">Scan complete \u2014 %1$d file found (%2$s)</item>
+        <item quantity="other">Scan complete \u2014 %1$d files found (%2$s)</item>
+    </plurals>
     <string name="scan_complete_simple">Scan complete</string>
     <string name="scanning_in_progress">Scanning in progress</string>
     <string name="scan_cancel">Cancel scan</string>
@@ -31,9 +34,18 @@
     <!-- Confirm dialog -->
     <string name="confirm_delete_title">Confirm Delete</string>
     <string name="confirm_delete_message">Files will be moved to trash. You can undo within 8 seconds.</string>
-    <string name="confirm_delete_detail">%1$d files (%2$s) will be moved to trash.\nYou can undo within 8 seconds.</string>
-    <string name="delete_n_files_title">Delete %d files?</string>
-    <string name="clean_n_files_title">Clean %d files?</string>
+    <plurals name="confirm_delete_detail">
+        <item quantity="one">%1$d file (%2$s) will be moved to trash.\nYou can undo within 8 seconds.</item>
+        <item quantity="other">%1$d files (%2$s) will be moved to trash.\nYou can undo within 8 seconds.</item>
+    </plurals>
+    <plurals name="delete_n_files_title">
+        <item quantity="one">Delete %d file?</item>
+        <item quantity="other">Delete %d files?</item>
+    </plurals>
+    <plurals name="clean_n_files_title">
+        <item quantity="one">Clean %d file?</item>
+        <item quantity="other">Clean %d files?</item>
+    </plurals>
 
     <!-- Permission dialogs -->
     <string name="storage_access_needed">Storage access needed</string>
@@ -45,7 +57,10 @@
 
     <!-- Browse -->
     <string name="all_files">All files</string>
-    <string name="n_files">%d files</string>
+    <plurals name="n_files">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
     <string name="no_files_found">No files found yet.\nTap Scan Storage to get started.</string>
     <string name="nothing_found">Nothing found yet.\nTap Scan Storage to get started.</string>
     <string name="scan_to_see_results">Tap Scan Storage to get started</string>
@@ -77,14 +92,26 @@
     <string name="title_duplicates">Duplicate Files</string>
 
     <!-- Summaries -->
-    <string name="junk_summary">%1$d junk files \u2014 %2$s can be freed</string>
-    <string name="large_summary">%1$d large files \u2014 %2$s total</string>
-    <string name="duplicates_summary">%1$d duplicate files \u2014 %2$s in duplicates</string>
+    <plurals name="junk_summary">
+        <item quantity="one">%1$d junk file \u2014 %2$s can be freed</item>
+        <item quantity="other">%1$d junk files \u2014 %2$s can be freed</item>
+    </plurals>
+    <plurals name="large_summary">
+        <item quantity="one">%1$d large file \u2014 %2$s total</item>
+        <item quantity="other">%1$d large files \u2014 %2$s total</item>
+    </plurals>
+    <plurals name="duplicates_summary">
+        <item quantity="one">%1$d duplicate file \u2014 %2$s in duplicates</item>
+        <item quantity="other">%1$d duplicate files \u2014 %2$s in duplicates</item>
+    </plurals>
     <string name="no_junk_found">No junk files found</string>
     <string name="no_large_found">No large files found</string>
     <string name="no_duplicates_found">No duplicates found</string>
     <string name="action_delete_n">Delete %1$d selected (%2$s)</string>
-    <string name="action_clean_n">Clean %1$d files (%2$s)</string>
+    <plurals name="action_clean_n">
+        <item quantity="one">Clean %1$d file (%2$s)</item>
+        <item quantity="other">Clean %1$d files (%2$s)</item>
+    </plurals>
 
     <!-- Bottom nav -->
     <string name="nav_browse">Browse</string>
@@ -113,7 +140,10 @@
     <string name="confirm_move_title">Move file?</string>
     <string name="confirm_move_message">Move \"%1$s\" to \"%2$s\"?</string>
     <string name="move">Move</string>
-    <string name="stats_header_format">%1$d files \u2022 %2$s</string>
+    <plurals name="stats_header_format">
+        <item quantity="one">%1$d file \u2022 %2$s</item>
+        <item quantity="other">%1$d files \u2022 %2$s</item>
+    </plurals>
     <string name="zoom_info_format">%1$d%% \u2022 %2$d nodes</string>
     <string name="located_file">Found: %s</string>
 
@@ -181,6 +211,15 @@
     <string name="scan_summary">Found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
 
     <!-- Date format -->
-    <string name="date_format_short">dd MMM yyyy</string>
     <string name="unknown_date">Unknown date</string>
+
+    <!-- Tree node display -->
+    <plurals name="tree_node_subtitle">
+        <item quantity="one">%1$d file \u2022 %2$s</item>
+        <item quantity="other">%1$d files \u2022 %2$s</item>
+    </plurals>
+    <plurals name="tree_more_files">
+        <item quantity="one">+%d more\u2026</item>
+        <item quantity="other">+%d more\u2026</item>
+    </plurals>
 </resources>

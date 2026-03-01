@@ -596,7 +596,8 @@ class ArborescenceView @JvmOverloads constructor(
 
         // Subtitle (file count + size) — also truncated to block width
         val sizeStr = formatSize(node.totalSize)
-        val subtitleText = "${node.totalFileCount} files \u2022 $sizeStr"
+        val subtitleText = context.resources.getQuantityString(
+            R.plurals.tree_node_subtitle, node.totalFileCount, node.totalFileCount, sizeStr)
         val subtitleMaxWidth = layout.w - 24f
         canvas.drawText(ellipsizeText(subtitleText, subtitlePaint, subtitleMaxWidth),
             layout.x + 12f, layout.y + 40f, subtitlePaint)
@@ -656,7 +657,9 @@ class ArborescenceView @JvmOverloads constructor(
         // "and N more..." label
         if (filtered.size > maxFiles) {
             val moreY = layout.y + headerHeight + maxFiles * fileLineHeight + 20f
-            val moreText = "+${filtered.size - maxFiles} more\u2026"
+            val remaining = filtered.size - maxFiles
+            val moreText = context.resources.getQuantityString(
+                R.plurals.tree_more_files, remaining, remaining)
             val savedColor = fileSizePaint.color
             fileSizePaint.color = colorTextTertiary
             canvas.drawText(moreText, layout.x + 28f, moreY, fileSizePaint)

@@ -177,8 +177,8 @@ abstract class BaseFileListFragment : Fragment() {
 
     private fun confirmDelete() {
         val totalSize = com.filecleaner.app.utils.UndoHelper.totalSize(selected)
-        val detailMessage = getString(com.filecleaner.app.R.string.confirm_delete_detail,
-            selected.size, totalSize)
+        val detailMessage = resources.getQuantityString(com.filecleaner.app.R.plurals.confirm_delete_detail,
+            selected.size, selected.size, totalSize)
         AlertDialog.Builder(requireContext())
             .setTitle(confirmTitle(selected.size))
             .setMessage(detailMessage)

@@ -72,8 +72,8 @@ class ArborescenceFragment : Fragment() {
         // Stats header updates
         binding.arborescenceView.onStatsUpdate = { totalFiles, totalSize, visibleNodes, zoom ->
             binding.tvStatsHeader.visibility = View.VISIBLE
-            binding.tvStatsHeader.text = getString(R.string.stats_header_format,
-                totalFiles, formatSize(totalSize))
+            binding.tvStatsHeader.text = resources.getQuantityString(R.plurals.stats_header_format,
+                totalFiles, totalFiles, formatSize(totalSize))
             binding.tvZoomInfo.visibility = View.VISIBLE
             binding.tvZoomInfo.text = getString(R.string.zoom_info_format,
                 (zoom * 100).toInt(), visibleNodes)
