@@ -6,13 +6,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 
-class BrowseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(DIFF) {
 
     sealed class Item {
         data class Header(val folderPath: String, val displayName: String, val fileCount: Int) : Item()
@@ -22,9 +25,17 @@ class BrowseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_HEADER = 0
         private const val TYPE_FILE = 1
+
+        private val DIFF = object : DiffUtil.ItemCallback<Item>() {
+            override fun areItemsTheSame(a: Item, b: Item): Boolean = when {
+                a is Item.Header && b is Item.Header -> a.folderPath == b.folderPath
+                a is Item.File && b is Item.File -> a.fileItem.path == b.fileItem.path
+                else -> false
+            }
+            override fun areContentsTheSame(a: Item, b: Item): Boolean = a == b
+        }
     }
 
-    private var items: List<Item> = emptyList()
     var viewMode: ViewMode = ViewMode.LIST
         set(value) {
             if (field != value) {
@@ -36,16 +47,9 @@ class BrowseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onItemClick: ((FileItem) -> Unit)? = null
     var onItemLongClick: ((FileItem, View) -> Unit)? = null
 
-    fun submitList(newItems: List<Item>) {
-        items = newItems
-        notifyDataSetChanged()
-    }
+    fun getFileCount(): Int = currentList.count { it is Item.File }
 
-    fun getFileCount(): Int = items.count { it is Item.File }
-
-    override fun getItemCount(): Int = items.size
-
-    override fun getItemViewType(position: Int): Int = when (items[position]) {
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is Item.Header -> TYPE_HEADER
         is Item.File -> when (viewMode) {
             ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> TYPE_FILE
@@ -53,7 +57,7 @@ class BrowseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    fun isHeader(position: Int): Boolean = position in items.indices && items[position] is Item.Header
+    fun isHeader(position: Int): Boolean = position in currentList.indices && getItem(position) is Item.Header
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -67,7 +71,7 @@ class BrowseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (val item = items[position]) {
+        when (val item = getItem(position)) {
             is Item.Header -> bindHeader(holder as HeaderVH, item)
             is Item.File -> bindFile(holder as FileVH, item.fileItem)
         }
@@ -90,8 +94,11 @@ class BrowseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         // Load thumbnail or icon
         if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
+            val thumbSize = if (viewMode == ViewMode.LIST || viewMode == ViewMode.LIST_WITH_THUMBNAILS) 128 else 256
             Glide.with(holder.itemView)
                 .load(item.file)
+                .override(thumbSize, thumbSize)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .placeholder(categoryDrawable(item.category))
                 .centerCrop()
                 .into(holder.icon)

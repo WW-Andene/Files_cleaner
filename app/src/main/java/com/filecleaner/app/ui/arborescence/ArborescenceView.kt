@@ -121,7 +121,8 @@ class ArborescenceView @JvmOverloads constructor(
         var y: Float = 0f,
         var w: Float = 0f,
         var h: Float = 0f,
-        var expanded: Boolean = false
+        var expanded: Boolean = false,
+        var cachedFiles: List<FileItem> = emptyList()
     )
 
     private var rootNode: DirectoryNode? = null
@@ -224,6 +225,12 @@ class ArborescenceView @JvmOverloads constructor(
                 }
             }
         })
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        highlightAnimator?.cancel()
+        highlightAnimator = null
+    }
 
     fun getExpandedPaths(): Set<String> =
         layouts.filter { it.value.expanded }.keys.toSet()
@@ -330,7 +337,8 @@ class ArborescenceView @JvmOverloads constructor(
             node = node,
             w = blockWidth,
             h = max(blockMinHeight, h),
-            expanded = expanded
+            expanded = expanded,
+            cachedFiles = filtered
         )
         if (expanded) {
             for (child in node.children) {
@@ -432,8 +440,7 @@ class ArborescenceView @JvmOverloads constructor(
             if (wx < layout.x || wx > layout.x + layout.w) continue
             val fileStartY = layout.y + headerHeight
             val maxFiles = 5
-            // Use filteredFiles() to match what drawBlock() actually renders
-            val files = filteredFiles(layout.node).take(maxFiles)
+            val files = layout.cachedFiles.take(maxFiles)
             for ((i, file) in files.withIndex()) {
                 val rowTop = fileStartY + i * fileLineHeight
                 if (wy >= rowTop && wy <= rowTop + fileLineHeight) {
@@ -555,7 +562,7 @@ class ArborescenceView @JvmOverloads constructor(
         highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
 
         // Block background, semi-transparent if no matching files
-        val hasMatchingFiles = filteredFiles(node).isNotEmpty() ||
+        val hasMatchingFiles = layout.cachedFiles.isNotEmpty() ||
             (filterCategory == null && filterExtensions.isEmpty())
         val blockAlpha = if (hasMatchingFiles) 255 else 80
         blockPaint.color = colorSurface
@@ -599,7 +606,7 @@ class ArborescenceView @JvmOverloads constructor(
         }
 
         // File list (filtered) — clip to file area within block
-        val filtered = filteredFiles(node)
+        val filtered = layout.cachedFiles
         val maxFiles = 5
         val files = filtered.take(maxFiles)
         var highlightFileRowTop = -1f // Track for drawing arrow outside clip
@@ -806,7 +813,7 @@ class ArborescenceView @JvmOverloads constructor(
         if (cw <= 0f || ch <= 0f) return
 
         // Find the Y position of the specific file row
-        val files = filteredFiles(layout.node).take(5)
+        val files = layout.cachedFiles.take(5)
         val fileIndex = files.indexOfFirst { it.path == filePath }
         val fileRowCenterY = if (fileIndex >= 0) {
             layout.y + headerHeight + fileIndex * fileLineHeight + fileLineHeight / 2f

@@ -97,6 +97,7 @@ abstract class BaseFileListFragment : Fragment() {
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
                 hasClipboard = vm.clipboardEntry.value != null)
         }
+        binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
 
         binding.btnSelectAll.setOnClickListener { onSelectAll() }

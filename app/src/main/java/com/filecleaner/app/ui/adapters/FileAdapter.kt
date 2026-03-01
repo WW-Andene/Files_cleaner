@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.card.MaterialCardView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
@@ -151,8 +152,14 @@ class FileAdapter(
 
     private fun loadThumbnail(holder: FileVH, item: FileItem) {
         if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
+            val thumbSize = when (viewMode) {
+                ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> 128
+                else -> 256
+            }
             Glide.with(holder.itemView)
                 .load(item.file)
+                .override(thumbSize, thumbSize)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .placeholder(categoryDrawable(item.category))
                 .centerCrop()
                 .into(holder.icon)

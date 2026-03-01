@@ -70,6 +70,7 @@ class BrowseFragment : Fragment() {
                 hasClipboard = vm.clipboardEntry.value != null)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
 
         // View mode toggle

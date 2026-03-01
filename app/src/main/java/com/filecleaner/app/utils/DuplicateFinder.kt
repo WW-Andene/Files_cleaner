@@ -2,6 +2,7 @@ package com.filecleaner.app.utils
 
 import com.filecleaner.app.data.FileItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.security.MessageDigest
@@ -34,6 +35,7 @@ object DuplicateFinder {
         // Stage 2: Partial hash — first 4 KB + last 4 KB
         val byPartial = mutableMapOf<String, MutableList<FileItem>>()
         for (item in sizeCollisions) {
+            ensureActive()
             onProgress(done++, total)
             val key = partialHash(File(item.path)) ?: continue
             byPartial.getOrPut(key) { mutableListOf() }.add(item)
@@ -47,6 +49,7 @@ object DuplicateFinder {
 
             val byFull = mutableMapOf<String, MutableList<FileItem>>()
             for (item in partialGroup) {
+                ensureActive()
                 val hash = fullMd5(File(item.path)) ?: continue
                 byFull.getOrPut(hash) { mutableListOf() }.add(item)
             }
