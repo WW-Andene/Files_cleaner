@@ -146,6 +146,7 @@
     <string name="cut_hint">%s cut \u2014 long-press a file to paste into its folder</string>
     <string name="move_to_title">Move to\u2026</string>
     <string name="select_directory">Select this folder</string>
+    <string name="no_subdirectories">No subdirectories</string>
     <string name="ctx_compress">Compress</string>
     <string name="ctx_extract">Extract</string>
     <string name="ctx_open_in_tree">Show in Tree</string>

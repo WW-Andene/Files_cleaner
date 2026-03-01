@@ -469,6 +469,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                         ?: return@withContext MoveResult(false, "Cannot determine parent directory")
                     val outDir = File(parentDir, src.nameWithoutExtension)
                     outDir.mkdirs()
+                    // Guard against zip bombs: limit total extracted size to 2 GB
+                    // and total entry count to 10,000 files
+                    val maxExtractedBytes = 2L * 1024 * 1024 * 1024
+                    val maxEntries = 10_000
+                    var totalExtracted = 0L
+                    var entryCount = 0
                     ZipInputStream(src.inputStream().buffered()).use { zis ->
                         var entry = zis.nextEntry
                         while (entry != null) {
@@ -478,11 +484,27 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                                 entry = zis.nextEntry
                                 continue
                             }
+                            entryCount++
+                            if (entryCount > maxEntries) {
+                                return@withContext MoveResult(false,
+                                    "Archive has too many entries (limit: $maxEntries)")
+                            }
                             if (entry.isDirectory) {
                                 outFile.mkdirs()
                             } else {
                                 outFile.parentFile?.mkdirs()
-                                outFile.outputStream().buffered().use { zis.copyTo(it) }
+                                outFile.outputStream().buffered().use { out ->
+                                    val buf = ByteArray(8192)
+                                    var len: Int
+                                    while (zis.read(buf).also { len = it } > 0) {
+                                        totalExtracted += len
+                                        if (totalExtracted > maxExtractedBytes) {
+                                            return@withContext MoveResult(false,
+                                                "Archive too large (exceeds 2 GB extracted)")
+                                        }
+                                        out.write(buf, 0, len)
+                                    }
+                                }
                             }
                             entry = zis.nextEntry
                         }

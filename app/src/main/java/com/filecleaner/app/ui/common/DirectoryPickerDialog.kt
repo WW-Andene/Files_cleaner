@@ -70,7 +70,7 @@ object DirectoryPickerDialog {
             val children = currentNode.children.sortedBy { it.name.lowercase() }
             if (children.isEmpty()) {
                 val emptyLabel = TextView(context).apply {
-                    text = "No subdirectories"
+                    text = context.getString(R.string.no_subdirectories)
                     setTextColor(ContextCompat.getColor(context, R.color.textTertiary))
                     textSize = 14f
                     gravity = Gravity.CENTER
