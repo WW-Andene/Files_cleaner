@@ -173,13 +173,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
 
                 _scanState.postValue(ScanState.Done)
-
-                // Cache results to disk for persistence
-                ScanCache.save(getApplication(), files, tree)
             }.onFailure { e ->
                 if (e is kotlinx.coroutines.CancellationException) throw e
                 _scanState.postValue(ScanState.Error(e.message ?: "Unknown error"))
             }
+
+            // Cache results to disk — outside runCatching so save failure
+            // doesn't override ScanState.Done with Error
+            saveCache()
         }
     }
 
@@ -250,6 +251,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _junkFiles.postValue(_junkFiles.value?.filter { it.path !in deletedPaths })
                 recalcStats(remaining)
             }
+            saveCache()
         }
     }
 
@@ -283,6 +285,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _junkFiles.postValue(JunkFinder.findJunk(updated))
                     recalcStats(updated)
                 }
+                saveCache()
             }
         }
     }
@@ -453,6 +456,20 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _largeFiles.postValue(JunkFinder.findLargeFiles(files))
                 _junkFiles.postValue(JunkFinder.findJunk(files))
                 recalcStats(files)
+            }
+            saveCache()
+        }
+    }
+
+    /** Persist current in-memory scan data to disk cache. */
+    private fun saveCache() {
+        val files = _allFiles.value ?: return
+        val tree = _directoryTree.value ?: return
+        viewModelScope.launch {
+            try {
+                ScanCache.save(getApplication(), files, tree)
+            } catch (_: Exception) {
+                // Non-critical — cache will be rebuilt on next scan
             }
         }
     }
