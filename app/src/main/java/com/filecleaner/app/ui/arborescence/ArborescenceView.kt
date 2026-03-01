@@ -26,15 +26,6 @@ class ArborescenceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
 
-    init {
-        isFocusable = true
-        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
-        contentDescription = context.getString(R.string.a11y_tree_view_default)
-        // D1: Set theme-dependent paint colors once at construction.
-        // View is recreated on configuration change, so this is sufficient.
-        initPaintColors()
-    }
-
     private val isDarkMode: Boolean
         get() = (context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
@@ -153,6 +144,15 @@ class ArborescenceView @JvmOverloads constructor(
         highlightPaint.color = colorAccent
         highlightFillPaint.color = (colorAccent and 0x00FFFFFF) or 0x44000000
         ghostTextPaint.color = colorTextPrimary
+    }
+
+    init {
+        isFocusable = true
+        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
+        contentDescription = context.getString(R.string.a11y_tree_view_default)
+        // D1: Set theme-dependent paint colors once at construction.
+        // View is recreated on configuration change, so this is sufficient.
+        initPaintColors()
     }
 
     // ── Category colors (resolved once — View is recreated on config change) ──
