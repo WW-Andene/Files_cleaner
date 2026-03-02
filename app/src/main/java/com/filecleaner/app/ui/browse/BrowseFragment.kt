@@ -25,6 +25,7 @@ import com.filecleaner.app.ui.adapters.BrowseAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
+import com.filecleaner.app.ui.common.FileListDividerDecoration
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.utils.MotionUtil
@@ -48,6 +49,7 @@ class BrowseFragment : Fragment() {
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
     private var shouldScrollToTop = false
+    private var dividerDecoration: FileListDividerDecoration? = null
 
     // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
     @Suppress("DEPRECATION")
@@ -92,6 +94,9 @@ class BrowseFragment : Fragment() {
         adapter.onItemLongClick = { item, anchor ->
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
                 hasClipboard = vm.clipboardEntry.value != null)
+        }
+        dividerDecoration = FileListDividerDecoration(requireContext()) { position ->
+            adapter.isHeader(position)
         }
         applyLayoutManager()
         binding.recyclerView.setHasFixedSize(true)
@@ -203,6 +208,7 @@ class BrowseFragment : Fragment() {
 
     private fun applyLayoutManager() {
         val spanCount = currentViewMode.spanCount
+        dividerDecoration?.let { binding.recyclerView.removeItemDecoration(it) }
         binding.recyclerView.layoutManager = if (spanCount == 1) {
             LinearLayoutManager(requireContext())
         } else {
@@ -213,6 +219,9 @@ class BrowseFragment : Fragment() {
                     }
                 }
             }
+        }
+        if (spanCount == 1) {
+            dividerDecoration?.let { binding.recyclerView.addItemDecoration(it) }
         }
     }
 

@@ -26,6 +26,7 @@ import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.utils.SearchQueryParser
 import com.filecleaner.app.utils.UndoHelper
+import com.filecleaner.app.ui.common.FileListDividerDecoration
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.snackbar.Snackbar
@@ -57,6 +58,7 @@ abstract class BaseFileListFragment : Fragment() {
     private var rawItems = listOf<FileItem>()
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+    private var dividerDecoration: FileListDividerDecoration? = null
 
     /** Screen title shown in the header. */
     abstract val screenTitle: String
@@ -121,6 +123,7 @@ abstract class BaseFileListFragment : Fragment() {
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
                 hasClipboard = vm.clipboardEntry.value != null)
         }
+        dividerDecoration = FileListDividerDecoration(requireContext())
         applyLayoutManager()
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
@@ -290,10 +293,14 @@ abstract class BaseFileListFragment : Fragment() {
 
     private fun applyLayoutManager() {
         val spanCount = currentViewMode.spanCount
+        dividerDecoration?.let { binding.recyclerView.removeItemDecoration(it) }
         binding.recyclerView.layoutManager = if (spanCount == 1) {
             LinearLayoutManager(requireContext())
         } else {
             GridLayoutManager(requireContext(), spanCount)
+        }
+        if (spanCount == 1) {
+            dividerDecoration?.let { binding.recyclerView.addItemDecoration(it) }
         }
     }
 
