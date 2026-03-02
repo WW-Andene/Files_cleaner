@@ -12,6 +12,7 @@ import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.databinding.FragmentDashboardBinding
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.filecleaner.app.viewmodel.ScanState
 
 /**
  * Storage dashboard showing device storage summary and category breakdown (P2).
@@ -53,7 +54,11 @@ class StorageDashboardFragment : Fragment() {
                 val totalSize = files.sumOf { it.size }
                 "${cat.emoji} ${getString(cat.displayNameRes)}: ${files.size} files (${UndoHelper.formatBytes(totalSize)})"
             }
-            binding.tvCategoryBreakdown.text = lines.ifEmpty { getString(R.string.dashboard_no_scan) }
+            binding.tvCategoryBreakdown.text = when {
+                lines.isNotEmpty() -> lines
+                vm.scanState.value is ScanState.Scanning -> getString(R.string.dashboard_scanning)
+                else -> getString(R.string.dashboard_no_scan)
+            }
         }
 
         // Scan stats
@@ -67,6 +72,17 @@ class StorageDashboardFragment : Fragment() {
                     UndoHelper.formatBytes(stats.junkSize),
                     UndoHelper.formatBytes(stats.largeSize))
                 binding.tvStatsDetail.visibility = View.VISIBLE
+            }
+        }
+
+        // Update category breakdown text when scan state changes
+        vm.scanState.observe(viewLifecycleOwner) { state ->
+            val catMap = vm.filesByCategory.value ?: emptyMap()
+            if (catMap.isEmpty()) {
+                binding.tvCategoryBreakdown.text = when (state) {
+                    is ScanState.Scanning -> getString(R.string.dashboard_scanning)
+                    else -> getString(R.string.dashboard_no_scan)
+                }
             }
         }
     }

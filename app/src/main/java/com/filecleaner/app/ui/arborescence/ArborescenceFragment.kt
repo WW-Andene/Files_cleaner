@@ -19,6 +19,7 @@ import com.filecleaner.app.databinding.FragmentArborescenceBinding
 import com.filecleaner.app.ui.common.DirectoryPickerDialog
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
@@ -90,13 +91,22 @@ class ArborescenceFragment : Fragment() {
         binding.arborescenceView.onNodeSelected = { node ->
             if (node != null) {
                 binding.tvNodeDetail.visibility = View.VISIBLE
-                binding.tvNodeDetail.text = getString(
-                    R.string.node_detail,
-                    node.name,
-                    node.totalFileCount,
-                    formatSize(node.totalSize),
-                    node.children.size
-                )
+                binding.tvNodeDetail.text = if (node.children.isEmpty()) {
+                    getString(
+                        R.string.node_detail_no_children,
+                        node.name,
+                        node.totalFileCount,
+                        formatSize(node.totalSize)
+                    )
+                } else {
+                    getString(
+                        R.string.node_detail,
+                        node.name,
+                        node.totalFileCount,
+                        formatSize(node.totalSize),
+                        node.children.size
+                    )
+                }
             } else {
                 binding.tvNodeDetail.visibility = View.GONE
             }
@@ -207,6 +217,15 @@ class ArborescenceFragment : Fragment() {
             } else {
                 binding.arborescenceView.visibility = View.GONE
                 binding.tvEmpty.visibility = View.VISIBLE
+                val scanState = vm.scanState.value
+                val isScanning = scanState is ScanState.Scanning
+                val isPreScan = scanState !is ScanState.Done
+                binding.tvEmptyText.text = when {
+                    isScanning -> getString(R.string.scanning_in_progress)
+                    !isPreScan -> getString(R.string.empty_tree_post_scan)
+                    else -> getString(R.string.empty_tree_pre_scan)
+                }
+                binding.btnScanNow.visibility = if (isPreScan && !isScanning) View.VISIBLE else View.GONE
             }
         }
 

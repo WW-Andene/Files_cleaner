@@ -268,13 +268,16 @@ class BrowseFragment : Fragment() {
         if (fileCount == 0) {
             binding.tvEmpty.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-            val isPreScan = vm.scanState.value !is ScanState.Done
+            val scanState = vm.scanState.value
+            val isPreScan = scanState !is ScanState.Done
+            val isScanning = scanState is ScanState.Scanning
             binding.tvEmptyText.text = when {
                 searchQuery.isNotEmpty() -> getString(R.string.empty_search_results, searchQuery)
+                isScanning -> getString(R.string.scanning_in_progress)
                 !isPreScan -> getString(R.string.empty_browse_post_scan)
                 else -> getString(R.string.empty_browse_pre_scan)
             }
-            binding.btnScanNow.visibility = if (isPreScan && searchQuery.isEmpty()) View.VISIBLE else View.GONE
+            binding.btnScanNow.visibility = if (isPreScan && !isScanning && searchQuery.isEmpty()) View.VISIBLE else View.GONE
         } else {
             binding.tvEmpty.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
