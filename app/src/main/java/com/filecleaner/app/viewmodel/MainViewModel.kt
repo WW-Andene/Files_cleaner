@@ -23,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -216,7 +217,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             }
             if (files.isNotEmpty() && tree != null) {
                 try {
-                    ScanCache.save(getApplication(), files, tree)
+                    runBlocking { ScanCache.save(getApplication(), files, tree) }
                 } catch (_: Exception) { }
             }
         }.start()

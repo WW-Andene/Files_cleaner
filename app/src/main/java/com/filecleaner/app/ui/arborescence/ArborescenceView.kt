@@ -841,7 +841,7 @@ class ArborescenceView @JvmOverloads constructor(
         // "and N more..." label
         if (filtered.size > maxFiles) {
             val moreRowTop = layout.y + headerHeight + maxFiles * fileLineHeight
-            val moreBaseline = moreRowTop + fileBaselineOffset
+            val moreBaseline = moreRowTop + fileBaselineOffsetCached
             val remaining = filtered.size - maxFiles
             val moreText = context.resources.getQuantityString(
                 R.plurals.tree_more_files, remaining, remaining)
