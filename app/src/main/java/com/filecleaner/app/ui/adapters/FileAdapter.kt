@@ -102,8 +102,8 @@ class FileAdapter(
         // Visual state: duplicate group colouring → selection highlight → default
         val c = colors!!
         val card = holder.itemView as? MaterialCardView
-        if (item.duplicateGroup >= 0) {
-            val dupColors = resolvedDupColors ?: return
+        val dupColors = resolvedDupColors
+        if (item.duplicateGroup >= 0 && dupColors != null) {
             val color = dupColors[item.duplicateGroup % dupColors.size]
             card?.setCardBackgroundColor(color) ?: holder.itemView.setBackgroundColor(color)
             card?.strokeColor = c.border

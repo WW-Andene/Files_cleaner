@@ -134,6 +134,24 @@ class ArborescenceView @JvmOverloads constructor(
     private var cachedEllipsisWidth = -1f
     private var cachedEllipsisPaint: Paint? = null
 
+    // D2: Pre-cached font metrics — paint sizes are constant, avoid allocating FontMetrics per drawBlock
+    private val titleFontMetrics: Paint.FontMetrics = titlePaint.fontMetrics
+    private val subtitleFontMetrics: Paint.FontMetrics = subtitlePaint.fontMetrics
+    private val expandFontMetrics: Paint.FontMetrics = expandPaint.fontMetrics
+    private val fileFontMetrics: Paint.FontMetrics = filePaint.fontMetrics
+
+    // D2: Pre-computed baseline offsets (constant per paint)
+    private val titleTextH = titleFontMetrics.descent - titleFontMetrics.ascent
+    private val subTextH = subtitleFontMetrics.descent - subtitleFontMetrics.ascent
+    private val fileTextH = fileFontMetrics.descent - fileFontMetrics.ascent
+    private val fileBaselineOffsetCached = (fileLineHeight - fileTextH) / 2f - fileFontMetrics.ascent
+
+    // D2: Pre-allocated reusable RectF objects for drawing (avoid allocation in onDraw)
+    private val blockRect = RectF()
+    private val headerRect = RectF()
+    private val highlightRect = RectF()
+    private val ghostRect = RectF()
+
     /** Set theme-dependent paint colors once (View is recreated on config change). */
     private fun initPaintColors() {
         filePaint.color = colorTextPrimary
@@ -719,7 +737,7 @@ class ArborescenceView @JvmOverloads constructor(
 
     private fun drawBlock(canvas: Canvas, layout: NodeLayout, isSelected: Boolean, isDropTarget: Boolean) {
         val node = layout.node
-        val rect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + layout.h)
+        blockRect.set(layout.x, layout.y, layout.x + layout.w, layout.y + layout.h)
 
         // Block background, semi-transparent if no matching files
         val hasMatchingFiles = layout.cachedFiles.isNotEmpty() ||
@@ -727,32 +745,29 @@ class ArborescenceView @JvmOverloads constructor(
         val blockAlpha = if (hasMatchingFiles) 255 else 80
         blockPaint.color = colorSurface
         blockPaint.alpha = blockAlpha
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockPaint)
+        canvas.drawRoundRect(blockRect, cornerRadius, cornerRadius, blockPaint)
         blockPaint.alpha = 255
 
         // Clip to rounded block bounds to prevent text overflow / superposition
         canvas.save()
         tempPath.rewind()
-        tempPath.addRoundRect(rect, cornerRadius, cornerRadius, Path.Direction.CW)
+        tempPath.addRoundRect(blockRect, cornerRadius, cornerRadius, Path.Direction.CW)
         canvas.clipPath(tempPath)
 
         // Header bar with category-based color (dominant cached at layout build time)
         headerPaint.color = categoryColors[layout.dominantCategory] ?: categoryColors[FileCategory.OTHER]!!
-        val headerRect = RectF(layout.x, layout.y, layout.x + layout.w, layout.y + headerHeight)
+        headerRect.set(layout.x, layout.y, layout.x + layout.w, layout.y + headerHeight)
         canvas.drawRoundRect(headerRect, cornerRadius, cornerRadius, headerPaint)
         // Square off bottom corners of header
         canvas.drawRect(layout.x, layout.y + headerHeight - cornerRadius,
             layout.x + layout.w, layout.y + headerHeight, headerPaint)
 
-        // Title (folder name) — use font metrics to vertically center in header
+        // Title (folder name) — use cached font metrics to vertically center in header
         val pad = 8f * dp
         val indicatorW = if (node.children.isNotEmpty()) 18f * dp else 0f
         val titleMaxWidth = layout.w - pad * 2 - indicatorW
         val displayName = ellipsizeText(node.name, titlePaint, titleMaxWidth)
-        // Place title baseline so text is centered in the top half of the header
-        val titleMetrics = titlePaint.fontMetrics
-        val titleTextH = titleMetrics.descent - titleMetrics.ascent
-        val titleBaseline = layout.y + (headerHeight * 0.5f - titleTextH) / 2f - titleMetrics.ascent
+        val titleBaseline = layout.y + (headerHeight * 0.5f - titleTextH) / 2f - titleFontMetrics.ascent
         canvas.drawText(displayName, layout.x + pad, titleBaseline, titlePaint)
 
         // Subtitle (file count + size) — centered in the bottom half of the header
@@ -760,17 +775,15 @@ class ArborescenceView @JvmOverloads constructor(
         val subtitleText = context.resources.getQuantityString(
             R.plurals.tree_node_subtitle, node.totalFileCount, node.totalFileCount, sizeStr)
         val subtitleMaxWidth = layout.w - pad * 2
-        val subMetrics = subtitlePaint.fontMetrics
-        val subTextH = subMetrics.descent - subMetrics.ascent
-        val subBaseline = layout.y + headerHeight * 0.5f + (headerHeight * 0.5f - subTextH) / 2f - subMetrics.ascent
+        val subBaseline = layout.y + headerHeight * 0.5f + (headerHeight * 0.5f - subTextH) / 2f - subtitleFontMetrics.ascent
         canvas.drawText(ellipsizeText(subtitleText, subtitlePaint, subtitleMaxWidth),
             layout.x + pad, subBaseline, subtitlePaint)
 
         // Expand/collapse indicator — vertically centered in header
         if (node.children.isNotEmpty()) {
             val indicator = if (layout.expanded) "\u25BC" else "\u25B6"
-            val expMetrics = expandPaint.fontMetrics
-            val expBaseline = layout.y + (headerHeight - (expMetrics.descent - expMetrics.ascent)) / 2f - expMetrics.ascent
+            val expTextH = expandFontMetrics.descent - expandFontMetrics.ascent
+            val expBaseline = layout.y + (headerHeight - expTextH) / 2f - expandFontMetrics.ascent
             canvas.drawText(indicator, layout.x + layout.w - 18f * dp, expBaseline, expandPaint)
         }
 
@@ -784,16 +797,11 @@ class ArborescenceView @JvmOverloads constructor(
         val fileTextX = 28f * dp
         val fileSizeEndPad = 6f * dp
 
-        // Compute file text baseline offset once (vertically centered in fileLineHeight)
-        val fileMetrics = filePaint.fontMetrics
-        val fileTextH = fileMetrics.descent - fileMetrics.ascent
-        val fileBaselineOffset = (fileLineHeight - fileTextH) / 2f - fileMetrics.ascent
-
         canvas.save()
         canvas.clipRect(layout.x, layout.y + headerHeight, layout.x + layout.w, layout.y + layout.h)
         for ((i, file) in files.withIndex()) {
             val rowTop = layout.y + headerHeight + i * fileLineHeight
-            val fy = rowTop + fileBaselineOffset
+            val fy = rowTop + fileBaselineOffsetCached
 
             // Category dot — vertically centered in row
             dotPaint.color = categoryColors[file.category] ?: categoryColors[FileCategory.OTHER]!!
@@ -813,7 +821,7 @@ class ArborescenceView @JvmOverloads constructor(
             if (file.path == highlightedFilePath) {
                 val fileRowTop = layout.y + headerHeight + i * fileLineHeight
                 highlightFileRowTop = fileRowTop
-                val highlightRect = RectF(
+                highlightRect.set(
                     layout.x + 2f, fileRowTop,
                     layout.x + layout.w - 2f, fileRowTop + fileLineHeight
                 )
@@ -849,17 +857,17 @@ class ArborescenceView @JvmOverloads constructor(
         // --- Draw elements outside clip (borders, highlights, arrows) ---
 
         // Border
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, blockStrokePaint)
+        canvas.drawRoundRect(blockRect, cornerRadius, cornerRadius, blockStrokePaint)
 
         // Drop target highlight
         if (isDropTarget) {
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, highlightPaint)
+            canvas.drawRoundRect(blockRect, cornerRadius, cornerRadius, highlightPaint)
         }
 
         // Selection highlight (reuse pre-allocated selectionPaint)
         if (isSelected) {
             selectionPaint.color = colorPrimary
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, selectionPaint)
+            canvas.drawRoundRect(blockRect, cornerRadius, cornerRadius, selectionPaint)
         }
 
         // Highlight glow + arrow (drawn outside clip so arrow extends left of block)
@@ -867,7 +875,7 @@ class ArborescenceView @JvmOverloads constructor(
             // Glow outline around the entire containing block (reuse pre-allocated glowPaint)
             glowPaint.color = colorAccent
             glowPaint.setAlpha((160 * highlightAlpha).toInt())
-            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, glowPaint)
+            canvas.drawRoundRect(blockRect, cornerRadius, cornerRadius, glowPaint)
 
             // Large arrow indicator on the left edge
             highlightArrowPaint.color = colorAccent
@@ -908,16 +916,14 @@ class ArborescenceView @JvmOverloads constructor(
         return if (lo > 0) text.substring(0, lo) + "\u2026" else "\u2026"
     }
 
-    // D1: Uses pre-allocated ghostPaint/ghostTextPaint — zero allocations during drag
+    // D1: Uses pre-allocated ghostPaint/ghostTextPaint/ghostRect — zero allocations during drag
     private fun drawDragGhost(canvas: Canvas) {
         val name = dragFileName ?: return
         ghostPaint.color = (colorAccent and 0x00FFFFFF) or 0xDD000000.toInt()
         val tw = ghostTextPaint.measureText(name) + 16f * dp
         val th = 20f * dp
-        canvas.drawRoundRect(
-            RectF(dragX - tw / 2, dragY - th, dragX + tw / 2, dragY + 6f * dp),
-            8f * dp, 8f * dp, ghostPaint
-        )
+        ghostRect.set(dragX - tw / 2, dragY - th, dragX + tw / 2, dragY + 6f * dp)
+        canvas.drawRoundRect(ghostRect, 8f * dp, 8f * dp, ghostPaint)
         canvas.drawText(name, dragX - tw / 2 + 8f * dp, dragY - 3f * dp, ghostTextPaint)
     }
 

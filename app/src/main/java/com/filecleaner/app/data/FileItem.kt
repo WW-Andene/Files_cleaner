@@ -28,6 +28,13 @@ enum class FileCategory(@StringRes val displayNameRes: Int, val emoji: String) {
             ARCHIVE to setOf("zip","rar","7z","tar","gz","bz2","xz","cab","iso","tgz","zst")
         )
 
+        // Flat O(1) lookup map: extension → category (pre-computed from extMap)
+        private val flatLookup: Map<String, FileCategory> = buildMap {
+            for ((cat, exts) in extMap) {
+                for (ext in exts) put(ext, cat)
+            }
+        }
+
         /** Combined media extensions (image + video + audio) — single source of truth. */
         val MEDIA_EXTENSIONS: Set<String> =
             (extMap[IMAGE] ?: emptySet()) + (extMap[VIDEO] ?: emptySet()) + (extMap[AUDIO] ?: emptySet())
@@ -35,13 +42,8 @@ enum class FileCategory(@StringRes val displayNameRes: Int, val emoji: String) {
         val DOCUMENT_EXTENSIONS: Set<String> = extMap[DOCUMENT] ?: emptySet()
         val ARCHIVE_APK_EXTENSIONS: Set<String> = (extMap[ARCHIVE] ?: emptySet()) + (extMap[APK] ?: emptySet())
 
-        fun fromExtension(ext: String): FileCategory {
-            val lower = ext.lowercase()
-            for ((cat, exts) in extMap) {
-                if (lower in exts) return cat
-            }
-            return OTHER
-        }
+        fun fromExtension(ext: String): FileCategory =
+            flatLookup[ext.lowercase()] ?: OTHER
     }
 }
 

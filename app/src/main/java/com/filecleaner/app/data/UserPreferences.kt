@@ -11,10 +11,19 @@ object UserPreferences {
 
     private const val PREFS_NAME = "raccoon_prefs"
 
-    private lateinit var prefs: SharedPreferences
+    @Volatile
+    private var appContext: Context? = null
+
+    private val prefs: SharedPreferences by lazy {
+        val ctx = appContext ?: throw IllegalStateException(
+            "UserPreferences.init(context) must be called before accessing preferences")
+        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
 
     fun init(context: Context) {
-        prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        appContext = context.applicationContext
+        // Eagerly trigger the lazy init on the calling thread
+        prefs
     }
 
     // ── Scan thresholds ──

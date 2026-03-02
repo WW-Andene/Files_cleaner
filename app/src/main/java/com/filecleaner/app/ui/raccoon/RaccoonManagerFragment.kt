@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.filecleaner.app.MainActivity
 import com.filecleaner.app.R
 import com.filecleaner.app.databinding.FragmentRaccoonManagerBinding
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
+import com.filecleaner.app.viewmodel.ScanPhase
 import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.snackbar.Snackbar
 
@@ -35,6 +37,13 @@ class RaccoonManagerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val navAnimOptions = NavOptions.Builder()
+            .setEnterAnim(R.anim.nav_enter)
+            .setExitAnim(R.anim.nav_exit)
+            .setPopEnterAnim(R.anim.nav_pop_enter)
+            .setPopExitAnim(R.anim.nav_pop_exit)
+            .build()
+
         // Scan Storage — triggers permission check + scan
         binding.cardScan.setOnClickListener {
             (activity as? MainActivity)?.requestPermissionsAndScan()
@@ -43,7 +52,7 @@ class RaccoonManagerFragment : Fragment() {
         // Analysis — navigate to storage dashboard
         binding.cardAnalysis.setOnClickListener {
             if (hasScanData()) {
-                findNavController().navigate(R.id.dashboardFragment)
+                findNavController().navigate(R.id.dashboardFragment, null, navAnimOptions)
             } else {
                 showScanNeeded()
             }
@@ -81,7 +90,7 @@ class RaccoonManagerFragment : Fragment() {
         // Arborescence — tree view
         binding.cardArborescence.setOnClickListener {
             if (hasScanData()) {
-                findNavController().navigate(R.id.arborescenceFragment)
+                findNavController().navigate(R.id.arborescenceFragment, null, navAnimOptions)
             } else {
                 showScanNeeded()
             }
@@ -99,7 +108,8 @@ class RaccoonManagerFragment : Fragment() {
         // Update subtitle and card states based on scan state
         vm.scanState.observe(viewLifecycleOwner) { state ->
             val hasData = state is ScanState.Done
-            binding.progressScan.visibility = if (state is ScanState.Scanning) View.VISIBLE else View.GONE
+            val isScanning = state is ScanState.Scanning
+            binding.progressScan.visibility = if (isScanning) View.VISIBLE else View.GONE
             binding.tvSubtitle.text = when (state) {
                 is ScanState.Done -> {
                     val stats = vm.storageStats.value
@@ -112,24 +122,42 @@ class RaccoonManagerFragment : Fragment() {
                             vm.largeFiles.value?.size ?: 0)
                     } else getString(R.string.raccoon_manager_subtitle)
                 }
-                is ScanState.Scanning -> getString(R.string.scanning_phase_indexing, state.filesFound)
+                is ScanState.Scanning -> when (state.phase) {
+                    ScanPhase.INDEXING -> getString(R.string.scanning_phase_indexing, state.filesFound)
+                    ScanPhase.DUPLICATES -> getString(R.string.scanning_phase_duplicates, state.filesFound)
+                    ScanPhase.ANALYZING -> getString(R.string.scanning_phase_analyzing, state.filesFound)
+                    ScanPhase.JUNK -> getString(R.string.scanning_phase_junk, state.filesFound)
+                }
                 else -> getString(R.string.raccoon_manager_subtitle)
             }
-            // F5: Dim cards that require scan data when none is available
-            val alpha = if (hasData) 1.0f else 0.5f
+            // F5: Dim cards that require scan data when none is available; full opacity when scanning or done
+            val alpha = if (hasData || isScanning) 1.0f else 0.5f
             binding.cardAnalysis.alpha = alpha
             binding.cardQuickClean.alpha = alpha
             binding.cardArborescence.alpha = alpha
             binding.cardJanitor.alpha = alpha
-            binding.tvAnalysisDesc.text = if (hasData)
-                getString(R.string.raccoon_action_analysis_desc)
-            else getString(R.string.raccoon_scan_needed)
-            binding.tvQuickCleanDesc.text = if (hasData)
-                getString(R.string.raccoon_action_quick_clean_desc)
-            else getString(R.string.raccoon_scan_needed)
-            binding.tvJanitorDesc.text = if (hasData)
-                getString(R.string.raccoon_action_janitor_desc)
-            else getString(R.string.raccoon_scan_needed)
+            // Show scan phase on card descriptions during active scan
+            val scanPhaseText = if (state is ScanState.Scanning) when (state.phase) {
+                ScanPhase.INDEXING -> getString(R.string.scanning_phase_indexing, state.filesFound)
+                ScanPhase.DUPLICATES -> getString(R.string.scanning_phase_duplicates, state.filesFound)
+                ScanPhase.ANALYZING -> getString(R.string.scanning_phase_analyzing, state.filesFound)
+                ScanPhase.JUNK -> getString(R.string.scanning_phase_junk, state.filesFound)
+            } else null
+            binding.tvAnalysisDesc.text = when {
+                hasData -> getString(R.string.raccoon_action_analysis_desc)
+                scanPhaseText != null -> scanPhaseText
+                else -> getString(R.string.raccoon_scan_needed)
+            }
+            binding.tvQuickCleanDesc.text = when {
+                hasData -> getString(R.string.raccoon_action_quick_clean_desc)
+                scanPhaseText != null -> scanPhaseText
+                else -> getString(R.string.raccoon_scan_needed)
+            }
+            binding.tvJanitorDesc.text = when {
+                hasData -> getString(R.string.raccoon_action_janitor_desc)
+                scanPhaseText != null -> scanPhaseText
+                else -> getString(R.string.raccoon_scan_needed)
+            }
         }
 
         // Observe delete result for undo snackbar

@@ -89,6 +89,10 @@ class MainActivity : AppCompatActivity() {
                 .setPopUpTo(R.id.raccoonManagerFragment, inclusive = false, saveState = true)
                 .setLaunchSingleTop(true)
                 .setRestoreState(true)
+                .setEnterAnim(R.anim.nav_enter)
+                .setExitAnim(R.anim.nav_exit)
+                .setPopEnterAnim(R.anim.nav_pop_enter)
+                .setPopExitAnim(R.anim.nav_pop_exit)
                 .build()
             navController.navigate(destId, null, options)
             true
@@ -103,6 +107,10 @@ class MainActivity : AppCompatActivity() {
                     .setPopUpTo(R.id.raccoonManagerFragment, inclusive = false, saveState = true)
                     .setLaunchSingleTop(true)
                     .setRestoreState(true)
+                    .setEnterAnim(R.anim.nav_enter)
+                    .setExitAnim(R.anim.nav_exit)
+                    .setPopEnterAnim(R.anim.nav_pop_enter)
+                    .setPopExitAnim(R.anim.nav_pop_exit)
                     .build()
                 navController.navigate(destId, null, options)
             }
@@ -120,12 +128,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Shared NavOptions for non-tab navigations (arborescence, settings, dashboard)
+        val navAnimOptions = NavOptions.Builder()
+            .setEnterAnim(R.anim.nav_enter)
+            .setExitAnim(R.anim.nav_exit)
+            .setPopEnterAnim(R.anim.nav_pop_enter)
+            .setPopExitAnim(R.anim.nav_pop_exit)
+            .build()
+
         // Navigate to tree on "Show in Tree"
         viewModel.navigateToTree.observe(this) { filePath ->
             if (filePath != null) {
                 val currentDest = navController.currentDestination?.id
                 if (currentDest != R.id.arborescenceFragment) {
-                    navController.navigate(R.id.arborescenceFragment)
+                    navController.navigate(R.id.arborescenceFragment, null, navAnimOptions)
                 }
             }
         }
@@ -192,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                         // Make scan status tappable to open dashboard
                         binding.tvScanStatus.setOnClickListener {
-                            findNavController(R.id.nav_host_fragment).navigate(R.id.dashboardFragment)
+                            findNavController(R.id.nav_host_fragment).navigate(R.id.dashboardFragment, null, navAnimOptions)
                         }
                     } else {
                         binding.tvScanStatus.text = getString(R.string.scan_complete_simple)
@@ -242,7 +258,7 @@ class MainActivity : AppCompatActivity() {
 
         // Settings button
         binding.btnSettings.setOnClickListener {
-            findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment)
+            findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment, null, navAnimOptions)
         }
 
         // First-launch onboarding
