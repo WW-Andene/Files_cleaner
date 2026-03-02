@@ -318,6 +318,7 @@ abstract class BaseFileListFragment : Fragment() {
 
     override fun onDestroyView() {
         searchRunnable?.let { handler.removeCallbacks(it) }
+        binding.spinnerSort.onItemSelectedListener = null
         super.onDestroyView()
         _binding = null
     }

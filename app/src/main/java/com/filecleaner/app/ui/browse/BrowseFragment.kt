@@ -397,6 +397,8 @@ class BrowseFragment : Fragment() {
 
     override fun onDestroyView() {
         searchRunnable?.let { handler.removeCallbacks(it) }
+        binding.spinnerCategory.onItemSelectedListener = null
+        binding.spinnerSort.onItemSelectedListener = null
         super.onDestroyView()
         _binding = null
     }

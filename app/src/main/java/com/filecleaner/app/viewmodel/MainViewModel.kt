@@ -23,7 +23,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -202,29 +201,25 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     override fun onCleared() {
         super.onCleared()
-        // Commit any pending trash — the undo window has expired since the UI is gone
-        // Use runBlocking since onCleared is synchronous and viewModelScope is cancelled
-        runBlocking {
-            trashMutex.withLock {
-                if (pendingTrash.isNotEmpty()) {
-                    for ((_, trashPath) in pendingTrash) {
-                        File(trashPath).delete()
-                    }
-                    pendingTrash.clear()
-                }
-            }
-        }
-        // Last-resort synchronous cache save — ensures scan data is persisted
-        // even when the app is killed (viewModelScope is already cancelled here)
+        // Snapshot mutable state on the Main Thread (safe — all mutations dispatch to Main)
+        val trashSnapshot = pendingTrash.toMap()
+        pendingTrash.clear()
         val files = latestFiles
         val tree = latestTree
-        if (files.isNotEmpty() && tree != null) {
-            runBlocking(Dispatchers.IO) {
+
+        // Run I/O on a background thread to avoid blocking Main Thread (ANR risk).
+        // If the process dies before completion, the init{} block cleans orphaned
+        // trash on next launch, so no data is permanently lost.
+        Thread {
+            for ((_, trashPath) in trashSnapshot) {
+                File(trashPath).delete()
+            }
+            if (files.isNotEmpty() && tree != null) {
                 try {
                     ScanCache.save(getApplication(), files, tree)
                 } catch (_: Exception) { }
             }
-        }
+        }.start()
     }
 
     fun startScan(minLargeFileMb: Int = try { UserPreferences.largeFileThresholdMb } catch (_: Exception) { 50 }) {
@@ -312,6 +307,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             // B4: Prevent concurrent delete operations from rapid double-taps
             if (!deleteMutex.tryLock()) return@launch
             try {
+            // Filter out protected paths before deletion
+            val protectedPaths = try { UserPreferences.protectedPaths } catch (_: Exception) { emptySet<String>() }
+            val safeToDelete = toDelete.filter { it.path !in protectedPaths }
+            if (safeToDelete.isEmpty()) return@launch
+
             // Commit any previous pending trash since its undo window is being replaced
             trashMutex.withLock {
                 if (pendingTrash.isNotEmpty()) {
@@ -321,10 +321,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
             val (movedPaths, freedBytes) = withContext(Dispatchers.IO) {
                 val dir = trashDir
-                dir.mkdirs()
+                if (!dir.exists() && !dir.mkdirs()) {
+                    return@withContext emptyMap<String, String>() to 0L
+                }
                 var freed = 0L
                 val moved = mutableMapOf<String, String>()
-                for (item in toDelete) {
+                for (item in safeToDelete) {
                     val src = File(item.path)
                     val dst = File(dir, "${System.nanoTime()}_${src.name}")
                     if (src.renameTo(dst)) {
@@ -339,8 +341,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 pendingTrash = movedPaths.toMutableMap()
             }
 
-            val failed = toDelete.size - movedPaths.size
-            val singleName = if (toDelete.size == 1) toDelete[0].name else null
+            val failed = safeToDelete.size - movedPaths.size
+            val singleName = if (safeToDelete.size == 1) safeToDelete[0].name else null
             _deleteResult.postValue(DeleteResult(movedPaths.size, failed, freedBytes, canUndo = true, singleFileName = singleName))
 
             stateMutex.withLock {

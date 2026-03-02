@@ -26,6 +26,7 @@ class FileAdapter(
         }
         private const val TYPE_LIST = 0
         private const val TYPE_GRID = 1
+        private const val PAYLOAD_SELECTION = "selection"
     }
 
     // Selection tracked separately from FileItem (F-001)
@@ -76,6 +77,38 @@ class FileAdapter(
         val layoutRes = if (viewType == TYPE_GRID) R.layout.item_file_grid else R.layout.item_file
         val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
         return FileViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: FileViewHolder, position: Int, payloads: List<Any>) {
+        if (payloads.contains(PAYLOAD_SELECTION)) {
+            val item = getItem(position)
+            val isSelected = item.path in selectedPaths
+            val ctx = holder.itemView.context
+            resolveColors(ctx)
+            val c = colors!!
+            val card = holder.itemView as? MaterialCardView
+
+            // Partial rebind: only update selection visual state (skip icon, text, thumbnail)
+            if (item.duplicateGroup < 0) {
+                if (isSelected) {
+                    card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
+                    card?.strokeColor = c.selectedBorder
+                } else {
+                    card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
+                    card?.strokeColor = c.border
+                }
+            }
+            if (selectable && holder.check != null) {
+                holder.check.isChecked = isSelected
+                holder.check.contentDescription = ctx.getString(
+                    if (isSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
+            }
+            holder.itemView.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                item.name, holder.meta?.text ?: "")
+            return
+        }
+        super.onBindViewHolder(holder, position, payloads)
     }
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
@@ -175,7 +208,7 @@ class FileAdapter(
 
     fun selectAll() {
         selectedPaths.addAll(currentList.map { it.path })
-        notifyItemRangeChanged(0, itemCount)
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 
@@ -189,13 +222,13 @@ class FileAdapter(
             val bestPath = best?.path
             group.forEach { if (it.path != bestPath) selectedPaths.add(it.path) }
         }
-        notifyItemRangeChanged(0, itemCount)
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 
     fun deselectAll() {
         selectedPaths.clear()
-        notifyItemRangeChanged(0, itemCount)
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         onSelectionChanged(emptyList())
     }
 
@@ -208,7 +241,7 @@ class FileAdapter(
     fun restoreSelection(paths: Set<String>) {
         selectedPaths.clear()
         selectedPaths.addAll(paths)
-        notifyItemRangeChanged(0, itemCount)
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 

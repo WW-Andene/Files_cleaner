@@ -9,13 +9,13 @@ import android.provider.Settings
  */
 object MotionUtil {
 
-    /** Returns true when animations should be skipped (scale == 0). */
+    /** Returns true when the user prefers reduced motion (animation scale below normal). */
     fun isReducedMotion(context: Context): Boolean {
         val scale = Settings.Global.getFloat(
             context.contentResolver,
             Settings.Global.ANIMATOR_DURATION_SCALE,
             1f
         )
-        return scale == 0f
+        return scale < 1f
     }
 }

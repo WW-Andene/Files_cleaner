@@ -392,6 +392,8 @@ class ArborescenceFragment : Fragment() {
 
     override fun onDestroyView() {
         savedExpandedPaths = binding.arborescenceView.getExpandedPaths()
+        binding.spinnerTreeCategory.onItemSelectedListener = null
+        binding.spinnerTreeSort.onItemSelectedListener = null
         super.onDestroyView()
         _binding = null
     }

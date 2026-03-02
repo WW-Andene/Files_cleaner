@@ -28,7 +28,7 @@ object JunkFinder {
      * - Old downloads (> 90 days, not media)
      */
     suspend fun findJunk(files: List<FileItem>): List<FileItem> = withContext(Dispatchers.IO) {
-        val staleDays = try { UserPreferences.staleDownloadDays.toLong() } catch (_: Exception) { DEFAULT_STALE_DOWNLOAD_DAYS }
+        val staleDays = try { UserPreferences.staleDownloadDays.toLong().coerceIn(1, 3650) } catch (_: Exception) { DEFAULT_STALE_DOWNLOAD_DAYS }
         val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(staleDays)
         // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
         @Suppress("DEPRECATION")

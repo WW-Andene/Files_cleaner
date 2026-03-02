@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNav.setOnItemSelectedListener { item ->
             val destId = menuToNav[item.itemId] ?: return@setOnItemSelectedListener false
             val currentDest = navController.currentDestination?.id
+            // Guard: skip navigation if already on this destination (prevents back stack duplication on rapid taps)
+            if (destId == currentDest) return@setOnItemSelectedListener true
             // Pop non-tab fragments (arborescence, settings, dashboard) from back stack
             if (currentDest != null && currentDest !in bottomNavIds) {
                 navController.popBackStack(currentDest, true)
