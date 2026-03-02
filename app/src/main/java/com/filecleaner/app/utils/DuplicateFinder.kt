@@ -2,13 +2,30 @@ package com.filecleaner.app.utils
 
 import com.filecleaner.app.data.FileItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.security.MessageDigest
 
 object DuplicateFinder {
 
-    private const val PARTIAL_HASH_BYTES = 4096L // 4 KB from head + tail
+    // 4 KB from head + tail — balances collision avoidance vs. I/O cost.
+    // Reducing below 1 KB raises false-positive rate significantly on media files.
+    private const val PARTIAL_HASH_BYTES = 4096L
+    // Standard I/O buffer — matches Android's default BufferedInputStream size.
+    private const val HASH_BUFFER_SIZE = 8192
+
+    // D1: Pre-allocated lookup table for hex encoding (avoids per-byte String.format allocation)
+    private val HEX_CHARS = "0123456789abcdef".toCharArray()
+    private fun bytesToHex(bytes: ByteArray): String {
+        val result = CharArray(bytes.size * 2)
+        for (i in bytes.indices) {
+            val v = bytes[i].toInt() and 0xFF
+            result[i * 2] = HEX_CHARS[v ushr 4]
+            result[i * 2 + 1] = HEX_CHARS[v and 0x0F]
+        }
+        return String(result)
+    }
 
     /**
      * Multi-stage duplicate detection (F-017):
@@ -34,6 +51,7 @@ object DuplicateFinder {
         // Stage 2: Partial hash — first 4 KB + last 4 KB
         val byPartial = mutableMapOf<String, MutableList<FileItem>>()
         for (item in sizeCollisions) {
+            ensureActive()
             onProgress(done++, total)
             val key = partialHash(File(item.path)) ?: continue
             byPartial.getOrPut(key) { mutableListOf() }.add(item)
@@ -47,6 +65,7 @@ object DuplicateFinder {
 
             val byFull = mutableMapOf<String, MutableList<FileItem>>()
             for (item in partialGroup) {
+                ensureActive()
                 val hash = fullMd5(File(item.path)) ?: continue
                 byFull.getOrPut(hash) { mutableListOf() }.add(item)
             }
@@ -59,7 +78,7 @@ object DuplicateFinder {
             }
         }
 
-        result.sortWith(compareBy({ it.duplicateGroup }, { -it.size }))
+        result.sortWith(compareBy({ it.duplicateGroup }, { it.name.lowercase() }))
         result
     }
 
@@ -81,19 +100,19 @@ object DuplicateFinder {
             raf.readFully(buf)
             md.update(buf)
         }
-        md.digest().joinToString("") { "%02x".format(it) }
+        bytesToHex(md.digest())
     }.getOrNull()
 
     /** Full MD5 of the entire file content. */
     private fun fullMd5(file: File): String? = runCatching {
         val md = MessageDigest.getInstance("MD5")
         file.inputStream().use { input ->
-            val buffer = ByteArray(8192)
+            val buffer = ByteArray(HASH_BUFFER_SIZE)
             var read: Int
             while (input.read(buffer).also { read = it } != -1) {
                 md.update(buffer, 0, read)
             }
         }
-        md.digest().joinToString("") { "%02x".format(it) }
+        bytesToHex(md.digest())
     }.getOrNull()
 }

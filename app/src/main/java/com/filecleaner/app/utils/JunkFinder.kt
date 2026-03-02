@@ -3,7 +3,9 @@ package com.filecleaner.app.utils
 import android.os.Environment
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
@@ -12,6 +14,8 @@ object JunkFinder {
     private val JUNK_EXTENSIONS = setOf(
         "tmp", "temp", "log", "bak", "old", "dmp", "crdownload", "part", "partial"
     )
+
+    private const val DEFAULT_STALE_DOWNLOAD_DAYS = 90L
 
     private val JUNK_DIR_KEYWORDS = listOf(
         ".cache", "cache", "temp", "tmp", "thumbnail", ".thumbnails", "lost+found"
@@ -24,16 +28,21 @@ object JunkFinder {
      * - Old downloads (> 90 days, not media)
      */
     suspend fun findJunk(files: List<FileItem>): List<FileItem> = withContext(Dispatchers.IO) {
-        val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(90)
+        val staleDays = try { UserPreferences.staleDownloadDays.toLong().coerceIn(1, 3650) } catch (_: Exception) { DEFAULT_STALE_DOWNLOAD_DAYS }
+        val cutoff90Days = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(staleDays)
+        // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
+        @Suppress("DEPRECATION")
         val downloadPath = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
         ).absolutePath
 
-        files.filter { item ->
-            val ext = item.name.substringAfterLast('.', "").lowercase()
+        val result = mutableListOf<FileItem>()
+        for ((index, item) in files.withIndex()) {
+            if (index % 100 == 0) ensureActive()
+            val ext = item.extension
             val path = item.path.lowercase()
 
-            when {
+            val isJunk = when {
                 // Known junk extension
                 ext in JUNK_EXTENSIONS -> true
 
@@ -43,14 +52,18 @@ object JunkFinder {
                 // Old download (> 90 days old, only truly disposable types)
                 // Excludes documents, media, archives, APKs — only flags
                 // files with no recognized extension (F-002)
+                // Guard: skip files with unknown date (lastModified == 0)
                 item.path.startsWith(downloadPath) &&
+                        item.lastModified > 0L &&
                         item.lastModified < cutoff90Days &&
                         !isMedia(ext) && !isDocument(ext) &&
                         !isArchiveOrApk(ext) -> true
 
                 else -> false
             }
-        }.sortedByDescending { it.size }
+            if (isJunk) result.add(item)
+        }
+        result.sortedByDescending { it.size }
     }
 
     /**
@@ -61,6 +74,7 @@ object JunkFinder {
         minSizeBytes: Long = 50 * 1024 * 1024L, // 50 MB default
         maxResults: Int = 200
     ): List<FileItem> = withContext(Dispatchers.IO) {
+        ensureActive()
         files.filter { it.size >= minSizeBytes }
             .sortedByDescending { it.size }
             .take(maxResults)
