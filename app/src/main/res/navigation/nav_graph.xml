@@ -50,6 +50,11 @@
         android:label="@string/optimize_title" />
 
     <fragment
+        android:id="@+id/dualPaneFragment"
+        android:name="com.filecleaner.app.ui.dualpane.DualPaneFragment"
+        android:label="@string/dual_pane_title" />
+
+    <fragment
         android:id="@+id/fileViewerFragment"
         android:name="com.filecleaner.app.ui.viewer.FileViewerFragment"
         android:label="@string/viewer_title">

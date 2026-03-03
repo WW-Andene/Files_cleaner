@@ -105,6 +105,11 @@ class RaccoonManagerFragment : Fragment() {
             }
         }
 
+        // Dual Pane — side-by-side file manager (no scan required)
+        binding.cardDualPane.setOnClickListener {
+            findNavController().navigate(R.id.dualPaneFragment, null, navAnimOptions)
+        }
+
         // Janitor — deep clean (navigate to duplicates tab for comprehensive review)
         binding.cardJanitor.setOnClickListener {
             if (!hasScanData()) {

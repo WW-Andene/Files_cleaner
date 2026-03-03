@@ -391,6 +391,70 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Dual Pane card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_dual_pane"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="?attr/selectableItemBackground"
+            android:contentDescription="@string/dual_pane_title"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <FrameLayout
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:background="@drawable/bg_icon_circle"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_nav"
+                        android:layout_height="@dimen/icon_nav"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_dual_pane"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"
+                        app:tint="@color/colorPrimary" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="@dimen/spacing_lg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dual_pane_title"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dual_pane_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Janitor card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_janitor"

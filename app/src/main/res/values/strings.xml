@@ -416,4 +416,23 @@
         <item quantity="other">Moved %d files successfully</item>
     </plurals>
     <string name="optimize_none_selected">No suggestions selected</string>
+
+    <!-- Dual Pane -->
+    <string name="dual_pane_title">Dual Pane</string>
+    <string name="dual_pane_desc">Side-by-side file manager for easy copy and move</string>
+    <string name="dual_pane_go_up">Go up one level</string>
+    <string name="dual_pane_copy">Copy →</string>
+    <string name="dual_pane_move">Move →</string>
+    <string name="dual_pane_no_selection">Select files first</string>
+    <string name="dual_pane_no_files_to_delete">No files selected (directories cannot be deleted here)</string>
+    <string name="dual_pane_count">%1$d folders, %2$d files</string>
+    <string name="back">Back</string>
+    <plurals name="n_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <plurals name="dual_pane_confirm_op">
+        <item quantity="one">%2$s %1$d file to %3$s?</item>
+        <item quantity="other">%2$s %1$d files to %3$s?</item>
+    </plurals>
 </resources>
