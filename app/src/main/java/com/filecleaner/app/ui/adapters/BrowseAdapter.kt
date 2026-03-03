@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.ui.adapters.FileItemUtils.dpToPx
+import com.filecleaner.app.utils.UndoHelper
 
 class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(DIFF) {
 
     sealed class Item {
-        data class Header(val folderPath: String, val displayName: String, val fileCount: Int) : Item()
+        data class Header(val folderPath: String, val displayName: String, val fileCount: Int, val totalSize: Long = 0L) : Item()
         data class File(val fileItem: FileItem) : Item()
     }
 
@@ -80,6 +81,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
 
     private fun bindHeader(holder: HeaderViewHolder, header: Item.Header) {
         holder.folderName.text = header.displayName
+        holder.folderSize.text = UndoHelper.formatBytes(header.totalSize)
         holder.folderCount.text = holder.itemView.context.resources.getQuantityString(R.plurals.n_files, header.fileCount, header.fileCount)
     }
 
@@ -123,6 +125,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
 
     class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val folderName: TextView = view.findViewById(R.id.tv_folder_name)
+        val folderSize: TextView = view.findViewById(R.id.tv_folder_size)
         val folderCount: TextView = view.findViewById(R.id.tv_folder_count)
     }
 

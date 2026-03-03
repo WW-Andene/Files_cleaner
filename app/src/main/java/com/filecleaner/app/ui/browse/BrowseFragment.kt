@@ -320,7 +320,8 @@ class BrowseFragment : Fragment() {
         for ((folderPath, folderFiles) in sortedGroups) {
             // Create a readable folder display name
             val displayName = folderDisplayName(folderPath)
-            result.add(BrowseAdapter.Item.Header(folderPath, displayName, folderFiles.size))
+            val totalSize = folderFiles.sumOf { it.size }
+            result.add(BrowseAdapter.Item.Header(folderPath, displayName, folderFiles.size, totalSize))
             for (file in folderFiles) {
                 result.add(BrowseAdapter.Item.File(file))
             }

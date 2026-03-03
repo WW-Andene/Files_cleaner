@@ -31,6 +31,14 @@
         android:accessibilityHeading="true" />
 
     <TextView
+        android:id="@+id/tv_folder_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+        android:textColor="@color/textTertiary" />
+
+    <TextView
         android:id="@+id/tv_folder_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
