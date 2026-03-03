@@ -18,10 +18,10 @@ import com.filecleaner.app.ui.viewer.FileViewerFragment
 import com.filecleaner.app.utils.FileOpener
 
 /**
- * Quick preview dialog for files (P8).
+ * Quick preview dialog for files.
  * - Images: full-size preview via Glide
- * - Text files: first 10KB in monospace
- * - PDF: opens fullscreen viewer directly
+ * - Text/code files: first 10KB in monospace (60+ extensions)
+ * - PDF/Audio/Video/HTML/Markdown: opens fullscreen viewer directly
  * - Others: fallback to external open
  *
  * All previews include a "View fullscreen" button to open FileViewerFragment.
@@ -29,17 +29,52 @@ import com.filecleaner.app.utils.FileOpener
 object FilePreviewDialog {
 
     private val TEXT_EXTENSIONS = setOf(
-        "txt", "md", "csv", "json", "xml", "html", "htm", "log",
-        "yml", "yaml", "toml", "ini", "cfg", "conf", "properties",
-        "sh", "bat", "py", "js", "ts", "kt", "java", "c", "cpp",
-        "h", "css", "scss", "sql", "gradle", "gitignore"
+        // Plain text & config
+        "txt", "csv", "log", "ini", "cfg", "conf", "properties",
+        "yml", "yaml", "toml", "env", "gitignore", "dockerignore",
+        "editorconfig", "htaccess", "npmrc", "nvmrc",
+        // Markup (non-rendered)
+        "xml", "svg", "plist",
+        // Code: JVM
+        "kt", "kts", "java", "groovy", "gradle", "scala",
+        // Code: Web
+        "js", "jsx", "ts", "tsx", "css", "scss", "sass", "less",
+        "vue", "svelte",
+        // Code: Systems
+        "c", "cpp", "cc", "cxx", "h", "hpp", "hxx",
+        "rs", "go", "zig",
+        // Code: Scripting
+        "py", "rb", "php", "pl", "pm", "lua", "r",
+        "sh", "bash", "zsh", "fish", "bat", "ps1", "cmd",
+        // Code: Mobile / other
+        "swift", "m", "mm", "dart",
+        // Code: Functional / ML
+        "hs", "ml", "ex", "exs", "erl", "clj",
+        // Data & query
+        "sql", "graphql", "gql", "proto",
+        // Build & CI
+        "makefile", "cmake", "dockerfile",
+        "tf", "hcl", "nix",
+        // Docs
+        "tex", "latex", "bib", "srt", "sub", "ass", "vtt",
+        "diff", "patch",
+        // Other
+        "json", "json5", "jsonc", "jsonl"
+    )
+
+    // Types that open directly in the fullscreen viewer
+    private val VIEWER_DIRECT_EXTENSIONS = setOf(
+        "pdf", "html", "htm", "md", "markdown", "mdown", "mkd",
+        "zip", "jar", "apk"
     )
 
     private const val MAX_TEXT_BYTES = 10 * 1024 // 10 KB
 
     fun show(context: Context, item: FileItem) {
         when {
-            item.extension == "pdf" -> navigateToViewer(context, item)
+            item.extension in VIEWER_DIRECT_EXTENSIONS -> navigateToViewer(context, item)
+            item.category == FileCategory.AUDIO -> navigateToViewer(context, item)
+            item.category == FileCategory.VIDEO -> navigateToViewer(context, item)
             item.category == FileCategory.IMAGE -> showImagePreview(context, item)
             item.extension in TEXT_EXTENSIONS -> showTextPreview(context, item)
             else -> FileOpener.open(context, item.file)

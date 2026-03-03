@@ -205,6 +205,9 @@
     <string name="viewer_pdf_page">Page %1$d of %2$d</string>
     <string name="viewer_unsupported">No built-in viewer for .%s files</string>
     <string name="viewer_open_fullscreen">View fullscreen</string>
+    <string name="viewer_audio_play">Play / Pause</string>
+    <string name="viewer_audio_error">Cannot play this audio file</string>
+    <string name="viewer_archive_error">Cannot read archive: %s</string>
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
     <string name="ctx_protect">Exclude from cleanup</string>

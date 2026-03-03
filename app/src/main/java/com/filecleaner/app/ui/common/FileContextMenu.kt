@@ -243,7 +243,16 @@ object FileContextMenu {
         addItem(context.getString(R.string.ctx_compress), R.drawable.ic_archive) {
             callback.onCompress(item)
         }
-        if (item.category == FileCategory.IMAGE || item.extension == "pdf") {
+        // Show convert option for images, PDFs, videos, audio, and text/code files
+        val convertibleTextExts = setOf(
+            "txt", "log", "csv", "json", "xml", "html", "htm", "md", "markdown",
+            "py", "js", "ts", "kt", "java", "c", "cpp", "rs", "go", "rb", "php",
+            "sh", "sql", "css", "yaml", "yml", "toml", "ini", "cfg", "conf",
+            "swift", "dart", "lua", "tex", "diff", "patch", "gradle", "makefile"
+        )
+        if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO ||
+            item.category == FileCategory.AUDIO || item.extension == "pdf" ||
+            item.extension in convertibleTextExts) {
             addItem(context.getString(R.string.ctx_convert), R.drawable.ic_file) {
                 ConvertDialog.show(context, item) { result ->
                     val msg = if (result.success) result.message

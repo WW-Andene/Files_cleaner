@@ -137,6 +137,94 @@
                 android:textIsSelectable="true" />
         </ScrollView>
 
+        <!-- Audio player (hidden by default) -->
+        <LinearLayout
+            android:id="@+id/audio_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/spacing_lg"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_audio_art"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_audio"
+                app:tint="@color/textTertiary" />
+
+            <TextView
+                android:id="@+id/tv_audio_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                android:textColor="@color/textPrimary"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <SeekBar
+                android:id="@+id/seek_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:layout_marginHorizontal="@dimen/spacing_lg" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/spacing_lg">
+
+                <TextView
+                    android:id="@+id/tv_audio_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textSecondary" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tv_audio_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textSecondary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="@dimen/spacing_sm">
+
+                <ImageButton
+                    android:id="@+id/btn_audio_play"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@android:drawable/ic_media_play"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/viewer_audio_play"
+                    app:tint="@color/textPrimary" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- WebView for HTML/Markdown (hidden by default) -->
+        <WebView
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
         <!-- Unsupported type fallback -->
         <LinearLayout
             android:id="@+id/unsupported_container"
