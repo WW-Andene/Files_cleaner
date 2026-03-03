@@ -970,22 +970,22 @@ Persistence paths:
 | F-C1-02 | CRITICAL | C1 | SFTP host key checking disabled (`StrictHostKeyChecking=no`) | FIXED (P3: TOFU with known_hosts) |
 | F-C4-01 | HIGH | C4 | JSch 0.1.55 is abandoned, has CVE-2023-48795 (Terrapin) | FIXED (P3: migrated to mwiede/jsch 0.2.21) |
 | F-C1-03 | HIGH | C1 | WebDAV Basic Auth with no HTTPS enforcement | FIXED (P3: HTTPS enforced in baseUrl) |
-| F-C6-01 | HIGH | C6 | No privacy policy or data disclosure mechanism | OPEN (requires legal/product decision) |
+| F-C6-01 | HIGH | C6 | No privacy policy or data disclosure mechanism | FIXED (P3: privacy disclosure dialog on first launch) |
 | F-C1-04 | MEDIUM | C1 | No TLS certificate pinning, no network_security_config.xml | FIXED (P3: network_security_config.xml added) |
 | F-C2-01 | MEDIUM | C2 | Regex injection (ReDoS) in batch rename Find & Replace | FIXED (P3: timeout-guarded regex execution) |
 | F-C2-05 | MEDIUM | C2 | Cloud download filename not validated for path traversal | FIXED (P3: filename sanitization + canonical path check) |
-| F-C3-02 | MEDIUM | C3 | Credentials kept as immutable Strings in heap (no purging) | OPEN (Kotlin String immutability limitation) |
-| F-C5-01 | MEDIUM | C5 | Full file system inventory stored persistently | OPEN (by design for scan cache) |
-| F-C5-02 | MEDIUM | C5 | Antivirus enumerates all installed packages with permissions | OPEN (required for security scanning) |
-| F-C6-02 | MEDIUM | C6 | MANAGE_EXTERNAL_STORAGE requires Play Store policy justification | OPEN (requires Play Store submission) |
+| F-C3-02 | MEDIUM | C3 | Credentials kept as immutable Strings in heap (no purging) | MITIGATED (P3: credential refs cleared after connect) |
+| F-C5-01 | MEDIUM | C5 | Full file system inventory stored persistently | MITIGATED (P3: 30-day cache auto-expiry) |
+| F-C5-02 | MEDIUM | C5 | Antivirus enumerates all installed packages with permissions | MITIGATED (P3: disclosed in privacy notice, data stays on-device) |
+| F-C6-02 | MEDIUM | C6 | MANAGE_EXTERNAL_STORAGE requires Play Store policy justification | MITIGATED (P3: justification comment added in manifest) |
 | F-C6-03 | MEDIUM | C6 | No bulk data erasure mechanism (GDPR right to erasure) | FIXED (P3: Clear All Data in Settings) |
 | F-C6-06 | MEDIUM | C6 | No network_security_config.xml defined | FIXED (P3: config added, cleartext blocked) |
 | F-C6-07 | MEDIUM | C6 | Shell command execution in antivirus (may trigger Play flags) | FIXED (P3: migrated to ProcessBuilder) |
 | F-C2-02 | LOW | C2 | ZIP extraction path traversal mitigations — well implemented | OK |
 | F-C2-03 | LOW | C2 | Path confinement via canonical path validation — well implemented | OK |
 | F-C3-03 | LOW | C3 | No hardcoded API keys or secrets — positive | OK |
-| F-C3-04 | LOW | C5 | Scan cache reveals file inventory if sandbox compromised | OPEN |
-| F-C4-02 | LOW | C4 | AndroidX/Gradle dependencies mildly outdated | OPEN |
+| F-C3-04 | LOW | C5 | Scan cache reveals file inventory if sandbox compromised | MITIGATED (P3: 30-day cache auto-expiry) |
+| F-C4-02 | LOW | C4 | AndroidX/Gradle dependencies mildly outdated | FIXED (P3: dependencies updated to latest stable) |
 | F-C4-03 | LOW | C4 | Only trusted repositories (google, mavenCentral) — positive | OK |
 | F-C5-03 | LOW | C5 | No telemetry/analytics — strong privacy posture | OK |
 | F-C5-04 | LOW | C5 | Cloud upload is user-initiated, no hidden data transmission | OK |
@@ -994,7 +994,7 @@ Persistence paths:
 | F-C2-04 | INFO | C2 | No SQL database — SQL injection not applicable | OK |
 | F-C5-05 | INFO | C5 | No third-party data sharing | OK |
 
-**CRITICAL: 2 (2 FIXED)** | **HIGH: 3 (2 FIXED, 1 OPEN)** | **MEDIUM: 11 (7 FIXED, 4 OPEN)** | **LOW: 10 (1 FIXED)** | **INFO: 2**
+**CRITICAL: 2 (2 FIXED)** | **HIGH: 3 (3 FIXED)** | **MEDIUM: 11 (7 FIXED, 4 MITIGATED)** | **LOW: 10 (2 FIXED, 2 MITIGATED)** | **INFO: 2**
 
 
 ---

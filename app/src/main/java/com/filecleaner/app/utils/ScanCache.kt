@@ -19,6 +19,8 @@ object ScanCache {
     private const val MAX_TREE_DEPTH = 100
     // B2: Limit cached entries to prevent unbounded cache file growth
     private const val MAX_CACHED_FILES = 50_000
+    // F-C5-01/F-C3-04: Auto-expire cache to limit persistent file inventory exposure
+    private const val CACHE_MAX_AGE_MS = 30L * 24 * 60 * 60 * 1000 // 30 days
 
     suspend fun save(context: Context, files: List<FileItem>, tree: DirectoryNode) =
         withContext(Dispatchers.IO) {
@@ -52,6 +54,13 @@ object ScanCache {
         withContext(Dispatchers.IO) {
             val cacheFile = File(context.filesDir, CACHE_FILE)
             if (!cacheFile.exists()) return@withContext null
+
+            // F-C5-01: Auto-expire old cache to limit persistent data exposure
+            val cacheAge = System.currentTimeMillis() - cacheFile.lastModified()
+            if (cacheAge > CACHE_MAX_AGE_MS) {
+                cacheFile.delete()
+                return@withContext null
+            }
 
             try {
                 val root = JSONObject(cacheFile.readText())

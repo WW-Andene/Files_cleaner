@@ -277,6 +277,18 @@ class MainActivity : AppCompatActivity() {
 
         // First-launch onboarding
         OnboardingDialog.showIfNeeded(this)
+
+        // P3 Security: Privacy disclosure on first launch (F-C6-01)
+        if (!UserPreferences.hasSeenPrivacyNotice) {
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.privacy_notice_title))
+                .setMessage(getString(R.string.privacy_notice_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.privacy_notice_accept)) { _, _ ->
+                    UserPreferences.hasSeenPrivacyNotice = true
+                }
+                .show()
+        }
     }
 
     fun requestPermissionsAndScan() {

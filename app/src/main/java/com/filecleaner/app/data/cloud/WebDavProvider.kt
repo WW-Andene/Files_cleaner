@@ -15,13 +15,16 @@ import java.net.URL
  * WebDAV cloud provider using plain HttpURLConnection (no extra dependencies).
  * Supports Nextcloud, ownCloud, and other WebDAV servers.
  */
-class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
+class WebDavProvider(private var connection: CloudConnection) : CloudProvider {
 
     override val displayName: String = connection.displayName
     override val type: ProviderType = ProviderType.WEBDAV
 
     @Volatile
     private var connected = false
+
+    // F-C3-02: Cache the auth header to allow clearing the raw credential
+    private var cachedAuthHeader: String? = null
 
     // Base URL must end without trailing slash
     private val baseUrl: String
@@ -53,6 +56,11 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
             }
             val code = conn.responseCode
             connected = code in 200..299 || code == 207
+            if (connected) {
+                // F-C3-02: Cache auth header and drop credential reference
+                cachedAuthHeader = authHeader()
+                connection = connection.copy(authToken = "", username = "")
+            }
             connected
         } catch (e: Exception) {
             connected = false
@@ -64,6 +72,7 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
 
     override suspend fun disconnect() {
         connected = false
+        cachedAuthHeader = null
     }
 
     override suspend fun listFiles(remotePath: String): List<CloudFile> = withContext(Dispatchers.IO) {
@@ -184,6 +193,7 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
     }
 
     private fun authHeader(): String {
+        cachedAuthHeader?.let { return it }
         val credentials = "${connection.username}:${connection.authToken}"
         return "Basic ${Base64.encodeToString(credentials.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)}"
     }

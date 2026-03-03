@@ -15,7 +15,7 @@ import java.util.Vector
  * SFTP cloud provider using JSch library.
  * Connects to remote servers via SSH/SFTP protocol.
  */
-class SftpProvider(private val connection: CloudConnection, private val context: android.content.Context) : CloudProvider {
+class SftpProvider(private var connection: CloudConnection, private val context: android.content.Context) : CloudProvider {
 
     override val displayName: String = connection.displayName
     override val type: ProviderType = ProviderType.SFTP
@@ -64,6 +64,8 @@ class SftpProvider(private val connection: CloudConnection, private val context:
 
                 session = s
                 channel = ch
+                // F-C3-02: Drop credential reference after auth completes
+                connection = connection.copy(authToken = "")
                 true
             } catch (e: Exception) {
                 try { channel?.disconnect() } catch (_: Exception) {}

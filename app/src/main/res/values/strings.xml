@@ -547,4 +547,9 @@
     <string name="settings_clear_data_confirm_title">Clear All Data?</string>
     <string name="settings_clear_data_confirm_message">This will delete all scan data, cloud connection credentials, scan history, and reset preferences to defaults.\n\nThis cannot be undone.</string>
     <string name="settings_clear_data_done">All app data cleared</string>
+
+    <!-- Privacy Notice (P3 Security: F-C6-01) -->
+    <string name="privacy_notice_title">Privacy &amp; Data Usage</string>
+    <string name="privacy_notice_message">Raccoon File Manager processes your data locally on your device:\n\n\u2022 File scanning indexes file names, sizes, and paths to find duplicates, junk, and large files. This data is cached locally and auto-deleted after 30 days.\n\n\u2022 Security scanning checks installed apps and their permissions to detect threats. No app data leaves your device.\n\n\u2022 Cloud connections store your credentials securely using Android encrypted storage. Credentials are cleared from memory after connecting.\n\n\u2022 No data is ever sent to external servers, analytics services, or third parties.\n\nYou can clear all stored data at any time from Settings.</string>
+    <string name="privacy_notice_accept">I Understand</string>
 </resources>

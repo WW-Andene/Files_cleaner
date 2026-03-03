@@ -97,4 +97,8 @@ object UserPreferences {
     var hasSeenOnboarding: Boolean
         get() = prefs.getBoolean("has_seen_onboarding", false)
         set(value) = prefs.edit().putBoolean("has_seen_onboarding", value).apply()
+
+    var hasSeenPrivacyNotice: Boolean
+        get() = prefs.getBoolean("has_seen_privacy_notice", false)
+        set(value) = prefs.edit().putBoolean("has_seen_privacy_notice", value).apply()
 }
