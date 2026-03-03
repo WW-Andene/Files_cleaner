@@ -21,6 +21,7 @@ import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
+import com.filecleaner.app.viewmodel.ClipboardManager
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -65,11 +66,11 @@ object FileContextMenu {
         override fun onPaste(targetDirPath: String) {
             val entry = vm.clipboardEntry.value ?: return
             when (entry.mode) {
-                MainViewModel.ClipboardMode.CUT -> {
+                ClipboardManager.ClipboardMode.CUT -> {
                     vm.moveFile(entry.item.path, targetDirPath)
                     vm.clearClipboard()
                 }
-                MainViewModel.ClipboardMode.COPY -> {
+                ClipboardManager.ClipboardMode.COPY -> {
                     vm.copyFile(entry.item.path, targetDirPath)
                 }
             }
