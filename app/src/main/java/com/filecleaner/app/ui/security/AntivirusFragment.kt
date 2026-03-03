@@ -24,7 +24,9 @@ import com.filecleaner.app.utils.antivirus.ThreatResult
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -70,52 +72,57 @@ class AntivirusFragment : Fragment() {
         binding.summaryRow.visibility = View.GONE
         binding.recyclerResults.visibility = View.GONE
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             // Phase 1: App Integrity
-            binding.tvStatus.text = getString(R.string.av_phase_integrity)
-            binding.tvPhase.text = getString(R.string.av_phase_integrity_desc)
-            binding.progress.isIndeterminate = false
+            _binding?.tvStatus?.text = getString(R.string.av_phase_integrity)
+            _binding?.tvPhase?.text = getString(R.string.av_phase_integrity_desc)
+            _binding?.progress?.isIndeterminate = false
 
-            val integrityResults = AppIntegrityScanner.scan(requireContext()) { pct ->
-                binding.progress.progress = pct / 3
+            val ctx = context ?: return@launch
+            val integrityResults = AppIntegrityScanner.scan(ctx) { pct ->
+                _binding?.progress?.post { _binding?.progress?.progress = pct / 3 }
             }
             allThreats.addAll(integrityResults)
 
             // Phase 2: File Signature Scan
-            binding.tvStatus.text = getString(R.string.av_phase_signature)
-            binding.tvPhase.text = getString(R.string.av_phase_signature_desc)
+            _binding?.tvStatus?.text = getString(R.string.av_phase_signature)
+            _binding?.tvPhase?.text = getString(R.string.av_phase_signature_desc)
 
             val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
             if (allFiles.isNotEmpty()) {
                 val signatureResults = SignatureScanner.scan(allFiles) { scanned, total ->
                     val pct = if (total > 0) (scanned * 33 / total) + 33 else 33
-                    binding.progress.progress = pct
+                    _binding?.progress?.post { _binding?.progress?.progress = pct }
                 }
                 allThreats.addAll(signatureResults)
             }
 
             // Phase 3: Privacy Audit
-            binding.tvStatus.text = getString(R.string.av_phase_privacy)
-            binding.tvPhase.text = getString(R.string.av_phase_privacy_desc)
+            _binding?.tvStatus?.text = getString(R.string.av_phase_privacy)
+            _binding?.tvPhase?.text = getString(R.string.av_phase_privacy_desc)
 
-            val privacyResults = PrivacyAuditor.audit(requireContext()) { pct ->
-                binding.progress.progress = 66 + (pct / 3)
+            val auditCtx = context ?: return@launch
+            val privacyResults = PrivacyAuditor.audit(auditCtx) { pct ->
+                _binding?.progress?.post { _binding?.progress?.progress = 66 + (pct / 3) }
             }
             allThreats.addAll(privacyResults)
 
             // Done
-            binding.progress.progress = 100
+            _binding?.progress?.progress = 100
             isScanning = false
-            showResults()
+            if (_binding != null) {
+                showResults()
+            }
         }
     }
 
     private fun showResults() {
-        binding.btnScan.isEnabled = true
-        binding.btnScan.text = getString(R.string.av_scan_again)
-        binding.progress.visibility = View.GONE
-        binding.tvPhase.visibility = View.GONE
-        binding.summaryRow.visibility = View.VISIBLE
+        val b = _binding ?: return
+        b.btnScan.isEnabled = true
+        b.btnScan.text = getString(R.string.av_scan_again)
+        b.progress.visibility = View.GONE
+        b.tvPhase.visibility = View.GONE
+        b.summaryRow.visibility = View.VISIBLE
 
         // Sort by severity (critical first)
         val sorted = allThreats.sortedByDescending { it.severity.ordinal }
@@ -125,19 +132,19 @@ class AntivirusFragment : Fragment() {
         }
         val cleanChecks = sorted.size - threatCount
 
-        binding.tvThreatCount.text = threatCount.toString()
-        binding.tvCleanCount.text = cleanChecks.coerceAtLeast(0).toString()
+        b.tvThreatCount.text = threatCount.toString()
+        b.tvCleanCount.text = cleanChecks.coerceAtLeast(0).toString()
 
         if (sorted.isEmpty()) {
-            binding.tvStatus.text = getString(R.string.av_all_clear)
-            binding.tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-            binding.recyclerResults.visibility = View.GONE
+            b.tvStatus.text = getString(R.string.av_all_clear)
+            b.tvStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+            b.recyclerResults.visibility = View.GONE
         } else {
-            binding.tvStatus.text = resources.getQuantityString(
+            b.tvStatus.text = resources.getQuantityString(
                 R.plurals.av_found_threats, sorted.size, sorted.size
             )
-            binding.recyclerResults.visibility = View.VISIBLE
-            binding.recyclerResults.adapter = ThreatAdapter(sorted)
+            b.recyclerResults.visibility = View.VISIBLE
+            b.recyclerResults.adapter = ThreatAdapter(sorted)
         }
     }
 
@@ -192,7 +199,8 @@ class AntivirusFragment : Fragment() {
                     holder.actionBtn.visibility = View.VISIBLE
                     holder.actionBtn.text = ctx.getString(R.string.av_quarantine)
                     holder.actionBtn.setOnClickListener {
-                        quarantineFile(item.filePath!!)
+                        val path = item.filePath ?: return@setOnClickListener
+                        quarantineFile(path)
                         holder.actionBtn.isEnabled = false
                         holder.actionBtn.text = ctx.getString(R.string.av_quarantined)
                     }
@@ -201,14 +209,16 @@ class AntivirusFragment : Fragment() {
                     holder.actionBtn.visibility = View.VISIBLE
                     holder.actionBtn.text = ctx.getString(R.string.delete)
                     holder.actionBtn.setOnClickListener {
-                        confirmDelete(item.filePath!!)
+                        val path = item.filePath ?: return@setOnClickListener
+                        confirmDelete(path)
                     }
                 }
                 ThreatResult.ThreatAction.UNINSTALL -> {
                     holder.actionBtn.visibility = View.VISIBLE
                     holder.actionBtn.text = ctx.getString(R.string.av_uninstall)
                     holder.actionBtn.setOnClickListener {
-                        requestUninstall(item.packageName!!)
+                        val pkg = item.packageName ?: return@setOnClickListener
+                        requestUninstall(pkg)
                     }
                 }
                 ThreatResult.ThreatAction.NONE -> {
@@ -221,27 +231,31 @@ class AntivirusFragment : Fragment() {
     }
 
     private fun quarantineFile(filePath: String) {
+        val ctx = context ?: return
         val quarantineDir = File(
-            requireContext().getExternalFilesDir(null), ".quarantine"
+            ctx.getExternalFilesDir(null), ".quarantine"
         )
         quarantineDir.mkdirs()
         val src = File(filePath)
         val dst = File(quarantineDir, "${System.currentTimeMillis()}_${src.name}")
         if (src.renameTo(dst)) {
-            Snackbar.make(binding.root,
+            val root = _binding?.root ?: return
+            Snackbar.make(root,
                 getString(R.string.av_quarantined_msg, src.name),
                 Snackbar.LENGTH_SHORT).show()
         }
     }
 
     private fun confirmDelete(filePath: String) {
-        AlertDialog.Builder(requireContext())
+        val ctx = context ?: return
+        AlertDialog.Builder(ctx)
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.av_confirm_delete, File(filePath).name))
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 val file = File(filePath)
                 if (file.delete()) {
-                    Snackbar.make(binding.root,
+                    val root = _binding?.root ?: return@setPositiveButton
+                    Snackbar.make(root,
                         getString(R.string.av_deleted, file.name),
                         Snackbar.LENGTH_SHORT).show()
                 }
@@ -257,7 +271,8 @@ class AntivirusFragment : Fragment() {
             }
             startActivity(intent)
         } catch (e: Exception) {
-            Snackbar.make(binding.root,
+            val root = _binding?.root ?: return
+            Snackbar.make(root,
                 getString(R.string.av_uninstall_failed),
                 Snackbar.LENGTH_SHORT).show()
         }

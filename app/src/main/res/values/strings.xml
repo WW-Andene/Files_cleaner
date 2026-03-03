@@ -197,6 +197,7 @@
     <string name="convert_title">Convert to</string>
     <string name="convert_unsupported">No conversions available for this file type</string>
     <string name="convert_failed">Conversion failed: %s</string>
+    <string name="convert_progress">Converting\u2026</string>
     <string name="ctx_properties">Properties</string>
     <string name="ctx_preview">Preview</string>
     <string name="preview_error">Cannot preview: %s</string>
@@ -240,7 +241,7 @@
     <string name="op_extracted">Extracted to %s</string>
     <string name="op_extract_failed">Extraction failed: %s</string>
     <string name="op_zip_only">Only ZIP archives can be extracted</string>
-    <string name="op_too_many_entries">This archive has too many files to extract safely.</string>
+    <string name="op_too_many_entries">This archive has too many files to extract safely (limit: %d).</string>
     <string name="op_archive_too_large">Archive too large (exceeds 2 GB extracted)</string>
     <string name="op_invalid_path">Path is outside accessible storage</string>
     <string name="op_scan_failed">Scan failed</string>

@@ -18,7 +18,9 @@ class SftpProvider(private val connection: CloudConnection) : CloudProvider {
     override val displayName: String = connection.displayName
     override val type: ProviderType = ProviderType.SFTP
 
+    @Volatile
     private var session: Session? = null
+    @Volatile
     private var channel: ChannelSftp? = null
 
     override val isConnected: Boolean
@@ -52,11 +54,12 @@ class SftpProvider(private val connection: CloudConnection) : CloudProvider {
         }
     }
 
-    override suspend fun disconnect() {
+    override suspend fun disconnect() = withContext(Dispatchers.IO) {
         try { channel?.disconnect() } catch (_: Exception) {}
         try { session?.disconnect() } catch (_: Exception) {}
         channel = null
         session = null
+        Unit
     }
 
     override suspend fun listFiles(remotePath: String): List<CloudFile> = withContext(Dispatchers.IO) {
@@ -103,9 +106,13 @@ class SftpProvider(private val connection: CloudConnection) : CloudProvider {
         val ch = channel ?: throw IllegalStateException("Not connected")
         try {
             ch.rm(remotePath)
-        } catch (_: Exception) {
-            // Might be a directory
-            ch.rmdir(remotePath)
+        } catch (rmEx: Exception) {
+            // Might be a directory, try rmdir; if that also fails, throw the original
+            try {
+                ch.rmdir(remotePath)
+            } catch (_: Exception) {
+                throw rmEx
+            }
         }
         Unit
     }

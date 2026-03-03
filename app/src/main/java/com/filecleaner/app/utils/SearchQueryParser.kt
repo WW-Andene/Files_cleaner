@@ -32,7 +32,10 @@ object SearchQueryParser {
     private val EXT_PATTERN = Regex("""ext:([a-zA-Z0-9,]+)""", RegexOption.IGNORE_CASE)
     private val DATE_PATTERN = Regex("""(after|before):(\d{4}-\d{2}-\d{2})""", RegexOption.IGNORE_CASE)
     private const val MILLIS_PER_DAY = 86_400_000L
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    // ThreadLocal to avoid thread-safety issues with SimpleDateFormat
+    private val dateFormat: ThreadLocal<SimpleDateFormat> = ThreadLocal.withInitial {
+        SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    }
 
     fun parse(query: String): ParsedQuery {
         if (query.isBlank()) return ParsedQuery()
@@ -75,7 +78,7 @@ object SearchQueryParser {
             val op = match.groupValues[1].lowercase()
             val dateStr = match.groupValues[2]
             try {
-                val ms = dateFormat.parse(dateStr)?.time ?: return@forEach
+                val ms = dateFormat.get()!!.parse(dateStr)?.time ?: return@forEach
                 if (op == "after") afterMs = ms else beforeMs = ms + MILLIS_PER_DAY // end of day
             } catch (_: Exception) { /* ignore bad dates */ }
             remaining = remaining.replace(match.value, "")

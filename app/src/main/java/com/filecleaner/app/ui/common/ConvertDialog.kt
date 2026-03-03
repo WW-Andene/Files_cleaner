@@ -1,5 +1,6 @@
 package com.filecleaner.app.ui.common
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
@@ -7,10 +8,15 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.utils.FileConverter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Dialog to choose a target format for file conversion.
  * Shows applicable formats based on the source file type.
+ * Conversions run on a background thread to avoid blocking the UI.
  *
  * Supports conversions for:
  * - Images: to other image formats (PNG, JPG, WEBP, WEBP lossless, BMP) + PDF
@@ -40,8 +46,21 @@ object ConvertDialog {
         AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.convert_title))
             .setAdapter(adapter) { _, which ->
-                val result = actions[which].action()
-                onResult(result)
+                // Run conversion on background thread to avoid ANR
+                @Suppress("DEPRECATION")
+                val progress = ProgressDialog(context).apply {
+                    setMessage(context.getString(R.string.convert_progress))
+                    isIndeterminate = true
+                    setCancelable(false)
+                    show()
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    val result = withContext(Dispatchers.IO) {
+                        actions[which].action()
+                    }
+                    progress.dismiss()
+                    onResult(result)
+                }
             }
             .setNegativeButton(context.getString(R.string.cancel), null)
             .show()
@@ -154,7 +173,7 @@ object ConvertDialog {
         }
 
         // Markdown -> PDF
-        if (ext == "md" || ext == "markdown" || ext == "mdown") {
+        if (ext == "md" || ext == "markdown" || ext == "mdown" || ext == "mkd") {
             actions.add(ConvertAction("PDF (.pdf)") {
                 val outputPath = "${item.file.parent}/${item.file.nameWithoutExtension}.pdf"
                 FileConverter.textToPdf(item.path, outputPath)

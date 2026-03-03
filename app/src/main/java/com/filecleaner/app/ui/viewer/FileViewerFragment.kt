@@ -91,6 +91,7 @@ class FileViewerFragment : Fragment() {
     private var pdfRenderer: PdfRenderer? = null
     private var pdfFd: ParcelFileDescriptor? = null
     private var currentPdfPage = 0
+    private var currentPdfBitmap: Bitmap? = null
 
     private var mediaPlayer: MediaPlayer? = null
     private val handler = Handler(Looper.getMainLooper())
@@ -190,6 +191,10 @@ class FileViewerFragment : Fragment() {
         bitmap.eraseColor(android.graphics.Color.WHITE)
         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         page.close()
+
+        // Recycle previous page bitmap to prevent memory accumulation
+        currentPdfBitmap?.recycle()
+        currentPdfBitmap = bitmap
         binding.ivPdfPage.setImageBitmap(bitmap)
 
         val pageCount = renderer.pageCount
@@ -218,8 +223,8 @@ class FileViewerFragment : Fragment() {
         binding.audioContainer.visibility = View.VISIBLE
 
         // Try to extract album art
+        val retriever = MediaMetadataRetriever()
         try {
-            val retriever = MediaMetadataRetriever()
             retriever.setDataSource(file.absolutePath)
             val art = retriever.embeddedPicture
             if (art != null) {
@@ -227,9 +232,10 @@ class FileViewerFragment : Fragment() {
             }
             val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
             binding.tvAudioTitle.text = title ?: file.nameWithoutExtension
-            retriever.release()
         } catch (e: Exception) {
             binding.tvAudioTitle.text = file.nameWithoutExtension
+        } finally {
+            try { retriever.release() } catch (_: Exception) {}
         }
 
         try {
@@ -259,7 +265,7 @@ class FileViewerFragment : Fragment() {
                 override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
                         mp.seekTo(progress)
-                        binding.tvAudioCurrent.text = formatTime(progress)
+                        _binding?.tvAudioCurrent?.text = formatTime(progress)
                     }
                 }
                 override fun onStartTrackingTouch(sb: SeekBar?) {}
@@ -268,20 +274,20 @@ class FileViewerFragment : Fragment() {
 
             mp.setOnCompletionListener {
                 isAudioPlaying = false
-                binding.btnAudioPlay.setImageResource(android.R.drawable.ic_media_play)
-                binding.seekAudio.progress = 0
-                binding.tvAudioCurrent.text = formatTime(0)
+                _binding?.btnAudioPlay?.setImageResource(android.R.drawable.ic_media_play)
+                _binding?.seekAudio?.progress = 0
+                _binding?.tvAudioCurrent?.text = formatTime(0)
             }
         } catch (e: Exception) {
-            binding.tvAudioTitle.text = getString(R.string.viewer_audio_error)
+            _binding?.tvAudioTitle?.text = getString(R.string.viewer_audio_error)
         }
     }
 
     private fun updateSeekBar() {
         val mp = mediaPlayer ?: return
         if (isAudioPlaying && mp.isPlaying) {
-            binding.seekAudio.progress = mp.currentPosition
-            binding.tvAudioCurrent.text = formatTime(mp.currentPosition)
+            _binding?.seekAudio?.progress = mp.currentPosition
+            _binding?.tvAudioCurrent?.text = formatTime(mp.currentPosition)
             handler.postDelayed({ updateSeekBar() }, 500)
         }
     }
@@ -430,20 +436,20 @@ class FileViewerFragment : Fragment() {
     private fun showArchiveContents(file: File) {
         binding.scrollText.visibility = View.VISIBLE
         val content = try {
-            val zf = ZipFile(file)
-            val entries = zf.entries().toList().sortedBy { it.name }
-            val sb = StringBuilder()
-            sb.appendLine("Archive: ${file.name}")
-            sb.appendLine("Entries: ${entries.size}")
-            sb.appendLine("─".repeat(50))
-            sb.appendLine()
-            for (entry in entries) {
-                val size = if (entry.size >= 0) UndoHelper.formatBytes(entry.size) else "?"
-                val dir = if (entry.isDirectory) "/" else ""
-                sb.appendLine("  $size  ${entry.name}$dir")
+            ZipFile(file).use { zf ->
+                val entries = zf.entries().toList().sortedBy { it.name }
+                val sb = StringBuilder()
+                sb.appendLine("Archive: ${file.name}")
+                sb.appendLine("Entries: ${entries.size}")
+                sb.appendLine("─".repeat(50))
+                sb.appendLine()
+                for (entry in entries) {
+                    val size = if (entry.size >= 0) UndoHelper.formatBytes(entry.size) else "?"
+                    val dir = if (entry.isDirectory) "/" else ""
+                    sb.appendLine("  $size  ${entry.name}$dir")
+                }
+                sb.toString()
             }
-            zf.close()
-            sb.toString()
         } catch (e: Exception) {
             getString(R.string.viewer_archive_error, e.localizedMessage ?: "")
         }
@@ -483,13 +489,21 @@ class FileViewerFragment : Fragment() {
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
+        mediaPlayer?.setOnCompletionListener(null)
         mediaPlayer?.release()
         mediaPlayer = null
+        isAudioPlaying = false
+        currentPdfBitmap?.recycle()
+        currentPdfBitmap = null
         pdfRenderer?.close()
         pdfFd?.close()
         pdfRenderer = null
         pdfFd = null
-        _binding?.webView?.destroy()
+        // WebView must be removed from parent before destroy()
+        _binding?.webView?.let { wv ->
+            (wv.parent as? ViewGroup)?.removeView(wv)
+            wv.destroy()
+        }
         super.onDestroyView()
         _binding = null
     }

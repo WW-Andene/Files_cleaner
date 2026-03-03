@@ -2,7 +2,6 @@ package com.filecleaner.app.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -18,13 +17,12 @@ import java.io.InputStreamReader
  * Format conversion utilities using only Android SDK APIs (no external dependencies).
  *
  * Supported conversions:
- * - Image -> Image (PNG, JPG, WEBP, BMP, GIF)
+ * - Image -> Image (PNG, JPG, WEBP, BMP)
  * - Image(s) -> PDF
  * - PDF -> Images (PNG or JPG per page)
  * - Text/Code/CSV/Markdown -> PDF
- * - HTML -> PDF (basic)
  * - Video -> Thumbnail image (PNG/JPG)
- * - Video -> GIF (first few seconds frame extraction)
+ * - Video -> Frame series extraction
  * - Audio -> Extract album art image
  */
 object FileConverter {
@@ -59,23 +57,26 @@ object FileConverter {
             val bitmap = BitmapFactory.decodeFile(inputPath)
                 ?: return ConvertResult(false, "", "Cannot decode image")
 
-            val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
-            val suffix = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "_lossless" else ""
-            val outputName = "${src.nameWithoutExtension}$suffix.$ext"
-            val outputFile = File(src.parent, outputName)
-            val finalFile = if (outputFile.absolutePath == src.absolutePath) {
-                File(src.parent, "${src.nameWithoutExtension}_converted.$ext")
-            } else outputFile
+            try {
+                val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
+                val suffix = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "_lossless" else ""
+                val outputName = "${src.nameWithoutExtension}$suffix.$ext"
+                val outputFile = File(src.parent, outputName)
+                val finalFile = if (outputFile.absolutePath == src.absolutePath) {
+                    File(src.parent, "${src.nameWithoutExtension}_converted.$ext")
+                } else outputFile
 
-            if (outputFormat == ImageFormat.BMP) {
-                writeBmp(bitmap, finalFile)
-            } else {
-                finalFile.outputStream().buffered().use { out ->
-                    bitmap.compress(outputFormat.compressFormat, quality, out)
+                if (outputFormat == ImageFormat.BMP) {
+                    writeBmp(bitmap, finalFile)
+                } else {
+                    finalFile.outputStream().buffered().use { out ->
+                        bitmap.compress(outputFormat.compressFormat, quality, out)
+                    }
                 }
+                ConvertResult(true, finalFile.absolutePath, "Converted to ${finalFile.name}")
+            } finally {
+                bitmap.recycle()
             }
-            bitmap.recycle()
-            ConvertResult(true, finalFile.absolutePath, "Converted to ${finalFile.name}")
         } catch (e: Exception) {
             ConvertResult(false, "", "Conversion failed: ${e.localizedMessage}")
         }
@@ -145,23 +146,28 @@ object FileConverter {
             val original = BitmapFactory.decodeFile(inputPath)
                 ?: return ConvertResult(false, "", "Cannot decode image")
 
-            val ratioW = maxWidth.toFloat() / original.width
-            val ratioH = maxHeight.toFloat() / original.height
-            val ratio = minOf(ratioW, ratioH, 1f)
-            val newW = (original.width * ratio).toInt()
-            val newH = (original.height * ratio).toInt()
+            var resized: Bitmap? = null
+            try {
+                val ratioW = maxWidth.toFloat() / original.width
+                val ratioH = maxHeight.toFloat() / original.height
+                val ratio = minOf(ratioW, ratioH, 1f)
+                val newW = (original.width * ratio).toInt()
+                val newH = (original.height * ratio).toInt()
 
-            val resized = Bitmap.createScaledBitmap(original, newW, newH, true)
-            original.recycle()
+                resized = Bitmap.createScaledBitmap(original, newW, newH, true)
 
-            val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
-            val outputFile = File(src.parent, "${src.nameWithoutExtension}_${newW}x${newH}.$ext")
-            outputFile.outputStream().buffered().use { out ->
-                resized.compress(outputFormat.compressFormat, quality, out)
+                val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
+                val outputFile = File(src.parent, "${src.nameWithoutExtension}_${newW}x${newH}.$ext")
+                outputFile.outputStream().buffered().use { out ->
+                    resized.compress(outputFormat.compressFormat, quality, out)
+                }
+
+                ConvertResult(true, outputFile.absolutePath, "Resized to ${newW}x${newH}")
+            } finally {
+                // Only recycle resized if it's a different object than original
+                if (resized != null && resized !== original) resized.recycle()
+                original.recycle()
             }
-            resized.recycle()
-
-            ConvertResult(true, outputFile.absolutePath, "Resized to ${newW}x${newH}")
         } catch (e: Exception) {
             ConvertResult(false, "", "Resize failed: ${e.localizedMessage}")
         }
@@ -173,38 +179,47 @@ object FileConverter {
 
     /** Convert one or more images to a multi-page PDF. */
     fun imagesToPdf(imagePaths: List<String>, outputPath: String): ConvertResult {
+        if (imagePaths.isEmpty()) return ConvertResult(false, "", "No images provided")
+        val doc = PdfDocument()
         return try {
-            val doc = PdfDocument()
+            var pagesAdded = 0
             for ((index, path) in imagePaths.withIndex()) {
-                val bitmap = BitmapFactory.decodeFile(path)
-                    ?: continue
-                val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, index + 1).create()
-                val page = doc.startPage(pageInfo)
-                page.canvas.drawBitmap(bitmap, 0f, 0f, null)
-                doc.finishPage(page)
-                bitmap.recycle()
+                val bitmap = BitmapFactory.decodeFile(path) ?: continue
+                try {
+                    val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, index + 1).create()
+                    val page = doc.startPage(pageInfo)
+                    page.canvas.drawBitmap(bitmap, 0f, 0f, null)
+                    doc.finishPage(page)
+                    pagesAdded++
+                } finally {
+                    bitmap.recycle()
+                }
             }
+            if (pagesAdded == 0) return ConvertResult(false, "", "No valid images to convert")
             File(outputPath).outputStream().buffered().use { out ->
                 doc.writeTo(out)
             }
-            doc.close()
             ConvertResult(true, outputPath, "Created ${File(outputPath).name}")
         } catch (e: Exception) {
             ConvertResult(false, "", "PDF creation failed: ${e.localizedMessage}")
+        } finally {
+            doc.close()
         }
     }
 
     /** Extract all pages of a PDF to individual images. */
     fun pdfToImages(pdfPath: String, outputDir: String, format: PdfImageFormat = PdfImageFormat.PNG, quality: Int = 90): ConvertResult {
+        val pdfFile = File(pdfPath)
+        if (!pdfFile.exists()) return ConvertResult(false, "", "PDF not found")
+
+        val outDir = File(outputDir)
+        outDir.mkdirs()
+
+        var fd: ParcelFileDescriptor? = null
+        var renderer: PdfRenderer? = null
         return try {
-            val pdfFile = File(pdfPath)
-            if (!pdfFile.exists()) return ConvertResult(false, "", "PDF not found")
-
-            val outDir = File(outputDir)
-            outDir.mkdirs()
-
-            val fd = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
-            val renderer = PdfRenderer(fd)
+            fd = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+            renderer = PdfRenderer(fd)
             val pageCount = renderer.pageCount
 
             for (i in 0 until pageCount) {
@@ -213,23 +228,26 @@ object FileConverter {
                 val bitmap = Bitmap.createBitmap(
                     page.width * scale, page.height * scale, Bitmap.Config.ARGB_8888
                 )
-                bitmap.eraseColor(Color.WHITE)
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                page.close()
+                try {
+                    bitmap.eraseColor(Color.WHITE)
+                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    page.close()
 
-                val pageFile = File(outDir, "${pdfFile.nameWithoutExtension}_page_${i + 1}.${format.extension}")
-                pageFile.outputStream().buffered().use { out ->
-                    bitmap.compress(format.compressFormat, quality, out)
+                    val pageFile = File(outDir, "${pdfFile.nameWithoutExtension}_page_${i + 1}.${format.extension}")
+                    pageFile.outputStream().buffered().use { out ->
+                        bitmap.compress(format.compressFormat, quality, out)
+                    }
+                } finally {
+                    bitmap.recycle()
                 }
-                bitmap.recycle()
             }
-
-            renderer.close()
-            fd.close()
 
             ConvertResult(true, outDir.absolutePath, "Extracted $pageCount pages to ${outDir.name}/")
         } catch (e: Exception) {
             ConvertResult(false, "", "PDF extraction failed: ${e.localizedMessage}")
+        } finally {
+            renderer?.close()
+            fd?.close()
         }
     }
 
@@ -239,10 +257,11 @@ object FileConverter {
 
     /** Convert a text file to PDF (monospace rendering). */
     fun textToPdf(inputPath: String, outputPath: String, fontSize: Float = 10f): ConvertResult {
-        return try {
-            val src = File(inputPath)
-            if (!src.exists()) return ConvertResult(false, "", "Source file not found")
+        val src = File(inputPath)
+        if (!src.exists()) return ConvertResult(false, "", "Source file not found")
 
+        val doc = PdfDocument()
+        return try {
             val lines = BufferedReader(InputStreamReader(src.inputStream(), Charsets.UTF_8)).use {
                 it.readLines()
             }
@@ -261,7 +280,6 @@ object FileConverter {
             val usableHeight = pageHeight - margin * 2
             val linesPerPage = (usableHeight / lineHeight).toInt()
 
-            val doc = PdfDocument()
             var pageNum = 1
             var lineIndex = 0
 
@@ -284,11 +302,12 @@ object FileConverter {
             }
 
             File(outputPath).outputStream().buffered().use { doc.writeTo(it) }
-            doc.close()
 
             ConvertResult(true, outputPath, "Created ${File(outputPath).name} ($pageNum pages)")
         } catch (e: Exception) {
             ConvertResult(false, "", "Text to PDF failed: ${e.localizedMessage}")
+        } finally {
+            doc.close()
         }
     }
 
@@ -362,49 +381,46 @@ object FileConverter {
 
     /** Extract a thumbnail frame from a video file. */
     fun videoToThumbnail(inputPath: String, outputFormat: ImageFormat = ImageFormat.PNG, quality: Int = 90, timeUs: Long = 0): ConvertResult {
-        return try {
-            val src = File(inputPath)
-            if (!src.exists()) return ConvertResult(false, "", "Source file not found")
+        val src = File(inputPath)
+        if (!src.exists()) return ConvertResult(false, "", "Source file not found")
 
-            val retriever = MediaMetadataRetriever()
+        val retriever = MediaMetadataRetriever()
+        return try {
             retriever.setDataSource(inputPath)
             val bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                 ?: retriever.getFrameAtTime(0)
-                ?: run {
-                    retriever.release()
-                    return ConvertResult(false, "", "Cannot extract frame from video")
+                ?: return ConvertResult(false, "", "Cannot extract frame from video")
+
+            try {
+                val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
+                val outputFile = File(src.parent, "${src.nameWithoutExtension}_thumb.$ext")
+                outputFile.outputStream().buffered().use { out ->
+                    bitmap.compress(outputFormat.compressFormat, quality, out)
                 }
-            retriever.release()
-
-            val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
-            val outputFile = File(src.parent, "${src.nameWithoutExtension}_thumb.$ext")
-            outputFile.outputStream().buffered().use { out ->
-                bitmap.compress(outputFormat.compressFormat, quality, out)
+                ConvertResult(true, outputFile.absolutePath, "Thumbnail: ${outputFile.name}")
+            } finally {
+                bitmap.recycle()
             }
-            bitmap.recycle()
-
-            ConvertResult(true, outputFile.absolutePath, "Thumbnail: ${outputFile.name}")
         } catch (e: Exception) {
             ConvertResult(false, "", "Thumbnail extraction failed: ${e.localizedMessage}")
+        } finally {
+            try { retriever.release() } catch (_: Exception) {}
         }
     }
 
     /** Extract multiple frames from video as a series of images. */
     fun videoToFrames(inputPath: String, outputDir: String, frameCount: Int = 10, outputFormat: ImageFormat = ImageFormat.JPG, quality: Int = 85): ConvertResult {
+        val src = File(inputPath)
+        if (!src.exists()) return ConvertResult(false, "", "Source file not found")
+
+        val outDir = File(outputDir)
+        outDir.mkdirs()
+
+        val retriever = MediaMetadataRetriever()
         return try {
-            val src = File(inputPath)
-            if (!src.exists()) return ConvertResult(false, "", "Source file not found")
-
-            val outDir = File(outputDir)
-            outDir.mkdirs()
-
-            val retriever = MediaMetadataRetriever()
             retriever.setDataSource(inputPath)
             val durationMs = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
-                ?: run {
-                    retriever.release()
-                    return ConvertResult(false, "", "Cannot determine video duration")
-                }
+                ?: return ConvertResult(false, "", "Cannot determine video duration")
             val durationUs = durationMs * 1000
             val interval = durationUs / frameCount.coerceAtLeast(1)
 
@@ -413,19 +429,23 @@ object FileConverter {
                 val timeUs = interval * i
                 val bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                     ?: continue
-                val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
-                val frameFile = File(outDir, "${src.nameWithoutExtension}_frame_${i + 1}.$ext")
-                frameFile.outputStream().buffered().use { out ->
-                    bitmap.compress(outputFormat.compressFormat, quality, out)
+                try {
+                    val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
+                    val frameFile = File(outDir, "${src.nameWithoutExtension}_frame_${i + 1}.$ext")
+                    frameFile.outputStream().buffered().use { out ->
+                        bitmap.compress(outputFormat.compressFormat, quality, out)
+                    }
+                    extracted++
+                } finally {
+                    bitmap.recycle()
                 }
-                bitmap.recycle()
-                extracted++
             }
-            retriever.release()
 
             ConvertResult(true, outDir.absolutePath, "Extracted $extracted frames to ${outDir.name}/")
         } catch (e: Exception) {
             ConvertResult(false, "", "Frame extraction failed: ${e.localizedMessage}")
+        } finally {
+            try { retriever.release() } catch (_: Exception) {}
         }
     }
 
@@ -435,30 +455,32 @@ object FileConverter {
 
     /** Extract album art from an audio file. */
     fun audioToAlbumArt(inputPath: String, outputFormat: ImageFormat = ImageFormat.PNG, quality: Int = 90): ConvertResult {
-        return try {
-            val src = File(inputPath)
-            if (!src.exists()) return ConvertResult(false, "", "Source file not found")
+        val src = File(inputPath)
+        if (!src.exists()) return ConvertResult(false, "", "Source file not found")
 
-            val retriever = MediaMetadataRetriever()
+        val retriever = MediaMetadataRetriever()
+        return try {
             retriever.setDataSource(inputPath)
             val art = retriever.embeddedPicture
-            retriever.release()
-
-            if (art == null) return ConvertResult(false, "", "No album art found in this file")
+                ?: return ConvertResult(false, "", "No album art found in this file")
 
             val bitmap = BitmapFactory.decodeByteArray(art, 0, art.size)
                 ?: return ConvertResult(false, "", "Cannot decode album art")
 
-            val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
-            val outputFile = File(src.parent, "${src.nameWithoutExtension}_cover.$ext")
-            outputFile.outputStream().buffered().use { out ->
-                bitmap.compress(outputFormat.compressFormat, quality, out)
+            try {
+                val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
+                val outputFile = File(src.parent, "${src.nameWithoutExtension}_cover.$ext")
+                outputFile.outputStream().buffered().use { out ->
+                    bitmap.compress(outputFormat.compressFormat, quality, out)
+                }
+                ConvertResult(true, outputFile.absolutePath, "Album art: ${outputFile.name}")
+            } finally {
+                bitmap.recycle()
             }
-            bitmap.recycle()
-
-            ConvertResult(true, outputFile.absolutePath, "Album art: ${outputFile.name}")
         } catch (e: Exception) {
             ConvertResult(false, "", "Album art extraction failed: ${e.localizedMessage}")
+        } finally {
+            try { retriever.release() } catch (_: Exception) {}
         }
     }
 }

@@ -20,6 +20,7 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
     override val displayName: String = connection.displayName
     override val type: ProviderType = ProviderType.WEBDAV
 
+    @Volatile
     private var connected = false
 
     // Base URL must end without trailing slash
@@ -29,10 +30,10 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
     override val isConnected: Boolean get() = connected
 
     override suspend fun connect(): Boolean = withContext(Dispatchers.IO) {
+        var conn: HttpURLConnection? = null
         try {
-            // Test connection with a PROPFIND on root
             val url = URL("$baseUrl/")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "PROPFIND"
                 setRequestProperty("Authorization", authHeader())
                 setRequestProperty("Depth", "0")
@@ -41,12 +42,13 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
                 readTimeout = 15000
             }
             val code = conn.responseCode
-            conn.disconnect()
             connected = code in 200..299 || code == 207
             connected
         } catch (e: Exception) {
             connected = false
             false
+        } finally {
+            conn?.disconnect()
         }
     }
 
@@ -55,10 +57,11 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
     }
 
     override suspend fun listFiles(remotePath: String): List<CloudFile> = withContext(Dispatchers.IO) {
+        var conn: HttpURLConnection? = null
         try {
             val path = remotePath.trimEnd('/') + "/"
             val url = URL("$baseUrl$path")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "PROPFIND"
                 setRequestProperty("Authorization", authHeader())
                 setRequestProperty("Depth", "1")
@@ -71,73 +74,102 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
                 out.write(PROPFIND_BODY.toByteArray(Charsets.UTF_8))
             }
 
-            val responseBody = if (conn.responseCode in 200..299 || conn.responseCode == 207) {
-                conn.inputStream.bufferedReader().readText()
-            } else {
-                conn.disconnect()
+            val code = conn.responseCode
+            if (code !in 200..299 && code != 207) {
                 return@withContext emptyList()
             }
-            conn.disconnect()
 
+            val responseBody = conn.inputStream.bufferedReader().readText()
             parseMultiStatus(responseBody, path)
                 .sortedWith(compareBy<CloudFile> { !it.isDirectory }.thenBy { it.name.lowercase() })
         } catch (e: Exception) {
             emptyList()
+        } finally {
+            conn?.disconnect()
         }
     }
 
     override suspend fun download(remotePath: String, output: OutputStream) = withContext(Dispatchers.IO) {
-        val url = URL("$baseUrl$remotePath")
-        val conn = (url.openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            setRequestProperty("Authorization", authHeader())
-            connectTimeout = 15000
-            readTimeout = 30000
+        var conn: HttpURLConnection? = null
+        try {
+            val url = URL("$baseUrl$remotePath")
+            conn = (url.openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                setRequestProperty("Authorization", authHeader())
+                connectTimeout = 15000
+                readTimeout = 30000
+            }
+            val code = conn.responseCode
+            if (code !in 200..299) {
+                throw java.io.IOException("Download failed with HTTP $code")
+            }
+            conn.inputStream.use { it.copyTo(output) }
+        } finally {
+            conn?.disconnect()
         }
-        conn.inputStream.use { it.copyTo(output) }
-        conn.disconnect()
         Unit
     }
 
     override suspend fun upload(remotePath: String, input: InputStream, fileName: String, mimeType: String) =
         withContext(Dispatchers.IO) {
-            val path = remotePath.trimEnd('/') + "/$fileName"
-            val url = URL("$baseUrl$path")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
-                requestMethod = "PUT"
-                setRequestProperty("Authorization", authHeader())
-                setRequestProperty("Content-Type", mimeType)
-                connectTimeout = 15000
-                readTimeout = 30000
-                doOutput = true
+            var conn: HttpURLConnection? = null
+            try {
+                val path = remotePath.trimEnd('/') + "/$fileName"
+                val url = URL("$baseUrl$path")
+                conn = (url.openConnection() as HttpURLConnection).apply {
+                    requestMethod = "PUT"
+                    setRequestProperty("Authorization", authHeader())
+                    setRequestProperty("Content-Type", mimeType)
+                    connectTimeout = 15000
+                    readTimeout = 30000
+                    doOutput = true
+                }
+                conn.outputStream.use { out -> input.copyTo(out) }
+                val code = conn.responseCode
+                if (code !in 200..299) {
+                    throw java.io.IOException("Upload failed with HTTP $code")
+                }
+            } finally {
+                conn?.disconnect()
             }
-            conn.outputStream.use { out -> input.copyTo(out) }
-            conn.responseCode // Trigger the request
-            conn.disconnect()
             Unit
         }
 
     override suspend fun delete(remotePath: String) = withContext(Dispatchers.IO) {
-        val url = URL("$baseUrl$remotePath")
-        val conn = (url.openConnection() as HttpURLConnection).apply {
-            requestMethod = "DELETE"
-            setRequestProperty("Authorization", authHeader())
-            connectTimeout = 15000
+        var conn: HttpURLConnection? = null
+        try {
+            val url = URL("$baseUrl$remotePath")
+            conn = (url.openConnection() as HttpURLConnection).apply {
+                requestMethod = "DELETE"
+                setRequestProperty("Authorization", authHeader())
+                connectTimeout = 15000
+            }
+            val code = conn.responseCode
+            if (code !in 200..299) {
+                throw java.io.IOException("Delete failed with HTTP $code")
+            }
+        } finally {
+            conn?.disconnect()
         }
-        conn.responseCode
-        conn.disconnect()
         Unit
     }
 
     override suspend fun createDirectory(remotePath: String) = withContext(Dispatchers.IO) {
-        val url = URL("$baseUrl$remotePath")
-        val conn = (url.openConnection() as HttpURLConnection).apply {
-            requestMethod = "MKCOL"
-            setRequestProperty("Authorization", authHeader())
-            connectTimeout = 15000
+        var conn: HttpURLConnection? = null
+        try {
+            val url = URL("$baseUrl$remotePath")
+            conn = (url.openConnection() as HttpURLConnection).apply {
+                requestMethod = "MKCOL"
+                setRequestProperty("Authorization", authHeader())
+                connectTimeout = 15000
+            }
+            val code = conn.responseCode
+            if (code !in 200..299) {
+                throw java.io.IOException("Create directory failed with HTTP $code")
+            }
+        } finally {
+            conn?.disconnect()
         }
-        conn.responseCode
-        conn.disconnect()
         Unit
     }
 
@@ -181,6 +213,9 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
                         "getcontenttype", "d:getcontenttype", "D:getcontenttype" -> {
                             contentType = parser.nextText().trim()
                         }
+                        "getlastmodified", "d:getlastmodified", "D:getlastmodified" -> {
+                            lastModified = parseHttpDate(parser.nextText().trim())
+                        }
                     }
                     XmlPullParser.END_TAG -> when (parser.name) {
                         "response", "d:response", "D:response" -> {
@@ -213,6 +248,16 @@ class WebDavProvider(private val connection: CloudConnection) : CloudProvider {
             // Parse errors — return what we have
         }
         return files
+    }
+
+    /** Parse HTTP date format (RFC 2822 / RFC 1123) to epoch millis */
+    private fun parseHttpDate(dateStr: String): Long {
+        return try {
+            val format = java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", java.util.Locale.US)
+            format.parse(dateStr)?.time ?: 0L
+        } catch (_: Exception) {
+            0L
+        }
     }
 
     companion object {

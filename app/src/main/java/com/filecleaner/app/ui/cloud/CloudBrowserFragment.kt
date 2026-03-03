@@ -129,53 +129,60 @@ class CloudBrowserFragment : Fragment() {
     }
 
     private fun updateUI() {
+        val b = _binding ?: return
         if (connections.isEmpty()) {
-            binding.emptyState.visibility = View.VISIBLE
-            binding.connectionBar.visibility = View.GONE
-            binding.recyclerFiles.visibility = View.GONE
-            binding.tvPath.visibility = View.GONE
-            binding.actionBar.visibility = View.GONE
+            b.emptyState.visibility = View.VISIBLE
+            b.connectionBar.visibility = View.GONE
+            b.recyclerFiles.visibility = View.GONE
+            b.tvPath.visibility = View.GONE
+            b.actionBar.visibility = View.GONE
         } else {
-            binding.emptyState.visibility = View.GONE
-            binding.connectionBar.visibility = View.VISIBLE
+            b.emptyState.visibility = View.GONE
+            b.connectionBar.visibility = View.VISIBLE
 
+            val ctx = context ?: return
             val labels = connections.map { "${it.displayName} (${it.type.name})" }
-            val adapter = ArrayAdapter(requireContext(),
+            val adapter = ArrayAdapter(ctx,
                 android.R.layout.simple_spinner_dropdown_item, labels)
-            binding.spinnerConnection.adapter = adapter
+            b.spinnerConnection.adapter = adapter
         }
     }
 
     private fun connectTo(connection: CloudConnection) {
-        val provider = createProvider(connection)
+        val ctx = context ?: return
+        val provider = createProvider(connection, ctx)
         currentProvider = provider
 
-        binding.progress.visibility = View.VISIBLE
-        binding.recyclerFiles.visibility = View.GONE
+        _binding?.progress?.visibility = View.VISIBLE
+        _binding?.recyclerFiles?.visibility = View.GONE
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val success = provider.connect()
-            binding.progress.visibility = View.GONE
+            _binding?.progress?.visibility = View.GONE
 
             if (success) {
-                Snackbar.make(binding.root,
-                    getString(R.string.cloud_connected, connection.displayName),
-                    Snackbar.LENGTH_SHORT).show()
+                _binding?.root?.let { root ->
+                    Snackbar.make(root,
+                        getString(R.string.cloud_connected, connection.displayName),
+                        Snackbar.LENGTH_SHORT).show()
+                }
                 currentPath = "/"
                 loadDirectory("/")
             } else {
-                Snackbar.make(binding.root,
-                    getString(R.string.cloud_connection_failed, connection.displayName),
-                    Snackbar.LENGTH_LONG).show()
+                _binding?.root?.let { root ->
+                    Snackbar.make(root,
+                        getString(R.string.cloud_connection_failed, connection.displayName),
+                        Snackbar.LENGTH_LONG).show()
+                }
             }
         }
     }
 
-    private fun createProvider(connection: CloudConnection): CloudProvider {
+    private fun createProvider(connection: CloudConnection, ctx: android.content.Context): CloudProvider {
         return when (connection.type) {
             ProviderType.SFTP -> SftpProvider(connection)
             ProviderType.WEBDAV -> WebDavProvider(connection)
-            ProviderType.GOOGLE_DRIVE -> GoogleDriveProvider(connection, requireContext())
+            ProviderType.GOOGLE_DRIVE -> GoogleDriveProvider(connection, ctx)
         }
     }
 
@@ -183,15 +190,17 @@ class CloudBrowserFragment : Fragment() {
         val provider = currentProvider ?: return
         currentPath = path
 
-        binding.progress.visibility = View.VISIBLE
-        binding.tvPath.visibility = View.VISIBLE
-        binding.tvPath.text = path
-        binding.recyclerFiles.visibility = View.VISIBLE
-        binding.actionBar.visibility = View.VISIBLE
+        val b = _binding ?: return
+        b.progress.visibility = View.VISIBLE
+        b.tvPath.visibility = View.VISIBLE
+        b.tvPath.text = path
+        b.recyclerFiles.visibility = View.VISIBLE
+        b.actionBar.visibility = View.VISIBLE
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val files = provider.listFiles(path)
-            binding.progress.visibility = View.GONE
+            val b2 = _binding ?: return@launch
+            b2.progress.visibility = View.GONE
             currentFiles = files
             fileAdapter.submitList(files.map { cf ->
                 CloudFileAdapter.CloudFileItem(
@@ -204,7 +213,7 @@ class CloudBrowserFragment : Fragment() {
             })
 
             if (files.isEmpty()) {
-                Snackbar.make(binding.root,
+                Snackbar.make(b2.root,
                     getString(R.string.cloud_empty_dir), Snackbar.LENGTH_SHORT).show()
             }
         }
@@ -223,27 +232,30 @@ class CloudBrowserFragment : Fragment() {
 
     private fun disconnectCurrent() {
         val provider = currentProvider ?: return
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             provider.disconnect()
             currentProvider = null
-            binding.recyclerFiles.visibility = View.GONE
-            binding.tvPath.visibility = View.GONE
-            binding.actionBar.visibility = View.GONE
-            Snackbar.make(binding.root,
+            val b = _binding ?: return@launch
+            b.recyclerFiles.visibility = View.GONE
+            b.tvPath.visibility = View.GONE
+            b.actionBar.visibility = View.GONE
+            Snackbar.make(b.root,
                 getString(R.string.cloud_disconnected), Snackbar.LENGTH_SHORT).show()
         }
     }
 
     private fun removeCurrentConnection() {
-        val idx = binding.spinnerConnection.selectedItemPosition
+        val b = _binding ?: return
+        val idx = b.spinnerConnection.selectedItemPosition
         if (idx < 0 || idx >= connections.size) return
         val conn = connections[idx]
 
-        AlertDialog.Builder(requireContext())
+        val ctx = context ?: return
+        AlertDialog.Builder(ctx)
             .setTitle(getString(R.string.cloud_remove))
             .setMessage(getString(R.string.cloud_remove_confirm, conn.displayName))
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
-                lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     currentProvider?.disconnect()
                     currentProvider = null
                 }
@@ -257,15 +269,17 @@ class CloudBrowserFragment : Fragment() {
     private fun downloadSelected() {
         val selected = fileAdapter.getSelectedItems()
         if (selected.isEmpty()) {
-            Snackbar.make(binding.root,
-                getString(R.string.dual_pane_no_selection), Snackbar.LENGTH_SHORT).show()
+            _binding?.root?.let { root ->
+                Snackbar.make(root,
+                    getString(R.string.dual_pane_no_selection), Snackbar.LENGTH_SHORT).show()
+            }
             return
         }
 
         val provider = currentProvider ?: return
-        binding.progress.visibility = View.VISIBLE
+        _binding?.progress?.visibility = View.VISIBLE
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             var success = 0
             var failed = 0
             for (item in selected) {
@@ -282,8 +296,9 @@ class CloudBrowserFragment : Fragment() {
                     failed++
                 }
             }
-            binding.progress.visibility = View.GONE
-            Snackbar.make(binding.root,
+            val b = _binding ?: return@launch
+            b.progress.visibility = View.GONE
+            Snackbar.make(b.root,
                 getString(R.string.cloud_download_result, success, failed),
                 Snackbar.LENGTH_LONG).show()
             fileAdapter.clearSelection()
@@ -300,26 +315,29 @@ class CloudBrowserFragment : Fragment() {
 
     private fun uploadFile(uri: android.net.Uri) {
         val provider = currentProvider ?: return
-        val contentResolver = requireContext().contentResolver
+        val ctx = context ?: return
+        val contentResolver = ctx.contentResolver
         val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "uploaded_file"
         val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
 
-        binding.progress.visibility = View.VISIBLE
-        lifecycleScope.launch {
+        _binding?.progress?.visibility = View.VISIBLE
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 withContext(Dispatchers.IO) {
                     contentResolver.openInputStream(uri)?.use { input ->
                         provider.upload(currentPath, input, fileName, mimeType)
                     }
                 }
-                binding.progress.visibility = View.GONE
-                Snackbar.make(binding.root,
+                val b = _binding ?: return@launch
+                b.progress.visibility = View.GONE
+                Snackbar.make(b.root,
                     getString(R.string.cloud_upload_success, fileName),
                     Snackbar.LENGTH_SHORT).show()
                 loadDirectory(currentPath) // Refresh
             } catch (e: Exception) {
-                binding.progress.visibility = View.GONE
-                Snackbar.make(binding.root,
+                val b = _binding ?: return@launch
+                b.progress.visibility = View.GONE
+                Snackbar.make(b.root,
                     getString(R.string.cloud_upload_failed, e.localizedMessage ?: ""),
                     Snackbar.LENGTH_LONG).show()
             }
@@ -327,17 +345,20 @@ class CloudBrowserFragment : Fragment() {
     }
 
     private fun showAddDialog() {
-        CloudSetupDialog.show(requireContext()) { connection ->
+        val ctx = context ?: return
+        CloudSetupDialog.show(ctx) { connection ->
             loadConnections()
-            Snackbar.make(binding.root,
-                getString(R.string.cloud_added, connection.displayName),
-                Snackbar.LENGTH_SHORT).show()
+            _binding?.root?.let { root ->
+                Snackbar.make(root,
+                    getString(R.string.cloud_added, connection.displayName),
+                    Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun updateActionBar() {
         val hasSelection = fileAdapter.getSelectedItems().isNotEmpty()
-        binding.btnDownload.isEnabled = hasSelection
+        _binding?.btnDownload?.isEnabled = hasSelection
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -346,6 +367,13 @@ class CloudBrowserFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        // Disconnect cloud provider to prevent leaking network connections
+        currentProvider?.let { provider ->
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                try { provider.disconnect() } catch (_: Exception) {}
+            }
+        }
+        binding.spinnerConnection.onItemSelectedListener = null
         super.onDestroyView()
         _binding = null
     }
