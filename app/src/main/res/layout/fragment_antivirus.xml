@@ -33,145 +33,358 @@
             android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
             android:textColor="@color/textPrimary"
             android:layout_marginStart="@dimen/spacing_sm" />
+
+        <ImageButton
+            android:id="@+id/btn_history"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_scan"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/av_history"
+            android:scaleType="centerInside"
+            app:tint="@color/textSecondary" />
     </LinearLayout>
 
-    <!-- Scan status -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/spacing_lg"
-        android:paddingVertical="@dimen/spacing_md">
-
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/av_ready"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textColor="@color/textPrimary" />
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_sm"
-            android:max="100"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tv_phase"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:textColor="@color/textSecondary"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:visibility="gone" />
-    </LinearLayout>
-
-    <!-- Start scan button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_scan"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/button_height"
-        android:layout_marginHorizontal="@dimen/spacing_lg"
-        android:text="@string/av_start_scan"
-        android:textAllCaps="false"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:cornerRadius="@dimen/radius_pill" />
-
-    <!-- Summary cards -->
-    <LinearLayout
-        android:id="@+id/summary_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/spacing_lg"
-        android:paddingTop="@dimen/spacing_md"
-        android:visibility="gone">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:id="@+id/tv_threat_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                    android:textColor="@color/colorError" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/av_threats"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                    android:textColor="@color/textSecondary" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_xs"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="@dimen/spacing_md">
-
-                <TextView
-                    android:id="@+id/tv_clean_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                    android:textColor="@color/colorPrimary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/av_clean"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                    android:textColor="@color/textSecondary" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-
-    <!-- Results list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_results"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingTop="@dimen/spacing_md"
-        android:paddingBottom="@dimen/spacing_above_nav"
-        android:visibility="gone" />
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Shield icon + status area -->
+            <LinearLayout
+                android:id="@+id/shield_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingVertical="@dimen/spacing_lg">
+
+                <ImageView
+                    android:id="@+id/iv_shield"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/ic_shield"
+                    app:tint="@color/colorPrimary"
+                    android:contentDescription="@string/av_title" />
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/av_ready"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                    android:textColor="@color/textPrimary"
+                    android:gravity="center"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:paddingHorizontal="@dimen/spacing_lg" />
+
+                <TextView
+                    android:id="@+id/tv_last_scan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textTertiary"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Phase progress area -->
+            <LinearLayout
+                android:id="@+id/progress_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/spacing_lg"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100" />
+
+                <TextView
+                    android:id="@+id/tv_phase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginTop="@dimen/spacing_xs" />
+
+                <TextView
+                    android:id="@+id/tv_phase_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textTertiary"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <!-- Start scan / scan again button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_scan"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/av_start_scan"
+                android:textAllCaps="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/ic_shield"
+                app:iconGravity="textStart"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <!-- Summary cards row -->
+            <LinearLayout
+                android:id="@+id/summary_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/spacing_lg"
+                android:paddingTop="@dimen/spacing_md"
+                android:visibility="gone">
+
+                <!-- Critical card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_xs"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="@dimen/elevation_none"
+                    app:cardBackgroundColor="@color/colorErrorLight"
+                    app:strokeWidth="@dimen/stroke_default"
+                    app:strokeColor="@color/colorError">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:id="@+id/tv_critical_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                            android:textColor="@color/colorError" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/av_critical"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/colorError"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- High card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="@dimen/elevation_none"
+                    app:cardBackgroundColor="@color/surfaceColor"
+                    app:strokeWidth="@dimen/stroke_default"
+                    app:strokeColor="@color/borderSubtle">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:id="@+id/tv_high_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                            android:textColor="@color/colorError" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/av_high"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Medium card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="@dimen/elevation_none"
+                    app:cardBackgroundColor="@color/surfaceColor"
+                    app:strokeWidth="@dimen/stroke_default"
+                    app:strokeColor="@color/borderSubtle">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:id="@+id/tv_medium_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                            android:textColor="@color/catVideo" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/av_medium"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Clean card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="@dimen/elevation_none"
+                    app:cardBackgroundColor="@color/surfaceColor"
+                    app:strokeWidth="@dimen/stroke_default"
+                    app:strokeColor="@color/borderSubtle">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="@dimen/spacing_sm">
+
+                        <TextView
+                            android:id="@+id/tv_clean_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                            android:textColor="@color/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/av_clean"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Fix All button (shown when actionable threats exist) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_fix_all"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_sm"
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/av_fix_all"
+                android:textAllCaps="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:visibility="gone"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:cornerRadius="@dimen/radius_pill"
+                app:strokeColor="@color/colorError"
+                android:textColor="@color/colorError" />
+
+            <!-- Filter chips -->
+            <HorizontalScrollView
+                android:id="@+id/filter_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:paddingHorizontal="@dimen/spacing_lg"
+                android:paddingTop="@dimen/spacing_sm"
+                android:visibility="gone">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/av_filter_all"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_critical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/av_critical"
+                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/av_high"
+                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/av_medium"
+                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_low_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/av_filter_low_info"
+                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <!-- Results list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:paddingTop="@dimen/spacing_sm"
+                android:paddingBottom="@dimen/spacing_above_nav"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

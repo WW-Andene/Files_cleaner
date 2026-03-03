@@ -470,7 +470,7 @@
 
     <!-- Antivirus / Security Scanner -->
     <string name="av_title">Security Scanner</string>
-    <string name="av_desc">Scan for malware, root, and privacy risks</string>
+    <string name="av_desc">Scan for malware, root, privacy, and network risks</string>
     <string name="av_ready">Ready to scan your device for threats.</string>
     <string name="av_start_scan">Start Security Scan</string>
     <string name="av_scanning">Scanning\u2026</string>
@@ -478,24 +478,43 @@
     <string name="av_all_clear">All clear! No threats detected.</string>
     <string name="av_threats">Threats</string>
     <string name="av_clean">Clean</string>
+    <string name="av_last_scan">Last scan: %s</string>
     <plurals name="av_found_threats">
         <item quantity="one">Found %d issue</item>
         <item quantity="other">Found %d issues</item>
     </plurals>
-    <string name="av_phase_integrity">Phase 1: App Integrity</string>
-    <string name="av_phase_integrity_desc">Checking for root, debugger, emulator, and malicious apps\u2026</string>
-    <string name="av_phase_signature">Phase 2: File Signatures</string>
-    <string name="av_phase_signature_desc">Scanning files for malware signatures\u2026</string>
-    <string name="av_phase_privacy">Phase 3: Privacy Audit</string>
-    <string name="av_phase_privacy_desc">Auditing installed apps for dangerous permissions\u2026</string>
+
+    <!-- Scan phases (5-phase) -->
+    <string name="av_phase_integrity">Phase 1/5: App Integrity</string>
+    <string name="av_phase_integrity_desc">Checking root, hooks, debugger, emulator, dev settings, overlays\u2026</string>
+    <string name="av_phase_signature">Phase 2/5: File Signatures</string>
+    <string name="av_phase_signature_desc">Scanning files for malware hashes, ELF binaries, scripts, patterns\u2026</string>
+    <string name="av_phase_privacy">Phase 3/5: Privacy Audit</string>
+    <string name="av_phase_privacy_desc">Auditing permissions, notification listeners, usage tracking\u2026</string>
+    <string name="av_phase_network">Phase 4/5: Network Security</string>
+    <string name="av_phase_network_desc">Checking cleartext traffic, data exfiltration risks, open ports\u2026</string>
+    <string name="av_phase_verification">Phase 5/5: App Verification</string>
+    <string name="av_phase_verification_desc">Verifying app installers, certificates, signing, sideloads\u2026</string>
+
+    <!-- Scanner source labels -->
     <string name="av_source_integrity">App Integrity Check</string>
     <string name="av_source_signature">File Signature Scan</string>
     <string name="av_source_privacy">Privacy Audit</string>
+    <string name="av_source_network">Network Security</string>
+    <string name="av_source_verification">App Verification</string>
+
+    <!-- Severity labels -->
     <string name="av_critical">CRITICAL</string>
     <string name="av_high">HIGH</string>
     <string name="av_medium">MEDIUM</string>
     <string name="av_low">LOW</string>
     <string name="av_info">INFO</string>
+
+    <!-- Filter chips -->
+    <string name="av_filter_all">All</string>
+    <string name="av_filter_low_info">Low / Info</string>
+
+    <!-- Actions -->
     <string name="av_quarantine">Quarantine</string>
     <string name="av_quarantined">Quarantined</string>
     <string name="av_quarantined_msg">Quarantined %s</string>
@@ -503,4 +522,22 @@
     <string name="av_uninstall_failed">Could not open uninstall dialog</string>
     <string name="av_confirm_delete">Permanently delete %s?</string>
     <string name="av_deleted">Deleted %s</string>
+    <string name="av_open_settings">Open Settings</string>
+    <string name="av_revoke_admin">Revoke Admin</string>
+    <string name="av_fix_all">Fix All</string>
+    <string name="av_fix_all_count">Fix All (%d)</string>
+    <string name="av_fix_all_confirm">This will attempt to resolve all actionable threats:\n\n%s\n\nProceed?</string>
+    <string name="av_proceed">Proceed</string>
+    <string name="av_fixed_count">Resolved %d threats</string>
+    <string name="av_dismiss">Dismiss</string>
+
+    <!-- Threat detail dialog -->
+    <string name="av_detail_file_path">File Path</string>
+    <string name="av_detail_package">Package Name</string>
+    <string name="av_detail_category">Category</string>
+
+    <!-- Scan history -->
+    <string name="av_history">Scan History</string>
+    <string name="av_no_history">No scan history yet.</string>
+    <string name="av_clear_history">Clear History</string>
 </resources>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surfaceColor"
+    android:padding="@dimen/spacing_lg">
+
+    <!-- Header with severity -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <View
+            android:id="@+id/severity_dot"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:background="@drawable/bg_icon_circle" />
+
+        <TextView
+            android:id="@+id/tv_severity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textAllCaps="true"
+            android:letterSpacing="0.08"
+            android:layout_marginStart="@dimen/spacing_sm" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="0dp" />
+
+        <TextView
+            android:id="@+id/tv_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary" />
+    </LinearLayout>
+
+    <!-- Threat name -->
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+        android:textColor="@color/textPrimary"
+        android:layout_marginTop="@dimen/spacing_md" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+        android:textColor="@color/textSecondary"
+        android:layout_marginTop="@dimen/spacing_sm" />
+
+    <!-- File path (if applicable) -->
+    <LinearLayout
+        android:id="@+id/file_path_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/av_detail_file_path"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary" />
+
+        <TextView
+            android:id="@+id/tv_file_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:fontFamily="monospace"
+            android:textIsSelectable="true"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Package name (if applicable) -->
+    <LinearLayout
+        android:id="@+id/package_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/av_detail_package"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary" />
+
+        <TextView
+            android:id="@+id/tv_package"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:fontFamily="monospace"
+            android:textIsSelectable="true"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Category -->
+    <LinearLayout
+        android:id="@+id/category_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/spacing_sm">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/av_detail_category"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary" />
+
+        <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Action buttons -->
+    <LinearLayout
+        android:id="@+id/action_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="@dimen/spacing_lg">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_sm"
+            android:text="@string/av_dismiss"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/textSecondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_action"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_sm"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:visibility="gone"
+            app:cornerRadius="@dimen/radius_pill"
+            app:backgroundTint="@color/colorError" />
+    </LinearLayout>
+</LinearLayout>

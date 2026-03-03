@@ -10,7 +10,9 @@ data class ThreatResult(
     val source: ScannerSource,
     val filePath: String? = null,
     val packageName: String? = null,
-    val action: ThreatAction = ThreatAction.NONE
+    val action: ThreatAction = ThreatAction.NONE,
+    val category: ThreatCategory = ThreatCategory.GENERAL,
+    val timestamp: Long = System.currentTimeMillis()
 ) {
     enum class Severity {
         INFO,
@@ -23,13 +25,30 @@ data class ThreatResult(
     enum class ScannerSource {
         APP_INTEGRITY,
         FILE_SIGNATURE,
-        PRIVACY_AUDIT
+        PRIVACY_AUDIT,
+        NETWORK_SECURITY,
+        APP_VERIFICATION
     }
 
     enum class ThreatAction {
         NONE,
         QUARANTINE,
         DELETE,
-        UNINSTALL
+        UNINSTALL,
+        OPEN_SETTINGS,
+        REVOKE_ADMIN
+    }
+
+    enum class ThreatCategory {
+        GENERAL,
+        MALWARE,
+        ROOT_TAMPERING,
+        PRIVACY,
+        NETWORK,
+        SIDELOAD,
+        ACCESSIBILITY_ABUSE,
+        DEVICE_ADMIN,
+        SUSPICIOUS_FILE,
+        DEBUG_RISK
     }
 }
