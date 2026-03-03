@@ -13,6 +13,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.utils.FileOpener
+import com.filecleaner.app.viewmodel.MainViewModel
 import java.io.File
 
 object FileContextMenu {
@@ -26,6 +27,30 @@ object FileContextMenu {
         fun onCut(item: FileItem) {}
         fun onPaste(targetDirPath: String) {}
         fun onRefresh()
+    }
+
+    /** Creates a standard callback wired to the ViewModel with optional overrides. */
+    fun defaultCallback(
+        vm: MainViewModel,
+        onOpenInTreeOverride: ((FileItem) -> Unit)? = null,
+        onRefreshAction: () -> Unit = {}
+    ): Callback = object : Callback {
+        override fun onDelete(item: FileItem) { vm.deleteFiles(listOf(item)) }
+        override fun onRename(item: FileItem, newName: String) { vm.renameFile(item.path, newName) }
+        override fun onCompress(item: FileItem) { vm.compressFile(item.path) }
+        override fun onExtract(item: FileItem) { vm.extractArchive(item.path) }
+        override fun onOpenInTree(item: FileItem) {
+            if (onOpenInTreeOverride != null) onOpenInTreeOverride(item)
+            else vm.requestTreeHighlight(item.path)
+        }
+        override fun onCut(item: FileItem) { vm.setCutFile(item) }
+        override fun onPaste(targetDirPath: String) {
+            vm.clipboardItem.value?.let { cut ->
+                vm.moveFile(cut.path, targetDirPath)
+                vm.clearClipboard()
+            }
+        }
+        override fun onRefresh() { onRefreshAction() }
     }
 
     fun show(context: Context, anchor: View, item: FileItem, callback: Callback, hasCutFile: Boolean = false) {
@@ -71,17 +96,23 @@ object FileContextMenu {
                         setText(item.name)
                         selectAll()
                     }
-                    AlertDialog.Builder(context)
+                    val dialog = AlertDialog.Builder(context)
                         .setTitle(context.getString(R.string.ctx_rename))
                         .setView(editText)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            val newName = editText.text.toString().trim()
-                            if (newName.isNotEmpty() && newName != item.name) {
-                                callback.onRename(item, newName)
-                            }
-                        }
+                        .setPositiveButton(android.R.string.ok, null) // set listener below
                         .setNegativeButton(context.getString(R.string.cancel), null)
                         .show()
+                    // Override positive button to add validation
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                        val newName = editText.text.toString().trim()
+                        val error = validateFileName(newName, item.name)
+                        if (error != null) {
+                            editText.error = error
+                        } else {
+                            callback.onRename(item, newName)
+                            dialog.dismiss()
+                        }
+                    }
                     true
                 }
                 4 -> { // Share
@@ -128,5 +159,19 @@ object FileContextMenu {
             }
         }
         popup.show()
+    }
+
+    private val INVALID_CHARS = charArrayOf('/', '\\', '\u0000', ':', '*', '?', '"', '<', '>', '|')
+
+    /** Returns an error message if the name is invalid, or null if valid. */
+    private fun validateFileName(newName: String, oldName: String): String? {
+        if (newName.isEmpty()) return "Name cannot be empty"
+        if (newName == oldName) return "Name unchanged"
+        if (newName.length > 255) return "Name too long (max 255 characters)"
+        for (c in INVALID_CHARS) {
+            if (c in newName) return "Name cannot contain '$c'"
+        }
+        if (newName.startsWith('.')) return "Name cannot start with '.'"
+        return null
     }
 }

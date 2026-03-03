@@ -25,6 +25,14 @@ class ArborescenceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
 
+    companion object {
+        private const val MAX_VISIBLE_FILES = 5
+    }
+
+    enum class TreeSortMode {
+        NAME_ASC, NAME_DESC, SIZE_ASC, SIZE_DESC, DATE_ASC, DATE_DESC
+    }
+
     private val isDarkMode: Boolean
         get() = (context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
@@ -120,9 +128,10 @@ class ArborescenceView @JvmOverloads constructor(
     private val layouts = mutableMapOf<String, NodeLayout>()
     private var selectedPath: String? = null
 
-    // ── Filter state ──
+    // ── Filter & sort state ──
     private var filterCategory: FileCategory? = null
     private var filterExtensions: Set<String> = emptySet()
+    var sortMode: TreeSortMode = TreeSortMode.NAME_ASC
 
     // ── Transform ──
     private val viewMatrix = Matrix()
@@ -309,12 +318,31 @@ class ArborescenceView @JvmOverloads constructor(
                 file.name.substringAfterLast('.', "").lowercase() in filterExtensions
             }
         }
-        return files
+        return when (sortMode) {
+            TreeSortMode.NAME_ASC -> files.sortedBy { it.name.lowercase() }
+            TreeSortMode.NAME_DESC -> files.sortedByDescending { it.name.lowercase() }
+            TreeSortMode.SIZE_ASC -> files.sortedBy { it.size }
+            TreeSortMode.SIZE_DESC -> files.sortedByDescending { it.size }
+            TreeSortMode.DATE_ASC -> files.sortedBy { it.lastModified }
+            TreeSortMode.DATE_DESC -> files.sortedByDescending { it.lastModified }
+        }
+    }
+
+    /** Returns children sorted according to the current sort mode. */
+    private fun sortedChildren(node: DirectoryNode): List<DirectoryNode> {
+        return when (sortMode) {
+            TreeSortMode.NAME_ASC -> node.children.sortedBy { it.name.lowercase() }
+            TreeSortMode.NAME_DESC -> node.children.sortedByDescending { it.name.lowercase() }
+            TreeSortMode.SIZE_ASC -> node.children.sortedBy { it.totalSize }
+            TreeSortMode.SIZE_DESC -> node.children.sortedByDescending { it.totalSize }
+            TreeSortMode.DATE_ASC -> node.children.sortedBy { it.files.minOfOrNull { f -> f.lastModified } ?: 0L }
+            TreeSortMode.DATE_DESC -> node.children.sortedByDescending { it.files.maxOfOrNull { f -> f.lastModified } ?: 0L }
+        }
     }
 
     private fun buildLayout(node: DirectoryNode, expanded: Boolean, expandChildren: Boolean) {
         val filtered = filteredFiles(node)
-        val maxFiles = 5
+        val maxFiles = MAX_VISIBLE_FILES
         val displayFiles = min(filtered.size, maxFiles)
         val h = headerHeight + displayFiles * fileLineHeight +
             (if (filtered.size > maxFiles) fileLineHeight else 0f) + 12f
@@ -325,7 +353,7 @@ class ArborescenceView @JvmOverloads constructor(
             expanded = expanded
         )
         if (expanded) {
-            for (child in node.children) {
+            for (child in sortedChildren(node)) {
                 buildLayout(child, expandChildren, expandChildren = false)
             }
         }
@@ -351,7 +379,7 @@ class ArborescenceView @JvmOverloads constructor(
         val childX = x + blockWidth + hGap
         var childY = y
         var totalChildHeight = 0f
-        for (child in node.children) {
+        for (child in sortedChildren(node)) {
             val childLayout = layouts[child.path] ?: continue
             val consumed = positionSubtree(child, childX, childY)
             totalChildHeight += consumed
@@ -380,8 +408,8 @@ class ArborescenceView @JvmOverloads constructor(
         layout.expanded = !layout.expanded
 
         if (layout.expanded) {
-            // Add child layouts
-            for (child in node.children) {
+            // Add child layouts in sorted order
+            for (child in sortedChildren(node)) {
                 if (child.path !in layouts) {
                     buildLayout(child, expanded = false, expandChildren = false)
                 }
@@ -419,7 +447,7 @@ class ArborescenceView @JvmOverloads constructor(
         for ((blockPath, layout) in layouts) {
             if (wx < layout.x || wx > layout.x + layout.w) continue
             val fileStartY = layout.y + headerHeight
-            val maxFiles = 5
+            val maxFiles = MAX_VISIBLE_FILES
             // Use filteredFiles() to match what drawBlock() actually renders
             val files = filteredFiles(layout.node).take(maxFiles)
             for ((i, file) in files.withIndex()) {
@@ -590,7 +618,7 @@ class ArborescenceView @JvmOverloads constructor(
 
         // File list (filtered)
         val filtered = filteredFiles(node)
-        val maxFiles = 5
+        val maxFiles = MAX_VISIBLE_FILES
         val files = filtered.take(maxFiles)
         for ((i, file) in files.withIndex()) {
             val fy = layout.y + headerHeight + i * fileLineHeight + 20f

@@ -105,33 +105,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Empty state -->
-    <LinearLayout
-        android:id="@+id/tv_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="48dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_raccoon_face"
-            android:alpha="0.55"
-            android:importantForAccessibility="no" />
-
-        <TextView
-            android:id="@+id/tv_empty_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/nothing_found"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textColor="@color/textSecondary"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp" />
-    </LinearLayout>
+    <include layout="@layout/view_empty_state" />
 
     <!-- File list -->
     <androidx.recyclerview.widget.RecyclerView

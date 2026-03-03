@@ -134,6 +134,70 @@ object FileScanner {
         Pair(results, rootNode)
     }
 
+    /** Rebuild tree from a flat file list without re-scanning the filesystem. */
+    fun buildTreeFromFiles(files: List<FileItem>): DirectoryNode {
+        val root = Environment.getExternalStorageDirectory()
+        val rootPath = root.absolutePath
+
+        // Group files by parent directory
+        val dirFiles = mutableMapOf<String, MutableList<FileItem>>()
+        val allDirPaths = mutableSetOf<String>()
+
+        for (item in files) {
+            val parentDir = File(item.path).parent ?: continue
+            dirFiles.getOrPut(parentDir) { mutableListOf() }.add(item)
+            // Ensure all ancestor dirs are tracked
+            var dir = parentDir
+            while (dir != rootPath && dir.startsWith(rootPath) && allDirPaths.add(dir)) {
+                dir = File(dir).parent ?: break
+            }
+        }
+        allDirPaths.add(rootPath)
+
+        // Build parent -> children mapping
+        val childMap = mutableMapOf<String, MutableList<String>>()
+        for (dirPath in allDirPaths) {
+            if (dirPath != rootPath) {
+                val parent = File(dirPath).parent ?: continue
+                childMap.getOrPut(parent) { mutableListOf() }.add(dirPath)
+            }
+        }
+
+        // Build tree bottom-up by sorting paths by depth descending
+        val nodeMap = mutableMapOf<String, DirectoryNode>()
+        val sortedDirs = allDirPaths.sortedByDescending { it.count { c -> c == '/' } }
+
+        for (dirPath in sortedDirs) {
+            val ownFiles = dirFiles[dirPath] ?: emptyList()
+            val childNodes = childMap[dirPath]?.mapNotNull { nodeMap[it] }?.toMutableList()
+                ?: mutableListOf()
+            val ownSize = ownFiles.sumOf { it.size }
+            val ownCount = ownFiles.size
+            val totalSize = ownSize + childNodes.sumOf { it.totalSize }
+            val totalCount = ownCount + childNodes.sumOf { it.totalFileCount }
+            val depth = dirPath.substringAfter(rootPath).count { it == '/' }
+
+            nodeMap[dirPath] = DirectoryNode(
+                path = dirPath,
+                name = File(dirPath).name,
+                files = ownFiles,
+                children = childNodes,
+                totalSize = totalSize,
+                totalFileCount = totalCount,
+                depth = depth
+            )
+        }
+
+        return nodeMap[rootPath] ?: DirectoryNode(
+            path = rootPath,
+            name = root.name,
+            files = emptyList(),
+            totalSize = 0,
+            totalFileCount = 0,
+            depth = 0
+        )
+    }
+
     fun fileToItem(file: File): FileItem = file.toFileItem()
 
     fun File.toFileItem(): FileItem {

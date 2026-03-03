@@ -1,39 +1,31 @@
 package com.filecleaner.app.viewmodel
 
 import android.app.Application
-import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.filecleaner.app.data.DirectoryNode
+import com.filecleaner.app.data.DeleteResult
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.OperationResult
+import com.filecleaner.app.data.StorageStats
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.utils.DuplicateFinder
+import com.filecleaner.app.utils.FileOperationHelper
 import com.filecleaner.app.utils.FileScanner
 import com.filecleaner.app.utils.JunkFinder
 import com.filecleaner.app.utils.ScanCache
+import com.filecleaner.app.data.ScanPhase
+import com.filecleaner.app.data.ScanState
 import com.filecleaner.app.utils.SingleLiveEvent
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
-
-enum class ScanPhase { INDEXING, DUPLICATES, ANALYZING, JUNK }
-
-sealed class ScanState {
-    object Idle : ScanState()
-    data class Scanning(val filesFound: Int, val phase: ScanPhase = ScanPhase.INDEXING) : ScanState()
-    object Done : ScanState()
-    object Cancelled : ScanState()
-    data class Error(val message: String) : ScanState()
-}
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -63,28 +55,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val _directoryTree = MutableLiveData<DirectoryNode?>(null)
     val directoryTree: LiveData<DirectoryNode?> = _directoryTree
 
-    private val _moveResult = SingleLiveEvent<MoveResult>()
-    val moveResult: LiveData<MoveResult> = _moveResult
-
     private val _deleteResult = SingleLiveEvent<DeleteResult>()
     val deleteResult: LiveData<DeleteResult> = _deleteResult
 
-    data class StorageStats(
-        val totalFiles: Int,
-        val totalSize: Long,
-        val junkSize: Long,
-        val duplicateSize: Long,
-        val largeSize: Long
-    )
-
-    data class DeleteResult(
-        val moved: Int,
-        val failed: Int,
-        val freedBytes: Long,
-        val canUndo: Boolean
-    )
-
-    data class MoveResult(val success: Boolean, val message: String)
+    // True while a file operation (delete, rename, compress, extract, move) is running
+    private val _isOperating = MutableLiveData(false)
+    val isOperating: LiveData<Boolean> = _isOperating
 
     // Trash directory for undo support (F-026)
     private val trashDir: File
@@ -137,9 +113,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun startScan(minLargeFileMb: Int = 50) {
+    fun startScan() {
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
+            // Read saved large file threshold from preferences
+            val thresholdMb = UserPreferences.largeFileThresholdMb(getApplication()).first()
+
             _scanState.value = ScanState.Scanning(0)
             runCatching {
                 val (files, tree) = FileScanner.scanWithTree(getApplication()) { count ->
@@ -156,7 +135,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _duplicates.postValue(dupes)
 
                     _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING))
-                    val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L)
+                    val large = JunkFinder.findLargeFiles(files, thresholdMb * 1024L * 1024L)
                     _largeFiles.postValue(large)
 
                     _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.JUNK))
@@ -183,24 +162,28 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Move a file to a different directory and update lists incrementally. */
+    /** Move a file to a different directory and update lists + tree incrementally. */
     fun moveFile(filePath: String, targetDirPath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                val src = File(filePath)
-                val dst = File(targetDirPath, src.name)
-                if (!src.exists()) return@withContext MoveResult(false, "Source file not found")
-                if (dst.exists()) return@withContext MoveResult(false, "File already exists in target")
-                if (src.renameTo(dst)) MoveResult(true, "Moved ${src.name}")
-                else MoveResult(false, "Failed to move file")
-            }
-            _moveResult.postValue(result)
+            _isOperating.value = true
+            val result = FileOperationHelper.moveFile(filePath, targetDirPath)
+            _operationResult.postValue(result)
             if (result.success) {
                 val dst = File(targetDirPath, File(filePath).name)
                 refreshAfterFileChange(removedPath = filePath, addedFile = dst)
-                // Also rebuild directory tree since paths changed
-                startScan()
+                // Rebuild tree from updated file list (no filesystem re-scan)
+                rebuildTreeFromFiles()
             }
+            _isOperating.value = false
+        }
+    }
+
+    /** Rebuild the directory tree from the current file list (no filesystem re-scan). */
+    private fun rebuildTreeFromFiles() {
+        viewModelScope.launch {
+            val currentFiles = _allFiles.value ?: return@launch
+            val newTree = FileScanner.buildTreeFromFiles(currentFiles)
+            _directoryTree.postValue(newTree)
         }
     }
 
@@ -214,27 +197,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteFiles(toDelete: List<FileItem>) {
         if (isScanning) return
         viewModelScope.launch {
+            _isOperating.value = true
             // Commit any previous pending trash since its undo window is being replaced
             if (pendingTrash.isNotEmpty()) {
                 commitPendingTrash()
             }
 
-            val (movedPaths, freedBytes) = withContext(Dispatchers.IO) {
-                val dir = trashDir
-                dir.mkdirs()
-                var freed = 0L
-                val moved = mutableMapOf<String, String>()
-                for (item in toDelete) {
-                    val src = File(item.path)
-                    val dst = File(dir, "${System.nanoTime()}_${src.name}")
-                    if (src.renameTo(dst)) {
-                        moved[item.path] = dst.absolutePath
-                        freed += item.size
-                    }
-                }
-                moved to freed
-            }
-
+            val (movedPaths, freedBytes) = FileOperationHelper.softDeleteFiles(toDelete, trashDir)
             pendingTrash = movedPaths.toMutableMap()
 
             val failed = toDelete.size - movedPaths.size
@@ -250,6 +219,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _junkFiles.postValue(_junkFiles.value?.filter { it.path !in deletedPaths })
                 recalcStats(remaining)
             }
+            _isOperating.value = false
         }
     }
 
@@ -257,17 +227,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun undoDelete() {
         if (pendingTrash.isEmpty()) return
         viewModelScope.launch {
-            val restored = withContext(Dispatchers.IO) {
-                val items = mutableListOf<FileItem>()
-                for ((origPath, trashPath) in pendingTrash) {
-                    val trashFile = File(trashPath)
-                    val origFile = File(origPath)
-                    if (trashFile.renameTo(origFile)) {
-                        items.add(FileScanner.fileToItem(origFile))
-                    }
-                }
-                items
-            }
+            val restored = FileOperationHelper.undoDelete(pendingTrash)
             pendingTrash.clear()
 
             if (restored.isNotEmpty()) {
@@ -292,10 +252,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch { commitPendingTrash() }
     }
 
-    private suspend fun commitPendingTrash() = withContext(Dispatchers.IO) {
-        for ((_, trashPath) in pendingTrash) {
-            File(trashPath).delete()
-        }
+    private suspend fun commitPendingTrash() {
+        FileOperationHelper.commitTrash(pendingTrash)
         pendingTrash.clear()
     }
 
@@ -319,90 +277,44 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // ── File operations ──
-    private val _operationResult = SingleLiveEvent<MoveResult>()
-    val operationResult: LiveData<MoveResult> = _operationResult
+    private val _operationResult = SingleLiveEvent<OperationResult>()
+    val operationResult: LiveData<OperationResult> = _operationResult
 
     fun renameFile(oldPath: String, newName: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                val src = File(oldPath)
-                if (!src.exists()) return@withContext MoveResult(false, "File not found")
-                val dst = File(src.parent, newName)
-                if (dst.exists()) return@withContext MoveResult(false, "File with that name already exists")
-                if (src.renameTo(dst)) MoveResult(true, "Renamed to $newName")
-                else MoveResult(false, "Rename failed")
-            }
+            _isOperating.value = true
+            val result = FileOperationHelper.renameFile(oldPath, newName)
             _operationResult.postValue(result)
             if (result.success) {
                 refreshAfterFileChange(removedPath = oldPath, addedFile = File(File(oldPath).parent, newName))
             }
+            _isOperating.value = false
         }
     }
 
     fun compressFile(filePath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                try {
-                    val src = File(filePath)
-                    if (!src.exists()) return@withContext MoveResult(false, "File not found")
-                    val zipFile = File(src.parent, "${src.nameWithoutExtension}.zip")
-                    ZipOutputStream(zipFile.outputStream().buffered()).use { zos ->
-                        zos.putNextEntry(ZipEntry(src.name))
-                        src.inputStream().buffered().use { it.copyTo(zos) }
-                        zos.closeEntry()
-                    }
-                    MoveResult(true, "Compressed to ${zipFile.name}")
-                } catch (e: Exception) {
-                    MoveResult(false, "Compression failed: ${e.message}")
-                }
-            }
+            _isOperating.value = true
+            val result = FileOperationHelper.compressFile(filePath)
             _operationResult.postValue(result)
             if (result.success) {
                 val zipFile = File(File(filePath).parent, "${File(filePath).nameWithoutExtension}.zip")
                 refreshAfterFileChange(addedFile = zipFile)
             }
+            _isOperating.value = false
         }
     }
 
     fun extractArchive(filePath: String) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                try {
-                    val src = File(filePath)
-                    if (!src.exists()) return@withContext MoveResult(false, "File not found")
-                    if (!src.extension.equals("zip", ignoreCase = true)) {
-                        return@withContext MoveResult(false, "Only ZIP archives can be extracted")
-                    }
-                    val outDir = File(src.parent, src.nameWithoutExtension)
-                    outDir.mkdirs()
-                    ZipInputStream(src.inputStream().buffered()).use { zis ->
-                        var entry = zis.nextEntry
-                        while (entry != null) {
-                            val outFile = File(outDir, entry.name)
-                            // Prevent zip slip
-                            if (!outFile.canonicalPath.startsWith(outDir.canonicalPath)) {
-                                entry = zis.nextEntry
-                                continue
-                            }
-                            if (entry.isDirectory) {
-                                outFile.mkdirs()
-                            } else {
-                                outFile.parentFile?.mkdirs()
-                                outFile.outputStream().buffered().use { zis.copyTo(it) }
-                            }
-                            entry = zis.nextEntry
-                        }
-                    }
-                    MoveResult(true, "Extracted to ${outDir.name}/")
-                } catch (e: Exception) {
-                    MoveResult(false, "Extraction failed: ${e.message}")
-                }
-            }
+            _isOperating.value = true
+            val result = FileOperationHelper.extractArchive(filePath)
             _operationResult.postValue(result)
             if (result.success) {
                 // Extract creates many files — rescan is appropriate here
                 startScan()
             }
+            _isOperating.value = false
         }
     }
 

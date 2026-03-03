@@ -1,10 +1,6 @@
 package com.filecleaner.app.ui.common
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +13,8 @@ import com.filecleaner.app.databinding.FragmentListActionBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
+import com.filecleaner.app.data.ScanState
 import com.filecleaner.app.viewmodel.MainViewModel
-import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -36,8 +32,6 @@ abstract class BaseFileListFragment : Fragment() {
     // Search state
     private var searchQuery = ""
     private var rawItems = listOf<FileItem>()
-    private val handler = Handler(Looper.getMainLooper())
-    private var searchRunnable: Runnable? = null
 
     /** Screen title shown in the header. */
     abstract val screenTitle: String
@@ -102,19 +96,13 @@ abstract class BaseFileListFragment : Fragment() {
         binding.btnAction.isEnabled = false
         binding.btnAction.setOnClickListener { confirmDelete() }
 
-        // Search with 300ms debounce
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                searchRunnable?.let { handler.removeCallbacks(it) }
-                searchRunnable = Runnable {
-                    searchQuery = s?.toString()?.trim() ?: ""
-                    applySearch()
-                }
-                handler.postDelayed(searchRunnable!!, 300)
+        // Search with debounce (lifecycle-aware cleanup)
+        binding.etSearch.addTextChangedListener(
+            DebouncedSearchWatcher(viewLifecycleOwner) { query ->
+                searchQuery = query
+                applySearch()
             }
-        })
+        )
 
         liveData().observe(viewLifecycleOwner) { items ->
             rawItems = items
@@ -165,36 +153,9 @@ abstract class BaseFileListFragment : Fragment() {
             .show()
     }
 
-    private val contextMenuCallback = object : FileContextMenu.Callback {
-        override fun onDelete(item: FileItem) {
-            vm.deleteFiles(listOf(item))
-        }
-        override fun onRename(item: FileItem, newName: String) {
-            vm.renameFile(item.path, newName)
-        }
-        override fun onCompress(item: FileItem) {
-            vm.compressFile(item.path)
-        }
-        override fun onExtract(item: FileItem) {
-            vm.extractArchive(item.path)
-        }
-        override fun onOpenInTree(item: FileItem) {
-            vm.requestTreeHighlight(item.path)
-        }
-        override fun onCut(item: FileItem) {
-            vm.setCutFile(item)
-        }
-        override fun onPaste(targetDirPath: String) {
-            vm.clipboardItem.value?.let { cut ->
-                vm.moveFile(cut.path, targetDirPath)
-                vm.clearClipboard()
-            }
-        }
-        override fun onRefresh() {}
-    }
+    private val contextMenuCallback by lazy { FileContextMenu.defaultCallback(vm) }
 
     override fun onDestroyView() {
-        searchRunnable?.let { handler.removeCallbacks(it) }
         super.onDestroyView()
         _binding = null
     }

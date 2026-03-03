@@ -20,9 +20,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.filecleaner.app.databinding.ActivityMainBinding
 import com.filecleaner.app.ui.widget.RaccoonBubble
 import com.filecleaner.app.utils.UndoHelper
+import com.filecleaner.app.data.ScanPhase
+import com.filecleaner.app.data.ScanState
 import com.filecleaner.app.viewmodel.MainViewModel
-import com.filecleaner.app.viewmodel.ScanPhase
-import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {

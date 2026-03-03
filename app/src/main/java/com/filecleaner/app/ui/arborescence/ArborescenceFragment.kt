@@ -10,15 +10,19 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.databinding.FragmentArborescenceBinding
+import com.filecleaner.app.ui.common.ExtensionChipHelper
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.viewmodel.MainViewModel
-import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.io.File
 
 class ArborescenceFragment : Fragment() {
@@ -158,12 +162,7 @@ class ArborescenceFragment : Fragment() {
             }
         }
 
-        // Observe move results
-        vm.moveResult.observe(viewLifecycleOwner) { result ->
-            Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
-        }
-
-        // Observe operation results (rename, compress, extract)
+        // Observe operation results (move, rename, compress, extract)
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
         }
@@ -209,99 +208,58 @@ class ArborescenceFragment : Fragment() {
         binding.spinnerTreeSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
                 applyTreeFilter()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    UserPreferences.saveTreeSortOrder(requireContext(), pos)
+                }
             }
             override fun onNothingSelected(p: AdapterView<*>?) {}
+        }
+
+        // Restore saved tree sort order
+        viewLifecycleOwner.lifecycleScope.launch {
+            val savedTreeSort = UserPreferences.treeSortOrder(requireContext()).first()
+            if (savedTreeSort in 0..5) {
+                binding.spinnerTreeSort.setSelection(savedTreeSort)
+            }
         }
     }
 
     private fun applyTreeFilter() {
         val catEntry = treeCategories[binding.spinnerTreeCategory.selectedItemPosition]
         val category = catEntry.second
+
+        // Apply sort mode from spinner
+        binding.arborescenceView.sortMode = when (binding.spinnerTreeSort.selectedItemPosition) {
+            0 -> ArborescenceView.TreeSortMode.NAME_ASC
+            1 -> ArborescenceView.TreeSortMode.NAME_DESC
+            2 -> ArborescenceView.TreeSortMode.SIZE_ASC
+            3 -> ArborescenceView.TreeSortMode.SIZE_DESC
+            4 -> ArborescenceView.TreeSortMode.DATE_ASC
+            else -> ArborescenceView.TreeSortMode.DATE_DESC
+        }
+
         binding.arborescenceView.setFilter(category, selectedTreeExtensions)
     }
 
     private fun updateTreeExtensionChips() {
         val tree = vm.directoryTree.value ?: return
-        val chipGroup = binding.chipGroupTreeExtensions
-
-        // Collect all files from tree
-        val allFiles = collectAllFiles(tree)
         val catEntry = treeCategories[binding.spinnerTreeCategory.selectedItemPosition]
         val category = catEntry.second
+        val allFilesList = tree.allFiles()
+        val filteredByCategory = if (category == null) allFilesList
+            else allFilesList.filter { it.category == category }
 
-        val filteredByCategory = if (category == null) allFiles
-        else allFiles.filter { it.category == category }
-
-        val extCounts = mutableMapOf<String, Int>()
-        for (file in filteredByCategory) {
-            val ext = file.name.substringAfterLast('.', "").lowercase()
-            if (ext.isNotEmpty()) {
-                extCounts[ext] = (extCounts[ext] ?: 0) + 1
-            }
-        }
-
-        val topExtensions = extCounts.entries.sortedByDescending { it.value }.take(15)
-
-        if (topExtensions.isEmpty()) {
-            binding.scrollTreeExtensions.visibility = View.GONE
-            return
-        }
-
-        binding.scrollTreeExtensions.visibility = View.VISIBLE
-        chipGroup.removeAllViews()
-
-        for ((ext, count) in topExtensions) {
-            val chip = Chip(requireContext()).apply {
-                text = ".$ext ($count)"
-                isCheckable = true
-                isChecked = ext in selectedTreeExtensions
-                setOnCheckedChangeListener { _, checked ->
-                    if (checked) selectedTreeExtensions.add(ext) else selectedTreeExtensions.remove(ext)
-                    applyTreeFilter()
-                }
-            }
-            chipGroup.addView(chip)
-        }
-    }
-
-    private fun collectAllFiles(node: com.filecleaner.app.data.DirectoryNode): List<FileItem> {
-        val result = mutableListOf<FileItem>()
-        result.addAll(node.files)
-        for (child in node.children) {
-            result.addAll(collectAllFiles(child))
-        }
-        return result
+        ExtensionChipHelper.updateChips(
+            requireContext(), binding.chipGroupTreeExtensions,
+            filteredByCategory, selectedTreeExtensions) { applyTreeFilter() }
     }
 
     private fun formatSize(bytes: Long): String =
         com.filecleaner.app.utils.UndoHelper.formatBytes(bytes)
 
-    private val contextMenuCallback = object : FileContextMenu.Callback {
-        override fun onDelete(item: FileItem) {
-            vm.deleteFiles(listOf(item))
-        }
-        override fun onRename(item: FileItem, newName: String) {
-            vm.renameFile(item.path, newName)
-        }
-        override fun onCompress(item: FileItem) {
-            vm.compressFile(item.path)
-        }
-        override fun onExtract(item: FileItem) {
-            vm.extractArchive(item.path)
-        }
-        override fun onOpenInTree(item: FileItem) {
-            binding.arborescenceView.highlightFilePath(item.path)
-        }
-        override fun onCut(item: FileItem) {
-            vm.setCutFile(item)
-        }
-        override fun onPaste(targetDirPath: String) {
-            vm.clipboardItem.value?.let { cut ->
-                vm.moveFile(cut.path, targetDirPath)
-                vm.clearClipboard()
-            }
-        }
-        override fun onRefresh() {}
+    private val contextMenuCallback by lazy {
+        FileContextMenu.defaultCallback(vm,
+            onOpenInTreeOverride = { item -> binding.arborescenceView.highlightFilePath(item.path) })
     }
 
     override fun onDestroyView() {

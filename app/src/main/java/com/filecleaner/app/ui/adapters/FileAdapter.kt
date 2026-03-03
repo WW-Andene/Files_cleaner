@@ -73,56 +73,16 @@ class FileAdapter(
 
         holder.name.text = item.name
 
-        // Thumbnail strategy based on view mode
-        when (viewMode) {
-            ViewMode.LIST -> {
-                // Standard list: thumbnails only for images/videos
-                if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
-                    Glide.with(holder.itemView)
-                        .load(item.file)
-                        .placeholder(categoryDrawable(item.category))
-                        .centerCrop()
-                        .into(holder.icon)
-                } else {
-                    Glide.with(holder.itemView).clear(holder.icon)
-                    holder.icon.setImageResource(categoryDrawable(item.category))
-                    holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                }
-            }
-            ViewMode.LIST_WITH_THUMBNAILS -> {
-                // List with larger thumbnails for all media types
-                val lp = holder.icon.layoutParams
-                lp.width = 72.dpToPx(holder.itemView)
-                lp.height = 72.dpToPx(holder.itemView)
-                holder.icon.layoutParams = lp
-
-                if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
-                    Glide.with(holder.itemView)
-                        .load(item.file)
-                        .placeholder(categoryDrawable(item.category))
-                        .centerCrop()
-                        .into(holder.icon)
-                } else {
-                    Glide.with(holder.itemView).clear(holder.icon)
-                    holder.icon.setImageResource(categoryDrawable(item.category))
-                    holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                }
-            }
-            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> {
-                // Grid: always try to load thumbnail
-                if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
-                    Glide.with(holder.itemView)
-                        .load(item.file)
-                        .placeholder(categoryDrawable(item.category))
-                        .centerCrop()
-                        .into(holder.icon)
-                } else {
-                    Glide.with(holder.itemView).clear(holder.icon)
-                    holder.icon.setImageResource(categoryDrawable(item.category))
-                    holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                }
-            }
+        // Enlarge icon for thumbnail list mode
+        if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
+            val lp = holder.icon.layoutParams
+            lp.width = 72.dpToPx(holder.itemView)
+            lp.height = 72.dpToPx(holder.itemView)
+            holder.icon.layoutParams = lp
         }
+
+        // Load thumbnail or category icon
+        loadThumbnail(holder, item)
 
         // Visual state: duplicate group colouring → selection highlight → default
         val card = holder.itemView as? MaterialCardView
@@ -189,6 +149,20 @@ class FileAdapter(
         }
     }
 
+    private fun loadThumbnail(holder: FileVH, item: FileItem) {
+        if (item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) {
+            Glide.with(holder.itemView)
+                .load(item.file)
+                .placeholder(categoryDrawable(item.category))
+                .centerCrop()
+                .into(holder.icon)
+        } else {
+            Glide.with(holder.itemView).clear(holder.icon)
+            holder.icon.setImageResource(categoryDrawable(item.category))
+            holder.icon.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }
+    }
+
     private fun Int.dpToPx(view: View): Int =
         (this * view.resources.displayMetrics.density).toInt()
 
@@ -227,13 +201,11 @@ class FileAdapter(
 
     fun getSelectedItems(): List<FileItem> = currentList.filter { it.path in selectedPaths }
 
-    private fun buildMeta(metaView: TextView, item: FileItem): String {
+    private fun buildMeta(metaView: TextView, item: FileItem) {
         val pattern = android.text.format.DateFormat.getBestDateTimePattern(
             metaView.resources.configuration.locales[0], "dd MMM yyyy")
         val date = android.text.format.DateFormat.format(pattern, item.lastModified)
-        val text = "${item.sizeReadable}  \u2022  $date"
-        metaView.text = text
-        return text
+        metaView.text = "${item.sizeReadable}  \u2022  $date"
     }
 
     private fun categoryDrawable(cat: FileCategory) = when (cat) {

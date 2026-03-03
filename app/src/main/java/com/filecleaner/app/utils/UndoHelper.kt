@@ -2,6 +2,7 @@ package com.filecleaner.app.utils
 
 import android.view.View
 import com.filecleaner.app.R
+import com.filecleaner.app.data.DeleteResult
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -12,7 +13,7 @@ object UndoHelper {
 
     fun showUndoSnackbar(
         view: View,
-        result: MainViewModel.DeleteResult,
+        result: DeleteResult,
         vm: MainViewModel
     ) {
         val ctx = view.context

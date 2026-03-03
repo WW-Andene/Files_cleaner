@@ -1,10 +1,6 @@
 package com.filecleaner.app.ui.browse
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,20 +8,25 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.databinding.FragmentBrowseBinding
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
+import com.filecleaner.app.ui.common.DebouncedSearchWatcher
+import com.filecleaner.app.ui.common.ExtensionChipHelper
 import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.utils.FileOpener
+import com.filecleaner.app.data.ScanState
 import com.filecleaner.app.viewmodel.MainViewModel
-import com.filecleaner.app.viewmodel.ScanState
-import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class BrowseFragment : Fragment() {
 
@@ -37,8 +38,6 @@ class BrowseFragment : Fragment() {
     private var currentViewMode = ViewMode.LIST
     private val selectedExtensions = mutableSetOf<String>()
     private var searchQuery = ""
-    private val handler = Handler(Looper.getMainLooper())
-    private var searchRunnable: Runnable? = null
 
     private val categories by lazy {
         listOf(
@@ -69,19 +68,13 @@ class BrowseFragment : Fragment() {
         binding.btnViewMode.setOnClickListener { cycleViewMode() }
         updateViewModeIcon()
 
-        // Search with 300ms debounce
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                searchRunnable?.let { handler.removeCallbacks(it) }
-                searchRunnable = Runnable {
-                    searchQuery = s?.toString()?.trim() ?: ""
-                    refresh()
-                }
-                handler.postDelayed(searchRunnable!!, 300)
+        // Search with debounce (lifecycle-aware cleanup)
+        binding.etSearch.addTextChangedListener(
+            DebouncedSearchWatcher(viewLifecycleOwner) { query ->
+                searchQuery = query
+                refresh()
             }
-        })
+        )
 
         // Category spinner
         val labels = categories.map { it.first }
@@ -105,11 +98,19 @@ class BrowseFragment : Fragment() {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
                 selectedExtensions.clear()
                 refresh()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    UserPreferences.saveLastCategory(requireContext(), pos)
+                }
             }
             override fun onNothingSelected(p: AdapterView<*>?) {}
         }
         binding.spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = refresh()
+            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
+                refresh()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    UserPreferences.saveSortOrder(requireContext(), pos)
+                }
+            }
             override fun onNothingSelected(p: AdapterView<*>?) {}
         }
 
@@ -117,6 +118,25 @@ class BrowseFragment : Fragment() {
 
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+        }
+
+        // Restore saved preferences
+        viewLifecycleOwner.lifecycleScope.launch {
+            val savedCategory = UserPreferences.lastCategory(requireContext()).first()
+            val savedSort = UserPreferences.sortOrder(requireContext()).first()
+            val savedViewMode = UserPreferences.viewMode(requireContext()).first()
+            if (savedCategory in categories.indices) {
+                binding.spinnerCategory.setSelection(savedCategory)
+            }
+            if (savedSort in 0..5) {
+                binding.spinnerSort.setSelection(savedSort)
+            }
+            if (savedViewMode in ViewMode.entries.indices) {
+                currentViewMode = ViewMode.entries[savedViewMode]
+                adapter.viewMode = currentViewMode
+                applyLayoutManager()
+                updateViewModeIcon()
+            }
         }
     }
 
@@ -127,6 +147,9 @@ class BrowseFragment : Fragment() {
         adapter.viewMode = currentViewMode
         applyLayoutManager()
         updateViewModeIcon()
+        viewLifecycleOwner.lifecycleScope.launch {
+            UserPreferences.saveViewMode(requireContext(), nextIndex)
+        }
     }
 
     private fun applyLayoutManager() {
@@ -201,76 +224,16 @@ class BrowseFragment : Fragment() {
     }
 
     private fun updateExtensionChips(files: List<FileItem>) {
-        val chipGroup = binding.chipGroupExtensions
-
-        // Count extensions
-        val extCounts = mutableMapOf<String, Int>()
-        for (file in files) {
-            val ext = file.name.substringAfterLast('.', "").lowercase()
-            if (ext.isNotEmpty()) {
-                extCounts[ext] = (extCounts[ext] ?: 0) + 1
-            }
-        }
-
-        // Show top 15 extensions sorted by count
-        val topExtensions = extCounts.entries
-            .sortedByDescending { it.value }
-            .take(15)
-
-        if (topExtensions.isEmpty()) {
-            binding.scrollExtensions.visibility = View.GONE
-            return
-        }
-
-        binding.scrollExtensions.visibility = View.VISIBLE
-        chipGroup.removeAllViews()
-
-        for ((ext, count) in topExtensions) {
-            val chip = Chip(requireContext()).apply {
-                text = ".$ext ($count)"
-                isCheckable = true
-                isChecked = ext in selectedExtensions
-                setOnCheckedChangeListener { _, checked ->
-                    if (checked) selectedExtensions.add(ext) else selectedExtensions.remove(ext)
-                    refresh()
-                }
-            }
-            chipGroup.addView(chip)
-        }
+        ExtensionChipHelper.updateChips(
+            requireContext(), binding.chipGroupExtensions,
+            files, selectedExtensions) { refresh() }
     }
 
-    private val contextMenuCallback = object : FileContextMenu.Callback {
-        override fun onDelete(item: FileItem) {
-            vm.deleteFiles(listOf(item))
-        }
-        override fun onRename(item: FileItem, newName: String) {
-            vm.renameFile(item.path, newName)
-        }
-        override fun onCompress(item: FileItem) {
-            vm.compressFile(item.path)
-        }
-        override fun onExtract(item: FileItem) {
-            vm.extractArchive(item.path)
-        }
-        override fun onOpenInTree(item: FileItem) {
-            vm.requestTreeHighlight(item.path)
-        }
-        override fun onCut(item: FileItem) {
-            vm.setCutFile(item)
-        }
-        override fun onPaste(targetDirPath: String) {
-            vm.clipboardItem.value?.let { cut ->
-                vm.moveFile(cut.path, targetDirPath)
-                vm.clearClipboard()
-            }
-        }
-        override fun onRefresh() {
-            refresh()
-        }
+    private val contextMenuCallback by lazy {
+        FileContextMenu.defaultCallback(vm, onRefreshAction = { refresh() })
     }
 
     override fun onDestroyView() {
-        searchRunnable?.let { handler.removeCallbacks(it) }
         super.onDestroyView()
         _binding = null
     }

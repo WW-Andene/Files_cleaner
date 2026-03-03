@@ -8,4 +8,14 @@ data class DirectoryNode(
     val totalSize: Long,
     val totalFileCount: Int,
     val depth: Int
-)
+) {
+    /** Recursively collects all files from this node and all descendants. */
+    fun allFiles(): List<FileItem> {
+        val result = mutableListOf<FileItem>()
+        result.addAll(files)
+        for (child in children) {
+            result.addAll(child.allFiles())
+        }
+        return result
+    }
+}
