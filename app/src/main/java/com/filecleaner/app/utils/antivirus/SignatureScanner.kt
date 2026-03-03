@@ -34,29 +34,24 @@ object SignatureScanner {
         "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"  // EICAR SHA-256
     )
 
-    /** Suspicious filename patterns (regex) */
+    /** Simple suspicious extensions — checked via O(1) Set lookup instead of regex */
+    private val SUSPICIOUS_EXTENSIONS = setOf(
+        "exe", "bat", "cmd", "scr", "pif", "com", "vbs", "wsf", "dll", "hta", "ps1", "psm1"
+    )
+
+    /** Complex suspicious filename patterns that require regex (kept minimal) */
     private val SUSPICIOUS_PATTERNS = listOf(
         Regex(".*\\.apk\\..*", RegexOption.IGNORE_CASE),      // Double extension APK
         Regex(".*payload.*\\.apk", RegexOption.IGNORE_CASE),   // Payload APKs
         Regex(".*keylog.*", RegexOption.IGNORE_CASE),           // Keyloggers
         Regex(".*trojan.*", RegexOption.IGNORE_CASE),           // Trojan indicators
-        Regex(".*rat_.*", RegexOption.IGNORE_CASE),             // RAT (Remote Access Trojan)
-        Regex(".*\\.exe", RegexOption.IGNORE_CASE),             // Windows executables
-        Regex(".*\\.bat", RegexOption.IGNORE_CASE),             // Batch files
-        Regex(".*\\.cmd", RegexOption.IGNORE_CASE),             // Command files
-        Regex(".*\\.scr", RegexOption.IGNORE_CASE),             // Screen saver
-        Regex(".*\\.pif", RegexOption.IGNORE_CASE),             // Program Information File
-        Regex(".*\\.com", RegexOption.IGNORE_CASE),             // COM executable
-        Regex(".*\\.vbs", RegexOption.IGNORE_CASE),             // VBScript
-        Regex(".*\\.wsf", RegexOption.IGNORE_CASE),             // Windows Script File
-        Regex(".*\\.dll", RegexOption.IGNORE_CASE),             // Dynamic Link Library
+        Regex(".*rat_.*", RegexOption.IGNORE_CASE),             // RAT
         Regex(".*backdoor.*", RegexOption.IGNORE_CASE),         // Backdoor
         Regex(".*exploit.*", RegexOption.IGNORE_CASE),          // Exploits
         Regex(".*rootkit.*", RegexOption.IGNORE_CASE),          // Rootkits
         Regex(".*spyware.*", RegexOption.IGNORE_CASE),          // Spyware
         Regex(".*meterpreter.*", RegexOption.IGNORE_CASE),      // Metasploit payload
         Regex(".*reverse.*shell.*", RegexOption.IGNORE_CASE),   // Reverse shells
-        Regex(".*\\.(hta|ps1|psm1)", RegexOption.IGNORE_CASE),  // PowerShell/HTA
     )
 
     /** Suspicious APK locations (outside standard install paths) */
@@ -135,6 +130,21 @@ object SignatureScanner {
     }
 
     private fun checkFilenamePatterns(item: FileItem, results: MutableList<ThreatResult>) {
+        // D3-04: O(1) extension check replaces 12 regex matches
+        if (item.extension.lowercase() in SUSPICIOUS_EXTENSIONS) {
+            results.add(
+                ThreatResult(
+                    name = "Suspicious Filename",
+                    description = "File \"${item.name}\" has a suspicious extension (.${item.extension}).",
+                    severity = ThreatResult.Severity.MEDIUM,
+                    source = ThreatResult.ScannerSource.FILE_SIGNATURE,
+                    filePath = item.path,
+                    category = ThreatResult.ThreatCategory.SUSPICIOUS_FILE,
+                    action = ThreatResult.ThreatAction.QUARANTINE
+                )
+            )
+            return
+        }
         for (pattern in SUSPICIOUS_PATTERNS) {
             if (pattern.matches(item.name)) {
                 results.add(
@@ -174,7 +184,9 @@ object SignatureScanner {
     }
 
     private fun checkFileHashes(item: FileItem, results: MutableList<ThreatResult>) {
-        if (item.size !in 1..52_428_800) return // Skip empty and >50MB files
+        // D3-03: Limit hashing to files ≤5MB — the known malware DB has only 4 hashes,
+        // so hashing every file up to 50MB wastes enormous I/O for negligible detection gain.
+        if (item.size !in 1..5_242_880) return
 
         try {
             val file = File(item.path)

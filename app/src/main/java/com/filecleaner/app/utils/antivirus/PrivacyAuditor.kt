@@ -302,7 +302,7 @@ object PrivacyAuditor {
         val results = mutableListOf<ThreatResult>()
 
         try {
-            val usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as? UsageStatsManager
+            (context.getSystemService(Context.USAGE_STATS_SERVICE) as? UsageStatsManager)
                 ?: return results
 
             val pm = context.packageManager

@@ -1380,6 +1380,30 @@ Persistence paths:
 
 **Code Quality (P10)**: The codebase demonstrates strong engineering practices. BaseFileListFragment eliminates UI duplication, FileItemUtils centralizes shared adapter logic, the antivirus module follows single-responsibility with clean interfaces, and audit-trail comments provide traceability. The primary concern is MainViewModel being a god class at ~700 lines with 17+ responsibilities. The codebase has zero TODOs, zero console logs, and zero dead imports beyond three unused imports in NetworkSecurityScanner. Error handling is comprehensive but uniformly silent (catch-and-swallow pattern).
 
+### P5/P10 Fix Status
+
+| ID | Severity | Finding | Status |
+|---|---|---|---|
+| D3-03 | MEDIUM | SignatureScanner hashes every file < 50MB | FIXED (reduced to 5MB + size pre-filter) |
+| D6-02 | MEDIUM | ScanCache tree serialization duplicates file items | FIXED (tree stores structure only) |
+| D2-01 | MEDIUM | ScanCache loads entire JSON into single String | OPEN (streaming parser requires major refactor) |
+| D2-02 | MEDIUM | ArborescenceView recomputes full layout on setData() | OPEN (requires custom view optimization) |
+| D5-02 | MEDIUM | runBlocking in ViewModel.onCleared() | FIXED (§0/P1: CoroutineScope + NonCancellable) |
+| I3-04 | MEDIUM | ScanCache.save() failure silently eaten | OPEN (acceptable — non-critical) |
+| I5-01 | MEDIUM | MainViewModel god class (~700 lines) | OPEN (requires architectural refactor) |
+| D3-04 | LOW | 21 regex patterns per filename | FIXED (12 converted to O(1) Set lookup) |
+| D3-07 | LOW | StorageOptimizer.analyze() on main thread | FIXED (moved to Dispatchers.IO coroutine) |
+| D5-05 | LOW | DualPaneFragment.loadDirectory() on main thread | FIXED (moved to Dispatchers.IO coroutine) |
+| D5-06 | LOW | CloudBrowserFragment disconnect on cancelled scope | FIXED (NonCancellable scope) |
+| I1-01 | LOW | pruneTreeByPaths() dead code | FIXED (removed) |
+| I1-02 | LOW | Unused `usm` variable in PrivacyAuditor | FIXED (removed) |
+| I1-05/06/07 | LOW | Unused imports in NetworkSecurityScanner | FIXED (removed) |
+| I3-05 | LOW | hasCleartextInManifest parses binary XML as text | FIXED (uses PackageManager API) |
+| I4-01 | LOW | Duplicate formatTimestamp() in ScanHistoryManager | FIXED (deduplicated) |
+| I4-04 | LOW | Duplicate orphan pruning logic 5 times | FIXED (extracted pruneOrphanDuplicates helper) |
+
+**MEDIUM: 7 (3 FIXED, 4 OPEN)** | **LOW: 10 (10 FIXED)**
+
 ---
 
 ---

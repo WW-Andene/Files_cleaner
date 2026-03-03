@@ -44,6 +44,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     companion object {
         // D5: Debounce interval for cache writes after file operations
         private const val SAVE_CACHE_DEBOUNCE_MS = 3000L
+
+        /** I4-04: Remove orphan duplicate groups (groups with fewer than 2 members). */
+        private fun pruneOrphanDuplicates(dupes: List<FileItem>): List<FileItem> {
+            val validGroups = dupes.groupBy { it.duplicateGroup }
+                .filter { it.value.size >= 2 }.keys
+            return dupes.filter { it.duplicateGroup in validGroups }
+        }
     }
 
     // File manager needs broad storage access; MANAGE_EXTERNAL_STORAGE grants it
@@ -174,12 +181,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     // of re-running the full MD5 hash pipeline on cold start.  The cache
                     // preserves duplicateGroup assignments from the last scan, so we only
                     // need to filter and prune orphan groups (< 2 members).
-                    val dupes = files.filter { it.duplicateGroup >= 0 }
-                        .let { dups ->
-                            val validGroups = dups.groupBy { it.duplicateGroup }
-                                .filter { it.value.size >= 2 }.keys
-                            dups.filter { it.duplicateGroup in validGroups }
-                        }
+                    val dupes = pruneOrphanDuplicates(files.filter { it.duplicateGroup >= 0 })
                     _duplicates.postValue(dupes)
 
                     val minLargeFileMb = try { UserPreferences.largeFileThresholdMb } catch (_: Exception) { 50 }
@@ -372,14 +374,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _filesByCategory.postValue(remaining.groupBy { it.category })
 
                 // Filter deleted paths, then remove orphan groups (< 2 files remaining)
-                val filteredDupes = (_duplicates.value ?: emptyList())
-                    .filter { it.path !in deletedPaths }
-                    .let { dupes ->
-                        val validGroups = dupes.groupBy { it.duplicateGroup }
-                            .filter { it.value.size >= 2 }
-                            .keys
-                        dupes.filter { it.duplicateGroup in validGroups }
-                    }
+                val filteredDupes = pruneOrphanDuplicates(
+                    (_duplicates.value ?: emptyList()).filter { it.path !in deletedPaths }
+                )
                 val filteredLarge = (_largeFiles.value ?: emptyList())
                     .filter { it.path !in deletedPaths }
                 val filteredJunk = (_junkFiles.value ?: emptyList())
@@ -579,13 +576,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _filesByCategory.postValue(latestFiles.groupBy { it.category })
                 // D1: Incrementally update duplicate list by replacing old paths
                 val currentDupes = _duplicates.value ?: emptyList()
-                val dupes = currentDupes.filter { it.path !in renamedPaths }
-                    .plus(newItems.filter { it.duplicateGroup >= 0 })
-                    .let { dups ->
-                        val validGroups = dups.groupBy { it.duplicateGroup }
-                            .filter { it.value.size >= 2 }.keys
-                        dups.filter { it.duplicateGroup in validGroups }
-                    }
+                val dupes = pruneOrphanDuplicates(
+                    currentDupes.filter { it.path !in renamedPaths }
+                        .plus(newItems.filter { it.duplicateGroup >= 0 })
+                )
                 val large = JunkFinder.findLargeFiles(latestFiles)
                 val junk = JunkFinder.findJunk(latestFiles)
                 _duplicates.postValue(dupes)
@@ -651,22 +645,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 // path, preserving the duplicate group.  No file I/O required.
                 val currentDupes = _duplicates.value ?: emptyList()
                 val oldDupe = if (removedPath != null) currentDupes.find { it.path == removedPath } else null
-                val updatedDupes = currentDupes
-                    .filter { it.path != removedPath }
-                    .let { dupes ->
-                        val newItem = if (addedFile != null) files.find { it.path == addedFile.absolutePath } else null
-                        if (newItem != null && oldDupe != null) {
-                            dupes + newItem.copy(duplicateGroup = oldDupe.duplicateGroup)
-                        } else {
-                            dupes
+                val updatedDupes = pruneOrphanDuplicates(
+                    currentDupes
+                        .filter { it.path != removedPath }
+                        .let { dupes ->
+                            val newItem = if (addedFile != null) files.find { it.path == addedFile.absolutePath } else null
+                            if (newItem != null && oldDupe != null) {
+                                dupes + newItem.copy(duplicateGroup = oldDupe.duplicateGroup)
+                            } else {
+                                dupes
+                            }
                         }
-                    }
-                    .let { dupes ->
-                        // Prune groups with < 2 members
-                        val validGroups = dupes.groupBy { it.duplicateGroup }
-                            .filter { it.value.size >= 2 }.keys
-                        dupes.filter { it.duplicateGroup in validGroups }
-                    }
+                )
 
                 val large = JunkFinder.findLargeFiles(files)
                 val junk = JunkFinder.findJunk(files)

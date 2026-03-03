@@ -28,7 +28,9 @@ import com.filecleaner.app.databinding.FragmentCloudBrowserBinding
 import com.filecleaner.app.ui.dualpane.PaneAdapter
 import com.filecleaner.app.utils.UndoHelper
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -382,7 +384,8 @@ class CloudBrowserFragment : Fragment() {
     override fun onDestroyView() {
         // Disconnect cloud provider to prevent leaking network connections
         currentProvider?.let { provider ->
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            // D5-06: Use NonCancellable scope — viewLifecycleOwner scope is cancelled during onDestroyView
+            CoroutineScope(Dispatchers.IO + NonCancellable).launch {
                 try { provider.disconnect() } catch (_: Exception) {}
             }
         }

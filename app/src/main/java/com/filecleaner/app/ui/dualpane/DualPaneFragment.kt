@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,9 @@ import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -171,35 +175,40 @@ class DualPaneFragment : Fragment() {
         val dir = File(path)
         if (!dir.isDirectory) return
 
-        val showHidden = try { UserPreferences.showHiddenFiles } catch (_: Exception) { false }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val showHidden = try { UserPreferences.showHiddenFiles } catch (_: Exception) { false }
 
-        val files = (dir.listFiles() ?: emptyArray())
-            .filter { showHidden || !it.isHidden }
-            .sortedWith(compareBy<File> { !it.isDirectory }.thenBy { it.name.lowercase() })
-            .map { file ->
-                PaneAdapter.PaneItem(
-                    file = file,
-                    isDirectory = file.isDirectory,
-                    name = file.name,
-                    size = if (file.isFile) file.length() else 0L,
-                    lastModified = file.lastModified()
-                )
+            // D5-05: Move file I/O off the main thread
+            val files = withContext(Dispatchers.IO) {
+                (dir.listFiles() ?: emptyArray())
+                    .filter { showHidden || !it.isHidden }
+                    .sortedWith(compareBy<File> { !it.isDirectory }.thenBy { it.name.lowercase() })
+                    .map { file ->
+                        PaneAdapter.PaneItem(
+                            file = file,
+                            isDirectory = file.isDirectory,
+                            name = file.name,
+                            size = if (file.isFile) file.length() else 0L,
+                            lastModified = file.lastModified()
+                        )
+                    }
             }
 
-        val adapter = if (pane == Pane.LEFT) leftAdapter else rightAdapter
-        val pathLabel = if (pane == Pane.LEFT) binding.tvPathLeft else binding.tvPathRight
-        val countLabel = if (pane == Pane.LEFT) binding.tvCountLeft else binding.tvCountRight
+            val adapter = if (pane == Pane.LEFT) leftAdapter else rightAdapter
+            val pathLabel = if (pane == Pane.LEFT) binding.tvPathLeft else binding.tvPathRight
+            val countLabel = if (pane == Pane.LEFT) binding.tvCountLeft else binding.tvCountRight
 
-        adapter.submitList(files)
+            adapter.submitList(files)
 
-        val relative = path.removePrefix(storagePath)
-        pathLabel.text = if (relative.isEmpty()) "/" else relative
+            val relative = path.removePrefix(storagePath)
+            pathLabel.text = if (relative.isEmpty()) "/" else relative
 
-        val dirCount = files.count { it.isDirectory }
-        val fileCount = files.count { !it.isDirectory }
-        countLabel.text = getString(R.string.dual_pane_count, dirCount, fileCount)
+            val dirCount = files.count { it.isDirectory }
+            val fileCount = files.count { !it.isDirectory }
+            countLabel.text = getString(R.string.dual_pane_count, dirCount, fileCount)
 
-        if (pane == Pane.LEFT) leftPath = path else rightPath = path
+            if (pane == Pane.LEFT) leftPath = path else rightPath = path
+        }
     }
 
     private fun showFileContextMenu(item: PaneAdapter.PaneItem, anchor: View, pane: Pane) {

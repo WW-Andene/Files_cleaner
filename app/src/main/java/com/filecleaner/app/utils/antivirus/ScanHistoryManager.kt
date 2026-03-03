@@ -128,7 +128,7 @@ object ScanHistoryManager {
             .apply()
     }
 
-    private fun formatTimestamp(ts: Long): String {
+    internal fun formatTimestamp(ts: Long): String {
         val now = System.currentTimeMillis()
         val diff = now - ts
 
@@ -151,18 +151,6 @@ object ScanHistoryManager {
         val low: Int,
         val info: Int
     ) {
-        val formattedTime: String get() = formatTimestamp(timestamp)
-
-        private fun formatTimestamp(ts: Long): String {
-            val now = System.currentTimeMillis()
-            val diff = now - ts
-            return when {
-                diff < 60_000 -> "Just now"
-                diff < 3_600_000 -> "${diff / 60_000}m ago"
-                diff < 86_400_000 -> "${diff / 3_600_000}h ago"
-                diff < 172_800_000 -> "Yesterday"
-                else -> SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(ts))
-            }
-        }
+        val formattedTime: String get() = ScanHistoryManager.formatTimestamp(timestamp)
     }
 }

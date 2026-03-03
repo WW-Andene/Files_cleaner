@@ -93,28 +93,6 @@ object ScanCache {
             }
         }
 
-    /**
-     * Recursively prune files from the tree that are NOT in [validPaths].
-     * Uses the pre-validated path set from the flat file list, avoiding
-     * redundant File.exists() disk checks for every tree entry.
-     */
-    private fun pruneTreeByPaths(node: DirectoryNode, validPaths: Set<String>): DirectoryNode {
-        val validFiles = node.files.filter { it.path in validPaths }
-        val prunedChildren = node.children.map { pruneTreeByPaths(it, validPaths) }
-
-        val ownFileSize = validFiles.sumOf { it.size }
-        val ownFileCount = validFiles.size
-        val totalSize = ownFileSize + prunedChildren.sumOf { it.totalSize }
-        val totalFileCount = ownFileCount + prunedChildren.sumOf { it.totalFileCount }
-
-        return node.copy(
-            files = validFiles,
-            children = prunedChildren,
-            totalSize = totalSize,
-            totalFileCount = totalFileCount
-        )
-    }
-
     private fun fileItemToJson(item: FileItem): JSONObject = JSONObject().apply {
         put("path", item.path)
         put("name", item.name)
@@ -137,18 +115,14 @@ object ScanCache {
         duplicateGroup = json.optInt("duplicateGroup", -1)
     )
 
+    // D6-02: Only serialize structural data in tree nodes.
+    // File items are already in the flat "files" array — no need to duplicate them.
     private fun directoryNodeToJson(node: DirectoryNode): JSONObject = JSONObject().apply {
         put("path", node.path)
         put("name", node.name)
         put("totalSize", node.totalSize)
         put("totalFileCount", node.totalFileCount)
         put("depth", node.depth)
-
-        val filesArray = JSONArray()
-        for (file in node.files) {
-            filesArray.put(fileItemToJson(file))
-        }
-        put("files", filesArray)
 
         val childrenArray = JSONArray()
         for (child in node.children) {
@@ -158,11 +132,8 @@ object ScanCache {
     }
 
     private fun jsonToDirectoryNode(json: JSONObject, depth: Int): DirectoryNode {
-        val filesArray = json.getJSONArray("files")
-        val files = mutableListOf<FileItem>()
-        for (i in 0 until filesArray.length()) {
-            files.add(jsonToFileItem(filesArray.getJSONObject(i)))
-        }
+        // D6-02: File items are loaded from the flat list, not from tree nodes
+        val files = emptyList<FileItem>()
 
         // C3: Stop recursion beyond MAX_TREE_DEPTH to prevent stack overflow
         val children = if (depth < MAX_TREE_DEPTH) {

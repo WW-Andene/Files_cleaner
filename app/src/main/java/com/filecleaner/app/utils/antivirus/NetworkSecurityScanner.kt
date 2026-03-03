@@ -5,12 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.File
-import java.io.StringReader
-import java.net.ServerSocket
-import java.util.zip.ZipFile
 
 /**
  * Network security scanner.
@@ -70,7 +65,7 @@ object NetworkSecurityScanner {
             onProgress(0)
 
             // 1. Check for apps with cleartext traffic enabled
-            results.addAll(checkCleartextTraffic(pm))
+            results.addAll(checkCleartextTraffic(pm, context))
             onProgress(20)
 
             // 2. Check for INTERNET + sensitive data exfiltration risk
@@ -97,7 +92,7 @@ object NetworkSecurityScanner {
         }
 
     @Suppress("DEPRECATION")
-    private fun checkCleartextTraffic(pm: PackageManager): List<ThreatResult> {
+    private fun checkCleartextTraffic(pm: PackageManager, context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
         val packages = pm.getInstalledPackages(0)
 
@@ -121,10 +116,9 @@ object NetworkSecurityScanner {
                 )
             }
 
-            // Check for explicit usesCleartextTraffic in the manifest via networkSecurityConfig
+            // Check for explicit usesCleartextTraffic in the manifest via PackageManager
             try {
-                val sourceDir = appInfo.sourceDir ?: continue
-                if (hasCleartextInManifest(sourceDir)) {
+                if (hasCleartextInManifest(pkg.packageName, context)) {
                     val appName = pm.getApplicationLabel(appInfo).toString()
                     results.add(
                         ThreatResult(
@@ -145,16 +139,15 @@ object NetworkSecurityScanner {
         return results
     }
 
-    private fun hasCleartextInManifest(apkPath: String): Boolean {
+    private fun hasCleartextInManifest(packageName: String, context: Context): Boolean {
+        // I3-05: Use PackageManager instead of parsing binary XML as text
         return try {
-            ZipFile(File(apkPath)).use { zip ->
-                val entry = zip.getEntry("AndroidManifest.xml") ?: return false
-                // Binary XML - we check the attribute in compiled form
-                // usesCleartextTraffic is attribute 0x01010506
-                val bytes = zip.getInputStream(entry).use { it.readBytes() }
-                // Simple heuristic: search for the string "usesCleartextTraffic" in string pool
-                val manifest = String(bytes, Charsets.UTF_8)
-                manifest.contains("usesCleartextTraffic", ignoreCase = true)
+            val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+            // FLAG_USES_CLEARTEXT_TRAFFIC is set when android:usesCleartextTraffic="true"
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                appInfo.flags and ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0
+            } else {
+                false // Pre-M defaults to allowing cleartext
             }
         } catch (_: Exception) {
             false

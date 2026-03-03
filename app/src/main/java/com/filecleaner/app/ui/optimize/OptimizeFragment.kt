@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,9 @@ import com.filecleaner.app.databinding.FragmentOptimizeBinding
 import com.filecleaner.app.utils.StorageOptimizer
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class OptimizeFragment : Fragment() {
@@ -42,25 +46,30 @@ class OptimizeFragment : Fragment() {
 
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
-        // Gather all files from scan
+        // D3-07: Run analysis off the main thread to prevent jank
         val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
-        suggestions = StorageOptimizer.analyze(allFiles, storagePath)
-
-        if (suggestions.isEmpty()) {
-            binding.tvEmpty.visibility = View.VISIBLE
-            binding.recyclerSuggestions.visibility = View.GONE
-            binding.btnApply.isEnabled = false
-        } else {
-            binding.tvEmpty.visibility = View.GONE
-            binding.recyclerSuggestions.visibility = View.VISIBLE
-        }
-
-        binding.tvSummary.text = resources.getQuantityString(
-            R.plurals.optimize_summary, suggestions.size, suggestions.size
-        )
-
         binding.recyclerSuggestions.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerSuggestions.adapter = SuggestionAdapter(suggestions, storagePath)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            suggestions = withContext(Dispatchers.IO) {
+                StorageOptimizer.analyze(allFiles, storagePath)
+            }
+
+            if (suggestions.isEmpty()) {
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.recyclerSuggestions.visibility = View.GONE
+                binding.btnApply.isEnabled = false
+            } else {
+                binding.tvEmpty.visibility = View.GONE
+                binding.recyclerSuggestions.visibility = View.VISIBLE
+            }
+
+            binding.tvSummary.text = resources.getQuantityString(
+                R.plurals.optimize_summary, suggestions.size, suggestions.size
+            )
+
+            binding.recyclerSuggestions.adapter = SuggestionAdapter(suggestions, storagePath)
+        }
 
         binding.btnApply.setOnClickListener { confirmApply() }
 
