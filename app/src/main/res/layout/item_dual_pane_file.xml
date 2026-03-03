@@ -8,7 +8,7 @@
     android:paddingHorizontal="@dimen/spacing_sm"
     android:paddingVertical="@dimen/spacing_xs"
     android:background="?attr/selectableItemBackground"
-    android:minHeight="44dp">
+    android:minHeight="48dp">
 
     <CheckBox
         android:id="@+id/cb_select"

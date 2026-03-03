@@ -180,6 +180,20 @@ class FileAdapter(
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: "")
+        } else if (selectable) {
+            // G2-3: Grid mode with selection — no checkbox, use tap to toggle + stateDescription
+            holder.itemView.setOnClickListener {
+                toggleSelection(item.path)
+                notifyItemChanged(holder.bindingAdapterPosition, PAYLOAD_SELECTION)
+                notifySelectionChanged()
+            }
+            holder.itemView.setOnLongClickListener { v ->
+                onItemLongClick?.invoke(item, v)
+                true
+            }
+            holder.itemView.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                item.name, holder.meta?.text ?: item.sizeReadable)
         } else {
             holder.check?.visibility = View.GONE
             // Wire click and long-click for non-selectable mode

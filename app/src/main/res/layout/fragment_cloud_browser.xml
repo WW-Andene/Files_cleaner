@@ -68,6 +68,7 @@
             android:layout_height="@dimen/button_height_sm"
             android:background="@drawable/bg_spinner"
             android:popupBackground="@drawable/bg_spinner_dropdown"
+            android:contentDescription="@string/a11y_connection_selector"
             android:paddingHorizontal="@dimen/spacing_md" />
 
         <ImageButton

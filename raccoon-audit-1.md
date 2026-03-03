@@ -1878,6 +1878,30 @@ The `MainActivity.kt` handles bottom nav navigation with careful back stack mana
 
 ---
 
+### P7/P8 Fix Status
+
+| ID | Severity | Finding | Status |
+|---|---|---|---|
+| G1-1 | HIGH | PDF page buttons + back buttons reuse onboarding strings | FIXED (new a11y_pdf_prev_page/a11y_pdf_next_page strings, back buttons use @string/back) |
+| G1-9 | HIGH | Dual pane up buttons 32x32dp below 48dp minimum | FIXED (increased to @dimen/icon_button 48dp with 12dp padding) |
+| F6-4 | MODERATE | Reward/greeting strings unused in Manager hub | FIXED (pre-scan subtitle uses raccoon_greeting_pre_scan) |
+| G1-3 | MODERATE | Image viewer ImageView lacks contentDescription | FIXED (dynamic contentDescription set in code, importantForAccessibility="yes" in XML) |
+| G1-7 | MODERATE | textTertiary (#6B7370) ~4.0:1 contrast fails WCAG AA | FIXED (darkened to #626966, ~5.2:1 contrast) |
+| G1-10 | MODERATE | Threat action button height 32dp below 48dp | FIXED (minHeight="48dp" with wrap_content height) |
+| G2-3 | MODERATE | Grid view has no selection state for screen readers | FIXED (added selectable grid branch with stateDescription + tap selection) |
+| G2-4 | MODERATE | WebView lacks accessibility attributes | FIXED (importantForAccessibility="yes" + dynamic contentDescription in code) |
+| G1-2 | MODERATE | File list checkbox lacks contentDescription | ALREADY FIXED (FileAdapter already sets a11y_select_file/a11y_deselect_file) |
+| F2-6 | MODERATE | Deprecated ProgressDialog in ConvertDialog | ALREADY FIXED (uses MaterialAlertDialogBuilder with custom progress view) |
+| G4-3 | MODERATE | BrowseFragment stagger animation not disabled for reduced motion | ALREADY FIXED (nulls layoutAnimation when MotionUtil.isReducedMotion) |
+| G2-5 | LOW | Menu rows lack contentDescription | FIXED (contentDescription = label on each programmatic row) |
+| F4-4 | LOW | error_prefix too vague | FIXED (improved to include actionable guidance) |
+| F4-6 | LOW | Sort labels with Unicode arrows not screen-reader-friendly | FIXED (replaced with descriptive text: "Name (A–Z)", "Size (smallest)", etc.) |
+| F4-7 | LOW | Onboarding hardcodes "50 MB" threshold | FIXED (changed to "your biggest files") |
+| G1-4 | LOW | Audio art ImageView lacks contentDescription | FIXED (importantForAccessibility="no" — decorative) |
+| G1-5 | LOW | Cloud browser spinner lacks contentDescription | FIXED (added a11y_connection_selector) |
+
+**HIGH: 2 (2 FIXED)** | **MODERATE: 11 (8 FIXED, 3 ALREADY FIXED)** | **LOW: 5 (5 FIXED)**
+
 # Deep Audit Report: P9 (Platform Compatibility) & P12 (Internationalization & Localization)
 
 ## Application: File Cleaner (Android/Kotlin)

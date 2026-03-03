@@ -18,7 +18,7 @@
     <string name="scanning_phase_duplicates">Finding duplicates\u2026 %d files</string>
     <string name="scanning_phase_analyzing">Analyzing sizes\u2026 %d files</string>
     <string name="scanning_phase_junk">Detecting junk\u2026 %d files</string>
-    <string name="error_prefix">Something went wrong: %s</string>
+    <string name="error_prefix">Error: %s. Check permissions and try again.</string>
     <string name="error_scan_failed">Scan failed. Check storage permissions and try again.</string>
 
     <!-- Actions -->
@@ -86,12 +86,12 @@
     <string name="empty_duplicates_post_scan">No duplicate files found. Everything is unique!</string>
 
     <!-- Sort options -->
-    <string name="sort_name_asc">Name \u2191</string>
-    <string name="sort_name_desc">Name \u2193</string>
-    <string name="sort_size_asc">Size \u2191</string>
-    <string name="sort_size_desc">Size \u2193</string>
-    <string name="sort_date_asc">Date \u2191</string>
-    <string name="sort_date_desc">Date \u2193</string>
+    <string name="sort_name_asc">Name (A\u2013Z)</string>
+    <string name="sort_name_desc">Name (Z\u2013A)</string>
+    <string name="sort_size_asc">Size (smallest)</string>
+    <string name="sort_size_desc">Size (largest)</string>
+    <string name="sort_date_asc">Date (oldest)</string>
+    <string name="sort_date_desc">Date (newest)</string>
 
     <!-- Screen titles -->
     <string name="title_junk">Junk Files</string>
@@ -141,6 +141,12 @@
     <string name="a11y_raccoon_bubble">Open Tree View \u2014 tap to visualize your file structure</string>
     <string name="a11y_node_expanded">%1$s expanded, %2$d sub-folders</string>
     <string name="a11y_node_collapsed">%s collapsed</string>
+    <string name="a11y_pdf_prev_page">Previous page</string>
+    <string name="a11y_pdf_next_page">Next page</string>
+    <string name="a11y_image_preview">Image preview of %s</string>
+    <string name="a11y_album_art">Album art</string>
+    <string name="a11y_connection_selector">Select connection</string>
+    <string name="a11y_webview_content">Document content for %s</string>
 
     <!-- Arborescence -->
     <string name="open_arborescence">Open Tree View</string>
@@ -344,7 +350,7 @@
     <string name="onboarding_title_1">Welcome to Raccoon</string>
     <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
-    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 scan, clean, and manage\n\u2022 Large Files \u2014 files over 50 MB\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 scan, clean, and manage\n\u2022 Large Files \u2014 your biggest files\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
     <!-- Dashboard (P2) -->
     <string name="dashboard_title">Storage Dashboard</string>
     <string name="dashboard_storage_title">Device Storage</string>

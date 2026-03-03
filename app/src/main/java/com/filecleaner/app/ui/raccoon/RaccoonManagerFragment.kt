@@ -152,7 +152,7 @@ class RaccoonManagerFragment : Fragment() {
                     ScanPhase.ANALYZING -> getString(R.string.scanning_phase_analyzing, state.filesFound)
                     ScanPhase.JUNK -> getString(R.string.scanning_phase_junk, state.filesFound)
                 }
-                else -> getString(R.string.raccoon_manager_subtitle)
+                else -> getString(R.string.raccoon_greeting_pre_scan)
             }
             // F5: Dim cards that require scan data when none is available; full opacity when scanning or done
             val alpha = if (hasData || isScanning) 1.0f else 0.5f

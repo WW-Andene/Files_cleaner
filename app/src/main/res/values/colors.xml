@@ -28,7 +28,7 @@
     <!-- Text hierarchy (chromatic, not pure gray) -->
     <color name="textPrimary">#1C1E1C</color>
     <color name="textSecondary">#515854</color>
-    <color name="textTertiary">#6B7370</color>
+    <color name="textTertiary">#626966</color>
     <color name="textOnPrimary">#FFFFFF</color>
     <color name="textDisabled">#B0B5B2</color>
 

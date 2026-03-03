@@ -119,6 +119,7 @@ object FileContextMenu {
                 setBackgroundResource(outValue.resourceId)
                 isClickable = true
                 isFocusable = true
+                contentDescription = label
                 setOnClickListener {
                     dialog.dismiss()
                     action()
@@ -312,6 +313,7 @@ object FileContextMenu {
             setBackgroundResource(outValue.resourceId)
             isClickable = true
             isFocusable = true
+            contentDescription = context.getString(R.string.ctx_delete)
             setOnClickListener {
                 dialog.dismiss()
                 val undoSec = try { UserPreferences.undoTimeoutMs / 1000 } catch (_: Exception) { 8 }

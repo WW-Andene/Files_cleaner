@@ -151,6 +151,7 @@ class FileViewerFragment : Fragment() {
         Glide.with(this)
             .load(file)
             .into(binding.ivImage)
+        binding.ivImage.contentDescription = getString(R.string.a11y_image_preview, file.name)
     }
 
     private fun showPdf(file: File, savedInstanceState: Bundle?) {
@@ -311,6 +312,7 @@ class FileViewerFragment : Fragment() {
             layoutAlgorithm = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
         }
         binding.webView.loadUrl("file://${file.absolutePath}")
+        binding.webView.contentDescription = getString(R.string.a11y_webview_content, file.name)
     }
 
     private fun showMarkdown(file: File) {
@@ -431,6 +433,7 @@ class FileViewerFragment : Fragment() {
             "UTF-8",
             null
         )
+        binding.webView.contentDescription = getString(R.string.a11y_webview_content, file.name)
     }
 
     private fun showArchiveContents(file: File) {
@@ -462,6 +465,7 @@ class FileViewerFragment : Fragment() {
         Glide.with(this)
             .load(file)
             .into(binding.ivImage)
+        binding.ivImage.contentDescription = getString(R.string.a11y_image_preview, file.name)
         binding.ivImage.setOnClickListener { FileOpener.open(requireContext(), file) }
     }
 
