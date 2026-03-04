@@ -184,19 +184,22 @@ class AntivirusFragment : Fragment() {
     }
 
     private fun startShieldPulse() {
+        _binding?.ivShield?.let {
+            it.setColorFilter(ContextCompat.getColor(it.context, R.color.colorAccent))
+        }
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
+            return
+        }
         pulseAnimation = ScaleAnimation(
             1f, 1.1f, 1f, 1.1f,
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f
         ).apply {
-            duration = 600
+            duration = resources.getInteger(R.integer.motion_emphasis).toLong()
             repeatCount = Animation.INFINITE
             repeatMode = Animation.REVERSE
         }
         _binding?.ivShield?.startAnimation(pulseAnimation)
-        _binding?.ivShield?.let {
-            it.setColorFilter(ContextCompat.getColor(it.context, R.color.colorAccent))
-        }
     }
 
     private fun stopShieldPulse() {
