@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textSecondary"
                 android:layout_marginTop="@dimen/spacing_xs" />
 
             <TextView

@@ -301,5 +301,37 @@
             android:textColor="@color/textTertiary"
             android:textStyle="italic" />
 
+        <!-- Data Management section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_data_section"
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginBottom="@dimen/spacing_md" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_clear_data_desc"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:layout_marginBottom="@dimen/spacing_lg" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_clear_data"
+            style="@style/Widget.FileCleaner.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:text="@string/settings_clear_data"
+            android:textColor="@color/colorError"
+            android:textAllCaps="false"
+            app:strokeColor="@color/colorError"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="@color/colorError"
+            app:iconGravity="textStart"
+            app:cornerRadius="@dimen/radius_btn"
+            android:layout_marginBottom="@dimen/spacing_xl" />
+
     </LinearLayout>
 </ScrollView>

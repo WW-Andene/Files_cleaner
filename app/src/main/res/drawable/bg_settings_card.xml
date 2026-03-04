@@ -7,8 +7,8 @@
         android:color="@color/borderSubtle" />
     <corners android:radius="@dimen/radius_card" />
     <padding
-        android:left="16dp"
-        android:top="16dp"
-        android:right="16dp"
-        android:bottom="16dp" />
+        android:left="@dimen/spacing_lg"
+        android:top="@dimen/spacing_lg"
+        android:right="@dimen/spacing_lg"
+        android:bottom="@dimen/spacing_lg" />
 </shape>

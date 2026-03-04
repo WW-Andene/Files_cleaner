@@ -449,12 +449,12 @@
                     android:text="@string/delete"
                     android:textAllCaps="false"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                    android:textColor="@color/sizeHuge"
+                    android:textColor="@color/colorError"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     app:icon="@drawable/ic_delete"
                     app:iconSize="@dimen/icon_small"
-                    app:iconTint="@color/sizeHuge" />
+                    app:iconTint="@color/colorError" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

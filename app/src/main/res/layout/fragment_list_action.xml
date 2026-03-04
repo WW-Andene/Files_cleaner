@@ -321,6 +321,7 @@
     <!-- Action button — not full-width for better visual proportion (§DBI3 #10) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_action"
+        style="@style/Widget.FileCleaner.Button.Destructive"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_gravity="center_horizontal"
@@ -329,11 +330,7 @@
         android:minWidth="@dimen/button_min_width"
         android:paddingHorizontal="@dimen/spacing_3xl"
         android:text="@string/delete_selected"
-        android:backgroundTint="@color/colorError"
-        android:textColor="@color/textOnPrimary"
         android:enabled="false"
-        app:cornerRadius="@dimen/radius_btn"
-        android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium" />
 
 </LinearLayout>

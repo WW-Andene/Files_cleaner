@@ -779,6 +779,7 @@
     </plurals>
 
     <!-- Clear All Data (P3 Security) -->
+    <string name="settings_data_section">Data Management</string>
     <string name="settings_clear_data">Clear All Data</string>
     <string name="settings_clear_data_desc">Remove scan cache, cloud connections, preferences, and scan history</string>
     <string name="settings_clear_data_confirm_title">Clear All Data?</string>

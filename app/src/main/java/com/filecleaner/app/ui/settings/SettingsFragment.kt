@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.filecleaner.app.R
@@ -133,33 +132,16 @@ class SettingsFragment : Fragment() {
         binding.tvSettingsNote.text = getString(R.string.settings_rescan_note)
 
         // Clear All Data (P3 Security: GDPR data erasure)
-        // Avoid duplicate button on configuration change by checking for existing tagged button
-        if (binding.settingsContainer.findViewWithTag<View>(TAG_CLEAR_BUTTON) == null) {
-            val clearButton = com.google.android.material.button.MaterialButton(requireContext()).apply {
-                tag = TAG_CLEAR_BUTTON
-                text = getString(R.string.settings_clear_data)
-                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorError))
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.textOnPrimary))
-                val lp = android.widget.LinearLayout.LayoutParams(
-                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                val margin = resources.getDimensionPixelSize(R.dimen.spacing_lg)
-                lp.setMargins(margin, margin * 2, margin, margin)
-                layoutParams = lp
-            }
-            clearButton.setOnClickListener {
-                val ctx = context ?: return@setOnClickListener
-                MaterialAlertDialogBuilder(ctx)
-                    .setTitle(getString(R.string.settings_clear_data_confirm_title))
-                    .setMessage(getString(R.string.settings_clear_data_confirm_message))
-                    .setPositiveButton(getString(R.string.delete)) { _, _ ->
-                        clearAllData()
-                    }
-                    .setNegativeButton(getString(R.string.cancel), null)
-                    .show()
-            }
-            binding.settingsContainer.addView(clearButton)
+        binding.btnClearData.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener
+            MaterialAlertDialogBuilder(ctx)
+                .setTitle(getString(R.string.settings_clear_data_confirm_title))
+                .setMessage(getString(R.string.settings_clear_data_confirm_message))
+                .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                    clearAllData()
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
         }
     }
 
@@ -189,10 +171,6 @@ class SettingsFragment : Fragment() {
         } else {
             binding.tvCrashPending.visibility = View.GONE
         }
-    }
-
-    companion object {
-        private const val TAG_CLEAR_BUTTON = "clear_all_data_button"
     }
 
     private fun clearAllData() {
