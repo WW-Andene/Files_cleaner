@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §DM5: FAB entrance — scale up from center with slight overshoot, uses motion_enter vocabulary -->
+<!-- §DM5: FAB entrance — scale up from center with gentle overshoot, uses motion_enter vocabulary.
+     Uses custom overshoot_gentle for "considerate utility" character instead of system overshoot. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@android:anim/overshoot_interpolator">
+    android:interpolator="@interpolator/overshoot_gentle">
 
     <scale
         android:fromXScale="0.0"
@@ -15,5 +16,5 @@
     <alpha
         android:fromAlpha="0.0"
         android:toAlpha="1.0"
-        android:duration="@integer/motion_enter" />
+        android:duration="@integer/motion_micro" />
 </set>

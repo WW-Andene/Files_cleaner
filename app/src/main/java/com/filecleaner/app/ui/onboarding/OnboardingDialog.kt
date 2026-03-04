@@ -1,6 +1,7 @@
 package com.filecleaner.app.ui.onboarding
 
 import android.content.Context
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -50,6 +51,9 @@ object OnboardingDialog {
             text = context.getString(R.string.onboarding_step, step + 1, steps.size)
             setTextAppearance(R.style.TextAppearance_FileCleaner_BodySmall)
             setTextColor(context.getColor(R.color.textTertiary))
+            // §G1: Announce step changes to TalkBack
+            contentDescription = context.getString(R.string.a11y_onboarding_step, step + 1, steps.size)
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         }
         container.addView(stepIndicator)
 
@@ -59,8 +63,16 @@ object OnboardingDialog {
             2 -> R.drawable.ic_scan
             else -> R.drawable.ic_raccoon_logo
         }
+        // §G1: Descriptive contentDescription for each onboarding icon
+        val iconDesc = when (step) {
+            0 -> context.getString(R.string.a11y_onboarding_icon_welcome)
+            1 -> context.getString(R.string.a11y_onboarding_icon_browse)
+            2 -> context.getString(R.string.a11y_onboarding_icon_scan)
+            else -> context.getString(R.string.a11y_onboarding_icon_welcome)
+        }
         val iconView = android.widget.ImageView(context).apply {
             setImageResource(iconRes)
+            contentDescription = iconDesc
             val size = (64 * context.resources.displayMetrics.density).toInt()
             layoutParams = LinearLayout.LayoutParams(size, size).apply {
                 gravity = android.view.Gravity.CENTER_HORIZONTAL

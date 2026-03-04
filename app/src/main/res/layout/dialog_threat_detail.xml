@@ -5,21 +5,25 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/surfaceColor"
-    android:padding="@dimen/spacing_lg">
+    android:paddingHorizontal="@dimen/spacing_xxl"
+    android:paddingTop="@dimen/spacing_xxl"
+    android:paddingBottom="@dimen/spacing_xxl">
 
     <!-- Header with severity -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/touch_target_min">
 
         <View
             android:id="@+id/severity_dot"
             android:layout_width="@dimen/icon_severity_dot"
             android:layout_height="@dimen/icon_severity_dot"
             android:background="@drawable/bg_icon_circle"
-            android:importantForAccessibility="no" />
+            android:importantForAccessibility="no"
+            android:contentDescription="@string/a11y_severity_indicator" />
 
         <TextView
             android:id="@+id/tv_severity"
@@ -31,7 +35,8 @@
         <View
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="0dp" />
+            android:layout_height="0dp"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:id="@+id/tv_source"
@@ -48,7 +53,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
         android:textColor="@color/textPrimary"
-        android:layout_marginTop="@dimen/spacing_md" />
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:accessibilityHeading="true" />
 
     <!-- Description -->
     <TextView
@@ -57,7 +63,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.FileCleaner.Body"
         android:textColor="@color/textSecondary"
-        android:layout_marginTop="@dimen/spacing_sm" />
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:lineSpacingExtra="@dimen/spacing_xs" />
 
     <!-- File path (if applicable) -->
     <LinearLayout
@@ -65,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="@dimen/spacing_md"
+        android:layout_marginTop="@dimen/spacing_lg"
         android:visibility="gone">
 
         <TextView
@@ -82,7 +89,7 @@
             android:textAppearance="@style/TextAppearance.FileCleaner.Mono"
             android:textColor="@color/textSecondary"
             android:textIsSelectable="true"
-            android:layout_marginTop="@dimen/spacing_micro" />
+            android:layout_marginTop="@dimen/spacing_xs" />
     </LinearLayout>
 
     <!-- Package name (if applicable) -->
@@ -91,7 +98,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/spacing_md"
         android:visibility="gone">
 
         <TextView
@@ -108,7 +115,7 @@
             android:textAppearance="@style/TextAppearance.FileCleaner.Mono"
             android:textColor="@color/textSecondary"
             android:textIsSelectable="true"
-            android:layout_marginTop="@dimen/spacing_micro" />
+            android:layout_marginTop="@dimen/spacing_xs" />
     </LinearLayout>
 
     <!-- Category -->
@@ -117,7 +124,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="@dimen/spacing_sm">
+        android:layout_marginTop="@dimen/spacing_md">
 
         <TextView
             android:layout_width="wrap_content"
@@ -132,7 +139,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textSecondary"
-            android:layout_marginTop="@dimen/spacing_micro" />
+            android:layout_marginTop="@dimen/spacing_xs" />
     </LinearLayout>
 
     <!-- Action buttons -->
@@ -142,26 +149,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:layout_marginTop="@dimen/spacing_lg">
+        android:layout_marginTop="@dimen/spacing_xxl">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_dismiss"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_height_sm"
+            android:layout_height="@dimen/button_height"
             android:text="@string/av_dismiss"
             android:textAllCaps="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:minWidth="@dimen/touch_target_min"
+            android:minHeight="@dimen/touch_target_min"
             style="@style/Widget.FileCleaner.Button.Text"
             android:textColor="@color/textSecondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_action"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_height_sm"
+            android:layout_height="@dimen/button_height"
             android:textAllCaps="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:minWidth="@dimen/touch_target_min"
+            android:minHeight="@dimen/touch_target_min"
             style="@style/Widget.FileCleaner.Button.Destructive"
             android:layout_marginStart="@dimen/spacing_sm"
             android:visibility="gone"

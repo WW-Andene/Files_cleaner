@@ -32,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_lg"
                 android:layout_marginTop="@dimen/spacing_md"
+                android:contentDescription="@string/a11y_storage_overview_card"
                 app:cardCornerRadius="@dimen/radius_header"
                 app:cardElevation="@dimen/elevation_raised"
                 app:cardBackgroundColor="@color/colorPrimaryContainer"
@@ -56,20 +57,25 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_sm"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
-                        android:textColor="@color/colorOnPrimaryContainer" />
+                        android:textColor="@color/colorOnPrimaryContainer"
+                        android:accessibilityLiveRegion="polite" />
 
                     <!-- Storage bar -->
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/spacing_md"
                         android:layout_marginTop="@dimen/spacing_md"
-                        android:background="@drawable/bg_storage_bar_track">
+                        android:background="@drawable/bg_storage_bar_track"
+                        android:contentDescription="@string/a11y_storage_bar"
+                        android:importantForAccessibility="yes"
+                        android:accessibilityLiveRegion="polite">
 
                         <View
                             android:id="@+id/view_storage_bar_fill"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/bg_storage_bar_fill" />
+                            android:background="@drawable/bg_storage_bar_fill"
+                            android:importantForAccessibility="no" />
                     </FrameLayout>
 
                     <!-- Segmented color bar showing per-category usage -->
@@ -81,7 +87,9 @@
                         android:orientation="horizontal"
                         android:background="@drawable/bg_storage_bar_track"
                         android:clipChildren="true"
-                        android:clipToOutline="true" />
+                        android:clipToOutline="true"
+                        android:contentDescription="@string/a11y_segmented_bar"
+                        android:importantForAccessibility="yes" />
 
                     <TextView
                         android:id="@+id/tv_total_files"
@@ -102,6 +110,8 @@
                         app:cardElevation="@dimen/elevation_none"
                         app:cardBackgroundColor="@color/analysisSavingsBackground"
                         app:strokeWidth="@dimen/stroke_none"
+                        android:contentDescription="@string/a11y_potential_savings"
+                        android:accessibilityLiveRegion="polite"
                         android:visibility="gone">
 
                         <TextView
@@ -136,15 +146,11 @@
                 <!-- Junk card -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_junk"
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
-                    app:cardElevation="@dimen/elevation_subtle"
-                    app:cardBackgroundColor="@color/surfaceColor"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/borderSubtle"
                     android:foreground="@drawable/ripple_card"
                     android:clickable="true"
                     android:focusable="true"
@@ -160,7 +166,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/emoji_trash"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji"
+                            android:importantForAccessibility="no" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -176,22 +183,19 @@
                             android:layout_marginTop="@dimen/spacing_micro"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
-                            android:maxLines="2" />
+                            android:maxLines="2"
+                            android:accessibilityLiveRegion="polite" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Large files card -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_large"
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
-                    app:cardElevation="@dimen/elevation_subtle"
-                    app:cardBackgroundColor="@color/surfaceColor"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/borderSubtle"
                     android:foreground="@drawable/ripple_card"
                     android:clickable="true"
                     android:focusable="true"
@@ -207,7 +211,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/emoji_folder"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji"
+                            android:importantForAccessibility="no" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -223,22 +228,19 @@
                             android:layout_marginTop="@dimen/spacing_micro"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
-                            android:maxLines="2" />
+                            android:maxLines="2"
+                            android:accessibilityLiveRegion="polite" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Duplicates card -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_duplicates"
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
-                    app:cardElevation="@dimen/elevation_subtle"
-                    app:cardBackgroundColor="@color/surfaceColor"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/borderSubtle"
                     android:foreground="@drawable/ripple_card"
                     android:clickable="true"
                     android:focusable="true"
@@ -254,7 +256,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/emoji_refresh"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji"
+                            android:importantForAccessibility="no" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -270,7 +273,8 @@
                             android:layout_marginTop="@dimen/spacing_micro"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
-                            android:maxLines="2" />
+                            android:maxLines="2"
+                            android:accessibilityLiveRegion="polite" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -290,7 +294,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="@dimen/spacing_sm"
-                android:layout_marginHorizontal="@dimen/spacing_lg" />
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:accessibilityLiveRegion="polite" />
 
             <!-- ──── Top 10 Largest Files ──── -->
             <LinearLayout
@@ -323,7 +328,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="@dimen/spacing_sm"
-                android:layout_marginHorizontal="@dimen/spacing_lg" />
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:accessibilityLiveRegion="polite" />
 
         </LinearLayout>
 

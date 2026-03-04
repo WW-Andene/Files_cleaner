@@ -9,17 +9,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/spacing_xxl"
-        android:paddingTop="@dimen/spacing_lg"
-        android:paddingBottom="@dimen/spacing_sm">
+        android:paddingTop="@dimen/spacing_xxl"
+        android:paddingBottom="@dimen/spacing_lg">
 
-        <!-- Provider type selector — card-style buttons -->
+        <!-- Provider type selector: card-style buttons -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/cloud_provider_type"
             android:textAppearance="@style/TextAppearance.FileCleaner.Body"
             android:textColor="@color/textSecondary"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chip_group_provider"
@@ -148,9 +149,10 @@
             android:id="@+id/tv_provider_help"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_sm"
+            android:layout_marginTop="@dimen/spacing_md"
             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:textColor="@color/textTertiary" />
+            android:textColor="@color/textTertiary"
+            android:lineSpacingExtra="@dimen/spacing_xs" />
 
     </LinearLayout>
 </ScrollView>

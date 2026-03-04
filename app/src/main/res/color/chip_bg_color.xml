@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Chip background — covers checked, pressed, focused, disabled states.
+     §DC4: Disabled state uses surfaceDim at reduced alpha for clear affordance. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/surfaceDim" android:state_enabled="false" />
+    <item android:color="@color/colorPrimaryContainer" android:state_checked="true" android:state_pressed="true" />
+    <item android:color="@color/colorPrimaryContainer" android:state_checked="true" android:state_focused="true" />
     <item android:color="@color/colorPrimaryContainer" android:state_checked="true" />
+    <item android:color="@color/statePressed" android:state_pressed="true" />
+    <item android:color="@color/stateFocus" android:state_focused="true" />
     <item android:color="@color/surfaceDim" />
 </selector>

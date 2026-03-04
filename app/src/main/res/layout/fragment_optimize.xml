@@ -17,7 +17,8 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingVertical="@dimen/spacing_sm">
+            android:paddingVertical="@dimen/spacing_sm"
+            android:minHeight="@dimen/touch_target_min">
 
             <ImageButton
                 android:id="@+id/btn_back"
@@ -34,7 +35,8 @@
                 android:layout_weight="1"
                 android:layout_marginStart="@dimen/spacing_sm"
                 android:text="@string/optimize_title"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Title" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:accessibilityHeading="true" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_reanalyze"
@@ -47,7 +49,8 @@
                 android:minWidth="@dimen/button_height"
                 android:minHeight="@dimen/button_height_sm"
                 android:insetTop="0dp"
-                android:insetBottom="0dp" />
+                android:insetBottom="0dp"
+                android:contentDescription="@string/a11y_reanalyze" />
         </LinearLayout>
 
         <!-- Loading indicator -->
@@ -58,7 +61,9 @@
             android:layout_height="@dimen/spacing_xs"
             android:indeterminate="true"
             android:indeterminateTint="@color/colorPrimary"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:contentDescription="@string/a11y_analyzing_progress"
+            android:accessibilityLiveRegion="assertive" />
 
         <!-- Explanatory card -->
         <com.google.android.material.card.MaterialCardView
@@ -70,7 +75,8 @@
             app:cardCornerRadius="@dimen/radius_header"
             app:cardElevation="@dimen/elevation_none"
             app:cardBackgroundColor="@color/colorPrimaryContainer"
-            app:strokeWidth="@dimen/stroke_none">
+            app:strokeWidth="@dimen/stroke_none"
+            android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,7 +89,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/optimize_info_title"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                    android:textColor="@color/colorOnPrimaryContainer" />
+                    android:textColor="@color/colorOnPrimaryContainer"
+                    android:accessibilityHeading="true" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -141,7 +148,8 @@
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/spacing_lg"
             android:paddingVertical="@dimen/spacing_sm"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:contentDescription="@string/a11y_filter_options">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_old_files"
@@ -177,7 +185,8 @@
             android:paddingHorizontal="@dimen/spacing_lg"
             android:paddingVertical="@dimen/spacing_sm"
             android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textColor="@color/textSecondary" />
+            android:textColor="@color/textSecondary"
+            android:accessibilityLiveRegion="polite" />
 
         <!-- Suggestions list -->
         <androidx.recyclerview.widget.RecyclerView
@@ -199,7 +208,10 @@
             android:orientation="vertical"
             android:gravity="center"
             android:padding="@dimen/spacing_4xl"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:contentDescription="@string/a11y_empty_state"
+            android:focusable="true"
+            android:accessibilityLiveRegion="polite">
 
             <ImageView
                 android:layout_width="@dimen/icon_empty_state"
@@ -250,7 +262,10 @@
         app:cardElevation="@dimen/elevation_raised"
         app:cardBackgroundColor="@color/colorPrimary"
         app:strokeWidth="@dimen/stroke_none"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/a11y_selection_actions"
+        android:focusable="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -258,7 +273,8 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/spacing_lg"
-            android:paddingVertical="@dimen/spacing_md">
+            android:paddingVertical="@dimen/spacing_md"
+            android:minHeight="@dimen/touch_target_min">
 
             <TextView
                 android:id="@+id/tv_selection_summary"
@@ -266,7 +282,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
-                android:textColor="@color/textOnPrimary" />
+                android:textColor="@color/textOnPrimary"
+                android:accessibilityLiveRegion="polite" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_clear_selection"
@@ -279,7 +296,8 @@
                 android:minWidth="@dimen/button_height"
                 android:minHeight="@dimen/button_height_sm"
                 android:insetTop="0dp"
-                android:insetBottom="0dp" />
+                android:insetBottom="0dp"
+                android:contentDescription="@string/a11y_clear_selection" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

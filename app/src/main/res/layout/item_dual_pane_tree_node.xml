@@ -9,7 +9,7 @@
     android:paddingVertical="@dimen/spacing_xs"
     android:paddingEnd="@dimen/spacing_sm"
     android:background="?attr/selectableItemBackground"
-    android:minHeight="@dimen/spacing_4xl">
+    android:minHeight="@dimen/touch_target_min">
 
     <!-- Expand/collapse indicator -->
     <ImageView
@@ -19,6 +19,7 @@
         android:src="@drawable/ic_chevron_right"
         android:scaleType="centerInside"
         android:importantForAccessibility="no"
+        android:contentDescription="@string/a11y_expand_collapse_node"
         app:tint="@color/textTertiary" />
 
     <ImageView
@@ -27,8 +28,9 @@
         android:layout_height="@dimen/icon_tree_node"
         android:src="@drawable/ic_folder"
         android:scaleType="centerInside"
-        android:layout_marginStart="@dimen/spacing_micro"
+        android:layout_marginStart="@dimen/spacing_xs"
         android:importantForAccessibility="no"
+        android:contentDescription="@string/a11y_folder_icon"
         app:tint="@color/textSecondary" />
 
     <TextView
@@ -40,7 +42,7 @@
         android:textColor="@color/textPrimary"
         android:maxLines="1"
         android:ellipsize="end"
-        android:layout_marginStart="@dimen/spacing_xs" />
+        android:layout_marginStart="@dimen/spacing_sm" />
 
     <TextView
         android:id="@+id/tv_node_info"
@@ -49,5 +51,5 @@
         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
         android:textColor="@color/textTertiary"
         android:maxLines="1"
-        android:layout_marginStart="@dimen/spacing_xs" />
+        android:layout_marginStart="@dimen/spacing_sm" />
 </LinearLayout>

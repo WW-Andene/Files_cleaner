@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §DM2: Fragment enter — slide in from right + fade in, uses motion_page vocabulary -->
+<!-- §DM2: Fragment enter — slide in from right + fade in, uses motion_page vocabulary.
+     Uses custom fast_out_slow_in for "considerate utility" deceleration on enter. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@android:anim/decelerate_interpolator">
+    android:interpolator="@interpolator/fast_out_slow_in_custom">
 
     <translate
         android:fromXDelta="5%p"

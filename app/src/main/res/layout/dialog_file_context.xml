@@ -12,10 +12,11 @@
         android:layout_width="@dimen/spacing_3xl"
         android:layout_height="@dimen/spacing_xs"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/spacing_sm"
-        android:layout_marginBottom="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:layout_marginBottom="@dimen/spacing_md"
         android:background="@drawable/bg_drag_handle"
-        android:importantForAccessibility="no" />
+        android:importantForAccessibility="no"
+        android:contentDescription="@string/a11y_drag_handle" />
 
     <!-- File header -->
     <LinearLayout
@@ -23,8 +24,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_xl"
-        android:paddingVertical="@dimen/spacing_md">
+        android:paddingHorizontal="@dimen/spacing_xxl"
+        android:paddingVertical="@dimen/spacing_md"
+        android:minHeight="@dimen/touch_target_min">
 
         <ImageView
             android:id="@+id/iv_file_icon"
@@ -33,14 +35,15 @@
             android:src="@drawable/ic_file"
             android:scaleType="centerInside"
             app:tint="@color/colorPrimary"
-            android:importantForAccessibility="no" />
+            android:importantForAccessibility="no"
+            android:contentDescription="@string/a11y_file_type_icon" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="@dimen/spacing_md">
+            android:layout_marginStart="@dimen/spacing_lg">
 
             <TextView
                 android:id="@+id/tv_file_name"
@@ -67,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/stroke_default"
         android:background="@color/borderDefault"
-        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginHorizontal="@dimen/spacing_xxl"
         android:importantForAccessibility="no" />
 
     <!-- Menu items -->
@@ -80,7 +83,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/spacing_sm" />
+            android:paddingTop="@dimen/spacing_sm"
+            android:paddingBottom="@dimen/spacing_sm" />
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

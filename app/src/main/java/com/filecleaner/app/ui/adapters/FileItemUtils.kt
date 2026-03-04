@@ -134,6 +134,9 @@ object FileItemUtils {
         if ((item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) && file.exists()) {
             imageView.clearColorFilter()
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            // §G1: Describe the thumbnail for screen readers
+            imageView.contentDescription = ctx.getString(R.string.a11y_file_icon,
+                ctx.getString(item.category.displayNameRes))
             Glide.with(ctx)
                 .load(file)
                 .transform(CenterCrop(), RoundedCorners(cornerRadius))
@@ -184,6 +187,10 @@ object FileItemUtils {
         imageView.setImageResource(iconRes)
         val tint = categoryColor(ctx, item.category)
         imageView.setColorFilter(tint)
+
+        // §G1: Set contentDescription on file icon for accessibility
+        imageView.contentDescription = ctx.getString(R.string.a11y_file_icon,
+            ctx.getString(item.category.displayNameRes))
     }
 
     // ── Junk background colors ──────────────────────────────────────────

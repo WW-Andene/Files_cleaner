@@ -14,7 +14,8 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_sm">
+        android:paddingVertical="@dimen/spacing_sm"
+        android:minHeight="@dimen/touch_target_min">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -34,7 +35,8 @@
             android:text="@string/cloud_title"
             android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
             android:textColor="@color/textPrimary"
-            android:layout_marginStart="@dimen/spacing_sm" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add"
@@ -60,7 +62,10 @@
         android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_xs"
         android:background="@color/surfaceDim"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_connection_bar"
+        android:focusable="true"
+        android:minHeight="@dimen/touch_target_min">
 
         <!-- Connection status dot (green=connected, red=disconnected) -->
         <ImageView
@@ -69,7 +74,8 @@
             android:layout_height="@dimen/spacing_md"
             android:layout_marginEnd="@dimen/spacing_sm"
             android:src="@drawable/ic_status_disconnected"
-            android:contentDescription="@string/cloud_status_disconnected" />
+            android:contentDescription="@string/cloud_status_disconnected"
+            android:importantForAccessibility="yes" />
 
         <Spinner
             android:id="@+id/spinner_connection"
@@ -79,7 +85,8 @@
             android:background="@drawable/bg_spinner"
             android:popupBackground="@drawable/bg_spinner_dropdown"
             android:contentDescription="@string/a11y_connection_selector"
-            android:paddingHorizontal="@dimen/spacing_md" />
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:minHeight="@dimen/touch_target_min" />
 
         <!-- Test connection button -->
         <ImageButton
@@ -128,7 +135,10 @@
         android:ellipsize="start"
         android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_xs"
-        android:visibility="gone" />
+        android:minHeight="@dimen/spacing_xxl"
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_cloud_path"
+        android:accessibilityLiveRegion="polite" />
 
     <!-- Loading indicator -->
     <ProgressBar
@@ -138,7 +148,9 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:indeterminateTint="@color/colorPrimary"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_cloud_loading"
+        android:accessibilityLiveRegion="assertive" />
 
     <!-- Empty state: no connections -->
     <LinearLayout
@@ -147,7 +159,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="@dimen/spacing_4xl">
+        android:padding="@dimen/spacing_4xl"
+        android:contentDescription="@string/a11y_empty_state"
+        android:focusable="true">
 
         <ImageView
             android:layout_width="@dimen/icon_empty_state"
@@ -200,7 +214,9 @@
         android:paddingHorizontal="@dimen/spacing_md"
         android:paddingVertical="@dimen/spacing_sm"
         android:background="@color/surfaceDim"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:elevation="@dimen/elevation_raised"
+        android:minHeight="@dimen/touch_target_min">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_download"

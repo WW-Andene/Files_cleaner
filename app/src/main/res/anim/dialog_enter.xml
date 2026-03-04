@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Dialog entrance — scale up from center with fade -->
+<!-- Dialog entrance — scale up from center with fade, subtle 90% start for considered feel.
+     Fade completes faster so dialog content is readable while scale finishes settling. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@interpolator/fast_out_slow_in_custom">
 
     <scale
-        android:fromXScale="0.85"
+        android:fromXScale="0.90"
         android:toXScale="1.0"
-        android:fromYScale="0.85"
+        android:fromYScale="0.90"
         android:toYScale="1.0"
         android:pivotX="50%"
         android:pivotY="50%"
@@ -15,5 +16,5 @@
     <alpha
         android:fromAlpha="0.0"
         android:toAlpha="1.0"
-        android:duration="@integer/motion_enter" />
+        android:duration="@integer/motion_micro" />
 </set>

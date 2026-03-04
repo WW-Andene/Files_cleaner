@@ -7,11 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/spacing_lg"
-    android:layout_marginTop="@dimen/spacing_chip"
+    android:layout_marginTop="@dimen/spacing_sm"
     android:scrollbars="none"
     android:fadingEdge="horizontal"
     android:requiresFadingEdge="horizontal"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:importantForAccessibility="yes">
 
     <LinearLayout
         android:id="@+id/legend_container"
@@ -19,6 +20,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingVertical="@dimen/spacing_xs" />
+        android:paddingVertical="@dimen/spacing_sm"
+        android:minHeight="@dimen/touch_target_min" />
 
 </HorizontalScrollView>

@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surfaceBase">
+    android:background="@color/surfaceBase"
+    android:fillViewport="true"
+    android:clipToPadding="false"
+    android:paddingBottom="@dimen/spacing_above_nav">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,6 +49,9 @@
             app:cardBackgroundColor="@color/colorPrimaryContainer"
             app:strokeWidth="@dimen/stroke_none"
             android:foreground="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_storage_overview_card"
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <LinearLayout
@@ -67,13 +73,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/spacing_md"
                     android:layout_marginTop="@dimen/spacing_md"
-                    android:background="@drawable/bg_storage_bar_track">
+                    android:background="@drawable/bg_storage_bar_track"
+                    android:contentDescription="@string/a11y_storage_bar"
+                    android:importantForAccessibility="yes"
+                    android:accessibilityLiveRegion="polite">
 
                     <View
                         android:id="@+id/progress_storage"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_storage_bar_fill" />
+                        android:background="@drawable/bg_storage_bar_fill"
+                        android:importantForAccessibility="no" />
                 </FrameLayout>
 
                 <TextView
@@ -83,7 +93,8 @@
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:accessibilityLiveRegion="polite" />
 
                 <TextView
                     android:id="@+id/tv_storage_free"
@@ -107,6 +118,8 @@
             app:cardBackgroundColor="@color/analysisSavingsBackground"
             app:strokeWidth="@dimen/stroke_none"
             android:layout_marginBottom="@dimen/spacing_md"
+            android:contentDescription="@string/a11y_potential_savings"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone">
 
             <LinearLayout
@@ -127,14 +140,13 @@
 
         <!-- Scan stats card -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:foreground="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_scan_stats_card"
             android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
@@ -162,13 +174,10 @@
 
         <!-- Category breakdown with colored bars -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
+            android:contentDescription="@string/a11y_category_breakdown_card"
             android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
@@ -197,20 +206,18 @@
                     android:id="@+id/category_rows_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:orientation="vertical"
+                    android:accessibilityLiveRegion="polite" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Top 10 Largest Files -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_top_files"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
+            android:contentDescription="@string/a11y_top_files_card"
             android:layout_marginBottom="@dimen/spacing_md"
             android:visibility="gone">
 
@@ -238,13 +245,10 @@
         <!-- Quick Actions -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_quick_actions"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
+            android:contentDescription="@string/a11y_quick_actions_card"
             android:layout_marginBottom="@dimen/spacing_md"
             android:visibility="gone">
 

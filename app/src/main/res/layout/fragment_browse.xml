@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_sm"
+        android:contentDescription="@string/a11y_search_files"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -57,6 +58,7 @@
             android:textColor="@color/textSecondary"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:contentDescription="@string/a11y_filter_options"
             app:icon="@drawable/ic_arrow_down"
             app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
@@ -65,7 +67,8 @@
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:importantForAccessibility="no" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_toggle_expand_collapse"
@@ -316,8 +319,10 @@
         android:id="@+id/selection_action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/spacing_sm"
-        android:layout_marginBottom="@dimen/spacing_sm"
+        android:layout_marginHorizontal="@dimen/spacing_md"
+        android:layout_marginBottom="@dimen/spacing_md"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/a11y_selection_actions"
         app:cardCornerRadius="@dimen/radius_card"
         app:cardElevation="@dimen/elevation_floating"
         app:cardBackgroundColor="@color/surfaceColor"
@@ -329,7 +334,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_sm">
+            android:padding="@dimen/spacing_md">
 
             <!-- Selection count -->
             <TextView
@@ -338,8 +343,9 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                 android:textColor="@color/colorPrimary"
-                android:paddingHorizontal="@dimen/spacing_sm"
-                android:paddingBottom="@dimen/spacing_xs"
+                android:paddingHorizontal="@dimen/spacing_xs"
+                android:paddingBottom="@dimen/spacing_sm"
+                android:accessibilityLiveRegion="polite"
                 tools:text="3 selected" />
 
             <!-- Selection scope buttons -->
@@ -412,7 +418,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="end"
-                android:layout_marginTop="@dimen/spacing_xs">
+                android:layout_marginTop="@dimen/spacing_sm">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_rename_selected"

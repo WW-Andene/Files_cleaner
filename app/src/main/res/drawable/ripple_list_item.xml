@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Hero card ripple — white-tinted for on-primary surfaces.
-     §DC4: Uses named color reference instead of hardcoded hex. -->
+<!-- §DC4: List item ripple — bounded rectangle with brand-tinted ripple color.
+     Used for file browser rows, settings items, and other full-width list items. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/rippleOnPrimary">
+    android:color="@color/statePressed">
     <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <corners android:radius="@dimen/radius_header" />
         </shape>
     </item>
 </ripple>

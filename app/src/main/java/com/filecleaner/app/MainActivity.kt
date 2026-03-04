@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.view.View
+import android.view.accessibility.AccessibilityEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -145,6 +146,11 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, dest, _ ->
             if (dest.id in bottomNavIds) {
                 binding.bottomNav.menu.findItem(dest.id)?.isChecked = true
+                // §G1: Announce tab change to TalkBack
+                val tabLabel = dest.label
+                if (tabLabel != null) {
+                    binding.root.announceForAccessibility(tabLabel)
+                }
             }
         }
 
@@ -171,6 +177,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // §G1: Make scan status announce updates to TalkBack
+        binding.tvScanStatus.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+
         // Cancel scan button
         binding.btnCancelScan.setOnClickListener { viewModel.cancelScan() }
 
@@ -190,6 +199,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 is ScanState.Done     -> {
                     hideScanProgress()
+                    // §G1: Announce scan completion to accessibility services
+                    binding.tvScanStatus.sendAccessibilityEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)
                     val stats = viewModel.storageStats.value
                     if (stats != null) {
                         val durationText = if (stats.scanDurationMs > 0) {

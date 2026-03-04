@@ -956,9 +956,73 @@
     <string name="a11y_severity_indicator">Severity indicator</string>
     <string name="a11y_drag_handle">Drag handle</string>
     <string name="a11y_select_checkbox">Select item</string>
+    <string name="a11y_loading">Loading content</string>
+    <string name="a11y_success">Operation completed successfully</string>
+    <string name="a11y_scan_threat_count">Threats found</string>
+    <string name="a11y_file_type_icon">File type icon</string>
+    <string name="a11y_expand_collapse_node">Expand or collapse folder</string>
     <string name="a11y_quick_action_junk">View junk files</string>
     <string name="a11y_quick_action_large">View large files</string>
     <string name="a11y_quick_action_duplicates">View duplicate files</string>
     <string name="a11y_reanalyze">Re-analyze storage</string>
     <string name="a11y_clear_selection">Clear selection</string>
+    <string name="a11y_filter_options">Toggle filter options panel</string>
+    <string name="a11y_scan_progress">Scan in progress</string>
+    <string name="a11y_unsupported_file">File type not supported for preview</string>
+    <string name="a11y_open_with_external">Open with external application</string>
+    <string name="a11y_share_file">Share file</string>
+    <string name="a11y_search_files">Search files</string>
+    <string name="a11y_search_tree">Search file tree</string>
+    <string name="a11y_file_count">File count</string>
+    <string name="a11y_selection_actions">Selection action bar</string>
+    <string name="a11y_empty_state">No results</string>
+    <string name="a11y_video_controls">Video playback controls</string>
+    <string name="a11y_audio_controls">Audio playback controls</string>
+    <string name="a11y_shield_status">Protection status</string>
+    <string name="a11y_scan_results_summary">Scan results summary</string>
+    <string name="a11y_analyzing_progress">Analyzing storage progress</string>
+    <string name="a11y_cloud_loading">Loading cloud files</string>
+    <string name="a11y_divider_resize">Resize panes divider</string>
+    <string name="a11y_pane_left">Left file pane</string>
+    <string name="a11y_pane_right">Right file pane</string>
+    <string name="a11y_theme_selection">Theme selection</string>
+    <string name="a11y_scan_phase_progress">Scan phase progress</string>
+    <string name="a11y_filter_threats">Filter scan results</string>
+    <string name="a11y_fix_all_threats">Fix all detected threats</string>
+    <string name="a11y_settings_section">Settings section</string>
+    <string name="a11y_connection_bar">Cloud connection controls</string>
+    <string name="a11y_cloud_path">Current cloud path</string>
+    <string name="a11y_swap_panes">Swap left and right panes</string>
+
+    <!-- Accessibility: design audit additions -->
+    <string name="a11y_raccoon_bubble">Raccoon assistant. Double tap to open.</string>
+    <string name="a11y_tab_selected">%s tab selected</string>
+    <string name="a11y_file_icon">%1$s file icon</string>
+    <string name="a11y_folder_icon">Folder icon</string>
+    <string name="a11y_onboarding_step">Onboarding step %1$d of %2$d</string>
+    <string name="a11y_onboarding_icon_welcome">Welcome raccoon logo</string>
+    <string name="a11y_onboarding_icon_browse">Browse files illustration</string>
+    <string name="a11y_onboarding_icon_scan">Scan storage illustration</string>
+    <string name="a11y_legend_color">%1$s, color indicator</string>
+    <string name="a11y_preview_image">Preview image of %s</string>
+    <string name="a11y_preview_text">Text preview of %s</string>
+    <string name="a11y_scan_status_update">Scan status updated</string>
+    <string name="a11y_selection_changed">%1$d items selected</string>
+    <string name="a11y_folder_header">%1$s folder, %2$d files, %3$s</string>
+
+    <!-- Dashboard & Analysis accessibility -->
+    <string name="a11y_storage_overview_card">Storage overview</string>
+    <string name="a11y_storage_bar">Storage usage bar</string>
+    <string name="a11y_segmented_bar">Category usage breakdown bar</string>
+    <string name="a11y_potential_savings">Potential storage savings</string>
+    <string name="a11y_scan_stats_card">Scan statistics</string>
+    <string name="a11y_category_breakdown_card">File category breakdown</string>
+    <string name="a11y_top_files_card">Top largest files</string>
+    <string name="a11y_quick_actions_card">Quick actions</string>
+    <string name="a11y_dashboard_back">Go back</string>
+    <string name="a11y_bottom_nav_divider">Navigation divider</string>
+    <string name="a11y_scan_icon">Scan status icon</string>
+
+    <!-- Accessibility: utility fragment audit additions -->
+    <string name="a11y_toggle_token_visibility">Toggle token visibility</string>
 </resources>

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Card press feedback — subtle elevation reduction on press, lift on release -->
+<!-- Card press/focus/drag feedback — subtle elevation changes for tactile feel.
+     §DM1: Uses motion_micro (120ms) for immediate state response.
+     States ordered most-specific-first per Android selector rules. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dragged: highest elevation for lift-and-move affordance -->
+    <item android:state_drag_hovered="true">
+        <set>
+            <objectAnimator
+                android:propertyName="translationZ"
+                android:duration="@integer/motion_micro"
+                android:valueTo="6dp"
+                android:valueType="floatType" />
+        </set>
+    </item>
     <!-- Pressed: lower elevation for "pushed in" feel -->
     <item android:state_pressed="true">
         <set>
@@ -8,6 +20,16 @@
                 android:propertyName="translationZ"
                 android:duration="@integer/motion_micro"
                 android:valueTo="0dp"
+                android:valueType="floatType" />
+        </set>
+    </item>
+    <!-- Focused: slight lift to indicate keyboard/accessibility focus -->
+    <item android:state_focused="true">
+        <set>
+            <objectAnimator
+                android:propertyName="translationZ"
+                android:duration="@integer/motion_micro"
+                android:valueTo="4dp"
                 android:valueType="floatType" />
         </set>
     </item>

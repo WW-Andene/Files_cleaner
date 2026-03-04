@@ -31,6 +31,10 @@ object RaccoonBubble {
         // Guard against duplicate attach — prevents stacking listeners and pulse animators
         if (bubble.getTag(TAG_ATTACHED) == true) return
         bubble.setTag(TAG_ATTACHED, true)
+
+        // §G1: Accessibility — describe the raccoon bubble for screen readers
+        bubble.contentDescription = bubble.context.getString(R.string.app_name)
+        bubble.isFocusable = true
         var downX = 0f
         var downY = 0f
         var startTransX = 0f
@@ -102,7 +106,9 @@ object RaccoonBubble {
         if (MotionUtil.isReducedMotion(view.context)) {
             view.translationX = targetX
         } else {
-            val pageMotion = view.resources.getInteger(R.integer.motion_page).toLong()
+            // §DM3: Use effectiveDuration so ObjectAnimator respects ANIMATOR_DURATION_SCALE
+            val pageMotion = MotionUtil.effectiveDuration(view.context,
+                MotionUtil.pageMs(view.context))
             ObjectAnimator.ofFloat(view, "translationX", view.translationX, targetX).apply {
                 duration = pageMotion
                 interpolator = OvershootInterpolator(1.2f)
@@ -112,7 +118,9 @@ object RaccoonBubble {
     }
 
     private fun startPulse(view: View) {
-        val emphasisMotion = view.resources.getInteger(R.integer.motion_emphasis).toLong()
+        // §DM3: Use effectiveDuration so ObjectAnimator respects ANIMATOR_DURATION_SCALE
+        val emphasisMotion = MotionUtil.effectiveDuration(view.context,
+            MotionUtil.emphasisMs(view.context))
         pulseAnimatorX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.05f, 1f).apply {
             duration = emphasisMotion
             startDelay = PULSE_DELAY_MS

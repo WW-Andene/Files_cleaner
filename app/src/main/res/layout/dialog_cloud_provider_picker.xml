@@ -10,8 +10,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/spacing_xxl"
-        android:paddingTop="@dimen/spacing_lg"
-        android:paddingBottom="@dimen/spacing_lg">
+        android:paddingTop="@dimen/spacing_xxl"
+        android:paddingBottom="@dimen/spacing_xxl">
 
         <!-- Header -->
         <TextView
@@ -19,7 +19,8 @@
             android:layout_height="wrap_content"
             android:text="@string/cloud_choose_service"
             android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-            android:textColor="@color/textPrimary" />
+            android:textColor="@color/textPrimary"
+            android:accessibilityHeading="true" />
 
         <TextView
             android:layout_width="match_parent"

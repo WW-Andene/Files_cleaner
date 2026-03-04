@@ -9,14 +9,14 @@
     android:paddingHorizontal="@dimen/spacing_sm"
     android:paddingVertical="@dimen/spacing_xs"
     android:background="?attr/selectableItemBackground"
-    android:minHeight="@dimen/spacing_4xl">
+    android:minHeight="@dimen/touch_target_min">
 
     <CheckBox
         android:id="@+id/cb_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="@dimen/button_height"
-        android:minHeight="@dimen/button_height"
+        android:minWidth="@dimen/touch_target_min"
+        android:minHeight="@dimen/touch_target_min"
         android:clickable="false"
         android:buttonTint="@color/colorPrimary"
         android:contentDescription="@string/a11y_select_checkbox"
@@ -28,6 +28,7 @@
         android:layout_height="@dimen/icon_dual_pane"
         android:scaleType="centerInside"
         android:importantForAccessibility="no"
+        android:contentDescription="@string/a11y_file_type_icon"
         app:tint="@color/textSecondary" />
 
     <LinearLayout
@@ -35,7 +36,8 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginStart="@dimen/spacing_sm">
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_marginEnd="@dimen/spacing_xs">
 
         <TextView
             android:id="@+id/tv_name"
@@ -64,5 +66,6 @@
         android:scaleType="centerInside"
         android:visibility="gone"
         android:importantForAccessibility="no"
+        android:contentDescription="@string/collapse_expand"
         app:tint="@color/textTertiary" />
 </LinearLayout>

@@ -24,6 +24,7 @@
             android:id="@+id/view_accent_stripe"
             android:layout_width="match_parent"
             android:layout_height="@dimen/spacing_xs"
+            android:importantForAccessibility="no"
             android:visibility="gone" />
 
         <com.google.android.material.card.MaterialCardView
@@ -45,7 +46,8 @@
                     android:minHeight="@dimen/grid_thumbnail_min_height"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
-                    android:importantForAccessibility="no" />
+                    android:importantForAccessibility="no"
+                    android:contentDescription="@string/a11y_file_type_icon" />
 
                 <CheckBox
                     android:id="@+id/cb_select"
@@ -53,8 +55,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
                     android:layout_margin="@dimen/spacing_xs"
-                    android:minWidth="@dimen/button_height"
-                    android:minHeight="@dimen/button_height"
+                    android:minWidth="@dimen/touch_target_min"
+                    android:minHeight="@dimen/touch_target_min"
                     android:clickable="false"
                     android:buttonTint="@color/colorPrimary"
                     android:contentDescription="@string/a11y_select_checkbox"
@@ -66,15 +68,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="@dimen/spacing_sm"
-            android:paddingTop="@dimen/spacing_chip"
-            android:paddingBottom="@dimen/spacing_sm">
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingTop="@dimen/spacing_sm"
+            android:paddingBottom="@dimen/spacing_md">
 
             <TextView
                 android:id="@+id/tv_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
+                android:textColor="@color/textPrimary"
                 android:maxLines="2"
                 android:ellipsize="end" />
 
@@ -83,8 +86,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textTertiary"
                 android:maxLines="1"
-                android:layout_marginTop="@dimen/spacing_micro" />
+                android:layout_marginTop="@dimen/spacing_xs" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

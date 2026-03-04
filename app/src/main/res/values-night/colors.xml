@@ -1,83 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary: Lighter green for dark mode legibility -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         Raccoon File Manager — Dark Mode Color System
+         Brand: Forest green (#5ECE9E lifted) + Warm amber (#F2A84E lifted)
+         Philosophy: Chromatic near-blacks with green tint, never neutral
+         Perceptual model: OKLCH for lightness steps, warm hue bias
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- ── Primary: Lighter green for dark mode legibility ── -->
     <color name="colorPrimary">#5ECE9E</color>
     <color name="colorPrimaryDark">#247A58</color>
     <color name="colorPrimaryLight">#7BDBB4</color>
     <color name="colorPrimaryContainer">#183828</color>
     <color name="colorOnPrimaryContainer">#B0E8CE</color>
+    <color name="colorOnPrimary">#0C1A14</color>
 
-    <!-- Accent -->
+    <!-- ── Accent: Warm amber — lifted for dark surfaces ── -->
     <color name="colorAccent">#F2A84E</color>
     <color name="colorAccentLight">#3D2E1A</color>
+    <color name="colorOnAccent">#1C1208</color>
+    <color name="colorAccentContainer">#3D2E1A</color>
+    <color name="colorOnAccentContainer">#F2D4A0</color>
 
-    <!-- Semantic — warm-shifted for character consistency -->
+    <!-- ── Semantic — warm-shifted for character consistency ── -->
     <color name="colorError">#EF6B6B</color>
     <color name="colorErrorLight">#3D1F1A</color>
+    <color name="colorOnError">#1C0A08</color>
     <color name="colorSuccess">#5ECE78</color>
-    <color name="colorWarning">#FFD06A</color>
     <color name="colorSuccessLight">#1A3D1F</color>
+    <color name="colorOnSuccess">#0C1A0F</color>
+    <color name="colorWarning">#FFD06A</color>
     <color name="colorWarningLight">#3D331A</color>
+    <color name="colorOnWarning">#1C1608</color>
 
-    <!-- Surface elevation ladder (chromatic near-blacks, ~3-4% lightness steps) -->
-    <!-- surfaceDim < surfaceBase < surfaceColor < surfaceElevated -->
+    <!-- ── Surface elevation ladder (chromatic near-blacks, §DC3) ──
+         ~3-4% OKLCH lightness steps, green-tinted:
+         surfaceDim(L5) → surfaceBase(L8) → surfaceColor(L12) → surfaceElevated(L16) -->
+    <color name="surfaceDim">#080C0A</color>
     <color name="surfaceBase">#0C110F</color>
     <color name="surfaceColor">#141A17</color>
     <color name="surfaceElevated">#1C2420</color>
-    <color name="surfaceDim">#080C0A</color>
 
-    <!-- Text (chromatic green-gray, not pure gray) -->
+    <!-- ── Material 3 surface container hierarchy (§DC3) ──
+         Maps to M3 surface container roles for layered UI
+         Lowest(L7) → Low(L10) → Mid(L13) → High(L16) → Highest(L19) -->
+    <color name="surfaceContainerLowest">#0A0E0C</color>
+    <color name="surfaceContainerLow">#111614</color>
+    <color name="surfaceContainer">#171D1A</color>
+    <color name="surfaceContainerHigh">#1E2522</color>
+    <color name="surfaceContainerHighest">#252D29</color>
+
+    <!-- ── Text (chromatic green-gray, not pure gray, §DC5) ── -->
     <color name="textPrimary">#ECE9E4</color>
     <color name="textSecondary">#A2A8A5</color>
     <color name="textTertiary">#7E8682</color>
     <color name="textOnPrimary">#0C110F</color>
     <color name="textDisabled">#4A514D</color>
 
-    <!-- Borders -->
+    <!-- ── Borders ── -->
     <color name="borderDefault">#2A322E</color>
     <color name="borderSubtle">#202820</color>
     <color name="borderFocus">#5ECE9E</color>
 
-    <!-- Selection / highlight -->
+    <!-- ── Interaction states (§DC4 — pressed/hover use primary with alpha) ── -->
+    <color name="statePressed">#1F5ECE9E</color>
+    <color name="stateHover">#145ECE9E</color>
+    <color name="stateFocus">#1F5ECE9E</color>
+    <color name="stateDragged">#295ECE9E</color>
+    <color name="stateSelected">#145ECE9E</color>
+
+    <!-- ── Selection / highlight ── -->
     <color name="selectedBackground">#183828</color>
     <color name="selectedBorder">#2E7D5F</color>
 
-    <!-- Bottom nav -->
+    <!-- ── Bottom nav ── -->
     <color name="bottomNavBackground">#151B18</color>
     <color name="bottomNavDivider">#242C28</color>
 
-    <!-- Scan bar -->
+    <!-- ── Scan bar ── -->
     <color name="scanBarBackground">#183828</color>
     <color name="scanBarText">#B0E8CE</color>
 
-    <!-- Hero card gradient-like tints -->
+    <!-- ── Hero card gradient-like tints ── -->
     <color name="heroCardStart">#1E6B4C</color>
     <color name="heroCardEnd">#165740</color>
 
-    <!-- Card icon tint backgrounds (unique per feature) -->
+    <!-- ── Card icon tint backgrounds (unique per feature, §DC2) ──
+         Each has a distinct hue at consistent dark-mode lightness -->
     <color name="tintAnalysis">#3D2E1A</color>
     <color name="tintQuickClean">#3D1A1A</color>
-    <color name="tintTree">#1A2838</color>
+    <color name="tintTree">#1A2840</color>
     <color name="tintOptimize">#1A3020</color>
-    <color name="tintDualPane">#1A2838</color>
+    <color name="tintDualPane">#1A303A</color>
     <color name="tintCloud">#251A3D</color>
     <color name="tintAntivirus">#1A3D1F</color>
-    <color name="tintJanitor">#1A2838</color>
+    <color name="tintJanitor">#1E2240</color>
 
-    <!-- Text on colored backgrounds (e.g. tree view headers) -->
+    <!-- ── Text on colored backgrounds (e.g. tree view headers) ── -->
     <color name="textOnColor">#CCFFFFFF</color>
 
-    <!-- File category tints -->
+    <!-- ── File category tints (§DC1 — lifted for dark mode legibility) ── -->
     <color name="catImage">#B388FF</color>
     <color name="catVideo">#F48FB1</color>
     <color name="catAudio">#FFAB40</color>
     <color name="catDocument">#64B5F6</color>
     <color name="catApk">#4DB6AC</color>
     <color name="catArchive">#A1887F</color>
-    <color name="catDownload">#90A4AE</color>
-    <color name="catOther">#B0BEC5</color>
+    <color name="catDownload">#88A99A</color>
+    <color name="catOther">#96A89E</color>
 
-    <!-- Cloud provider branding (dark mode) -->
+    <!-- ── Cloud provider branding (dark mode) ── -->
     <color name="googleBlue">#8AB4F8</color>
     <color name="googleBlueDark">#669DF6</color>
     <color name="googleButtonBg">#1C2420</color>
@@ -89,77 +121,77 @@
     <color name="webdavAccentLight">#1A2D30</color>
     <color name="providerCardIconBg">#232C28</color>
 
-    <!-- Category light backgrounds (for analysis bars) -->
+    <!-- ── Category dark backgrounds (for analysis bars, §DC5 — chromatic tinted) ── -->
     <color name="catImageBg">#1F1A2E</color>
     <color name="catVideoBg">#2E1A22</color>
     <color name="catAudioBg">#2E241A</color>
     <color name="catDocumentBg">#1A2438</color>
     <color name="catApkBg">#1A2E2B</color>
     <color name="catArchiveBg">#261F1A</color>
-    <color name="catDownloadBg">#1E2527</color>
-    <color name="catOtherBg">#1C2224</color>
+    <color name="catDownloadBg">#1C2824</color>
+    <color name="catOtherBg">#1E2622</color>
 
-    <!-- Analysis card colors -->
+    <!-- ── Analysis card colors ── -->
     <color name="analysisStorageBarBg">#232C28</color>
     <color name="analysisStorageBarFill">#5ECE9E</color>
     <color name="analysisSavingsBackground">#2E261A</color>
     <color name="analysisSavingsText">#F2A84E</color>
 
-    <!-- Duplicate group backgrounds -->
+    <!-- ── Duplicate group backgrounds (§DC8 — distinct chromatic tints) ── -->
     <color name="dupGroup0">#1B3D28</color>
     <color name="dupGroup1">#1A2E3D</color>
     <color name="dupGroup2">#3D2E1A</color>
     <color name="dupGroup3">#2E1A3D</color>
-    <color name="dupGroup4">#3D1A1A</color>
-    <color name="dupGroup5">#1A3D3D</color>
+    <color name="dupGroup4">#3D1A1F</color>
+    <color name="dupGroup5">#1A3D35</color>
 
-    <!-- Junk category accent colors (left stripe) -->
+    <!-- ── Junk category accent colors (left stripe) ── -->
     <color name="junkCache">#FF8A65</color>
     <color name="junkTemp">#CE93D8</color>
     <color name="junkThumbnail">#9FA8DA</color>
-    <color name="junkOldDownload">#90A4AE</color>
+    <color name="junkOldDownload">#88A99A</color>
     <color name="junkLog">#A1887F</color>
 
-    <!-- Size severity accent colors (left stripe) -->
+    <!-- ── Size severity accent colors (left stripe) ── -->
     <color name="sizeHuge">#EF5350</color>
     <color name="sizeLarge">#FFA726</color>
     <color name="sizeMedium">#FFEE58</color>
 
-    <!-- Legend chip background -->
+    <!-- ── Legend chip background ── -->
     <color name="legendChipBg">#232C28</color>
     <color name="legendTextColor">#A2A8A5</color>
 
-    <!-- GitHub branding (dark mode) -->
+    <!-- ── GitHub branding (dark mode) ── -->
     <color name="githubAccent">#F0F3F6</color>
     <color name="githubAccentLight">#1C2128</color>
 
-    <!-- Overlay -->
+    <!-- ── Overlay ── -->
     <color name="overlayDark">#80000000</color>
     <color name="statsOverlay">#CC0F3D2A</color>
 
-    <!-- Brand / Provider ripple colors -->
+    <!-- ── Brand / Provider ripple colors ── -->
     <color name="rippleGoogle">#1A4285F4</color>
     <color name="rippleGithub">#4DFFFFFF</color>
     <color name="rippleSftp">#1A546E7A</color>
     <color name="rippleWebdav">#1A0097A7</color>
 
-    <!-- Junk category light backgrounds (dark mode) -->
+    <!-- ── Junk category dark backgrounds ── -->
     <color name="junkCacheBg">#2E1F1A</color>
     <color name="junkTempBg">#2A1A2E</color>
     <color name="junkThumbnailBg">#1C1E2E</color>
-    <color name="junkOldDownloadBg">#1E2527</color>
+    <color name="junkOldDownloadBg">#1C2824</color>
     <color name="junkLogBg">#261F1A</color>
 
-    <!-- Size severity light backgrounds (dark mode) -->
+    <!-- ── Size severity dark backgrounds ── -->
     <color name="sizeHugeBg">#2E1A1A</color>
     <color name="sizeLargeBg">#2E221A</color>
     <color name="sizeMediumBg">#2E2C1A</color>
 
-    <!-- Google Sign-In button colors (consolidated with Google button colors) -->
+    <!-- ── Google Sign-In button colors (consolidated with Google button colors) ── -->
     <color name="googleSignInBg">@color/googleButtonBg</color>
     <color name="googleSignInBorder">@color/googleButtonBorder</color>
 
-    <!-- Syntax highlighting colors (dark mode) -->
+    <!-- ── Syntax highlighting colors (dark mode — WCAG AA on dark surfaces) ── -->
     <color name="syntaxKeyword">#B4A0FF</color>
     <color name="syntaxString">#81C995</color>
     <color name="syntaxComment">#7E8E86</color>

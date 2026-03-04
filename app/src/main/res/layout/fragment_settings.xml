@@ -3,14 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surfaceBase">
+    android:background="@color/surfaceBase"
+    android:clipToPadding="false"
+    android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
         android:id="@+id/settings_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_lg">
+        android:padding="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_bottom_inset">
 
         <!-- Settings title -->
         <TextView
@@ -18,7 +21,8 @@
             android:layout_height="wrap_content"
             android:text="@string/settings"
             android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
-            android:layout_marginBottom="@dimen/spacing_xl" />
+            android:layout_marginBottom="@dimen/spacing_xl"
+            android:accessibilityHeading="true" />
 
         <!-- Appearance section -->
         <TextView
@@ -26,7 +30,9 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_appearance_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true"
+            android:contentDescription="@string/a11y_settings_section" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -48,20 +54,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_theme_label"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/rg_theme" />
 
                 <RadioGroup
                     android:id="@+id/rg_theme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/spacing_sm">
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:contentDescription="@string/a11y_theme_selection">
 
                     <RadioButton
                         android:id="@+id/rb_theme_system"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
                         android:text="@string/theme_system" />
 
                     <RadioButton
@@ -69,6 +78,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
                         android:text="@string/theme_light" />
 
                     <RadioButton
@@ -76,6 +86,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
                         android:text="@string/theme_dark" />
                 </RadioGroup>
             </LinearLayout>
@@ -87,7 +98,8 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_scan_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -107,22 +119,28 @@
 
                 <!-- Large file threshold -->
                 <TextView
+                    android:id="@+id/label_large_file"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_large_file_label"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/seek_large_file" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false">
 
                     <SeekBar
                         android:id="@+id/seek_large_file"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
                         android:contentDescription="@string/a11y_seek_large_file_threshold" />
 
                     <TextView
@@ -130,28 +148,36 @@
                         android:layout_width="@dimen/seekbar_value_width"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
                 </LinearLayout>
 
                 <!-- Stale download age -->
                 <TextView
+                    android:id="@+id/label_stale_age"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_stale_age_label"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:layout_marginTop="@dimen/spacing_md" />
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:labelFor="@+id/seek_stale_age" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false">
 
                     <SeekBar
                         android:id="@+id/seek_stale_age"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
                         android:contentDescription="@string/a11y_seek_stale_download_age" />
 
                     <TextView
@@ -159,7 +185,9 @@
                         android:layout_width="@dimen/seekbar_value_width"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -171,7 +199,8 @@
             android:text="@string/settings_safety_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:layout_marginTop="@dimen/spacing_xl"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -191,22 +220,28 @@
 
                 <!-- Undo timeout -->
                 <TextView
+                    android:id="@+id/label_undo_timeout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_undo_label"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/seek_undo_timeout" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false">
 
                     <SeekBar
                         android:id="@+id/seek_undo_timeout"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
                         android:contentDescription="@string/a11y_seek_undo_timeout" />
 
                     <TextView
@@ -214,7 +249,9 @@
                         android:layout_width="@dimen/seekbar_value_width"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -226,7 +263,8 @@
             android:text="@string/settings_display_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:layout_marginTop="@dimen/spacing_xl"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -247,7 +285,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:minHeight="@dimen/icon_button"
+                android:minHeight="@dimen/touch_target_min"
                 android:padding="@dimen/spacing_lg">
 
                 <TextView
@@ -255,12 +293,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/settings_hidden_files"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/switch_hidden_files" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switch_hidden_files"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:minWidth="@dimen/touch_target_min"
                     android:contentDescription="@string/a11y_switch_hidden_files" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -272,7 +313,8 @@
             android:text="@string/settings_crash_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:layout_marginTop="@dimen/spacing_xl"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -307,7 +349,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
-                    android:minHeight="@dimen/icon_button"
+                    android:minHeight="@dimen/touch_target_min"
                     android:paddingVertical="@dimen/spacing_sm">
 
                     <TextView
@@ -315,12 +357,15 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/settings_crash_enable"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                        android:labelFor="@+id/switch_crash_reporting" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switch_crash_reporting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:minWidth="@dimen/touch_target_min"
                         android:contentDescription="@string/a11y_switch_crash_reporting" />
                 </LinearLayout>
 
@@ -332,7 +377,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_md"
                     android:hint="@string/settings_crash_token_hint"
-                    app:endIconMode="password_toggle">
+                    app:endIconMode="password_toggle"
+                    app:endIconContentDescription="@string/a11y_toggle_token_visibility">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_github_token"
@@ -367,6 +413,7 @@
                     android:layout_marginTop="@dimen/spacing_md"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/textSecondary"
+                    android:accessibilityLiveRegion="polite"
                     android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -388,7 +435,8 @@
             android:text="@string/settings_data_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:layout_marginTop="@dimen/spacing_xl"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

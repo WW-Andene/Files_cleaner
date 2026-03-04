@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- SwitchMaterial track — lighter primary tint when checked, dim surface when unchecked -->
+<!-- SwitchMaterial track — lighter primary tint when checked, dim surface when unchecked.
+     §DC4: Disabled states use surfaceDim for muted inactive affordance. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/surfaceDim" android:state_enabled="false" android:state_checked="true" />
+    <item android:color="@color/surfaceDim" android:state_enabled="false" />
     <item android:color="@color/colorPrimaryContainer" android:state_checked="true" />
     <item android:color="@color/surfaceDim" />
 </selector>

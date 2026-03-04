@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Bottom sheet entrance — slide up from bottom with decelerate, character-appropriate timing -->
+<!-- Bottom sheet entrance — slide up from bottom with decelerate, character-appropriate timing.
+     Fade completes at micro speed so sheet content is visible while slide finishes settling. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@interpolator/fast_out_slow_in_custom">
 
@@ -11,5 +12,5 @@
     <alpha
         android:fromAlpha="0.0"
         android:toAlpha="1.0"
-        android:duration="@integer/motion_enter" />
+        android:duration="@integer/motion_micro" />
 </set>

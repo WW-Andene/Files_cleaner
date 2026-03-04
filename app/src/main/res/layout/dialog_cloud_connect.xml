@@ -20,7 +20,8 @@
             android:layout_marginBottom="@dimen/spacing_lg"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textSecondary"
-            android:drawablePadding="@dimen/spacing_sm" />
+            android:drawablePadding="@dimen/spacing_sm"
+            android:lineSpacingExtra="@dimen/spacing_xs" />
 
         <!-- Connection name -->
         <com.google.android.material.textfield.TextInputLayout
@@ -259,7 +260,8 @@
                 android:id="@+id/iv_test_result_icon"
                 android:layout_width="@dimen/icon_test_result"
                 android:layout_height="@dimen/icon_test_result"
-                android:importantForAccessibility="no" />
+                android:importantForAccessibility="no"
+                android:contentDescription="@string/a11y_connection_status" />
 
             <TextView
                 android:id="@+id/tv_test_result"
@@ -279,7 +281,8 @@
             android:layout_gravity="start"
             android:layout_marginTop="@dimen/spacing_sm"
             android:indeterminateTint="@color/colorPrimary"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:contentDescription="@string/a11y_loading" />
 
     </LinearLayout>
 </ScrollView>

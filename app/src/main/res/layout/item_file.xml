@@ -13,7 +13,8 @@
     app:strokeColor="@color/borderSubtle"
     app:rippleColor="@color/colorPrimaryContainer"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:minHeight="@dimen/touch_target_min">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,6 +26,7 @@
             android:id="@+id/view_accent_stripe"
             android:layout_width="@dimen/divider_thick"
             android:layout_height="match_parent"
+            android:importantForAccessibility="no"
             android:visibility="gone" />
 
         <LinearLayout
@@ -51,7 +53,8 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:padding="@dimen/spacing_sm"
-                    android:importantForAccessibility="no" />
+                    android:importantForAccessibility="no"
+                    android:contentDescription="@string/a11y_file_type_icon" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Text block -->
@@ -77,7 +80,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                    android:layout_marginTop="@dimen/spacing_micro" />
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginTop="@dimen/spacing_xs" />
 
             </LinearLayout>
 
@@ -86,8 +90,8 @@
                 android:id="@+id/cb_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="@dimen/button_height"
-                android:minHeight="@dimen/button_height"
+                android:minWidth="@dimen/touch_target_min"
+                android:minHeight="@dimen/touch_target_min"
                 android:clickable="false"
                 android:buttonTint="@color/colorPrimary"
                 android:contentDescription="@string/a11y_select_checkbox" />

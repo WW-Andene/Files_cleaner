@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:minHeight="@dimen/button_height"
+    android:minHeight="@dimen/touch_target_min"
     android:paddingHorizontal="@dimen/spacing_lg"
     android:paddingTop="@dimen/spacing_lg"
     android:paddingBottom="@dimen/spacing_sm"
@@ -19,6 +19,7 @@
         android:layout_height="@dimen/icon_inline"
         android:src="@drawable/ic_folder"
         android:importantForAccessibility="no"
+        android:contentDescription="@string/a11y_folder_icon"
         app:tint="@color/colorPrimary" />
 
     <TextView
@@ -47,7 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_sm"
         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
-        android:textColor="@color/textTertiary" />
+        android:textColor="@color/textTertiary"
+        android:contentDescription="@string/a11y_file_count" />
 
     <ImageView
         android:id="@+id/iv_chevron"
@@ -56,6 +58,7 @@
         android:layout_marginStart="@dimen/spacing_sm"
         android:src="@drawable/ic_arrow_down"
         android:importantForAccessibility="no"
+        android:contentDescription="@string/collapse_expand"
         app:tint="@color/textTertiary" />
 
 </LinearLayout>

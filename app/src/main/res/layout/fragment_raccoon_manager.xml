@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/surfaceBase"
     android:clipToPadding="false"
-    android:paddingBottom="@dimen/spacing_above_nav">
+    android:paddingBottom="@dimen/spacing_above_nav"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +52,8 @@
                     android:text="@string/raccoon_manager_subtitle"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/textSecondary"
-                    android:layout_marginTop="@dimen/spacing_xs" />
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:accessibilityLiveRegion="polite" />
             </LinearLayout>
         </LinearLayout>
 
@@ -63,7 +65,9 @@
             android:indeterminate="true"
             android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:contentDescription="@string/a11y_scan_progress"
+            android:accessibilityLiveRegion="polite" />
 
         <!-- Scan Storage card — hero gradient -->
         <com.google.android.material.card.MaterialCardView
@@ -136,6 +140,7 @@
         <!-- Analysis card — unique amber tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_analysis"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
@@ -144,12 +149,7 @@
             android:clickable="true"
             android:focusable="true"
             android:stateListAnimator="@animator/card_state_list_anim"
-            android:contentDescription="@string/raccoon_action_analysis"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:contentDescription="@string/raccoon_action_analysis">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -197,7 +197,8 @@
                         android:text="@string/raccoon_action_analysis_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
 
                 <ImageView
@@ -212,6 +213,7 @@
         <!-- Quick Clean card — red tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_quick_clean"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
@@ -220,12 +222,7 @@
             android:clickable="true"
             android:focusable="true"
             android:stateListAnimator="@animator/card_state_list_anim"
-            android:contentDescription="@string/raccoon_action_quick_clean"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:contentDescription="@string/raccoon_action_quick_clean">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -273,7 +270,8 @@
                         android:text="@string/raccoon_action_quick_clean_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
 
                 <ImageView
@@ -288,6 +286,7 @@
         <!-- Janitor card — blue tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_janitor"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
@@ -296,12 +295,7 @@
             android:clickable="true"
             android:focusable="true"
             android:stateListAnimator="@animator/card_state_list_anim"
-            android:contentDescription="@string/raccoon_action_janitor"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:contentDescription="@string/raccoon_action_janitor">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -349,7 +343,8 @@
                         android:text="@string/raccoon_action_janitor_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
 
                 <ImageView
@@ -364,6 +359,7 @@
         <!-- Optimize Storage card — amber tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_optimize"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_lg"
@@ -372,12 +368,7 @@
             android:clickable="true"
             android:focusable="true"
             android:stateListAnimator="@animator/card_state_list_anim"
-            android:contentDescription="@string/optimize_title"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:contentDescription="@string/optimize_title">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -425,7 +416,8 @@
                         android:text="@string/optimize_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
 
                 <ImageView
@@ -457,6 +449,7 @@
             <!-- Tree View card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_arborescence"
+                style="@style/Widget.FileCleaner.Card"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -465,12 +458,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:stateListAnimator="@animator/card_state_list_anim"
-                android:contentDescription="@string/raccoon_action_arborescence"
-                app:cardCornerRadius="@dimen/radius_card"
-                app:cardElevation="@dimen/elevation_subtle"
-                app:cardBackgroundColor="@color/surfaceColor"
-                app:strokeWidth="@dimen/stroke_default"
-                app:strokeColor="@color/borderSubtle">
+                android:contentDescription="@string/raccoon_action_arborescence">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -517,6 +505,7 @@
             <!-- Dual Pane card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_dual_pane"
+                style="@style/Widget.FileCleaner.Card"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -525,12 +514,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:stateListAnimator="@animator/card_state_list_anim"
-                android:contentDescription="@string/dual_pane_title"
-                app:cardCornerRadius="@dimen/radius_card"
-                app:cardElevation="@dimen/elevation_subtle"
-                app:cardBackgroundColor="@color/surfaceColor"
-                app:strokeWidth="@dimen/stroke_default"
-                app:strokeColor="@color/borderSubtle">
+                android:contentDescription="@string/dual_pane_title">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -586,6 +570,7 @@
             <!-- Cloud / Network card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_cloud"
+                style="@style/Widget.FileCleaner.Card"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -594,12 +579,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:stateListAnimator="@animator/card_state_list_anim"
-                android:contentDescription="@string/cloud_title"
-                app:cardCornerRadius="@dimen/radius_card"
-                app:cardElevation="@dimen/elevation_subtle"
-                app:cardBackgroundColor="@color/surfaceColor"
-                app:strokeWidth="@dimen/stroke_default"
-                app:strokeColor="@color/borderSubtle">
+                android:contentDescription="@string/cloud_title">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -646,6 +626,7 @@
             <!-- Antivirus card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_antivirus"
+                style="@style/Widget.FileCleaner.Card"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -654,12 +635,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:stateListAnimator="@animator/card_state_list_anim"
-                android:contentDescription="@string/av_title"
-                app:cardCornerRadius="@dimen/radius_card"
-                app:cardElevation="@dimen/elevation_subtle"
-                app:cardBackgroundColor="@color/surfaceColor"
-                app:strokeWidth="@dimen/stroke_default"
-                app:strokeColor="@color/borderSubtle">
+                android:contentDescription="@string/av_title">
 
                 <LinearLayout
                     android:layout_width="match_parent"

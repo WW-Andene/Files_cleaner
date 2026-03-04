@@ -100,6 +100,8 @@ object FilePreviewDialog {
             )
             adjustViewBounds = true
             scaleType = ImageView.ScaleType.FIT_CENTER
+            // §G1: Describe the preview image for screen readers
+            contentDescription = context.getString(R.string.a11y_preview_image, item.name)
         }
 
         Glide.with(context)
@@ -139,6 +141,8 @@ object FilePreviewDialog {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
             setPadding(padding, padding, padding, padding)
             setTextIsSelectable(true)
+            // §G1: Describe the text preview for screen readers
+            contentDescription = context.getString(R.string.a11y_preview_text, item.name)
         }
 
         val scrollView = ScrollView(context).apply {

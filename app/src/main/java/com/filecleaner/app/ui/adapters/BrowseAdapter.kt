@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -273,6 +274,10 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_info,
                 fileItem.name, holder.meta?.text ?: fileItem.sizeReadable)
+            // §G1: Set stateDescription so TalkBack announces selection state
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_info,
+                    fileItem.name, holder.meta?.text ?: fileItem.sizeReadable))
             return
         }
         super.onBindViewHolder(holder, position, payloads)
@@ -298,11 +303,17 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         holder.chevron.rotation = 0f
 
         val ctx = holder.itemView.context
+        // §G1: Rich folder header description with file count and size
+        val folderDesc = ctx.getString(R.string.a11y_folder_header,
+            header.displayName, header.fileCount, UndoHelper.formatBytes(header.totalSize))
         holder.itemView.contentDescription = if (isCollapsed) {
-            ctx.getString(R.string.a11y_expand_folder, header.displayName)
+            "$folderDesc, ${ctx.getString(R.string.a11y_expand_folder, header.displayName)}"
         } else {
-            ctx.getString(R.string.a11y_collapse_folder, header.displayName)
+            "$folderDesc, ${ctx.getString(R.string.a11y_collapse_folder, header.displayName)}"
         }
+        // §G1: State description for expand/collapse state
+        ViewCompat.setStateDescription(holder.itemView,
+            if (isCollapsed) ctx.getString(R.string.collapse_all) else ctx.getString(R.string.expand_all))
 
         holder.itemView.setOnClickListener {
             val pos = holder.bindingAdapterPosition
@@ -393,6 +404,10 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         holder.itemView.contentDescription = ctx.getString(
             if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_info,
             item.name, holder.meta?.text ?: item.sizeReadable)
+        // §G1: Set stateDescription so TalkBack announces selection state
+        ViewCompat.setStateDescription(holder.itemView,
+            ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_info,
+                item.name, holder.meta?.text ?: item.sizeReadable))
     }
 
     class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {

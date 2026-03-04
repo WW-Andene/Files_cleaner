@@ -136,6 +136,9 @@ object ColorLegendHelper {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(chipPadPx, vPad, chipPadPx, vPad)
+            // §G1: Describe the legend chip for screen readers
+            contentDescription = ctx.getString(R.string.a11y_legend_color, entry.label)
+            isFocusable = true
 
             val bg = GradientDrawable().apply {
                 setColor(ContextCompat.getColor(ctx, R.color.legendChipBg))
@@ -152,13 +155,14 @@ object ColorLegendHelper {
             layoutParams = lp
         }
 
-        // Colored dot
+        // Colored dot (decorative — accessibility handled by chip contentDescription)
         val dot = View(ctx).apply {
             val dotBg = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(entry.color)
             }
             background = dotBg
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             layoutParams = LinearLayout.LayoutParams(dotSize, dotSize).apply {
                 marginEnd = spacingXsPx
             }

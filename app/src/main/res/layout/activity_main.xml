@@ -96,7 +96,7 @@
                         android:layout_width="@dimen/icon_inline"
                         android:layout_height="@dimen/icon_inline"
                         android:src="@drawable/ic_scan"
-                        android:importantForAccessibility="no"
+                        android:contentDescription="@string/a11y_scan_icon"
                         app:tint="@color/colorPrimary" />
 
                     <TextView
@@ -120,7 +120,8 @@
                         android:layout_marginStart="@dimen/spacing_sm"
                         android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
                         android:textColor="@color/colorPrimary"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        android:accessibilityLiveRegion="polite" />
 
                     <ImageButton
                         android:id="@+id/btn_cancel_scan"
@@ -142,6 +143,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:visibility="gone"
+                    android:contentDescription="@string/a11y_scan_phase_progress"
+                    android:accessibilityLiveRegion="polite"
                     app:indicatorColor="@color/colorPrimary"
                     app:trackColor="@color/colorPrimaryContainer"
                     app:trackCornerRadius="@dimen/track_corner_radius"
@@ -163,14 +166,16 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                        android:textColor="@color/textTertiary" />
+                        android:textColor="@color/textTertiary"
+                        android:accessibilityLiveRegion="polite" />
 
                     <TextView
                         android:id="@+id/tv_phase_step"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                        android:textColor="@color/textTertiary" />
+                        android:textColor="@color/textTertiary"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -196,7 +201,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_width"
-            android:background="@color/bottomNavDivider" />
+            android:background="@color/bottomNavDivider"
+            android:importantForAccessibility="no" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav"

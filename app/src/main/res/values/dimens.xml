@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Spacing scale -->
+    <!-- ═══ Spacing Scale (4dp base) ═══ -->
+    <!-- micro/2dp → xs/4dp → sm/8dp → md/12dp → lg/16dp → xl/20dp → xxl/24dp → 3xl/32dp → 4xl/48dp → 5xl/64dp -->
+    <dimen name="spacing_micro">2dp</dimen>
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
     <dimen name="spacing_10">10dp</dimen>
@@ -29,18 +31,20 @@
     <!-- Large spacing -->
     <dimen name="spacing_3xl">32dp</dimen>
     <dimen name="spacing_4xl">48dp</dimen>
-    <dimen name="spacing_micro">2dp</dimen>
+    <dimen name="spacing_5xl">64dp</dimen>
     <dimen name="divider_width">1dp</dimen>
     <dimen name="divider_thick">4dp</dimen>
     <dimen name="spacing_bottom_inset">72dp</dimen>
     <dimen name="spacing_above_nav">80dp</dimen>
 
-    <!-- Elevation scale -->
+    <!-- Elevation scale — 0 / 1 / 2 / 4 / 8 / 16 -->
     <dimen name="elevation_none">0dp</dimen>
+    <dimen name="elevation_border">1dp</dimen>
     <dimen name="elevation_subtle">2dp</dimen>
     <dimen name="elevation_raised">4dp</dimen>
     <dimen name="elevation_floating">8dp</dimen>
     <dimen name="elevation_nav">8dp</dimen>
+    <dimen name="elevation_modal">16dp</dimen>
 
     <!-- Stroke widths -->
     <dimen name="stroke_none">0dp</dimen>
@@ -83,14 +87,23 @@
     <dimen name="dialog_max_height">400dp</dimen>
     <dimen name="track_corner_radius">2dp</dimen>
 
+    <!-- Outlined card border (Card.Flat style) -->
+    <dimen name="stroke_card_flat">1dp</dimen>
+
     <!-- Hub card grid -->
     <dimen name="hub_card_icon_inner">28dp</dimen>
 
-    <!-- Button heights -->
+    <!-- Button heights & touch targets -->
     <dimen name="button_height_sm">36dp</dimen>
     <dimen name="button_height">48dp</dimen>
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="icon_button_size">48dp</dimen>
+    <dimen name="icon_button_size_sm">36dp</dimen>
 
-    <!-- Text sizes (modular scale) -->
+    <!-- ═══ Typographic Scale (§DT2) ═══ -->
+    <!-- Lower range: compressed for legibility at small mobile sizes -->
+    <!-- Upper range: ~Major Third (1.25×): 14 → 16 → 20 → 26 → 32 -->
+    <dimen name="text_overline">10sp</dimen>
     <dimen name="text_caption">10sp</dimen>
     <dimen name="text_label">11sp</dimen>
     <dimen name="text_body_small">12sp</dimen>

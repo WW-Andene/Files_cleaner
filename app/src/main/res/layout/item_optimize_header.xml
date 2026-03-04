@@ -14,7 +14,7 @@
         android:id="@+id/header_clickable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/button_height"
+        android:minHeight="@dimen/touch_target_min"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="?attr/selectableItemBackground"
@@ -24,6 +24,8 @@
             android:id="@+id/cb_category_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="@dimen/touch_target_min"
+            android:minHeight="@dimen/touch_target_min"
             android:contentDescription="@string/a11y_optimize_select_category" />
 
         <TextView
@@ -34,14 +36,17 @@
             android:layout_marginStart="@dimen/spacing_xs"
             android:textAppearance="@style/TextAppearance.FileCleaner.Title"
             android:textColor="@color/textPrimary"
+            android:accessibilityHeading="true"
             tools:text="Photos" />
 
         <ImageView
             android:id="@+id/iv_expand_arrow"
-            android:layout_width="@dimen/icon_nav"
-            android:layout_height="@dimen/icon_nav"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:padding="@dimen/spacing_md"
             android:src="@drawable/ic_arrow_back"
             android:rotation="-90"
+            android:scaleType="centerInside"
             android:contentDescription="@string/collapse_expand"
             android:layout_marginStart="@dimen/spacing_sm"
             app:tint="@color/textTertiary" />

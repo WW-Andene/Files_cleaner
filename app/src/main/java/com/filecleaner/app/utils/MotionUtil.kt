@@ -187,6 +187,89 @@ object MotionUtil {
             .setInterpolator(OvershootInterpolator(1.5f))
     }
 
+    // ── Crossfade helper ─────────────────────────────────────────────────
+
+    /**
+     * Crossfades from [outView] to [inView] using enter/exit durations.
+     * Respects reduced motion by snapping visibility immediately.
+     */
+    fun crossfade(outView: View, inView: View) {
+        if (isReducedMotion(outView.context)) {
+            outView.alpha = 0f
+            outView.visibility = View.GONE
+            inView.alpha = 1f
+            inView.visibility = View.VISIBLE
+            return
+        }
+        val exitDur = exitMs(outView.context)
+        val enterDur = enterMs(inView.context)
+        outView.animate()
+            .alpha(0f)
+            .setDuration(exitDur)
+            .setInterpolator(AccelerateInterpolator())
+            .withEndAction {
+                outView.visibility = View.GONE
+                inView.alpha = 0f
+                inView.visibility = View.VISIBLE
+                inView.animate()
+                    .alpha(1f)
+                    .setDuration(enterDur)
+                    .setInterpolator(DecelerateInterpolator())
+                    .start()
+            }
+            .start()
+    }
+
+    // ── Stagger delay helper ─────────────────────────────────────────────
+
+    /**
+     * Computes a capped stagger delay for list item at [index].
+     * Uses motion_stagger_step per item, capped at 160ms total (4 steps).
+     * Returns 0 when reduced motion is enabled.
+     */
+    fun staggerDelay(context: Context, index: Int): Long {
+        if (isReducedMotion(context)) return 0L
+        val step = staggerStepMs(context)
+        val maxStagger = step * 4  // cap at 160ms
+        return (index * step).coerceAtMost(maxStagger)
+    }
+
+    // ── Effective duration helper ────────────────────────────────────────
+
+    /**
+     * Returns the given duration scaled by ANIMATOR_DURATION_SCALE.
+     * If reduced motion is enabled, returns 0 (instant).
+     * Useful when constructing ObjectAnimator durations that need to
+     * respect the system scale but still use resource-based values.
+     */
+    fun effectiveDuration(context: Context, baseMs: Long): Long {
+        val scale = Settings.Global.getFloat(
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+            1f
+        )
+        if (scale < 1f) return 0L
+        return (baseMs * scale).toLong()
+    }
+
+    // ── Micro-interaction helper ─────────────────────────────────────────
+
+    /**
+     * Quick alpha fade for micro-interactions (press feedback, toggle state).
+     * Uses motion_micro duration with linear interpolation.
+     * Ideal for checkbox/toggle visual feedback (§DM4).
+     */
+    fun microFade(view: View, targetAlpha: Float): ViewPropertyAnimator? {
+        if (isReducedMotion(view.context)) {
+            view.alpha = targetAlpha
+            return null
+        }
+        val duration = microMs(view.context)
+        return view.animate()
+            .alpha(targetAlpha)
+            .setDuration(duration)
+    }
+
     // ── Navigation helpers ───────────────────────────────────────────────
 
     /**

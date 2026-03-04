@@ -22,6 +22,7 @@
             android:layout_height="@dimen/icon_button"
             android:src="@drawable/ic_arrow_back"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:focusable="true"
             android:contentDescription="@string/back"
             app:tint="@color/textPrimary" />
 
@@ -41,7 +42,8 @@
             android:layout_height="@dimen/icon_button"
             android:src="@drawable/ic_open"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/ctx_open"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_open_with_external"
             app:tint="@color/textPrimary" />
 
         <ImageButton
@@ -50,7 +52,8 @@
             android:layout_height="@dimen/icon_button"
             android:src="@drawable/ic_share"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/ctx_share"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_share_file"
             app:tint="@color/textPrimary" />
     </LinearLayout>
 
@@ -102,6 +105,7 @@
                     android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_arrow_back"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:focusable="true"
                     android:contentDescription="@string/a11y_pdf_prev_page"
                     app:tint="@color/textPrimary" />
 
@@ -110,7 +114,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_lg"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                    android:accessibilityLiveRegion="polite" />
 
                 <ImageButton
                     android:id="@+id/btn_pdf_next"
@@ -118,6 +123,7 @@
                     android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_arrow_forward"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:focusable="true"
                     android:contentDescription="@string/a11y_pdf_next_page"
                     app:tint="@color/textPrimary" />
             </LinearLayout>
@@ -175,19 +181,24 @@
                 android:orientation="vertical"
                 android:padding="@dimen/spacing_sm"
                 android:background="@color/overlayDark"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/a11y_video_controls"
                 android:visibility="gone">
 
                 <SeekBar
                     android:id="@+id/seek_video"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
                     android:contentDescription="@string/a11y_video_seek" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="@dimen/spacing_xs">
 
                     <ImageButton
                         android:id="@+id/btn_video_play"
@@ -195,6 +206,7 @@
                         android:layout_height="@dimen/icon_button"
                         android:src="@android:drawable/ic_media_pause"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:focusable="true"
                         android:contentDescription="@string/viewer_video_play"
                         app:tint="@color/textOnPrimary" />
 
@@ -202,6 +214,7 @@
                         android:id="@+id/tv_video_current"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_xs"
                         android:text="0:00"
                         android:textColor="@color/textOnPrimary"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric" />
@@ -209,7 +222,8 @@
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:importantForAccessibility="no" />
 
                     <TextView
                         android:id="@+id/tv_video_duration"
@@ -230,6 +244,8 @@
             android:orientation="vertical"
             android:gravity="center"
             android:padding="@dimen/spacing_lg"
+            android:accessibilityLiveRegion="polite"
+            android:contentDescription="@string/a11y_audio_controls"
             android:visibility="gone">
 
             <ImageView
@@ -249,21 +265,25 @@
                 android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                 android:textColor="@color/textPrimary"
                 android:maxLines="2"
-                android:ellipsize="end" />
+                android:ellipsize="end"
+                android:gravity="center" />
 
             <SeekBar
                 android:id="@+id/seek_audio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="@dimen/touch_target_min"
                 android:layout_marginTop="@dimen/spacing_lg"
                 android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:focusable="true"
                 android:contentDescription="@string/a11y_audio_seek" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginHorizontal="@dimen/spacing_lg">
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_xs">
 
                 <TextView
                     android:id="@+id/tv_audio_current"
@@ -276,7 +296,8 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:id="@+id/tv_audio_duration"
@@ -292,7 +313,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="@dimen/spacing_sm">
+                android:layout_marginTop="@dimen/spacing_md">
 
                 <ImageButton
                     android:id="@+id/btn_audio_play"
@@ -300,6 +321,7 @@
                     android:layout_height="@dimen/icon_audio_play"
                     android:src="@android:drawable/ic_media_play"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:focusable="true"
                     android:contentDescription="@string/viewer_audio_play"
                     app:tint="@color/textPrimary" />
             </LinearLayout>
@@ -320,6 +342,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
+            android:padding="@dimen/spacing_4xl"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone">
 
             <TextView
@@ -327,16 +351,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                android:textColor="@color/textSecondary" />
+                android:textColor="@color/textSecondary"
+                android:gravity="center"
+                android:contentDescription="@string/a11y_unsupported_file" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_open_fallback"
                 style="@style/Widget.FileCleaner.Button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/button_height"
                 android:layout_marginTop="@dimen/spacing_lg"
                 android:text="@string/ctx_open"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:focusable="true"
+                app:cornerRadius="@dimen/radius_pill" />
         </LinearLayout>
     </FrameLayout>
 
@@ -345,10 +373,12 @@
         android:id="@+id/tv_file_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_sm"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_sm"
         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
         android:textColor="@color/textTertiary"
         android:gravity="center"
-        android:background="@color/surfaceElevated" />
+        android:background="@color/surfaceElevated"
+        android:accessibilityLiveRegion="polite" />
 
 </LinearLayout>

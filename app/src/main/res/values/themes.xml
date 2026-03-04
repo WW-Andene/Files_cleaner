@@ -152,38 +152,42 @@
     </style>
 
     <!-- ═══ Typography System ═══ -->
-    <!-- Display: large hero numbers — bold weight, tight tracking -->
+    <!-- Display: large hero numbers — bold weight, tight tracking, 1.2× line height -->
     <style name="TextAppearance.FileCleaner.Display" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="android:textSize">@dimen/text_display</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
-    <!-- Headline: bold, slight negative tracking for optical tightening -->
+    <!-- Headline: bold, slight negative tracking for optical tightening, 1.2× line height -->
     <style name="TextAppearance.FileCleaner.Headline" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textSize">@dimen/text_headline</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
-    <!-- Title: medium weight, tighter than body -->
+    <!-- Title: medium weight, tighter than body, 1.2× line height -->
     <style name="TextAppearance.FileCleaner.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:textSize">@dimen/text_title</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:letterSpacing">-0.005</item>
         <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
-    <!-- Subtitle: slightly emphasized -->
+    <!-- Subtitle: slightly emphasized, 1.3× line height (bridge between heading & body) -->
     <style name="TextAppearance.FileCleaner.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle2">
         <item name="android:textSize">@dimen/text_subtitle</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
     </style>
 
     <!-- Body: regular weight, natural tracking -->
@@ -195,20 +199,22 @@
         <item name="android:lineSpacingMultiplier">1.4</item>
     </style>
 
-    <!-- Body medium-weight: file names in compact contexts -->
+    <!-- Body medium-weight: file names in compact contexts, 1.4× line height -->
     <style name="TextAppearance.FileCleaner.BodyMedium" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textSize">@dimen/text_body</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:letterSpacing">0.005</item>
         <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingMultiplier">1.4</item>
     </style>
 
-    <!-- Body small: secondary info -->
+    <!-- Body small: secondary info, 1.5× line height for small-text legibility -->
     <style name="TextAppearance.FileCleaner.BodySmall" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:textSize">@dimen/text_body_small</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
 
     <!-- Body small medium-weight: emphasized small text (file names, card labels) -->
@@ -217,21 +223,23 @@
         <item name="android:textColor">@color/textPrimary</item>
     </style>
 
-    <!-- Caption: small labels, wider tracking for legibility at small size -->
+    <!-- Caption: small labels, wider tracking for legibility at small size, 1.5× line height -->
     <style name="TextAppearance.FileCleaner.Caption" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">@dimen/text_caption</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:letterSpacing">0.03</item>
         <item name="android:textColor">@color/textTertiary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
 
-    <!-- Label: all-caps chip/tag labels — wide tracking is mandatory -->
+    <!-- Label: all-caps chip/tag labels — wide tracking is mandatory, 1.5× line height -->
     <style name="TextAppearance.FileCleaner.Label" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">@dimen/text_label</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:letterSpacing">0.06</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
 
     <!-- Bottom Sheet Dialog -->
@@ -391,6 +399,8 @@
         <item name="subtitleTextAppearance">@style/TextAppearance.FileCleaner.BodySmall</item>
         <item name="titleTextColor">@color/textPrimary</item>
         <item name="subtitleTextColor">@color/textSecondary</item>
+        <!-- Back / navigation icon tinted to match text for consistent iconography -->
+        <item name="navigationIconTint">@color/textPrimary</item>
     </style>
 
     <!-- ═══ NEW: Badge style for notification counts ═══ -->
@@ -412,5 +422,105 @@
         <item name="indicatorColor">@color/colorPrimary</item>
         <item name="trackColor">@color/surfaceDim</item>
         <item name="trackThickness">@dimen/spacing_xs</item>
+    </style>
+
+    <!-- ═══ §DT2 Overline: section labels — 10sp, all-caps, wide tracking ═══ -->
+    <style name="TextAppearance.FileCleaner.Overline" parent="TextAppearance.MaterialComponents.Overline">
+        <item name="android:textSize">@dimen/text_overline</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <!-- ═══ §E5 Card.Flat — no elevation, border only for less prominent cards ═══ -->
+    <style name="Widget.FileCleaner.Card.Flat" parent="Widget.FileCleaner.Card">
+        <item name="cardElevation">@dimen/elevation_none</item>
+        <item name="strokeWidth">@dimen/stroke_card_flat</item>
+        <item name="strokeColor">@color/borderDefault</item>
+    </style>
+
+    <!-- ═══ §E5 Card.Outlined — explicit outlined variant ═══ -->
+    <style name="Widget.FileCleaner.Card.Outlined" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/radius_card</item>
+        <item name="cardElevation">@dimen/elevation_none</item>
+        <item name="strokeWidth">@dimen/stroke_default</item>
+        <item name="strokeColor">@color/borderDefault</item>
+        <item name="cardBackgroundColor">@color/surfaceColor</item>
+    </style>
+
+    <!-- ═══ §E5 Ghost Button — lowest emphasis, no background ═══ -->
+    <style name="Widget.FileCleaner.Button.Ghost" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:textColor">@color/textSecondary</item>
+        <item name="rippleColor">@color/borderDefault</item>
+    </style>
+
+    <!-- ═══ §E5 Icon Button — circular touch target with icon ═══ -->
+    <style name="Widget.FileCleaner.Button.Icon" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:minWidth">@dimen/icon_button_size</item>
+        <item name="android:minHeight">@dimen/icon_button_size</item>
+        <item name="android:padding">@dimen/spacing_md</item>
+        <item name="iconTint">@color/textPrimary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.FileCleaner.Circle</item>
+    </style>
+
+    <!-- Small icon button (36dp) -->
+    <style name="Widget.FileCleaner.Button.Icon.Small">
+        <item name="android:minWidth">@dimen/icon_button_size_sm</item>
+        <item name="android:minHeight">@dimen/icon_button_size_sm</item>
+        <item name="android:padding">@dimen/spacing_sm</item>
+    </style>
+
+    <!-- Circle shape for icon buttons -->
+    <style name="ShapeAppearance.FileCleaner.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- ═══ §E5 Small Button variant — 36dp height for compact contexts ═══ -->
+    <style name="Widget.FileCleaner.Button.Small" parent="Widget.FileCleaner.Button">
+        <item name="android:minHeight">@dimen/button_height_sm</item>
+        <item name="android:textSize">@dimen/text_body_small</item>
+    </style>
+
+    <style name="Widget.FileCleaner.Button.Outlined.Small" parent="Widget.FileCleaner.Button.Outlined">
+        <item name="android:minHeight">@dimen/button_height_sm</item>
+        <item name="android:textSize">@dimen/text_body_small</item>
+    </style>
+
+    <!-- ═══ §DT3 FileViewer text appearances ═══ -->
+    <!-- Filename in viewer toolbar — medium weight, single line -->
+    <style name="TextAppearance.FileCleaner.FileViewer.Filename" parent="TextAppearance.FileCleaner.BodyMedium">
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- File info bar at bottom of viewer — tabular numerals for size/date -->
+    <style name="TextAppearance.FileCleaner.FileViewer.Info" parent="TextAppearance.FileCleaner.Numeric">
+        <item name="android:textColor">@color/textTertiary</item>
+    </style>
+
+    <!-- Text/code content in viewer — monospace with comfortable line height -->
+    <style name="TextAppearance.FileCleaner.FileViewer.Content" parent="TextAppearance.FileCleaner.Mono">
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <!-- ═══ §DT3 NumericDisplay: tabular numerals at Display size for hero stats ═══ -->
+    <style name="TextAppearance.FileCleaner.NumericDisplay" parent="TextAppearance.FileCleaner.Display">
+        <item name="android:fontFeatureSettings">tnum</item>
+    </style>
+
+    <!-- ═══ §DT3 NumericHeadline: tabular numerals at Headline size ═══ -->
+    <style name="TextAppearance.FileCleaner.NumericHeadline" parent="TextAppearance.FileCleaner.Headline">
+        <item name="android:fontFeatureSettings">tnum</item>
     </style>
 </resources>

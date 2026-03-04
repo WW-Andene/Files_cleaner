@@ -7,6 +7,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -125,6 +126,10 @@ class FileAdapter(
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: "")
+            // §G1: Set stateDescription so TalkBack announces "selected"/"not selected"
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                    item.name, holder.meta?.text ?: ""))
             return
         }
         super.onBindViewHolder(holder, position, payloads)
@@ -229,6 +234,9 @@ class FileAdapter(
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: "")
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                    item.name, holder.meta?.text ?: ""))
         } else if (selectable) {
             // G2-3: Grid mode with selection — no checkbox, use tap to toggle + stateDescription
             holder.itemView.setOnClickListener {
@@ -250,6 +258,9 @@ class FileAdapter(
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: item.sizeReadable)
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                    item.name, holder.meta?.text ?: item.sizeReadable))
         } else {
             holder.check?.visibility = View.GONE
             // Wire click and long-click for non-selectable mode (use bindingAdapterPosition)
@@ -285,7 +296,8 @@ class FileAdapter(
     }
 
     private fun notifySelectionChanged() {
-        onSelectionChanged(currentList.filter { it.path in selectedPaths })
+        val selected = currentList.filter { it.path in selectedPaths }
+        onSelectionChanged(selected)
     }
 
     // D1: Use notifyItemRangeChanged for selection changes instead of

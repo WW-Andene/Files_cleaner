@@ -6,33 +6,41 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="@dimen/spacing_4xl">
+    android:paddingHorizontal="@dimen/spacing_3xl"
+    android:paddingTop="@dimen/spacing_5xl"
+    android:paddingBottom="@dimen/spacing_4xl"
+    android:accessibilityLiveRegion="polite"
+    android:contentDescription="@string/a11y_empty_state">
 
     <ImageView
         android:layout_width="@dimen/icon_empty_state"
         android:layout_height="@dimen/icon_empty_state"
         android:src="@drawable/ic_raccoon_logo"
         android:alpha="0.85"
-        android:importantForAccessibility="no" />
+        android:importantForAccessibility="no"
+        android:contentDescription="@null" />
 
     <TextView
         android:id="@+id/tv_empty_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xl"
+        android:layout_marginTop="@dimen/spacing_xxl"
         android:textAppearance="@style/TextAppearance.FileCleaner.Title"
         android:textColor="@color/textPrimary"
         android:gravity="center"
+        android:maxWidth="280dp"
+        android:lineSpacingExtra="@dimen/spacing_xs"
         tools:text="Raccoon is waiting to dig in!" />
 
     <TextView
         android:id="@+id/tv_empty_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/spacing_md"
         android:textAppearance="@style/TextAppearance.FileCleaner.Body"
         android:textColor="@color/textSecondary"
         android:gravity="center"
+        android:maxWidth="300dp"
         android:lineSpacingExtra="@dimen/spacing_xs"
         tools:text="Scan your storage and Raccoon will crunch the numbers for you." />
 

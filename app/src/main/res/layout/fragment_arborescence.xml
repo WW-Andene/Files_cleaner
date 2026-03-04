@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_sm"
+        android:contentDescription="@string/a11y_search_tree"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -62,6 +63,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:padding="@dimen/spacing_md"
+                android:focusable="true"
                 android:contentDescription="@string/toggle_filters"
                 app:tint="@color/textSecondary" />
         </com.google.android.material.card.MaterialCardView>
@@ -88,6 +90,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="@dimen/button_height"
+                android:minHeight="@dimen/touch_target_min"
                 android:layout_marginEnd="@dimen/spacing_sm"
                 android:background="@drawable/bg_spinner"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
@@ -99,6 +102,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="@dimen/button_height"
+                android:minHeight="@dimen/touch_target_min"
                 android:layout_marginStart="@dimen/spacing_sm"
                 android:background="@drawable/bg_spinner"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
@@ -193,7 +197,8 @@
                 android:text="@string/scan_to_see_results"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Body"
                 android:textColor="@color/textSecondary"
-                android:gravity="center" />
+                android:gravity="center"
+                android:lineSpacingExtra="@dimen/spacing_xs" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_scan_now"
@@ -237,10 +242,12 @@
             android:layout_marginStart="@dimen/spacing_lg"
             android:layout_marginBottom="@dimen/spacing_bottom_inset"
             android:contentDescription="@string/reset_view"
+            android:focusable="true"
             android:src="@drawable/ic_recenter"
             app:fabSize="mini"
             app:backgroundTint="@color/surfaceDim"
             app:tint="@color/colorPrimary"
+            app:elevation="@dimen/elevation_floating"
             app:shapeAppearance="@style/ShapeSmall" />
     </FrameLayout>
 

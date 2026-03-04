@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shared element return transition — faster exit timing -->
+<!-- Shared element return transition — faster exit timing (160ms).
+     §DM2: Exits use accelerate (fast_out_linear_in) and are faster than entries. -->
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
     android:transitionOrdering="together"
     android:duration="@integer/motion_exit"
@@ -12,4 +13,8 @@
     <changeClipBounds />
 
     <changeImageTransform />
+
+    <fade
+        android:fadingMode="fade_out"
+        android:duration="@integer/motion_micro" />
 </transitionSet>

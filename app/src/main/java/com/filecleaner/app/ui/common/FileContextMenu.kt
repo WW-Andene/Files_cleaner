@@ -104,9 +104,16 @@ object FileContextMenu {
         }
         ivIcon.setImageResource(iconRes)
 
+        // §G1: Set contentDescription on the header icon
+        ivIcon.contentDescription = context.getString(R.string.a11y_file_icon,
+            context.getString(item.category.displayNameRes))
+
         val container = contentView.findViewById<LinearLayout>(R.id.menu_container)
         val res = context.resources
         val buttonHeight = res.getDimensionPixelSize(R.dimen.button_height)
+        // §H3: Ensure minimum 48dp touch target for menu items
+        val minTouchTarget = (48 * res.displayMetrics.density).toInt()
+        val effectiveHeight = maxOf(buttonHeight, minTouchTarget)
         val spacingXl = res.getDimensionPixelSize(R.dimen.spacing_xl)
         val spacingLg = res.getDimensionPixelSize(R.dimen.spacing_lg)
         val spacingXs = res.getDimensionPixelSize(R.dimen.spacing_xs)
@@ -120,7 +127,7 @@ object FileContextMenu {
                 gravity = Gravity.CENTER_VERTICAL
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    buttonHeight
+                    effectiveHeight  // §H3: Ensure minimum 48dp touch target
                 )
                 setPadding(spacingXl, 0, spacingXl, 0)
                 val outValue = TypedValue()
@@ -140,6 +147,8 @@ object FileContextMenu {
                 setImageResource(iconDrawable)
                 setColorFilter(ContextCompat.getColor(context, R.color.textSecondary))
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
+                // §G1: Icon is decorative; row has contentDescription
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             }
             row.addView(icon)
 
@@ -313,7 +322,7 @@ object FileContextMenu {
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                buttonHeight
+                effectiveHeight  // §H3: Ensure minimum 48dp touch target
             )
             setPadding(spacingXl, 0, spacingXl, 0)
             val outValue = TypedValue()
@@ -342,6 +351,8 @@ object FileContextMenu {
             setImageResource(R.drawable.ic_delete)
             setColorFilter(ContextCompat.getColor(context, R.color.colorError))
             scaleType = ImageView.ScaleType.CENTER_INSIDE
+            // §G1: Icon is decorative; row has contentDescription
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
         deleteRow.addView(deleteIcon)
         val deleteText = TextView(context).apply {

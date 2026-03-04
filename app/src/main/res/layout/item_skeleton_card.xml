@@ -1,55 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Skeleton loading card — shown while real data loads, matches item_file layout structure -->
+<!-- Skeleton loading card: shown while real data loads, matches item_file layout structure -->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_sm"
     android:layout_marginBottom="@dimen/spacing_sm"
     app:cardCornerRadius="@dimen/radius_card"
     app:cardElevation="@dimen/elevation_none"
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
-    app:strokeColor="@color/borderSubtle">
+    app:strokeColor="@color/borderSubtle"
+    android:importantForAccessibility="no">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/spacing_lg">
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_lg">
 
         <!-- Icon placeholder -->
         <View
-            android:layout_width="@dimen/icon_file_list_default"
-            android:layout_height="@dimen/icon_file_list_default"
-            android:background="@drawable/bg_shimmer_circle" />
+            android:layout_width="@dimen/icon_provider_container"
+            android:layout_height="@dimen/icon_provider_container"
+            android:background="@drawable/bg_shimmer_circle"
+            android:importantForAccessibility="no" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="@dimen/spacing_lg">
+            android:layout_marginStart="@dimen/spacing_md">
 
             <!-- Title placeholder -->
             <View
                 android:layout_width="180dp"
                 android:layout_height="14dp"
-                android:background="@drawable/bg_shimmer_placeholder" />
+                android:background="@drawable/bg_shimmer_placeholder"
+                android:importantForAccessibility="no" />
 
             <!-- Subtitle placeholder -->
             <View
                 android:layout_width="120dp"
                 android:layout_height="10dp"
                 android:layout_marginTop="@dimen/spacing_sm"
-                android:background="@drawable/bg_shimmer_placeholder" />
+                android:background="@drawable/bg_shimmer_placeholder"
+                android:importantForAccessibility="no" />
         </LinearLayout>
 
         <!-- Size placeholder -->
         <View
-            android:layout_width="48dp"
-            android:layout_height="12dp"
-            android:background="@drawable/bg_shimmer_placeholder" />
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/spacing_md"
+            android:background="@drawable/bg_shimmer_placeholder"
+            android:importantForAccessibility="no" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

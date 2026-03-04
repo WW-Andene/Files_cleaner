@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shared element transition — for list-item-to-detail screen transitions -->
+<!-- Shared element enter transition — for list-item-to-detail screen transitions.
+     §DM2: Uses motion_page (280ms) with custom fast_out_slow_in for "considerate utility".
+     Includes fade for smoother visual continuity when bounds change. -->
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
     android:transitionOrdering="together"
     android:duration="@integer/motion_page"
@@ -12,4 +14,8 @@
     <changeClipBounds />
 
     <changeImageTransform />
+
+    <fade
+        android:fadingMode="fade_in"
+        android:duration="@integer/motion_enter" />
 </transitionSet>
