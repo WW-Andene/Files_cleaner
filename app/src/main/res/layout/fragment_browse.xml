@@ -58,7 +58,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:icon="@drawable/ic_arrow_down"
-            app:iconSize="16dp"
+            app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
             app:iconTint="@color/textSecondary" />
 
@@ -81,7 +81,7 @@
             android:layout_marginEnd="@dimen/spacing_sm"
             android:contentDescription="@string/a11y_toggle_all_folders"
             app:icon="@drawable/ic_chevron_up"
-            app:iconSize="16dp"
+            app:iconSize="@dimen/icon_small"
             app:iconGravity="textStart"
             app:iconTint="@color/textSecondary" />
 
@@ -98,7 +98,7 @@
             android:insetBottom="0dp"
             android:contentDescription="@string/a11y_display_options"
             app:icon="@drawable/ic_arrow_down"
-            app:iconSize="16dp"
+            app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
             app:iconTint="@color/textSecondary" />
 
@@ -426,7 +426,7 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     app:icon="@drawable/ic_edit"
-                    app:iconSize="16dp" />
+                    app:iconSize="@dimen/icon_small" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_compress_selected"
@@ -439,7 +439,7 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     app:icon="@drawable/ic_archive"
-                    app:iconSize="16dp" />
+                    app:iconSize="@dimen/icon_small" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_delete_selected"
@@ -453,7 +453,7 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     app:icon="@drawable/ic_delete"
-                    app:iconSize="16dp"
+                    app:iconSize="@dimen/icon_small"
                     app:iconTint="@color/sizeHuge" />
             </LinearLayout>
         </LinearLayout>

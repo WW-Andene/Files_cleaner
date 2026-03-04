@@ -34,7 +34,7 @@
             app:boxCornerRadiusTopEnd="@dimen/radius_input"
             app:boxCornerRadiusBottomStart="@dimen/radius_input"
             app:boxCornerRadiusBottomEnd="@dimen/radius_input"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_name"
@@ -56,7 +56,7 @@
             app:boxCornerRadiusTopEnd="@dimen/radius_input"
             app:boxCornerRadiusBottomStart="@dimen/radius_input"
             app:boxCornerRadiusBottomEnd="@dimen/radius_input"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_host"
@@ -69,7 +69,7 @@
         <!-- Port -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_port"
-            android:layout_width="120dp"
+            android:layout_width="@dimen/port_field_width"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_port_hint"
@@ -78,7 +78,7 @@
             app:boxCornerRadiusTopEnd="@dimen/radius_input"
             app:boxCornerRadiusBottomStart="@dimen/radius_input"
             app:boxCornerRadiusBottomEnd="@dimen/radius_input"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_port"
@@ -101,7 +101,7 @@
             app:boxCornerRadiusTopEnd="@dimen/radius_input"
             app:boxCornerRadiusBottomStart="@dimen/radius_input"
             app:boxCornerRadiusBottomEnd="@dimen/radius_input"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_username"
@@ -123,7 +123,7 @@
             app:boxCornerRadiusBottomStart="@dimen/radius_input"
             app:boxCornerRadiusBottomEnd="@dimen/radius_input"
             app:endIconMode="password_toggle"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_password"
@@ -163,7 +163,7 @@
                 app:boxCornerRadiusTopEnd="@dimen/radius_input"
                 app:boxCornerRadiusBottomStart="@dimen/radius_input"
                 app:boxCornerRadiusBottomEnd="@dimen/radius_input"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+                style="@style/Widget.FileCleaner.TextInput">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_oauth_client_id"
@@ -186,7 +186,7 @@
                 app:boxCornerRadiusBottomStart="@dimen/radius_input"
                 app:boxCornerRadiusBottomEnd="@dimen/radius_input"
                 app:endIconMode="password_toggle"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+                style="@style/Widget.FileCleaner.TextInput">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_oauth_client_secret"
@@ -211,10 +211,10 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:icon="@drawable/ic_cloud"
             app:iconGravity="textStart"
-            app:iconSize="20dp"
+            app:iconSize="@dimen/icon_inline"
             app:cornerRadius="@dimen/radius_btn"
             app:strokeColor="@color/colorPrimary"
-            app:strokeWidth="1dp"
+            app:strokeWidth="@dimen/stroke_default"
             app:iconTint="@color/colorPrimary"
             android:textColor="@color/colorPrimary" />
 
@@ -260,7 +260,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             app:icon="@drawable/ic_cloud"
             app:iconGravity="textStart"
-            app:iconSize="18dp"
+            app:iconSize="@dimen/icon_test_result"
             app:iconPadding="@dimen/spacing_sm"
             app:iconTint="@color/colorPrimary"
             app:rippleColor="@color/selectedBackground" />
@@ -277,8 +277,8 @@
 
             <ImageView
                 android:id="@+id/iv_test_result_icon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="@dimen/icon_test_result"
+                android:layout_height="@dimen/icon_test_result"
                 android:importantForAccessibility="no" />
 
             <TextView

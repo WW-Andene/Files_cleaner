@@ -9,7 +9,7 @@
     android:paddingVertical="@dimen/spacing_xs"
     android:paddingEnd="@dimen/spacing_sm"
     android:background="?attr/selectableItemBackground"
-    android:minHeight="40dp">
+    android:minHeight="@dimen/spacing_4xl">
 
     <!-- Expand/collapse indicator -->
     <ImageView
@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/iv_folder_icon"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
+        android:layout_width="@dimen/icon_tree_node"
+        android:layout_height="@dimen/icon_tree_node"
         android:src="@drawable/ic_folder"
         android:scaleType="centerInside"
         android:layout_marginStart="@dimen/spacing_micro"

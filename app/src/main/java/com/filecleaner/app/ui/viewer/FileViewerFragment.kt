@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.widget.SeekBar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -112,12 +113,8 @@ class FileViewerFragment : Fragment() {
             "html", "htm", "css", "scss"
         )
 
-        // Syntax highlighting colors
-        private const val COLOR_KEYWORD = 0xFF7B68EE.toInt()   // Medium slate blue
-        private const val COLOR_STRING = 0xFF2E8B57.toInt()    // Sea green
-        private const val COLOR_COMMENT = 0xFF808080.toInt()   // Gray
-        private const val COLOR_NUMBER = 0xFFCD853F.toInt()    // Peru / brown
-        private const val COLOR_TYPE = 0xFF4682B4.toInt()      // Steel blue
+        // Syntax highlighting colors — resolved at runtime from theme resources
+        // (see values/colors.xml and values-night/colors.xml)
 
         // Common keywords across many languages
         private val COMMON_KEYWORDS = setOf(
@@ -158,6 +155,13 @@ class FileViewerFragment : Fragment() {
     // Video state
     private var isVideoPlaying = false
     private var isVideoInitialized = false
+
+    // Syntax highlighting colors — resolved lazily from themed resources
+    private val COLOR_KEYWORD by lazy { ContextCompat.getColor(requireContext(), R.color.syntaxKeyword) }
+    private val COLOR_STRING by lazy { ContextCompat.getColor(requireContext(), R.color.syntaxString) }
+    private val COLOR_COMMENT by lazy { ContextCompat.getColor(requireContext(), R.color.syntaxComment) }
+    private val COLOR_NUMBER by lazy { ContextCompat.getColor(requireContext(), R.color.syntaxNumber) }
+    private val COLOR_TYPE by lazy { ContextCompat.getColor(requireContext(), R.color.syntaxType) }
 
     // Image zoom/pan state
     private var scaleFactor = 1.0f
@@ -740,17 +744,21 @@ class FileViewerFragment : Fragment() {
             append("<meta charset='utf-8'>")
             append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
             append("<style>")
-            append("body{font-family:sans-serif;padding:16px;line-height:1.6;color:#333;max-width:100%;word-wrap:break-word;}")
-            append("pre,code{background:#f4f4f4;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:14px;}")
+            // Light mode defaults
+            append(":root{--text:#1C1E1C;--bg:#F8F6F2;--code-bg:#EEEAE4;--border:#DDD9D3;--muted:#626966;}")
+            // Dark mode overrides via system preference
+            append("@media(prefers-color-scheme:dark){:root{--text:#E6E4DF;--bg:#0E1311;--code-bg:#1F2723;--border:#2D3531;--muted:#8A918D;}}")
+            append("body{font-family:sans-serif;padding:16px;line-height:1.6;color:var(--text);background:var(--bg);max-width:100%;word-wrap:break-word;}")
+            append("pre,code{background:var(--code-bg);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:14px;}")
             append("pre{padding:12px;overflow-x:auto;}")
             append("pre code{background:none;padding:0;}")
-            append("blockquote{border-left:4px solid #ddd;margin:0;padding:0 16px;color:#666;}")
+            append("blockquote{border-left:4px solid var(--border);margin:0;padding:0 16px;color:var(--muted);}")
             append("h1,h2,h3{margin-top:24px;}")
-            append("hr{border:none;border-top:1px solid #ddd;margin:24px 0;}")
+            append("hr{border:none;border-top:1px solid var(--border);margin:24px 0;}")
             append("img{max-width:100%;}")
             append("table{border-collapse:collapse;width:100%;}")
-            append("th,td{border:1px solid #ddd;padding:8px;text-align:left;}")
-            append("th{background:#f4f4f4;}")
+            append("th,td{border:1px solid var(--border);padding:8px;text-align:left;}")
+            append("th{background:var(--code-bg);}")
             append("</style></head><body>")
 
             var inCodeBlock = false

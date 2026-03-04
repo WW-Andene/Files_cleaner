@@ -68,7 +68,7 @@
                 android:id="@+id/btn_mode_left"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="32dp"
+                android:layout_height="@dimen/dual_pane_tab_height"
                 android:background="@color/surfaceDim"
                 android:text="@string/dual_pane_tab_browse"
                 android:textAllCaps="false"
@@ -79,7 +79,7 @@
                 android:insetBottom="0dp"
                 android:paddingHorizontal="@dimen/spacing_sm"
                 app:icon="@drawable/ic_arrow_down"
-                app:iconSize="14dp"
+                app:iconSize="@dimen/icon_btn_size_sm"
                 app:iconGravity="end"
                 app:iconTint="@color/textSecondary" />
 
@@ -182,7 +182,7 @@
                 android:id="@+id/btn_mode_right"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="32dp"
+                android:layout_height="@dimen/dual_pane_tab_height"
                 android:background="@color/surfaceDim"
                 android:text="@string/dual_pane_tab_browse"
                 android:textAllCaps="false"
@@ -193,7 +193,7 @@
                 android:insetBottom="0dp"
                 android:paddingHorizontal="@dimen/spacing_sm"
                 app:icon="@drawable/ic_arrow_down"
-                app:iconSize="14dp"
+                app:iconSize="@dimen/icon_btn_size_sm"
                 app:iconGravity="end"
                 app:iconTint="@color/textSecondary" />
 

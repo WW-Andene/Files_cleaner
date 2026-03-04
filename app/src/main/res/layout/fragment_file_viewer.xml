@@ -68,6 +68,7 @@
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
             android:importantForAccessibility="yes"
+            android:contentDescription="@string/a11y_image_content"
             android:visibility="gone" />
 
         <!-- PDF page viewer (hidden by default) -->
@@ -84,7 +85,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:background="@color/surfaceColor" />
+                android:background="@color/surfaceColor"
+                android:contentDescription="@string/a11y_pdf_page_content" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -159,7 +161,9 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_play_circle"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/viewer_video_play"
+                android:contentDescription="@string/a11y_play_video"
+                android:clickable="true"
+                android:focusable="true"
                 app:tint="@color/textOnPrimary"
                 android:alpha="0.9" />
 
@@ -177,7 +181,8 @@
                 <SeekBar
                     android:id="@+id/seek_video"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/a11y_video_seek" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -230,8 +235,8 @@
 
             <ImageView
                 android:id="@+id/iv_audio_art"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="@dimen/icon_audio_art"
+                android:layout_height="@dimen/icon_audio_art"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_audio"
                 android:importantForAccessibility="no"
@@ -252,7 +257,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_lg"
-                android:layout_marginHorizontal="@dimen/spacing_lg" />
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:contentDescription="@string/a11y_audio_seek" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -291,8 +297,8 @@
 
                 <ImageButton
                     android:id="@+id/btn_audio_play"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="@dimen/icon_audio_play"
+                    android:layout_height="@dimen/icon_audio_play"
                     android:src="@android:drawable/ic_media_play"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/viewer_audio_play"

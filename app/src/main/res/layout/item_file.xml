@@ -21,7 +21,7 @@
         <!-- Color accent stripe (4dp left edge indicator) -->
         <View
             android:id="@+id/view_accent_stripe"
-            android:layout_width="4dp"
+            android:layout_width="@dimen/divider_thick"
             android:layout_height="match_parent"
             android:visibility="gone" />
 
@@ -36,8 +36,8 @@
 
             <!-- Thumbnail / icon -->
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="@dimen/icon_provider_container"
+                android:layout_height="@dimen/icon_provider_container"
                 app:cardCornerRadius="@dimen/radius_icon_container"
                 app:cardElevation="@dimen/elevation_none"
                 app:strokeWidth="@dimen/stroke_none"

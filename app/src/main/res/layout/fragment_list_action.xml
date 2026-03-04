@@ -173,7 +173,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:icon="@drawable/ic_arrow_down"
-            app:iconSize="16dp"
+            app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
             app:iconTint="@color/textSecondary" />
 
@@ -194,7 +194,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:icon="@drawable/ic_arrow_down"
-            app:iconSize="16dp"
+            app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
             app:iconTint="@color/textSecondary" />
     </LinearLayout>

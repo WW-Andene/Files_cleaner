@@ -141,4 +141,11 @@
     <!-- Google Sign-In button colors -->
     <color name="googleSignInBg">#FFFFFF</color>
     <color name="googleSignInBorder">#DADCE0</color>
+
+    <!-- Syntax highlighting colors (light mode — high contrast on white) -->
+    <color name="syntaxKeyword">#7B68EE</color>
+    <color name="syntaxString">#2E7D42</color>
+    <color name="syntaxComment">#6B7E75</color>
+    <color name="syntaxNumber">#B8731A</color>
+    <color name="syntaxType">#3A6E96</color>
 </resources>

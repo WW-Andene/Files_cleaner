@@ -48,7 +48,7 @@
                     android:id="@+id/tv_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/text_body_small"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/textSecondary"
                     android:fontFamily="sans-serif-medium" />
             </LinearLayout>
@@ -120,7 +120,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/spacing_sm"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                         android:textColor="@color/colorPrimary"
                         android:fontFamily="sans-serif-medium"
                         android:visibility="gone" />
@@ -147,7 +147,7 @@
                     android:visibility="gone"
                     app:indicatorColor="@color/colorPrimary"
                     app:trackColor="@color/colorPrimaryContainer"
-                    app:trackCornerRadius="2dp"
+                    app:trackCornerRadius="@dimen/track_corner_radius"
                     app:trackThickness="@dimen/spacing_xs" />
 
                 <!-- Phase step indicators: dot row showing scan stages -->

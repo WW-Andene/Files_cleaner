@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.data.cloud.OAuthHelper
 import com.filecleaner.app.databinding.ActivityMainBinding
@@ -148,13 +149,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Shared NavOptions for non-tab navigations (arborescence, settings, dashboard)
-        val navAnimOptions = NavOptions.Builder()
-            .setEnterAnim(R.anim.nav_enter)
-            .setExitAnim(R.anim.nav_exit)
-            .setPopEnterAnim(R.anim.nav_pop_enter)
-            .setPopExitAnim(R.anim.nav_pop_exit)
-            .build()
+        // §DM2: Use centralized motion vocabulary NavOptions for consistent page transitions
+        val navAnimOptions = MotionUtil.navOptions()
 
         // Navigate to tree on "Show in Tree"
         viewModel.navigateToTree.observe(this) { filePath ->

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.filecleaner.app.R
@@ -137,8 +138,8 @@ class SettingsFragment : Fragment() {
             val clearButton = com.google.android.material.button.MaterialButton(requireContext()).apply {
                 tag = TAG_CLEAR_BUTTON
                 text = getString(R.string.settings_clear_data)
-                setBackgroundColor(android.graphics.Color.parseColor("#B00020"))
-                setTextColor(android.graphics.Color.WHITE)
+                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorError))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.textOnPrimary))
                 val lp = android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                     android.widget.LinearLayout.LayoutParams.WRAP_CONTENT

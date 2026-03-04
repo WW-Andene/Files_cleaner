@@ -28,8 +28,8 @@
         <!-- Small icon -->
         <ImageView
             android:id="@+id/iv_file_icon"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="@dimen/icon_compact"
+            android:layout_height="@dimen/icon_compact"
             android:scaleType="centerCrop"
             android:importantForAccessibility="no" />
 

@@ -114,8 +114,7 @@
                     android:id="@+id/tv_progress_pct"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                    android:fontFeatureSettings="tnum"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorPrimary"
                     android:gravity="end"
                     android:layout_marginTop="@dimen/spacing_micro"
@@ -196,8 +195,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/av_critical"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/colorError"
-                            android:textSize="@dimen/text_caption" />
+                            android:textColor="@color/colorError" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -234,8 +232,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/av_high"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/textTertiary"
-                            android:textSize="@dimen/text_caption" />
+                            android:textColor="@color/textTertiary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -272,8 +269,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/av_medium"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/textTertiary"
-                            android:textSize="@dimen/text_caption" />
+                            android:textColor="@color/textTertiary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -310,8 +306,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/av_clean"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/textTertiary"
-                            android:textSize="@dimen/text_caption" />
+                            android:textColor="@color/textTertiary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>

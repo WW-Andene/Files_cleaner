@@ -41,7 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:minHeight="120dp"
+                    android:minHeight="@dimen/grid_thumbnail_min_height"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />

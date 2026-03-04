@@ -41,7 +41,7 @@
             android:contentDescription="@string/a11y_provider_google_drive"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:strokeWidth="1dp"
+            app:strokeWidth="@dimen/stroke_default"
             app:strokeColor="@color/borderDefault"
             app:cardBackgroundColor="@color/surfaceColor"
             app:rippleColor="@color/selectedBackground">
@@ -61,8 +61,8 @@
 
                     <!-- Google Drive icon in rounded container -->
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/icon_provider_container"
+                        android:layout_height="@dimen/icon_provider_container"
                         android:background="@drawable/bg_icon_rounded"
                         android:backgroundTint="@color/providerCardIconBg">
 
@@ -119,19 +119,17 @@
                     android:text="@string/cloud_oauth_sign_in_google"
                     android:textAllCaps="false"
                     android:textColor="@color/googleButtonText"
-                    android:textSize="@dimen/text_body"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.01"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     app:icon="@drawable/ic_google_drive"
                     app:iconGravity="textStart"
-                    app:iconSize="20dp"
+                    app:iconSize="@dimen/icon_inline"
                     app:iconPadding="@dimen/spacing_md"
                     app:cornerRadius="@dimen/radius_btn"
                     app:strokeColor="@color/googleButtonBorder"
-                    app:strokeWidth="1dp"
+                    app:strokeWidth="@dimen/stroke_default"
                     app:backgroundTint="@color/googleButtonBg"
                     app:rippleColor="@color/rippleGoogle" />
 
@@ -149,7 +147,7 @@
             android:contentDescription="@string/a11y_provider_github"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:strokeWidth="1dp"
+            app:strokeWidth="@dimen/stroke_default"
             app:strokeColor="@color/borderDefault"
             app:cardBackgroundColor="@color/surfaceColor"
             app:rippleColor="@color/selectedBackground">
@@ -168,8 +166,8 @@
                     android:gravity="center_vertical">
 
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/icon_provider_container"
+                        android:layout_height="@dimen/icon_provider_container"
                         android:background="@drawable/bg_icon_rounded"
                         android:backgroundTint="@color/githubAccentLight">
 
@@ -227,15 +225,13 @@
                     android:text="@string/cloud_oauth_connect_github"
                     android:textAllCaps="false"
                     android:textColor="@color/textOnPrimary"
-                    android:textSize="@dimen/text_body"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.01"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     style="@style/Widget.FileCleaner.Button"
                     app:icon="@drawable/ic_archive"
                     app:iconGravity="textStart"
-                    app:iconSize="20dp"
+                    app:iconSize="@dimen/icon_inline"
                     app:iconPadding="@dimen/spacing_md"
                     app:cornerRadius="@dimen/radius_btn"
                     app:backgroundTint="@color/githubAccent"
@@ -256,7 +252,7 @@
             android:contentDescription="@string/a11y_provider_sftp"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:strokeWidth="1dp"
+            app:strokeWidth="@dimen/stroke_default"
             app:strokeColor="@color/borderDefault"
             app:cardBackgroundColor="@color/surfaceColor"
             app:rippleColor="@color/selectedBackground">
@@ -275,8 +271,8 @@
                     android:gravity="center_vertical">
 
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/icon_provider_container"
+                        android:layout_height="@dimen/icon_provider_container"
                         android:background="@drawable/bg_icon_rounded"
                         android:backgroundTint="@color/sftpAccentLight">
 
@@ -328,11 +324,11 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     app:icon="@drawable/ic_server"
                     app:iconGravity="textStart"
-                    app:iconSize="20dp"
+                    app:iconSize="@dimen/icon_inline"
                     app:iconPadding="@dimen/spacing_md"
                     app:cornerRadius="@dimen/radius_btn"
                     app:strokeColor="@color/sftpAccent"
-                    app:strokeWidth="1dp"
+                    app:strokeWidth="@dimen/stroke_default"
                     app:iconTint="@color/sftpAccent"
                     android:textColor="@color/sftpAccent"
                     app:rippleColor="@color/rippleSftp" />
@@ -350,7 +346,7 @@
             android:contentDescription="@string/a11y_provider_webdav"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"
-            app:strokeWidth="1dp"
+            app:strokeWidth="@dimen/stroke_default"
             app:strokeColor="@color/borderDefault"
             app:cardBackgroundColor="@color/surfaceColor"
             app:rippleColor="@color/selectedBackground">
@@ -369,8 +365,8 @@
                     android:gravity="center_vertical">
 
                     <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/icon_provider_container"
+                        android:layout_height="@dimen/icon_provider_container"
                         android:background="@drawable/bg_icon_rounded"
                         android:backgroundTint="@color/webdavAccentLight">
 
@@ -422,11 +418,11 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     app:icon="@drawable/ic_webdav"
                     app:iconGravity="textStart"
-                    app:iconSize="20dp"
+                    app:iconSize="@dimen/icon_inline"
                     app:iconPadding="@dimen/spacing_md"
                     app:cornerRadius="@dimen/radius_btn"
                     app:strokeColor="@color/webdavAccent"
-                    app:strokeWidth="1dp"
+                    app:strokeWidth="@dimen/stroke_default"
                     app:iconTint="@color/webdavAccent"
                     android:textColor="@color/webdavAccent"
                     app:rippleColor="@color/rippleWebdav" />

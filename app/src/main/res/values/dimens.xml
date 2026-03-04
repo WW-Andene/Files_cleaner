@@ -62,6 +62,20 @@
     <dimen name="node_detail_max_width">240dp</dimen>
     <dimen name="card_min_height">80dp</dimen>
     <dimen name="seekbar_value_width">64dp</dimen>
+    <dimen name="icon_provider_container">44dp</dimen>
+    <dimen name="icon_dual_pane">26dp</dimen>
+    <dimen name="icon_tree_node">22dp</dimen>
+    <dimen name="icon_compact">28dp</dimen>
+    <dimen name="icon_severity_dot">16dp</dimen>
+    <dimen name="icon_test_result">18dp</dimen>
+    <dimen name="icon_audio_art">200dp</dimen>
+    <dimen name="icon_audio_play">56dp</dimen>
+    <dimen name="grid_thumbnail_min_height">120dp</dimen>
+    <dimen name="port_field_width">120dp</dimen>
+    <dimen name="dual_pane_tab_height">32dp</dimen>
+    <dimen name="icon_btn_size_sm">14dp</dimen>
+    <dimen name="dialog_max_height">400dp</dimen>
+    <dimen name="track_corner_radius">2dp</dimen>
 
     <!-- Button heights -->
     <dimen name="button_height_sm">36dp</dimen>

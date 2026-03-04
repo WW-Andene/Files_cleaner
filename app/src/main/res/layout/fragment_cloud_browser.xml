@@ -46,7 +46,7 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:cornerRadius="@dimen/radius_pill"
             app:icon="@drawable/ic_cloud"
-            app:iconSize="16dp" />
+            app:iconSize="@dimen/icon_small" />
     </LinearLayout>
 
     <!-- Connection selector with status indicator -->

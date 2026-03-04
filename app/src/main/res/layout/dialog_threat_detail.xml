@@ -16,17 +16,15 @@
 
         <View
             android:id="@+id/severity_dot"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="@dimen/icon_severity_dot"
+            android:layout_height="@dimen/icon_severity_dot"
             android:background="@drawable/bg_icon_circle" />
 
         <TextView
             android:id="@+id/tv_severity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:textAllCaps="true"
-            android:letterSpacing="0.08"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Label"
             android:layout_marginStart="@dimen/spacing_sm" />
 
         <View

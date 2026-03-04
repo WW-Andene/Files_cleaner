@@ -9,12 +9,12 @@
     android:paddingHorizontal="@dimen/spacing_sm"
     android:paddingVertical="@dimen/spacing_xs"
     android:background="?attr/selectableItemBackground"
-    android:minHeight="44dp">
+    android:minHeight="@dimen/spacing_4xl">
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
+        android:layout_width="@dimen/icon_dual_pane"
+        android:layout_height="@dimen/icon_dual_pane"
         android:scaleType="centerInside"
         android:importantForAccessibility="no"
         app:tint="@color/textSecondary" />

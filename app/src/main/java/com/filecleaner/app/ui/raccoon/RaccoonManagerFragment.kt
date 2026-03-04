@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.filecleaner.app.MainActivity
 import com.filecleaner.app.R
@@ -40,12 +39,8 @@ class RaccoonManagerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navAnimOptions = NavOptions.Builder()
-            .setEnterAnim(R.anim.nav_enter)
-            .setExitAnim(R.anim.nav_exit)
-            .setPopEnterAnim(R.anim.nav_pop_enter)
-            .setPopExitAnim(R.anim.nav_pop_exit)
-            .build()
+        // §DM2: Use centralized motion vocabulary NavOptions for consistent transitions
+        val navAnimOptions = MotionUtil.navOptions()
 
         // Scan Storage — triggers permission check + scan
         binding.cardScan.setOnClickListener {

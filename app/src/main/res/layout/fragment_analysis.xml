@@ -48,8 +48,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/analysis_storage_overview"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/colorOnPrimaryContainer"
-                        android:fontFamily="sans-serif-medium" />
+                        android:textColor="@color/colorOnPrimaryContainer" />
 
                     <TextView
                         android:id="@+id/tv_storage_used"
@@ -108,7 +107,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="@dimen/spacing_sm"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                             android:textColor="@color/analysisSavingsText"
                             android:fontFamily="sans-serif-medium"
                             android:drawablePadding="@dimen/spacing_sm" />
@@ -123,8 +122,7 @@
                 android:layout_marginStart="@dimen/spacing_xl"
                 android:layout_marginTop="@dimen/spacing_xl"
                 android:text="@string/analysis_quick_actions"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                android:fontFamily="sans-serif-medium" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -160,7 +158,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="\uD83D\uDDD1\uFE0F"
-                            android:textSize="@dimen/text_emoji" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -208,7 +206,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="\uD83D\uDCC2"
-                            android:textSize="@dimen/text_emoji" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -256,7 +254,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="\uD83D\uDD04"
-                            android:textSize="@dimen/text_emoji" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -286,8 +284,7 @@
                 android:layout_marginStart="@dimen/spacing_xl"
                 android:layout_marginTop="@dimen/spacing_xl"
                 android:text="@string/analysis_category_breakdown"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                android:fontFamily="sans-serif-medium" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle" />
 
             <LinearLayout
                 android:id="@+id/layout_categories"
@@ -312,8 +309,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/analysis_top_files"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle" />
 
                 <TextView
                     android:layout_width="wrap_content"

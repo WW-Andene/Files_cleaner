@@ -86,7 +86,7 @@ class ArborescenceView @JvmOverloads constructor(
     private val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = context.resources.getDimension(R.dimen.text_subtitle)
         typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
-        color = Color.WHITE
+        color = ContextCompat.getColor(context, R.color.textOnColor)
         letterSpacing = TITLE_LETTER_SPACING
     }
     private val subtitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

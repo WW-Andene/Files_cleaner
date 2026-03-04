@@ -222,7 +222,7 @@
 
     <!-- Emoji: large display for category emojis -->
     <style name="TextAppearance.FileCleaner.Emoji" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="android:textSize">22sp</item>
+        <item name="android:textSize">@dimen/text_emoji</item>
         <item name="android:textColor">@color/textPrimary</item>
     </style>
 

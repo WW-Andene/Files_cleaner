@@ -18,8 +18,8 @@
     <string name="scanning_phase_duplicates">Finding duplicates\u2026 %d files</string>
     <string name="scanning_phase_analyzing">Analyzing sizes\u2026 %d files</string>
     <string name="scanning_phase_junk">Detecting junk\u2026 %d files</string>
-    <string name="error_prefix">Error: %s. Check permissions and try again.</string>
-    <string name="error_scan_failed">Scan failed. Check storage permissions and try again.</string>
+    <string name="error_prefix">Oops! %s \u2014 check permissions and give it another go.</string>
+    <string name="error_scan_failed">Raccoon hit a snag! Check storage permissions and try scanning again.</string>
 
     <!-- Scan progress indicators -->
     <string name="scan_percent">%d%%</string>
@@ -72,27 +72,27 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="no_files_found">No files found yet.\nGo to the Manager tab to scan.</string>
-    <string name="nothing_found">Nothing found yet.\nGo to the Manager tab to scan.</string>
-    <string name="scan_to_see_results">Scan your storage to see your files</string>
+    <string name="no_files_found">Raccoon hasn\'t sniffed out any files yet.\nHead to the Manager tab to start a scan!</string>
+    <string name="nothing_found">Nothing in the den yet!\nLet Raccoon scan your storage first.</string>
+    <string name="scan_to_see_results">Let Raccoon rummage through your storage to see what\'s here</string>
 
     <!-- Context-aware empty states (Browse) -->
-    <string name="empty_browse_pre_scan">Go to the Manager tab and tap Scan Storage to browse your files.</string>
-    <string name="empty_browse_post_scan">No files match your filters.\nTry a different category or clear the search.</string>
-    <string name="empty_search_results">No results for \"%s\"</string>
+    <string name="empty_browse_pre_scan">Raccoon needs to scout your storage first!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_browse_post_scan">Raccoon peeked everywhere but found nothing.\nTry a different category or clear the search.</string>
+    <string name="empty_search_results">Raccoon searched high and low \u2014 no results for \"%s\"</string>
 
     <!-- Context-aware empty states (Tree) -->
-    <string name="empty_tree_pre_scan">Go to the Manager tab and tap Scan Storage to see your file tree.</string>
-    <string name="empty_tree_post_scan">No files to display in the tree view.</string>
+    <string name="empty_tree_pre_scan">Raccoon needs scan data to build the tree!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_tree_post_scan">The tree is bare \u2014 no files to display here.</string>
     <string name="browsing_folder">Browsing %s</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
-    <string name="empty_junk_pre_scan">Go to the Manager tab and tap Scan Storage to find junk files.</string>
-    <string name="empty_junk_post_scan">Your storage is clean! No junk files detected.</string>
-    <string name="empty_large_pre_scan">Go to the Manager tab and tap Scan Storage to find large files.</string>
-    <string name="empty_large_post_scan">No large files found. Your storage looks well-managed!</string>
-    <string name="empty_duplicates_pre_scan">Go to the Manager tab and tap Scan Storage to find duplicates.</string>
-    <string name="empty_duplicates_post_scan">No duplicate files found. Everything is unique!</string>
+    <string name="empty_junk_pre_scan">Raccoon is ready to sniff out junk!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_junk_post_scan">Squeaky clean! Raccoon found zero junk. Your storage is spotless.</string>
+    <string name="empty_large_pre_scan">Raccoon wants to hunt for space hogs!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_large_post_scan">No big files lurking around \u2014 Raccoon approves of your tidy storage!</string>
+    <string name="empty_duplicates_pre_scan">Raccoon is eager to catch copycats!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_duplicates_post_scan">No duplicates spotted! Every file is one-of-a-kind.</string>
 
     <!-- Sort options -->
     <string name="sort_name_asc">Name (A\u2013Z)</string>
@@ -154,9 +154,9 @@
     <string name="analysis_quick_junk_detail">%1$d files \u2022 %2$s reclaimable</string>
     <string name="analysis_quick_large_detail">%1$d files \u2022 %2$s total</string>
     <string name="analysis_quick_duplicates_detail">%1$d files \u2022 %2$s wasted</string>
-    <string name="analysis_empty_title">No data yet</string>
-    <string name="analysis_empty_subtitle">Tap Scan Storage to analyze your files</string>
-    <string name="analysis_potential_savings">Potential savings: %s</string>
+    <string name="analysis_empty_title">Raccoon is waiting to dig in!</string>
+    <string name="analysis_empty_subtitle">Scan your storage and Raccoon will crunch the numbers for you.</string>
+    <string name="analysis_potential_savings">Raccoon found %s you could reclaim!</string>
 
     <!-- Accessibility -->
     <string name="a11y_select_file">Select %s</string>
@@ -525,7 +525,7 @@
     <!-- Storage Optimizer -->
     <string name="optimize_title">Optimize Storage</string>
     <string name="optimize_desc">Reorganize files into tidy folders by type and date</string>
-    <string name="optimize_empty">Everything looks well-organized already!</string>
+    <string name="optimize_empty">Raccoon checked every corner \u2014 your files are already perfectly organized!</string>
     <string name="optimize_apply">Apply Changes</string>
     <plurals name="optimize_summary">
         <item quantity="one">%d suggestion</item>
@@ -605,13 +605,13 @@
     <string name="cloud_disconnected">Disconnected</string>
     <string name="cloud_remove">Remove Connection</string>
     <string name="cloud_remove_confirm">Remove connection \"%s\"? This cannot be undone.</string>
-    <string name="cloud_empty">No cloud connections yet.\nAdd one to browse remote files.</string>
-    <string name="cloud_empty_dir">This folder is empty</string>
-    <string name="cloud_connected">Connected to %s</string>
-    <string name="cloud_connection_failed">Failed to connect to %s</string>
-    <string name="cloud_no_network">No internet connection</string>
-    <string name="cloud_auth_failed">Authentication failed. Check your credentials.</string>
-    <string name="cloud_timeout">Connection timed out. Try again.</string>
+    <string name="cloud_empty">Raccoon hasn\'t ventured to the cloud yet.\nAdd a connection to explore remote files!</string>
+    <string name="cloud_empty_dir">Nothing in this folder \u2014 it\'s totally empty.</string>
+    <string name="cloud_connected">Raccoon connected to %s!</string>
+    <string name="cloud_connection_failed">Raccoon couldn\'t reach %s. Check your settings and try again.</string>
+    <string name="cloud_no_network">No internet connection \u2014 Raccoon can\'t reach the cloud right now.</string>
+    <string name="cloud_auth_failed">Authentication failed \u2014 double-check your credentials and try again.</string>
+    <string name="cloud_timeout">Connection timed out \u2014 the server may be busy. Try again in a moment.</string>
     <string name="cloud_host_not_found">Server not found. Check the hostname.</string>
     <string name="cloud_added">Added %s</string>
     <string name="cloud_download">Download</string>
@@ -672,11 +672,11 @@
     <!-- Antivirus / Security Scanner -->
     <string name="av_title">Security Scanner</string>
     <string name="av_desc">Scan for malware, root, privacy, and network risks</string>
-    <string name="av_ready">Ready to scan your device for threats.</string>
+    <string name="av_ready">Raccoon is standing guard. Tap below to check for threats.</string>
     <string name="av_start_scan">Start Security Scan</string>
-    <string name="av_scanning">Scanning\u2026</string>
+    <string name="av_scanning">Raccoon is investigating\u2026</string>
     <string name="av_scan_again">Scan Again</string>
-    <string name="av_all_clear">All clear! No threats detected.</string>
+    <string name="av_all_clear">All clear! Raccoon gave your device a clean bill of health.</string>
     <string name="av_threats">Threats</string>
     <string name="av_clean">Clean</string>
     <string name="av_last_scan">Last scan: %s</string>
@@ -903,7 +903,7 @@
     <!-- Optimize enhancements -->
     <string name="optimize_reanalyze">Re-analyze</string>
     <string name="optimize_analyzing">Analyzing files\u2026</string>
-    <string name="optimize_no_scan_data">Scan your storage first to see optimization suggestions.\nGo to the Manager tab and tap Scan Storage.</string>
+    <string name="optimize_no_scan_data">Raccoon needs scan data to suggest optimizations.\nHead to the Manager tab and tap Scan Storage.</string>
     <string name="optimize_total_reorganize_size">%1$d files totaling %2$s can be reorganized</string>
 
     <!-- Cloud OAuth -->
@@ -933,4 +933,20 @@
     <string name="cloud_github_help">Create a personal access token at github.com/settings/tokens and paste it above.</string>
     <string name="a11y_provider_github">GitHub repository access</string>
     <string name="cloud_type_github">GitHub</string>
+
+    <!-- Accessibility: content descriptions added in audit -->
+    <string name="a11y_switch_hidden_files">Show hidden files</string>
+    <string name="a11y_switch_crash_reporting">Enable crash reporting</string>
+    <string name="a11y_seek_large_file_threshold">Large file size threshold</string>
+    <string name="a11y_seek_stale_download_age">Stale download age threshold</string>
+    <string name="a11y_seek_undo_timeout">Undo timeout duration</string>
+    <string name="a11y_video_seek">Video progress</string>
+    <string name="a11y_audio_seek">Audio progress</string>
+    <string name="a11y_pdf_page_content">PDF page content</string>
+    <string name="a11y_image_content">Image file content</string>
+    <string name="a11y_play_video">Play video</string>
+    <string name="a11y_optimize_accept_suggestion">Accept optimization suggestion</string>
+    <string name="a11y_optimize_select_category">Select all items in this category</string>
+    <string name="a11y_severity_indicator">Severity indicator</string>
+    <string name="a11y_drag_handle">Drag handle</string>
 </resources>

@@ -122,7 +122,26 @@
     <color name="rippleSftp">#1A546E7A</color>
     <color name="rippleWebdav">#1A0097A7</color>
 
+    <!-- Junk category light backgrounds (dark mode) -->
+    <color name="junkCacheBg">#2E1F1A</color>
+    <color name="junkTempBg">#2A1A2E</color>
+    <color name="junkThumbnailBg">#1C1E2E</color>
+    <color name="junkOldDownloadBg">#1E2527</color>
+    <color name="junkLogBg">#261F1A</color>
+
+    <!-- Size severity light backgrounds (dark mode) -->
+    <color name="sizeHugeBg">#2E1A1A</color>
+    <color name="sizeLargeBg">#2E221A</color>
+    <color name="sizeMediumBg">#2E2C1A</color>
+
     <!-- Google Sign-In button colors (dark mode) -->
     <color name="googleSignInBg">#1F2723</color>
     <color name="googleSignInBorder">#3C4043</color>
+
+    <!-- Syntax highlighting colors (dark mode — lighter for readability on dark surfaces) -->
+    <color name="syntaxKeyword">#B4A0FF</color>
+    <color name="syntaxString">#81C995</color>
+    <color name="syntaxComment">#7E8E86</color>
+    <color name="syntaxNumber">#E8B872</color>
+    <color name="syntaxType">#7CB8D8</color>
 </resources>

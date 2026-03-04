@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    §DM2: All fragment destinations declare consistent enter/exit animations
+    from the motion vocabulary so that every navigation — even those triggered
+    without explicit NavOptions — gets the standard page transition.
+-->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
@@ -77,5 +82,13 @@
             android:name="file_path"
             app:argType="string" />
     </fragment>
+
+    <!-- §DM2: Default action with consistent page transition animations -->
+    <action
+        android:id="@+id/action_global_default"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
 
 </navigation>

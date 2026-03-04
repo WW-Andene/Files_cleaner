@@ -91,7 +91,8 @@
                 android:id="@+id/seek_large_file"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:contentDescription="@string/a11y_seek_large_file_threshold" />
 
             <TextView
                 android:id="@+id/tv_large_file_value"
@@ -119,7 +120,8 @@
                 android:id="@+id/seek_stale_age"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:contentDescription="@string/a11y_seek_stale_download_age" />
 
             <TextView
                 android:id="@+id/tv_stale_age_value"
@@ -157,7 +159,8 @@
                 android:id="@+id/seek_undo_timeout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:contentDescription="@string/a11y_seek_undo_timeout" />
 
             <TextView
                 android:id="@+id/tv_undo_value"
@@ -200,7 +203,8 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_hidden_files"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/a11y_switch_hidden_files" />
         </LinearLayout>
 
         <!-- Crash Reporting section -->
@@ -243,7 +247,8 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_crash_reporting"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/a11y_switch_crash_reporting" />
         </LinearLayout>
 
         <!-- GitHub token input -->

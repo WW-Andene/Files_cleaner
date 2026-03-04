@@ -99,7 +99,7 @@
         <!-- Port -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_port"
-            android:layout_width="120dp"
+            android:layout_width="@dimen/port_field_width"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_port_hint"
