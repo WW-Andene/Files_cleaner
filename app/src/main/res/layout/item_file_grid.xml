@@ -10,7 +10,9 @@
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
     app:strokeColor="@color/borderSubtle"
-    app:rippleColor="@color/colorPrimaryContainer">
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,8 +53,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
                     android:layout_margin="@dimen/spacing_xs"
+                    android:minWidth="@dimen/button_height"
+                    android:minHeight="@dimen/button_height"
                     android:clickable="false"
                     android:buttonTint="@color/colorPrimary"
+                    android:contentDescription="@string/a11y_select_checkbox"
                     android:visibility="gone" />
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -69,11 +74,9 @@
                 android:id="@+id/tv_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                android:textColor="@color/textPrimary"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
                 android:maxLines="2"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-medium" />
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/tv_file_meta"

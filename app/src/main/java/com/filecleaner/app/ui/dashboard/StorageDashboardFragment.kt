@@ -75,8 +75,14 @@ class StorageDashboardFragment : Fragment() {
             UndoHelper.formatBytes(usedBytes), UndoHelper.formatBytes(totalBytes), usedPct)
         binding.tvStorageFree.text = getString(R.string.dashboard_storage_free,
             UndoHelper.formatBytes(freeBytes))
-        binding.progressStorage.max = 100
-        binding.progressStorage.progress = usedPct
+        // Set storage bar fill width as percentage of parent
+        binding.progressStorage.post {
+            val parent = binding.progressStorage.parent as? ViewGroup ?: return@post
+            val targetWidth = (parent.width * usedPct / 100.0).toInt()
+            binding.progressStorage.layoutParams = binding.progressStorage.layoutParams.apply {
+                width = targetWidth
+            }
+        }
 
         // Quick action buttons
         binding.btnCleanJunk.setOnClickListener {

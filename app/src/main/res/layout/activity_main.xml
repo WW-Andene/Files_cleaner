@@ -48,9 +48,8 @@
                     android:id="@+id/tv_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                    android:textColor="@color/textSecondary"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                    android:textColor="@color/textSecondary" />
             </LinearLayout>
 
             <ImageButton
@@ -107,9 +106,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/spacing_md"
                         android:text="@string/scan_prompt"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                         android:textColor="@color/scanBarText"
-                        android:fontFamily="sans-serif-medium"
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:accessibilityLiveRegion="polite" />
@@ -120,9 +118,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/spacing_sm"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
                         android:textColor="@color/colorPrimary"
-                        android:fontFamily="sans-serif-medium"
                         android:visibility="gone" />
 
                     <ImageButton
@@ -198,7 +195,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/divider_width"
             android:background="@color/bottomNavDivider" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

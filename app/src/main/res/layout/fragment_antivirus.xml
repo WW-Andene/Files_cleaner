@@ -150,6 +150,7 @@
             <!-- Start scan / scan again button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_scan"
+                style="@style/Widget.FileCleaner.Button"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
                 android:layout_marginHorizontal="@dimen/spacing_lg"
@@ -196,8 +197,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                            android:fontFeatureSettings="tnum"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/colorError" />
 
                         <TextView
@@ -233,9 +233,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                            android:fontFeatureSettings="tnum"
-                            android:textColor="@color/colorError" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
+                            android:textColor="@color/colorAccent" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -270,8 +269,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                            android:fontFeatureSettings="tnum"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/colorWarning" />
 
                         <TextView
@@ -307,8 +305,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                            android:fontFeatureSettings="tnum"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/colorPrimary" />
 
                         <TextView
@@ -400,6 +397,7 @@
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
                 android:clipToPadding="false"
+                android:layoutAnimation="@anim/layout_item_stagger"
                 android:paddingHorizontal="@dimen/spacing_md"
                 android:paddingTop="@dimen/spacing_sm"
                 android:paddingBottom="@dimen/spacing_above_nav"

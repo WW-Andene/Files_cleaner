@@ -135,8 +135,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/spacing_lg"
-                android:fontFamily="monospace"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Mono"
                 android:textIsSelectable="true" />
         </ScrollView>
 

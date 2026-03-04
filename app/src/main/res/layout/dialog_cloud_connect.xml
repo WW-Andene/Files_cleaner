@@ -29,11 +29,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_display_name"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="@dimen/radius_input"
-            app:boxCornerRadiusTopEnd="@dimen/radius_input"
-            app:boxCornerRadiusBottomStart="@dimen/radius_input"
-            app:boxCornerRadiusBottomEnd="@dimen/radius_input"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -51,11 +46,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_host_hint"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="@dimen/radius_input"
-            app:boxCornerRadiusTopEnd="@dimen/radius_input"
-            app:boxCornerRadiusBottomStart="@dimen/radius_input"
-            app:boxCornerRadiusBottomEnd="@dimen/radius_input"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -73,11 +63,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_port_hint"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="@dimen/radius_input"
-            app:boxCornerRadiusTopEnd="@dimen/radius_input"
-            app:boxCornerRadiusBottomStart="@dimen/radius_input"
-            app:boxCornerRadiusBottomEnd="@dimen/radius_input"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -96,11 +81,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_username_hint"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="@dimen/radius_input"
-            app:boxCornerRadiusTopEnd="@dimen/radius_input"
-            app:boxCornerRadiusBottomStart="@dimen/radius_input"
-            app:boxCornerRadiusBottomEnd="@dimen/radius_input"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText

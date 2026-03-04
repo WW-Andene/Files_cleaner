@@ -20,10 +20,11 @@
     <color name="colorWarningLight">#3D331A</color>
 
     <!-- Surface elevation ladder (chromatic near-blacks, ~3-4% lightness steps) -->
+    <!-- surfaceDim < surfaceBase < surfaceColor < surfaceElevated -->
     <color name="surfaceBase">#0C110F</color>
     <color name="surfaceColor">#141A17</color>
     <color name="surfaceElevated">#1C2420</color>
-    <color name="surfaceDim">#232C28</color>
+    <color name="surfaceDim">#080C0A</color>
 
     <!-- Text (chromatic green-gray, not pure gray) -->
     <color name="textPrimary">#ECE9E4</color>
@@ -55,9 +56,9 @@
 
     <!-- Card icon tint backgrounds (unique per feature) -->
     <color name="tintAnalysis">#3D2E1A</color>
-    <color name="tintQuickClean">#3D1F1A</color>
+    <color name="tintQuickClean">#3D1A1A</color>
     <color name="tintTree">#1A2838</color>
-    <color name="tintOptimize">#3D2E1A</color>
+    <color name="tintOptimize">#1A3020</color>
     <color name="tintDualPane">#1A2838</color>
     <color name="tintCloud">#251A3D</color>
     <color name="tintAntivirus">#1A3D1F</color>
@@ -96,7 +97,7 @@
     <color name="catApkBg">#1A2E2B</color>
     <color name="catArchiveBg">#261F1A</color>
     <color name="catDownloadBg">#1E2527</color>
-    <color name="catOtherBg">#1E2527</color>
+    <color name="catOtherBg">#1C2224</color>
 
     <!-- Analysis card colors -->
     <color name="analysisStorageBarBg">#232C28</color>
@@ -153,9 +154,9 @@
     <color name="sizeLargeBg">#2E221A</color>
     <color name="sizeMediumBg">#2E2C1A</color>
 
-    <!-- Google Sign-In button colors (dark mode) -->
-    <color name="googleSignInBg">#1C2420</color>
-    <color name="googleSignInBorder">#3C4043</color>
+    <!-- Google Sign-In button colors (consolidated with Google button colors) -->
+    <color name="googleSignInBg">@color/googleButtonBg</color>
+    <color name="googleSignInBorder">@color/googleButtonBorder</color>
 
     <!-- Syntax highlighting colors (dark mode) -->
     <color name="syntaxKeyword">#B4A0FF</color>

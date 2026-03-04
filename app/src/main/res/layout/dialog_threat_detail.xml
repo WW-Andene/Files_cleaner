@@ -79,9 +79,8 @@
             android:id="@+id/tv_file_path"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Mono"
             android:textColor="@color/textSecondary"
-            android:fontFamily="monospace"
             android:textIsSelectable="true"
             android:layout_marginTop="@dimen/spacing_micro" />
     </LinearLayout>
@@ -106,9 +105,8 @@
             android:id="@+id/tv_package"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Mono"
             android:textColor="@color/textSecondary"
-            android:fontFamily="monospace"
             android:textIsSelectable="true"
             android:layout_marginTop="@dimen/spacing_micro" />
     </LinearLayout>

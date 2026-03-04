@@ -112,6 +112,10 @@ class CloudBrowserFragment : Fragment() {
         }
         binding.recyclerFiles.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerFiles.adapter = fileAdapter
+        // §DM4: Disable stagger animation when user prefers reduced motion
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
+            binding.recyclerFiles.layoutAnimation = null
+        }
 
         // Add connection buttons — now opens provider picker
         binding.btnAdd.setOnClickListener { showAddDialog() }

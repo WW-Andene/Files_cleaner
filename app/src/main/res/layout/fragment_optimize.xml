@@ -82,9 +82,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/optimize_info_title"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                    android:textColor="@color/colorOnPrimaryContainer"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                    android:textColor="@color/colorOnPrimaryContainer" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -187,6 +186,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
+            android:layoutAnimation="@anim/layout_item_stagger"
             android:paddingHorizontal="@dimen/spacing_md"
             android:paddingBottom="@dimen/spacing_bottom_inset" />
 

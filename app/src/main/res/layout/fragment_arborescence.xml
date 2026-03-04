@@ -153,9 +153,8 @@
                 android:id="@+id/tv_stats_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+                android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
                 android:textColor="@color/textOnPrimary"
-                android:fontFamily="sans-serif-medium"
                 android:accessibilityLiveRegion="polite"
                 android:visibility="gone" />
 
@@ -198,6 +197,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_scan_now"
+                style="@style/Widget.FileCleaner.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height_sm"
                 android:layout_marginTop="@dimen/spacing_lg"
@@ -221,8 +221,7 @@
             android:paddingHorizontal="@dimen/spacing_lg"
             android:paddingVertical="@dimen/spacing_md"
             android:textColor="@color/textOnPrimary"
-            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-            android:fontFamily="sans-serif-medium"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
             android:maxLines="4"
             android:ellipsize="end"
             android:elevation="@dimen/elevation_raised"

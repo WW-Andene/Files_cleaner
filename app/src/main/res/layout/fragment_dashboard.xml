@@ -63,14 +63,19 @@
                     android:textColor="@color/colorOnPrimaryContainer"
                     android:textAlignment="center" />
 
-                <ProgressBar
-                    android:id="@+id/progress_storage"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
+                <!-- Storage bar — rounded, matching analysis screen style -->
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/spacing_md"
                     android:layout_marginTop="@dimen/spacing_md"
-                    android:progressTint="@color/colorPrimary"
-                    android:progressBackgroundTint="@color/borderDefault" />
+                    android:background="@drawable/bg_storage_bar_track">
+
+                    <View
+                        android:id="@+id/progress_storage"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_storage_bar_fill" />
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/tv_storage_used"
@@ -88,7 +93,7 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:alpha="0.8"
+                    android:alpha="0.85"
                     android:textAlignment="center" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

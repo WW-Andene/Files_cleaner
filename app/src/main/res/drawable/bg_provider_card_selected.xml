@@ -4,7 +4,7 @@
     android:shape="rectangle">
     <solid android:color="@color/selectedBackground" />
     <stroke
-        android:width="2dp"
+        android:width="@dimen/stroke_selected"
         android:color="@color/colorPrimary" />
     <corners android:radius="@dimen/radius_card" />
 </shape>

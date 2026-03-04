@@ -90,6 +90,10 @@ class AntivirusFragment : Fragment() {
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
         binding.recyclerResults.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerResults.isNestedScrollingEnabled = false
+        // §DM4: Disable stagger animation when user prefers reduced motion
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
+            binding.recyclerResults.layoutAnimation = null
+        }
 
         binding.btnScan.setOnClickListener {
             if (!isScanning) startScan()
@@ -306,6 +310,10 @@ class AntivirusFragment : Fragment() {
         val noHistory = dialogView.findViewById<TextView>(R.id.tv_no_history)
 
         recycler.layoutManager = LinearLayoutManager(ctx)
+        // §DM4: Disable stagger animation when user prefers reduced motion
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(ctx)) {
+            recycler.layoutAnimation = null
+        }
 
         if (history.isEmpty()) {
             recycler.visibility = View.GONE

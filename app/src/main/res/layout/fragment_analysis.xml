@@ -88,7 +88,7 @@
                         android:layout_marginTop="@dimen/spacing_sm"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                         android:textColor="@color/colorOnPrimaryContainer"
-                        android:alpha="0.8" />
+                        android:alpha="0.85" />
 
                     <!-- Potential savings banner -->
                     <com.google.android.material.card.MaterialCardView
@@ -107,9 +107,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="@dimen/spacing_sm"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
                             android:textColor="@color/analysisSavingsText"
-                            android:fontFamily="sans-serif-medium"
                             android:drawablePadding="@dimen/spacing_sm" />
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
@@ -165,9 +164,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_chip"
                             android:text="@string/analysis_quick_junk"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                            android:fontFamily="sans-serif-medium"
-                            android:textColor="@color/textPrimary" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium" />
 
                         <TextView
                             android:id="@+id/tv_junk_detail"
@@ -213,9 +210,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_chip"
                             android:text="@string/analysis_quick_large"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                            android:fontFamily="sans-serif-medium"
-                            android:textColor="@color/textPrimary" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium" />
 
                         <TextView
                             android:id="@+id/tv_large_detail"
@@ -261,9 +256,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_chip"
                             android:text="@string/analysis_quick_duplicates"
-                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                            android:fontFamily="sans-serif-medium"
-                            android:textColor="@color/textPrimary" />
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium" />
 
                         <TextView
                             android:id="@+id/tv_duplicates_detail"

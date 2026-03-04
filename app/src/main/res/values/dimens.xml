@@ -45,6 +45,7 @@
     <!-- Stroke widths -->
     <dimen name="stroke_none">0dp</dimen>
     <dimen name="stroke_default">1dp</dimen>
+    <dimen name="stroke_selected">2dp</dimen>
 
     <!-- Icon sizes -->
     <dimen name="icon_small">16dp</dimen>

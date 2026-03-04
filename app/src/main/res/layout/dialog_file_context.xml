@@ -49,8 +49,7 @@
                 android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                 android:textColor="@color/textPrimary"
                 android:maxLines="2"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-medium" />
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/tv_file_info"

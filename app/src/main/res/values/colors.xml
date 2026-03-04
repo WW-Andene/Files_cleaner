@@ -15,14 +15,14 @@
     <color name="colorError">#C62828</color>
     <color name="colorErrorLight">#FFEAEA</color>
     <color name="colorSuccess">#2E7D42</color>
-    <color name="colorWarning">#E8A830</color>
+    <color name="colorWarning">#996D12</color>
     <color name="colorSuccessLight">#E6F5EA</color>
     <color name="colorWarningLight">#FFF8E6</color>
 
     <!-- Surface elevation ladder (chromatic warm-whites) -->
     <color name="surfaceBase">#F5F3EE</color>
     <color name="surfaceColor">#FEFDFB</color>
-    <color name="surfaceElevated">#FFFFFF</color>
+    <color name="surfaceElevated">#FFFFFB</color>
     <color name="surfaceDim">#EAE6DF</color>
 
     <!-- Text hierarchy (chromatic, not pure gray) -->
@@ -55,9 +55,9 @@
 
     <!-- Card icon tint backgrounds (unique per feature) -->
     <color name="tintAnalysis">#FFF0DA</color>
-    <color name="tintQuickClean">#FFEAEA</color>
+    <color name="tintQuickClean">#FFE0E0</color>
     <color name="tintTree">#DCEEFF</color>
-    <color name="tintOptimize">#FFF0DA</color>
+    <color name="tintOptimize">#E8F5E1</color>
     <color name="tintDualPane">#D8F0FF</color>
     <color name="tintCloud">#E8E0FF</color>
     <color name="tintAntivirus">#DCEFDF</color>
@@ -74,7 +74,7 @@
     <color name="catApk">#00897B</color>
     <color name="catArchive">#6D4C41</color>
     <color name="catDownload">#546E7A</color>
-    <color name="catOther">#78909C</color>
+    <color name="catOther">#4F6570</color>
 
     <!-- Cloud provider branding -->
     <color name="googleBlue">#4285F4</color>
@@ -96,7 +96,7 @@
     <color name="catApkBg">#E0F2F1</color>
     <color name="catArchiveBg">#EFEBE9</color>
     <color name="catDownloadBg">#ECEFF1</color>
-    <color name="catOtherBg">#ECEFF1</color>
+    <color name="catOtherBg">#E8EBEE</color>
 
     <!-- Analysis card colors -->
     <color name="analysisStorageBarBg">#E8E5E0</color>
@@ -116,7 +116,7 @@
     <color name="junkCache">#C04020</color>
     <color name="junkTemp">#AB47BC</color>
     <color name="junkThumbnail">#5C6BC0</color>
-    <color name="junkOldDownload">#78909C</color>
+    <color name="junkOldDownload">#4F6570</color>
     <color name="junkLog">#8D6E63</color>
 
     <!-- Size severity accent colors (left stripe) -->
@@ -153,9 +153,9 @@
     <color name="rippleSftp">#1A546E7A</color>
     <color name="rippleWebdav">#1A0097A7</color>
 
-    <!-- Google Sign-In button colors -->
-    <color name="googleSignInBg">#FFFFFF</color>
-    <color name="googleSignInBorder">#DADCE0</color>
+    <!-- Google Sign-In button colors (consolidated with Google button colors) -->
+    <color name="googleSignInBg">@color/googleButtonBg</color>
+    <color name="googleSignInBorder">@color/googleButtonBorder</color>
 
     <!-- Syntax highlighting colors (light mode — WCAG AA on warm-white surfaces) -->
     <color name="syntaxKeyword">#6B58D6</color>

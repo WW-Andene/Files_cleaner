@@ -11,7 +11,9 @@
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
     app:strokeColor="@color/borderSubtle"
-    app:rippleColor="@color/colorPrimaryContainer">
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,11 +67,10 @@
                     android:id="@+id/tv_file_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                     android:textColor="@color/textPrimary"
                     android:maxLines="1"
-                    android:ellipsize="middle"
-                    android:fontFamily="sans-serif-medium" />
+                    android:ellipsize="middle" />
 
                 <TextView
                     android:id="@+id/tv_file_meta"
@@ -85,8 +86,11 @@
                 android:id="@+id/cb_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="@dimen/button_height"
+                android:minHeight="@dimen/button_height"
                 android:clickable="false"
-                android:buttonTint="@color/colorPrimary" />
+                android:buttonTint="@color/colorPrimary"
+                android:contentDescription="@string/a11y_select_checkbox" />
 
         </LinearLayout>
     </LinearLayout>

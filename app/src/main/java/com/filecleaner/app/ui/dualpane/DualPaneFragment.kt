@@ -196,6 +196,10 @@ class DualPaneFragment : Fragment() {
     ) {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
+        // §DM4: Disable stagger animation when user prefers reduced motion
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
+            recycler.layoutAnimation = null
+        }
 
         // --- File adapter callbacks ---
         adapter.onItemClick = { item ->

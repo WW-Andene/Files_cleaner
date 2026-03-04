@@ -19,19 +19,19 @@
     <string name="scanning_in_progress">Raccoon is rummaging through your files\u2026</string>
     <string name="scan_cancel">Cancel scan</string>
     <string name="scan_cancelled">Scan cancelled \u2014 Raccoon stopped mid-rummage.</string>
-    <string name="scanning_phase_indexing">Scanning\u2026 %d files found</string>
-    <string name="scanning_phase_duplicates">Finding duplicates\u2026 %d files</string>
-    <string name="scanning_phase_analyzing">Analyzing sizes\u2026 %d files</string>
-    <string name="scanning_phase_junk">Detecting junk\u2026 %d files</string>
+    <string name="scanning_phase_indexing">Raccoon is indexing\u2026 %d files found</string>
+    <string name="scanning_phase_duplicates">Raccoon is sniffing out duplicates\u2026 %d files</string>
+    <string name="scanning_phase_analyzing">Raccoon is weighing file sizes\u2026 %d files</string>
+    <string name="scanning_phase_junk">Raccoon is hunting for junk\u2026 %d files</string>
     <string name="error_prefix">Oops! %s \u2014 check permissions and give it another go.</string>
     <string name="error_scan_failed">Raccoon hit a snag! Check storage permissions and try scanning again.</string>
 
     <!-- Scan progress indicators -->
     <string name="scan_percent">%d%%</string>
-    <string name="phase_label_indexing">Scanning files\u2026</string>
-    <string name="phase_label_duplicates">Finding duplicates\u2026</string>
-    <string name="phase_label_analyzing">Analyzing sizes\u2026</string>
-    <string name="phase_label_junk">Classifying junk\u2026</string>
+    <string name="phase_label_indexing">Raccoon is scanning files\u2026</string>
+    <string name="phase_label_duplicates">Raccoon is finding duplicates\u2026</string>
+    <string name="phase_label_analyzing">Raccoon is analyzing sizes\u2026</string>
+    <string name="phase_label_junk">Raccoon is classifying junk\u2026</string>
     <string name="phase_step">Step %1$d of %2$d</string>
     <string name="browse_scan_file_count">%d files</string>
 
@@ -209,11 +209,11 @@
     <!-- Search -->
     <string name="search_files_hint">Search\u2026 (try &gt;50mb or ext:pdf)</string>
     <string name="search_tree_hint">Search in tree\u2026</string>
-    <string name="search_not_found">No matching files found</string>
+    <string name="search_not_found">Raccoon rummaged everywhere \u2014 no matching files found.</string>
 
     <!-- File opening -->
     <string name="open_with">Open With</string>
-    <string name="no_app_found">No app found to open this file</string>
+    <string name="no_app_found">Raccoon can\u0027t find an app to open this file. Try installing a compatible viewer.</string>
 
     <!-- Context menu -->
     <string name="ctx_open">Open</string>
@@ -235,9 +235,9 @@
     <string name="ctx_browse_folder">Browse folder</string>
     <string name="ctx_convert">Convert to\u2026</string>
     <string name="convert_title">Convert to</string>
-    <string name="convert_unsupported">No conversions available for this file type</string>
-    <string name="convert_failed">Conversion failed: %s</string>
-    <string name="convert_progress">Converting\u2026</string>
+    <string name="convert_unsupported">Raccoon doesn\u0027t know how to convert this file type yet.</string>
+    <string name="convert_failed">Raccoon couldn\u0027t convert that file: %s</string>
+    <string name="convert_progress">Raccoon is converting\u2026</string>
     <!-- Conversion action labels -->
     <string name="convert_action">Convert</string>
     <string name="convert_format_with_ext">%1$s (.%2$s)</string>
@@ -288,17 +288,17 @@
     <string name="convert_csv_to_table_desc">Convert CSV data into a neatly aligned text table with column headers.</string>
     <string name="ctx_properties">Properties</string>
     <string name="ctx_preview">Preview</string>
-    <string name="preview_error">Cannot preview: %s</string>
+    <string name="preview_error">Raccoon can\u0027t preview this one: %s</string>
     <string name="viewer_title">File Viewer</string>
     <string name="viewer_file_info">%1$s  \u2022  %2$s</string>
     <string name="viewer_pdf_page">Page %1$d of %2$d</string>
-    <string name="viewer_unsupported">No built-in viewer for .%s files</string>
+    <string name="viewer_unsupported">Raccoon doesn\u0027t have a built-in viewer for .%s files \u2014 try opening with another app.</string>
     <string name="viewer_open_fullscreen">View fullscreen</string>
     <string name="viewer_audio_play">Play / Pause</string>
-    <string name="viewer_audio_error">Cannot play this audio file</string>
+    <string name="viewer_audio_error">Raccoon can\u0027t play this audio file \u2014 it may be corrupted or in an unsupported format.</string>
     <string name="viewer_video_play">Play video</string>
-    <string name="viewer_video_error">Cannot play this video</string>
-    <string name="viewer_archive_error">Cannot read archive: %s</string>
+    <string name="viewer_video_error">Raccoon can\u0027t play this video \u2014 it may be corrupted or in an unsupported format.</string>
+    <string name="viewer_archive_error">Raccoon can\u0027t read this archive: %s</string>
 
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
@@ -309,12 +309,12 @@
     <string name="protected_added">%s protected from cleanup</string>
     <string name="protected_removed">%s cleanup protection removed</string>
     <!-- File operation feedback (used by ViewModel → Snackbar) -->
-    <string name="op_source_not_found">Source file not found</string>
-    <string name="op_file_not_found">File not found</string>
-    <string name="op_file_exists_in_target">File already exists in target</string>
-    <string name="op_no_parent_dir">Cannot determine parent folder</string>
-    <string name="op_invalid_name">File names can\u0027t contain / : * ? \" &lt; &gt; or |</string>
-    <string name="op_name_exists">A file with that name already exists</string>
+    <string name="op_source_not_found">Raccoon can\u0027t find the original file \u2014 it may have been moved or deleted.</string>
+    <string name="op_file_not_found">Raccoon can\u0027t find that file \u2014 it may have been moved or deleted.</string>
+    <string name="op_file_exists_in_target">A file with that name already exists in the destination folder.</string>
+    <string name="op_no_parent_dir">Raccoon can\u0027t figure out where this file lives \u2014 try a different location.</string>
+    <string name="op_invalid_name">Oops! File names can\u0027t contain / : * ? \" &lt; &gt; or | \u2014 try a different name.</string>
+    <string name="op_name_exists">That name is already taken \u2014 pick a different one!</string>
     <string name="op_moved">Raccoon moved %s to its new home!</string>
     <string name="op_move_failed">Raccoon couldn\'t move that file \u2014 check if the destination is accessible.</string>
     <string name="op_copied">Raccoon copied %s!</string>
@@ -331,17 +331,17 @@
     <string name="op_compress_failed">Compression failed: %s. Raccoon will try harder next time.</string>
     <string name="op_extracted">Unpacked to %s \u2014 all files ready!</string>
     <string name="op_extract_failed">Raccoon couldn\'t unpack that: %s</string>
-    <string name="op_zip_only">Only ZIP archives can be extracted</string>
-    <string name="op_too_many_entries">This archive has too many files to extract safely (limit: %d).</string>
-    <string name="op_archive_too_large">Archive too large (exceeds 2 GB extracted)</string>
-    <string name="op_invalid_path">Path is outside accessible storage</string>
-    <string name="error_no_files_to_compress">No files to compress</string>
-    <string name="op_scan_failed">Scan failed</string>
+    <string name="op_zip_only">Raccoon can only unpack ZIP archives for now.</string>
+    <string name="op_too_many_entries">Whoa, that archive has too many files! Raccoon\u0027s limit is %d to keep things safe.</string>
+    <string name="op_archive_too_large">That archive is too large to unpack safely (over 2 GB). Try a smaller one!</string>
+    <string name="op_invalid_path">Raccoon can\u0027t reach that location \u2014 it\u0027s outside accessible storage.</string>
+    <string name="error_no_files_to_compress">Raccoon needs some files to pack \u2014 select a few first!</string>
+    <string name="op_scan_failed">Raccoon hit a snag while scanning. Give it another try!</string>
 
     <!-- Undo / Delete feedback -->
     <string name="undo_deleted_single">Deleted %1$s (%2$s). Undo?</string>
     <string name="undo_deleted_multiple">Deleted %1$d files (%2$s). Undo?</string>
-    <string name="delete_partial_failure">%1$d deleted, %2$d failed \u2014 some files may be in use</string>
+    <string name="delete_partial_failure">Raccoon deleted %1$d but %2$d wouldn\u0027t budge \u2014 they may be in use by another app.</string>
 
     <!-- Post-scan summary -->
     <string name="scan_duration_suffix"> in %1$.1fs</string>
@@ -429,7 +429,7 @@
     <string name="batch_case_upper">UPPERCASE</string>
     <string name="batch_case_title">Title Case</string>
     <string name="batch_rename_start_hint">Start number</string>
-    <string name="batch_rename_result">Renamed %1$d files (%2$d failed)</string>
+    <string name="batch_rename_result">Raccoon renamed %1$d files \u2014 %2$d couldn\u0027t be changed.</string>
     <string name="batch_rename">Batch Rename</string>
 
     <!-- Accessibility -->
@@ -562,9 +562,9 @@
     <string name="dual_pane_go_up">Go up one level</string>
     <string name="dual_pane_copy">Copy</string>
     <string name="dual_pane_move">Move</string>
-    <string name="dual_pane_no_selection">Select files first</string>
-    <string name="dual_pane_no_files_to_delete">No files selected (directories cannot be deleted here)</string>
-    <string name="dual_pane_invalid_dir">Invalid directory</string>
+    <string name="dual_pane_no_selection">Raccoon needs you to select some files first!</string>
+    <string name="dual_pane_no_files_to_delete">No files selected \u2014 folders can only be removed from the Browse tab.</string>
+    <string name="dual_pane_invalid_dir">Raccoon can\u0027t open that folder \u2014 it may have been moved or deleted.</string>
     <string name="dual_pane_count">%1$d folders, %2$d files</string>
     <string name="dual_pane_swap">Swap panes</string>
     <string name="dual_pane_pick_directory">Choose folder</string>
@@ -594,7 +594,7 @@
 
     <!-- Dual Pane Drag & Drop -->
     <string name="dual_pane_drag_copy_or_move">Copy or Move?</string>
-    <string name="dual_pane_drag_message">What would you like to do with %d item(s)?</string>
+    <string name="dual_pane_drag_message">What should Raccoon do with these files?</string>
 
     <!-- Antivirus progress -->
     <string name="av_progress_pct">%d%%</string>
@@ -610,7 +610,7 @@
     <string name="cloud_remove">Remove Connection</string>
     <string name="cloud_remove_confirm">Remove connection \"%s\"? This cannot be undone.</string>
     <string name="cloud_empty">Raccoon hasn\'t ventured to the cloud yet.\nAdd a connection to explore remote files!</string>
-    <string name="cloud_empty_dir">Nothing in this folder \u2014 it\'s totally empty.</string>
+    <string name="cloud_empty_dir">This folder is empty \u2014 nothing for Raccoon to find here.</string>
     <string name="cloud_connected">Raccoon connected to %s!</string>
     <string name="cloud_connection_failed">Raccoon couldn\'t reach %s. Check your settings and try again.</string>
     <string name="cloud_no_network">No internet connection \u2014 Raccoon can\'t reach the cloud right now.</string>
@@ -622,7 +622,7 @@
     <string name="cloud_upload">Upload</string>
     <string name="cloud_download_result">Raccoon grabbed %1$d files (%2$d failed)</string>
     <string name="cloud_upload_success">Raccoon uploaded %s to the cloud!</string>
-    <string name="cloud_upload_failed">Upload failed: %s. Check your connection and try again.</string>
+    <string name="cloud_upload_failed">Raccoon couldn\u0027t upload: %s. Check your connection and try again.</string>
     <string name="cloud_list_failed">Raccoon couldn\'t load this folder: %s</string>
     <string name="cloud_directory">Directory</string>
     <string name="cloud_provider_type">Provider type</string>
@@ -635,9 +635,9 @@
     <string name="cloud_type_webdav">WebDAV</string>
     <string name="cloud_type_google_drive">Google Drive</string>
     <string name="cloud_default_server_name">My Server</string>
-    <string name="cloud_error_host_required">Host is required</string>
-    <string name="cloud_error_port_range">Port must be 1\u201365535</string>
-    <string name="cloud_error_username_required">Username is required</string>
+    <string name="cloud_error_host_required">Raccoon needs a hostname to connect to!</string>
+    <string name="cloud_error_port_range">Port must be between 1 and 65535.</string>
+    <string name="cloud_error_username_required">Raccoon needs a username to log in!</string>
     <string name="cloud_sftp_host_hint">Hostname or IP (e.g. 192.168.1.10)</string>
     <string name="cloud_webdav_host_hint">Server URL (e.g. https://cloud.example.com/remote.php/webdav)</string>
     <string name="cloud_gdrive_token_hint">OAuth2 Access Token</string>
@@ -664,9 +664,9 @@
     <string name="cloud_setup_title_sftp">Connect SFTP Server</string>
     <string name="cloud_setup_title_webdav">Connect WebDAV Server</string>
     <string name="cloud_test_connection">Test Connection</string>
-    <string name="cloud_testing_connection">Testing connection\u2026</string>
-    <string name="cloud_test_success">Connection successful!</string>
-    <string name="cloud_test_failed">Connection failed: %s</string>
+    <string name="cloud_testing_connection">Raccoon is testing the connection\u2026</string>
+    <string name="cloud_test_success">Raccoon connected successfully!</string>
+    <string name="cloud_test_failed">Raccoon couldn\u0027t connect: %s</string>
     <string name="cloud_status_connected">Connected</string>
     <string name="cloud_status_disconnected">Not connected</string>
     <string name="a11y_connection_status">Connection status: %s</string>
@@ -725,7 +725,7 @@
     <string name="av_quarantined">Quarantined</string>
     <string name="av_quarantined_msg">Quarantined %s</string>
     <string name="av_uninstall">Uninstall</string>
-    <string name="av_uninstall_failed">Could not open uninstall dialog</string>
+    <string name="av_uninstall_failed">Raccoon couldn\u0027t open the uninstall screen \u2014 try removing the app from Settings.</string>
     <string name="av_confirm_delete">Permanently delete %s?</string>
     <string name="av_deleted">Deleted %s</string>
     <string name="av_open_settings">Open Settings</string>
@@ -760,9 +760,9 @@
 
     <!-- Scan history -->
     <string name="av_history">Scan History</string>
-    <string name="av_no_history">No scan history yet \u2014 run your first scan to start tracking.</string>
+    <string name="av_no_history">No scan history yet \u2014 Raccoon is ready for its first patrol!</string>
     <string name="av_clear_history">Clear History</string>
-    <string name="av_scan_history_summary">%1$d findings (%2$dC %3$dH %4$dM)</string>
+    <string name="av_scan_history_summary">%1$d findings \u2014 %2$d critical, %3$d high, %4$d medium</string>
 
     <!-- Fix all plurals -->
     <plurals name="av_fix_quarantine">
@@ -784,7 +784,7 @@
     <string name="settings_clear_data_desc">Remove scan cache, cloud connections, preferences, and scan history</string>
     <string name="settings_clear_data_confirm_title">Clear All Data?</string>
     <string name="settings_clear_data_confirm_message">This will delete all scan data, cloud connection credentials, scan history, and reset preferences to defaults.\n\nThis cannot be undone.</string>
-    <string name="settings_clear_data_done">All app data cleared</string>
+    <string name="settings_clear_data_done">Raccoon wiped the slate clean \u2014 all app data has been cleared!</string>
 
     <!-- Crash Reporting -->
     <string name="settings_crash_section">Crash Reporting</string>
@@ -792,7 +792,7 @@
     <string name="settings_crash_enable">Enable crash reporting</string>
     <string name="settings_crash_token_hint">GitHub Token (with repo scope)</string>
     <string name="settings_crash_repo_hint">GitHub Repository (owner/repo)</string>
-    <string name="settings_crash_pending">%d pending crash report(s) will be sent on next launch</string>
+    <string name="settings_crash_pending">%d pending crash reports will be sent on next launch</string>
 
     <!-- Privacy Notice (P3 Security: F-C6-01) -->
     <string name="privacy_notice_title">Privacy &amp; Data Usage</string>
@@ -908,7 +908,7 @@
 
     <!-- Optimize enhancements -->
     <string name="optimize_reanalyze">Re-analyze</string>
-    <string name="optimize_analyzing">Analyzing files\u2026</string>
+    <string name="optimize_analyzing">Raccoon is analyzing your files\u2026</string>
     <string name="optimize_no_scan_data">Raccoon needs scan data to suggest optimizations.\nHead to the Manager tab and tap Scan Storage.</string>
     <string name="optimize_total_reorganize_size">%1$d files totaling %2$s can be reorganized</string>
 
@@ -917,13 +917,13 @@
     <!-- cloud_oauth_google removed: use cloud_gdrive_sign_in -->
     <string name="cloud_oauth_github">Sign in with GitHub</string>
     <string name="cloud_oauth_or_manual">or enter token manually</string>
-    <string name="cloud_oauth_success">OAuth authentication successful</string>
-    <string name="cloud_oauth_failed">OAuth failed: %s</string>
+    <string name="cloud_oauth_success">Raccoon is authenticated \u2014 you\u0027re all set!</string>
+    <string name="cloud_oauth_failed">Raccoon couldn\u0027t sign in: %s</string>
     <!-- cloud_sign_in_google removed: use cloud_gdrive_sign_in -->
     <string name="cloud_connect_github">Connect with GitHub</string>
     <string name="cloud_oauth_note">Uses secure OAuth 2.0 authentication</string>
     <!-- cloud_oauth_sign_in_google and cloud_oauth_connect_github removed: use cloud_gdrive_sign_in / cloud_connect_github -->
-    <string name="cloud_oauth_authenticating">Authenticating\u2026</string>
+    <string name="cloud_oauth_authenticating">Raccoon is authenticating\u2026</string>
     <string name="cloud_oauth_config_title">OAuth Configuration</string>
     <string name="cloud_oauth_client_id_hint">OAuth Client ID</string>
     <string name="cloud_oauth_client_secret_hint">OAuth Client Secret (optional for PKCE)</string>
@@ -954,4 +954,10 @@
     <string name="a11y_optimize_select_category">Select all items in this category</string>
     <string name="a11y_severity_indicator">Severity indicator</string>
     <string name="a11y_drag_handle">Drag handle</string>
+    <string name="a11y_select_checkbox">Select item</string>
+    <string name="a11y_quick_action_junk">View junk files</string>
+    <string name="a11y_quick_action_large">View large files</string>
+    <string name="a11y_quick_action_duplicates">View duplicate files</string>
+    <string name="a11y_reanalyze">Re-analyze storage</string>
+    <string name="a11y_clear_selection">Clear selection</string>
 </resources>

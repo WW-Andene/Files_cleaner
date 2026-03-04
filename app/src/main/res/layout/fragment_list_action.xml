@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                 android:textColor="@color/colorOnPrimaryContainer"
-                android:alpha="0.8"
+                android:alpha="0.85"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:accessibilityLiveRegion="polite"
@@ -295,6 +295,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_scan_now"
+            style="@style/Widget.FileCleaner.Button"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height_sm"
             android:layout_marginTop="@dimen/spacing_lg"

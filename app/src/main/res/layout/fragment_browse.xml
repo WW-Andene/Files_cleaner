@@ -252,11 +252,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="3 files"
-        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+        android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
         android:paddingHorizontal="@dimen/spacing_xl"
         android:paddingTop="@dimen/spacing_sm"
         android:paddingBottom="@dimen/spacing_xs"
-        android:fontFamily="sans-serif-medium"
         android:accessibilityLiveRegion="polite" />
 
     <!-- Empty state -->
@@ -290,6 +289,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_scan_now"
+            style="@style/Widget.FileCleaner.Button"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height_sm"
             android:layout_marginTop="@dimen/spacing_lg"
@@ -336,9 +336,8 @@
                 android:id="@+id/tv_browse_selection_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                 android:textColor="@color/colorPrimary"
-                android:fontFamily="sans-serif-medium"
                 android:paddingHorizontal="@dimen/spacing_sm"
                 android:paddingBottom="@dimen/spacing_xs"
                 tools:text="3 selected" />

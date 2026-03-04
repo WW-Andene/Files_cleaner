@@ -27,9 +27,8 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_sm"
-        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
         android:textColor="@color/colorPrimary"
-        android:fontFamily="sans-serif-medium"
         android:maxLines="1"
         android:ellipsize="middle"
         android:accessibilityHeading="true" />

@@ -167,6 +167,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add_first"
+            style="@style/Widget.FileCleaner.Button"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height_sm"
             android:layout_marginTop="@dimen/spacing_lg"
@@ -184,6 +185,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:layoutAnimation="@anim/layout_item_stagger"
         android:paddingHorizontal="@dimen/spacing_md"
         android:paddingBottom="@dimen/spacing_above_nav"
         android:visibility="gone" />
@@ -202,6 +204,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_download"
+            style="@style/Widget.FileCleaner.Button"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="@dimen/button_height_sm"
