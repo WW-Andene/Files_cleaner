@@ -3,14 +3,13 @@ package com.filecleaner.app.ui.dualpane
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
-import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.utils.UndoHelper
 import java.io.File
 import java.text.DateFormat
@@ -18,7 +17,8 @@ import java.util.Date
 
 /**
  * Adapter for a single pane in the dual-pane file manager.
- * Displays files and directories with selection support.
+ * Displays files and directories with long-press multi-selection support.
+ * Selection is indicated by a highlighted background instead of checkboxes.
  */
 class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DIFF) {
 
@@ -45,6 +45,9 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
     var onItemLongClick: ((PaneItem, View) -> Unit)? = null
     var onSelectionChanged: (() -> Unit)? = null
 
+    /** Whether selection mode is active (at least one item is selected). */
+    val isSelectionActive: Boolean get() = currentList.any { it.selected }
+
     fun getSelectedItems(): List<PaneItem> = currentList.filter { it.selected }
 
     fun clearSelection() {
@@ -59,6 +62,13 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
         onSelectionChanged?.invoke()
     }
 
+    private fun toggleSelection(position: Int) {
+        val item = getItem(position)
+        item.selected = !item.selected
+        notifyItemChanged(position)
+        onSelectionChanged?.invoke()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_dual_pane_file, parent, false)
@@ -67,31 +77,60 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
+        val ctx = holder.itemView.context
+
         holder.name.text = item.name
 
         if (item.isDirectory) {
             holder.icon.setImageResource(R.drawable.ic_folder)
-            val childCount = item.file.listFiles()?.size ?: 0
-            holder.meta.text = holder.itemView.context.resources.getQuantityString(
-                R.plurals.n_items, childCount, childCount
-            )
+            // Avoid calling listFiles on bind for performance — show a simple indicator
+            holder.meta.text = ctx.getString(R.string.dual_pane_go_up).let {
+                // Show "Folder" or count if possible
+                val childCount = item.file.listFiles()?.size ?: 0
+                ctx.resources.getQuantityString(R.plurals.n_items, childCount, childCount)
+            }
+            holder.chevron.visibility = View.VISIBLE
         } else {
             holder.icon.setImageResource(iconForFile(item.name))
             val dateStr = DateFormat.getDateInstance(DateFormat.SHORT)
                 .format(Date(item.lastModified))
             holder.meta.text = "${UndoHelper.formatBytes(item.size)} \u2022 $dateStr"
+            holder.chevron.visibility = View.GONE
         }
 
-        holder.checkbox.setOnCheckedChangeListener(null)
-        holder.checkbox.isChecked = item.selected
-        holder.checkbox.setOnCheckedChangeListener { _, checked ->
-            item.selected = checked
-            onSelectionChanged?.invoke()
+        // Selection highlight
+        if (item.selected) {
+            holder.itemView.setBackgroundResource(R.drawable.bg_item_selected)
+            holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
+        } else {
+            holder.itemView.setBackgroundResource(
+                android.R.attr.selectableItemBackground.let {
+                    val ta = ctx.obtainStyledAttributes(intArrayOf(it))
+                    val resId = ta.getResourceId(0, 0)
+                    ta.recycle()
+                    resId
+                }
+            )
+            holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
         }
 
-        holder.itemView.setOnClickListener { onItemClick?.invoke(item) }
+        holder.itemView.setOnClickListener {
+            if (isSelectionActive) {
+                // In selection mode, tap toggles selection
+                toggleSelection(holder.bindingAdapterPosition)
+            } else {
+                onItemClick?.invoke(item)
+            }
+        }
+
         holder.itemView.setOnLongClickListener { v ->
-            onItemLongClick?.invoke(item, v)
+            if (!isSelectionActive) {
+                // Enter selection mode with this item
+                toggleSelection(holder.bindingAdapterPosition)
+            } else {
+                // Already in selection mode — show context menu for files
+                onItemLongClick?.invoke(item, v)
+            }
             true
         }
     }
@@ -110,9 +149,9 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val checkbox: CheckBox = view.findViewById(R.id.cb_select)
         val icon: ImageView = view.findViewById(R.id.iv_icon)
         val name: TextView = view.findViewById(R.id.tv_name)
         val meta: TextView = view.findViewById(R.id.tv_meta)
+        val chevron: ImageView = view.findViewById(R.id.iv_chevron)
     }
 }

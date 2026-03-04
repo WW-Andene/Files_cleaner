@@ -462,7 +462,6 @@
     <string name="filter_old_files">Old files (&gt;90 days)</string>
     <string name="filter_large_files">Large files (&gt;50 MB)</string>
     <string name="clear_selection">Clear</string>
-    <string name="collapse_expand">Collapse or expand</string>
 
     <!-- Dual Pane -->
     <string name="dual_pane_title">Dual Pane</string>
