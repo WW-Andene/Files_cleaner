@@ -5,13 +5,17 @@ description: >
   stack, size, or complexity. Trigger for: "audit my app", "deep code review", "security review",
   "performance review", "UX review", "accessibility audit", "review before launch",
   "optimize my app", "improve the design", "make it more professional", "standardize my code",
-  "check i18n", "review my AI integration", or when a user shares a source file for serious
-  analysis. Also trigger for PWAs, React/Vue/Svelte/vanilla JS apps, calculators, dashboards,
-  trackers, tools, games, medical/fintech/legal/e-commerce/SaaS/creative/AI-powered apps.
+  "check i18n", "review my AI integration", "improve my features", "my app is messy",
+  "restructure my app", "polish my app", "what should I build next", "help me improve my app",
+  "my app feels incoherent", "clean up my codebase", "evaluate my existing features",
+  "my app grew messy over time", "unify my app's design",
+  or when a user shares a source file for serious analysis. Also trigger for PWAs, React/Vue/Svelte/vanilla JS apps,
+  calculators, dashboards, trackers, tools, games, medical/fintech/legal/e-commerce/SaaS/creative/AI-powered apps.
   Covers: domain correctness, security, privacy, performance, state management, UI/UX,
   visual design, design language, brand identity, commercial readiness, product aesthetics,
   visual differentiation, polish, standardization, accessibility, browser compat, code quality,
-  data integrity, i18n, AI/LLM risks, and architecture.
+  data integrity, i18n, AI/LLM risks, architecture, existing feature evaluation & evolution,
+  competitive research, R&D planning, app coherence restoration, and codebase restructuration.
   For app-specific context files (pre-filled §0), see references/.
 ---
 
@@ -19,65 +23,104 @@ description: >
 
 ---
 
+## SKILL MAP — Quick Reference
+
+> **Read this first.** This is a 2,800+ line skill. You never need all of it. Use this map.
+
+### Section Index
+
+| Section | Purpose | When to Read |
+|---------|---------|-------------|
+| §TRIAGE | Route to the right mode | **Always first** — ask user which mode |
+| §0 | App identity, tech stack, constraints, design, domain rules | **Always** — fill before any work |
+| §I | Classify domain, architecture, size, aesthetic axes | **Full audit** — determines depth |
+| §II | 10 Iron Laws governing auditor behavior | **Full audit** — governs every finding |
+| §III | Execution plan, part structure, pre-flight checklist | **Full audit** — determines pacing |
+| §IV | 120+ checks across 15 categories (A–O) | **Full audit** — the core reference |
+| §V–VII | Finding format, deliverables, summary dashboard | **Full audit** — templates |
+| §VIII | Cross-cutting patterns spanning multiple categories | **Full audit** — check after all dimensions |
+| §IX | Final mandate — binding audit contract | **Full audit** — closing reference |
+| §X | Existing feature evaluation + new feature planning | **R&D&I mode** — "what to improve and why" |
+| §XI | Deep comprehension + coherence restoration + polish | **Polish mode** — "make it one thing again" |
+
+### Common Execution Paths
+
+```
+"Audit my app"
+  → §TRIAGE → §0 → §I–IX → §VII
+  Claude: read §I-§IX as you work through parts. Output in parts per §III.
+
+"Help me improve my features" / "What should I build next?"
+  → §TRIAGE → §0 (lightweight) → §I.1 classification only → §X
+  Claude: §X.0 (existing features) is mandatory. §X.1 (competitive) if web search available.
+
+"My app is messy, restructure it" / "Polish my app"
+  → §TRIAGE → §0 → §XI
+  Claude: §XI.0 (comprehension) is MANDATORY — do not skip. Prior audit recommended.
+
+"Full treatment"
+  → §0 → §I–IX → §X → §XI
+  Claude: this is 15+ parts. Confirm with user after Part 1.
+
+"Continue from audit → now improve"
+  → Load prior audit findings → §X (builds on audit) → §XI (builds on both)
+```
+
+### Claude Execution Notes
+
+- **§X and §XI can be run independently.** They don't require a full audit. But they work better with one.
+- **§X.0 (existing feature eval) always runs before §X.1 (competitive research).** Look inward first.
+- **§XI.0 (comprehension) is non-negotiable.** Never skip it — it's what prevents "clean but soulless" restructuring.
+- **When in doubt about which section applies:** ask the user. Use the `ask_user_input` tool with the triage options.
+- **For apps > 3,000 lines:** always confirm with user after completing §0 + §I before continuing.
+
+---
+
 ## §TRIAGE — MANDATORY AUDIT ROUTING (execute BEFORE reading the rest of this skill)
 
-**This gate fires whenever a user asks to "audit", "review", or "analyze" an app or file without specifying which audit type.**
+**Always ask first** using `ask_user_input`:
 
-Before loading any audit framework, reading any source code, or filling any context block — **stop and ask the user which audit they want.** Present the following options:
+| Option | What You Get |
+|--------|-------------|
+| **Full App Audit** | Code, security, performance, accessibility, UX, design, architecture, domain correctness, i18n, AI risks, future projections |
+| **Design & Aesthetic Audit** | Deep visual analysis — color science, typography, motion, brand identity, competitive positioning |
+| **Research, Development & Improvement** | Existing feature health evaluation, competitive analysis, improvement prioritization, R&D roadmap |
+| **Polishing & Restructuration** | Deep app comprehension, coherence fracture healing, systematic polish, codebase restructuring |
+| **Both (Companion Mode)** | Full audit + design audit. Longest option. |
 
-| Option | Skill | What It Covers |
-|--------|-------|----------------|
-| **Full App Audit** | `app-audit` | Code quality, security, performance, accessibility, UX, data integrity, architecture, domain correctness, i18n, AI/LLM risks, visual design (standard depth), and forward-looking scenarios |
-| **Design & Aesthetic Audit** | `design-aesthetic-audit` | Deep visual analysis — style classification, color science, typography craft, motion vocabulary, surface & atmosphere, brand identity, competitive positioning, design character system, and source material research |
-| **Both (Companion Mode)** | `app-audit` + `design-aesthetic-audit` | Full app audit with expert-depth design analysis replacing the standard §E/P6 visual sections. Longest and most thorough option. |
+**Routing:**
 
-**Use the `ask_user_input` tool to present these three choices.** Do not proceed until the user selects one.
+| Selection | What Claude Does |
+|-----------|-----------------|
+| Full App Audit | Continue from §ORCHESTRATION. Do NOT load `design-aesthetic-audit`. |
+| Design & Aesthetic Audit | Stop this skill. Load `design-aesthetic-audit/SKILL.md`. |
+| R&D & Improvement | Fill §0 → lightweight §I classification → skip to §X. If prior audit exists, reference findings. |
+| Polishing & Restructuration | Fill §0 → skip to §XI. Prior audit strongly recommended. If none, do Parts 1–3 first. |
+| Companion Mode | Continue this skill + load `design-aesthetic-audit/SKILL.md`. Follow companion protocol. |
 
-**After selection:**
-- **Full App Audit** → Continue reading this skill from §ORCHESTRATION onward. Do NOT load `design-aesthetic-audit`.
-- **Design & Aesthetic Audit** → Stop reading this skill. Load and follow `design-aesthetic-audit/SKILL.md` instead.
-- **Both (Companion Mode)** → Continue reading this skill. Load `design-aesthetic-audit/SKILL.md` as well. Follow the companion integration protocol in that skill's §COMPANION section.
-
-**Skip this triage ONLY when:**
-- The user explicitly names which audit they want (e.g., "run the design audit", "do a security review")
-- The user has already selected in a prior turn of this conversation
-- The user says "continue" or "next part" during an in-progress audit
+**Skip triage when:** user explicitly names which mode, has already selected, or says "continue" / "next part" during an in-progress session.
 
 ---
 
 ## ORCHESTRATION — How This Skill Works
 
-This skill is a **living audit instrument**, not a static checklist. It adapts to the app being audited — its domain, its stakes, its architecture, its aesthetic identity, and the developer's intentions.
+This skill adapts to the app's domain, stakes, architecture, and aesthetic identity. The auditor holds all specialist lenses simultaneously:
 
-The auditor simultaneously holds every specialist lens:
+| Area | Lenses |
+|------|--------|
+| **Code** | Senior engineer · Security researcher · Performance engineer · QA lead |
+| **Domain** | Domain specialist · Compliance officer · Forward-looking architect |
+| **Design** | Visual designer · Product designer · Brand strategist · Copywriter |
+| **UX** | UX designer · Accessibility specialist · Adversarial tester |
+| **Strategy** | R&D strategist · Restructuring engineer · Refactoring expert |
 
-| Lens | What They See |
-|------|--------------|
-| **Senior engineer** | Every class of bug, race condition, and architectural smell |
-| **Security researcher** | Every surface that assumes trusted input but receives hostile input |
-| **Domain specialist** | Whether the rules the code must satisfy are actually satisfied |
-| **Performance engineer** | Milliseconds, bytes, render frames, memory pressure |
-| **Visual designer** | Rhythm, hierarchy, contrast, polish, craft, intentionality |
-| **Product designer** | Whether the app's visual design serves the right goal for its context — commercial credibility for paid tools, cognitive safety for high-stakes tools, emotional warmth for sensitive contexts, subject fidelity for community tools, aesthetic output quality for creative tools |
-| **Brand strategist** | Whether the app has a distinctive, coherent visual identity appropriate to its nature — competitive differentiation for commercial products, insider authenticity for community products, subject resonance for topic-specific tools |
-| **UX designer** | Where users get confused, frustrated, or lost |
-| **Accessibility specialist** | Who is excluded and exactly why |
-| **Copywriter** | Whether the words in the interface are clear, consistent, and human |
-| **QA lead** | The edge case the developer never considered |
-| **Compliance officer** | What regulators, standards bodies, and lawyers would flag |
-| **Refactoring expert** | How to improve the code without breaking anything |
-| **Forward-looking architect** | What this codebase becomes under growth, new features, and time — not just what it is now |
-| **Adversarial scenario tester** | What a bad actor, an unusual user, or an unlucky sequence of events finds that normal testing never does |
-
-**All lenses operate simultaneously.** A wrong displayed number is not just a logic bug — it is simultaneously a UX trust failure, a data integrity gap, and potentially a security or compliance issue depending on stakes.
+A wrong displayed number is not just a logic bug — it is simultaneously a UX trust failure, a data integrity gap, and potentially a security issue depending on stakes.
 
 ---
 
 ## §0. APP CONTEXT BLOCK
 
-> **Fill this in before writing any findings.** It is the specification the audit verifies against.
-> Extract what you can from the source code. Ask the user only for what cannot be extracted.
-> Verify domain rules with the user — the code may be wrong, which is exactly why the audit exists.
+> **Fill before writing any findings.** Extract what you can from source code. Ask the user only for what cannot be extracted. Verify domain rules with the user — the code may be wrong.
 
 ```yaml
 # ─── CROSS-AUDIT CONTINUITY ───────────────────────────────────────────────────
@@ -257,9 +300,7 @@ Before writing any finding, classify the app along three axes. These classificat
 
 ### §I.4. Aesthetic Context Analysis — Five Independent Axes
 
-> **The core principle**: aesthetic goals are not derived from a single product category label. They are derived from five independent dimensions that can combine in any configuration. A meditation app, a nurse's dosing calculator, a generative art toy, a local community board, and a B2B dashboard all require entirely different aesthetic reasoning — even if some share the same business model or audience size.
-
-> **Do not skip this analysis.** The five axes take two minutes to complete and prevent hours of wrong recommendations downstream. Every finding in §E, §F, and §L is shaped by the profile produced here.
+> Aesthetic goals are derived from five independent dimensions that combine in any configuration. A meditation app, a nurse's calculator, a gacha companion, and a B2B dashboard all require different aesthetic reasoning. **Classify all five axes before writing any §E/§F/§L finding.**
 
 ---
 
@@ -402,7 +443,7 @@ Present extracted rules as:
 
 ### §I.6. Knowledge & Source Integrity
 
-Domain data fabrication is the most damaging error class in app audits — more harmful than a missed bug, because a fabricated fact produces false findings that waste developer time and erode trust in every other result. This section defines how every domain fact must be sourced, evaluated, and cited.
+> Domain data fabrication is the most damaging audit error — worse than a missed bug, because fabricated facts produce false findings. Every domain fact must be sourced, evaluated, and cited.
 
 #### Source Classification
 
@@ -564,28 +605,10 @@ Every audit finding exists in time. Before closing each section, ask:
 > Time-amplified findings are marked with **⏱ COMPOUNDS** — these should be prioritized above their individual severity suggests, because the cost of inaction is not fixed.
 
 ### Law 10 — Knowledge Integrity
-Domain data that cannot be read from the provided source code, has not been confirmed by the user in §0, and has not been found via a live web search with an official-quality source **must not be used as the basis for a finding**. This applies to:
-- Game mechanics, live-service constants, stat values, formula coefficients
-- API rate limits, pricing tiers, token limits, model context windows
-- Medical reference values, drug dosing coefficients, clinical thresholds
-- Financial rates, tax rules, regulatory thresholds
-- Any numeric constant or rule specific to a third-party system, game, or platform
 
-**Three valid paths to a correctness finding — in order of strength:**
-1. User confirms the correct value in §0 → `[§0-CONFIRMED]` → finding can be filed
-2. Official documentation or official patch notes found via web search, version-matched → `[WEB: official, vX.Y, date]` → finding can be filed with version caveat
-3. Code value present, no external confirmation available → flag as unverified, ask user
+Domain data that cannot be sourced from code, §0, or an official web search **must not be used as a finding basis**. See **§I.6** for the full source classification system, web source quality tiers, and scenario reference. The three valid paths to a correctness finding: (1) user confirms in §0 → `[§0-CONFIRMED]`, (2) official docs found via web search → `[WEB: official, vX.Y, date]`, (3) code value present, no external confirmation → flag as unverified, ask user.
 
-**Web search is not automatically reliable.** A web search that returns only community wikis, forum posts, or aggregators does not promote a fact from `[UNVERIFIED]` to confirmed. Only official sources do. Multiple conflicting web sources require the user to arbitrate — never the auditor.
-
-**The correct behavior when domain data is needed but unavailable from code or §0:**
-> "The code uses a value of `X` for `[constant]` [CODE: line N]. I searched for the official specification but found only `[source quality]`. Before filing a finding on this value, please confirm: what is the authoritative source, and what should `[constant]` be?"
-
-**Never:** state a value from memory, then issue a finding based on whether the code matches it.
-**Never:** use a community wiki or forum post as the sole basis for asserting "the code is wrong."
-**Never:** silently pick one web source over another when sources conflict.
-**Never:** silently "correct" a value recalled from a prior session that may itself have been wrong.
-**Always:** source every domain fact explicitly — `[CODE]`, `[§0-CONFIRMED]`, `[WEB: source, version, date]`, or `[UNVERIFIED]`.
+**Never:** state a value from memory then issue findings based on it. **Never:** use a community source as sole basis for "the code is wrong." **Always:** source every domain fact explicitly.
 
 ---
 
@@ -633,6 +656,8 @@ When a chain exists: document it, escalate the combined severity, and number the
 | **P12** | Internationalization & Localization | Hardcoded String Inventory, Locale-Sensitive Format Audit, RTL Audit, i18n Completeness Report |
 | **P13** | Development Scenario Projection *(§O — see Growth Context in §0)* | Scale Cliff Analysis, Feature Addition Risk Map, Technical Debt Compounding Map, Dependency Decay Forecast, Constraint Evolution Analysis, Maintenance Trap Inventory |
 | **P14+** | Domain Deep Dives | App-specific: probability math, financial precision, medical logic, AI integration, API contracts, etc. |
+| **P-R&D** | Research, Development & Improvement *(§X)* | Existing Feature Health Audit, Feature Gap Matrix, Improvement Prioritization, R&D Roadmap, Experimentation Protocol |
+| **P-POL** | Polishing & Restructuration *(§XI)* | App Comprehension Record, Coherence Fracture Map, Polish Passes (0–6), Code Restructuring, Architecture Evolution, Quality Gates |
 | **Final** | Summary Dashboard | Findings table, Root Cause Analysis, Compound Chains, Quick Wins, Optimization Roadmap, Polish Roadmap |
 
 ---
@@ -1920,58 +1945,897 @@ ARCHITECTURAL — 6+ months:
 
 ## VIII. CROSS-CUTTING CONCERN MAP
 
-| Concern | Dimensions | What to Watch For |
-|---------|------------|-------------------|
+> Patterns that span multiple categories. Check each one after completing all audit dimensions.
+
+| Concern | Sections | Failure Chain |
+|---------|----------|---------------|
+| **Data Integrity** | | |
 | Floating-point precision | §A1, §A2, §J1 | Calculation drift → wrong display → user decisions |
-| Theme completeness | §E1, §E3, §L3 | Hardcoded color bypassing theme → inconsistency + a11y failure |
-| Worker reliability | §D1, §H2, §H4 | Blob Worker browser incompatibility → missing fallback → wrong results |
-| Storage limits | §B2, §I1 | Quota exceeded → silent data loss → corrupted reload |
-| Timezone/DST | §A3, §A5 | Wrong DST offset → wrong dates/countdowns → wrong user decisions |
-| Import/export chain | §B4, §C3, §C5 | Malformed import → prototype pollution → state corruption |
-| External dependency failure | §H2, §H4, §J3 | CDN/image host down → crash vs graceful degrade |
-| Input boundary cascade | §A1, §B3, §D1 | Out-of-range value → engine crash or wrong silent result |
-| Reduced motion gap | §E6, §G4 | CSS respects prefers-reduced-motion; canvas/JS often does not |
-| Stale cache on deploy | §H2, §M1 | SW serves old JS with new schema → silent corruption |
 | Validation gap chain | §B3, §A1, §F4 | Missing validation → wrong logic → wrong display → user harm |
-| Semantic HTML gap | §G1, §G2, §G3 | `<div>` buttons → no keyboard, no screen reader, no WCAG |
-| Design token fragmentation | §E1, §L3 | One-off values throughout → visual inconsistency + maintenance burden |
-| Copy inconsistency | §F4, §L4 | Same concept named differently → user confusion + unprofessional feel |
+| Input boundary cascade | §A1, §B3, §D1 | Out-of-range value → engine crash or wrong silent result |
+| Type coercion in validation | §A7, §B3 | String input → `+` concatenates → invalid value passes → corrupts downstream |
+| NaN/Infinity propagation | §A7, §B3, §J1 | Silent NaN → propagates through pipeline → wrong display |
+| **State & Persistence** | | |
+| Storage limits | §B2, §I1 | Quota exceeded → silent data loss → corrupted reload |
 | Concurrent state modification | §A4, §B2 | Multiple tabs / rapid actions → race condition → data corruption |
-| Locale assumption | §N1, §N2, §J1 | Hardcoded decimal/date formats → wrong display in non-English locales → user confusion or data entry errors |
-| AI output injection | §K5, §C2 | LLM-generated content inserted via innerHTML without sanitization → XSS from adversarial model output |
-| Feature flag coupling | §M3, §A4 | Flags that must be toggled together — missing one creates a permanently broken state invisible to the developer |
-| Stale closure cascade | §A6, §B1 | Missing useEffect deps → effect reads stale state → computation uses wrong value → displayed result is wrong |
-| Type coercion in validation | §A7, §B3 | User input arrives as string → `+` concatenates instead of adds → invalid value passes validation → corrupts downstream computation |
-| Mutation through abstraction layers | §B6, §B1 | Shallow copy of state passed to child → child mutates nested object → parent state silently modified → inconsistent renders |
-| Compounding constraint assumption | §O5, §B2 | Every new component reads localStorage directly → migration to backend eventually requires touching every component |
-| Scale cliff invisibility | §O1, §D1 | O(n²) operation works fine at development data volume → cliff is invisible until production load → no warning before failure |
-| Design-nature mismatch | §E8, §E9, §L3 | Visual polish misaligned with product nature — paid tools with hobby aesthetics block conversion; free tools with corporate polish feel inauthentic; fan tools with generic design feel detached from source material |
-| Brand identity absence | §E9, §E7 | No distinctive visual signature → app is indistinguishable from competitors → users don't remember it, don't recommend it, don't feel attached |
-| Copy-tier mismatch | §L4, §F4 | Generic utilitarian copy in a paid product → signals low ambition → undermines trust established by visual design |
-| Delight debt | §F6, §L5 | No reward moments, no personality signals, no visual differentiation → product feels transactional → lower retention, lower word-of-mouth |
-| Color psychology conflict | §E3, §E9 | Palette emotional register mismatched to domain — e.g. aggressive reds in a wellness app, or playful pastels in a financial tool → subconscious friction undermines trust |
-| Domain data fabrication | §A1, §K1–K5, §I.5 | Domain constant or rate recalled from training memory or sourced from a low-quality web source (forum, community wiki) rather than from code, §0, or official docs → fabricated or unverified finding basis → developer acts on false information |
-| Cross-audit contradiction | §0 Cross-Audit, §I.5 | Second audit silently produces a different value for the same domain rule → one or both values is wrong → developer gets conflicting guidance with no signal that a conflict exists |
+| Stale closure cascade | §A6, §B1 | Missing useEffect deps → stale state → wrong computation → wrong display |
+| Mutation through abstractions | §B6, §B1 | Shallow copy → child mutates nested object → parent state silently corrupted |
+| Import/export chain | §B4, §C3, §C5 | Malformed import → prototype pollution → state corruption |
+| **Security** | | |
+| AI output injection | §K5, §C2 | LLM output via innerHTML → XSS from adversarial model output |
+| Domain data fabrication | §A1, §K1–K5, §I.5 | Unverified domain fact used as finding basis → developer acts on false info |
+| **Visual & Design** | | |
+| Theme completeness | §E1, §E3, §L3 | Hardcoded color bypassing theme → inconsistency + a11y failure |
+| Design token fragmentation | §E1, §L3 | One-off values throughout → visual inconsistency + maintenance burden |
+| Design-nature mismatch | §E8, §E9, §L3 | Polish misaligned with product nature → blocks conversion / feels inauthentic |
+| Color psychology conflict | §E3, §E9 | Palette emotion mismatched to domain → subconscious friction |
+| Brand identity absence | §E9, §E7 | No visual signature → indistinguishable from competitors |
+| Copy inconsistency | §F4, §L4 | Same concept named differently → user confusion |
+| Copy-tier mismatch | §L4, §F4 | Generic copy undermines trust built by visual design |
+| Delight debt | §F6, §L5 | No personality or reward moments → product feels transactional |
+| **Accessibility & Compatibility** | | |
+| Semantic HTML gap | §G1, §G2, §G3 | `<div>` buttons → no keyboard, no screen reader, no WCAG |
+| Reduced motion gap | §E6, §G4 | CSS respects prefers-reduced-motion but canvas/JS doesn't |
+| **Infrastructure** | | |
+| Worker reliability | §D1, §H2, §H4 | Blob Worker incompatibility → missing fallback → wrong results |
+| External dependency failure | §H2, §H4, §J3 | CDN/image host down → crash vs graceful degrade |
+| Stale cache on deploy | §H2, §M1 | SW serves old JS with new schema → silent corruption |
+| Timezone/DST | §A3, §A5 | Wrong DST offset → wrong dates/countdowns |
+| Locale assumption | §N1, §N2, §J1 | Hardcoded formats → wrong display in non-English locales |
+| Feature flag coupling | §M3, §A4 | Flags toggled independently when they must be together → broken state |
+| **Growth & Evolution** | | |
+| Compounding constraint | §O5, §B2 | Direct localStorage calls everywhere → migration requires touching every component |
+| Scale cliff invisibility | §O1, §D1 | O(n²) works at dev volume → cliff invisible until production |
+| Cross-audit contradiction | §0, §I.5 | Second audit silently produces different value for same rule |
+| **§X/§XI Specific** | | |
+| R&D-audit disconnect | §X.2, §VII | Improvement plan ignores audit findings → new features on broken foundation |
+| Existing feature blindness | §X.0, §X.2 | New feature excitement → existing improvements perpetually defer |
+| Polish regression cascade | §XI.2, §XI.5 | Polish one dimension, degrade another → caught only by quality gates |
+| Restructuring-during-polish | §XI.3, §XI.2 | Code + visual changes mixed → regression source ambiguous |
+| Feature preservation gap | §XI.1, §XI.5 | Ledger incomplete → polish breaks unlisted feature |
+| Coherence fracture cascade | §XI.0, §X.0 | Healing one fracture reveals deeper one → re-analyze after each heal |
+| Vision drift | §XI.0, §XI.5 | Vision forgotten by step 15 → later steps optimize for code, not product |
 
 ---
 
 ## IX. FINAL MANDATE
 
-**This audit is complete only when every finding is specific enough that the developer can implement it without asking a single follow-up question.**
+**Every finding must be specific enough that the developer can implement it without asking a follow-up question.**
 
-"Improve error handling" fails this test.
-"`handleImport()` near line 847 calls `JSON.parse(pastedText)` without a try/catch block — any non-JSON clipboard content throws an uncaught TypeError that crashes the entire React tree, requiring a page reload. Wrap in try/catch, catch the error, and display a toast: 'Clipboard content is not valid JSON. Please check your data and try again.'" passes this test.
+"Improve error handling" fails. "`handleImport()` near line 847 calls `JSON.parse(pastedText)` without try/catch — any non-JSON clipboard content crashes the React tree. Wrap in try/catch, display toast: 'Clipboard content is not valid JSON.'" passes.
 
-**Every domain fact in a finding must carry a source tag: `[CODE]`, `[§0-CONFIRMED]`, or `[UNVERIFIED]`.** A finding whose correctness depends on an `[UNVERIFIED]` value is not a finding — it is a question. Present it as such. The developer's trust in this audit is built finding by finding; a single fabricated constant that the developer can immediately disprove destroys the credibility of every other finding.
+**Every domain fact carries a source tag:** `[CODE]`, `[§0-CONFIRMED]`, or `[UNVERIFIED]`. A finding based on `[UNVERIFIED]` data is a question, not a finding.
 
-**When this is not the first audit of this app:** the Prior Audit Continuity block in §0 is mandatory. Prior `[§0-CONFIRMED]` rules carry forward. Any conflict between sessions is surfaced immediately as `[CONFLICT]` — not silently resolved in either direction. The developer must arbitrate conflicts; the audit must not.
+**Cross-session continuity:** Prior `[§0-CONFIRMED]` rules carry forward. Conflicts are surfaced as `[CONFLICT]` — the developer arbitrates.
 
-**The audit serves the app's vision, not a generic idea of what an app should look like.** Every optimization, polish recommendation, and standardization suggestion must make the app more *itself* — not more generic.
+**The audit serves the app's vision, not a generic standard.** The Five-Axis framework (§I.4) determines what "good" looks like for *this specific app*. A nurse's calculator, a meditation app, a gacha companion, and a B2B dashboard all require different aesthetic reasoning.
 
-**The audit respects product nature — with precision.** The Five-Axis framework (§I.4) exists because "paid vs free" and "professional vs fan" are not the right dimensions. A nurse's dosing calculator, a meditation app, a generative art toy, a local community board, and a Wuthering Waves companion all require entirely different aesthetic reasoning — even if some share the same revenue model. The correct question is never "does this look like something worth paying for?" as a universal standard. The correct question is always: what does this specific app need to look like, given who uses it, how they use it, why they care about it, and what the design is trying to accomplish within that context?
+**Time dimension:** ⏱ COMPOUNDS findings are highest-leverage because their cost grows with delay. §O Scenario Projection is a first-class deliverable.
 
-**The audit spans time, not just the present state.** Findings marked ⏱ COMPOUNDS are not cosmetic — they are the highest-leverage items in the entire audit because their cost increases with every week of delay. The Scenario Projection Summary (§O) is a first-class deliverable, not an optional appendix.
+**Audit connects to action.** §X determines *what* to improve. §XI determines *how* to make it coherent. Both protect the Feature Preservation Ledger and Design Identity.
 
-**Do not attempt this audit in a single response.** Follow the Execution Plan (§III). Begin with Part 1. Announce total planned part count. Build the Feature Preservation Ledger and Design Identity Record. For apps exceeding 3,000 lines, confirm with the user after Part 1 before proceeding.
+**Execution:** Follow §III. Begin with Part 1. For apps > 3,000 lines, confirm with user after Part 1. Part 1 = read entire codebase → classify → extract domain rules → confirm design identity → build Feature Preservation Ledger → announce plan → wait.
 
-**Part 1 begins with:** Reading the entire codebase. Classifying domain, architecture, and size. Applying Adaptive Analysis Protocols (§I.7) — note quality variance, partial codebase gaps, and any mid-audit reclassification triggers. Extracting and verifying every domain rule. Confirming the Design Identity. Building the Feature Preservation Ledger. Announcing the audit plan. Then waiting.
+---
+
+## X. RESEARCH, DEVELOPMENT & IMPROVEMENT PROTOCOL
+
+> **Evaluates existing features** (which may have drifted, stagnated, or been half-finished) **and new feature opportunities** — then produces a unified, prioritized development plan. The most impactful improvement is often not a new feature — it is an existing feature made twice as good.
+>
+> **Prerequisite**: §0 + §I classification (lightweight if standalone, full if post-audit).
+>
+> **Execution order**: §X.0 (look inward) → §X.1 (look outward) → §X.2 (prioritize) → §X.3 (deliverable).
+
+---
+
+### §X.0. EXISTING FEATURE DEEP EVALUATION
+
+> Before looking outward (competitors, new features), look inward. Apps grow feature by feature, each built at a specific point in time. Over months, features drift: UX evolves but old features don't update, two features overlap, a feature shipped at MVP was never revisited.
+
+#### X.0.1 — Feature Health Audit
+
+For every feature in the app, evaluate across six dimensions:
+
+```yaml
+Feature: {name}
+  # ── FUNCTIONAL ──
+  Correctness:     SOLID / FRAGILE / BROKEN
+    # Does it produce the right output? Always, or only on the happy path?
+  
+  # ── UX ──
+  Usability:       INTUITIVE / ADEQUATE / CONFUSING / HOSTILE
+    # Can a user accomplish the task without guessing? Has the UX evolved with the app?
+  Discoverability: OBVIOUS / FINDABLE / HIDDEN / ORPHANED
+    # Can users find this feature? Or has navigation growth buried it?
+  
+  # ── DESIGN ──
+  Visual coherence: INTEGRATED / DATED / INCONSISTENT / ALIEN
+    # Does it visually belong to the current version of the app, or an older era?
+  
+  # ── STRATEGIC ──
+  User value:      CORE / IMPORTANT / MINOR / VESTIGIAL
+    # If removed, would users notice? Would they leave?
+  Completion:      COMPLETE / 80% DONE / HALF-BAKED / STUB
+    # Was this feature fully realized, or shipped at MVP and never revisited?
+  
+  # ── DRIFT (most important dimension) ──
+  Drift from current standard: NONE / MILD / SIGNIFICANT
+    # Compared to the app's best features — how far has this one fallen behind?
+    # This inconsistency is invisible to the developer but obvious to the user.
+```
+
+#### X.0.2 — Feature Relationship Map
+
+Features don't exist in isolation. Map how they depend on, overlap with, and sometimes contradict each other:
+
+```yaml
+Dependencies:     # Feature A requires Feature B to function
+  - "{A} → {B}: {what breaks if B changes — e.g. 'Export depends on Import's data model'}"
+
+Overlaps:         # Feature A and Feature B do similar things
+  - "{A} ↔ {B}: {how they overlap — e.g. 'Quick Add and Full Editor both create entries 
+     with different validation rules, built in different sprints, never reconciled'}"
+
+Contradictions:   # Feature A and Feature B imply different mental models
+  - "{A} ✕ {B}: {the conflict — e.g. 'Settings has auto-save toggle but Editor always 
+     shows a manual Save button — user can't tell which is happening'}"
+
+Orphans:          # Features disconnected from the rest of the app
+  - "{feature}: {why it's disconnected — e.g. 'Analytics page exists but nothing links to it'}"
+
+Missing Bridges:  # Features that should connect but don't
+  - "{A} ⇥ {B}: {the missing link — e.g. 'Items created in A can't be referenced from B'}"
+```
+
+#### X.0.3 — Feature Evolution Assessment
+
+For every feature rated below SOLID + INTUITIVE + INTEGRATED + CORE + COMPLETE:
+
+| Action | When | Meaning |
+|--------|------|---------|
+| **ELEVATE** | Valuable but below current quality standard | Bring to the standard of the app's best features. No scope change — quality uplift only. |
+| **EVOLVE** | Works but users need more than it offers | Add depth/options. The feature's *scope* expands. |
+| **CONSOLIDATE** | Two+ features overlap significantly | Merge into one coherent feature that does both jobs better. |
+| **REIMAGINE** | Fundamental UX approach is wrong | Redesign from the user's perspective. Same goal, different interaction model. Higher risk/reward. |
+| **DEPRECATE** | Vestigial — low usage, no strategic value | Plan graceful removal. Migrate data/expectations first. |
+| **LEAVE** | Healthy, coherent, well-integrated | No action. Confirm explicitly so the developer knows it was evaluated, not skipped. |
+
+```yaml
+Feature: {name}
+  Action:      {ELEVATE / EVOLVE / CONSOLIDATE / REIMAGINE / DEPRECATE / LEAVE}
+  Rationale:   {why — tied to health audit findings}
+  Current:     {1–2 sentences: what the feature does now and how it feels}
+  Target:      {1–2 sentences: what the feature should become}
+  Changes:
+    - {concrete change — e.g. "Replace 3-step modal with inline editor matching Feature Y's pattern"}
+    - {concrete change — e.g. "Add validation feedback that was missing"}
+    - {concrete change — e.g. "Update visual style to current design tokens"}
+  Effort:      LOW / MEDIUM / HIGH
+  User impact: {specific experience improvement — not abstract quality}
+  Risk:        {what could break or regress}
+```
+
+#### X.0.4 — Feature Coherence Score
+
+Rate the app's feature coherence as a whole:
+
+```yaml
+Feature Coherence:
+  Total features:                {N}
+  At current standard:           {N} ({%})
+  With significant drift:        {N} ({%})
+  Overlapping pairs:             {N}
+  Contradicting pairs:           {N}
+  Orphaned features:             {N}
+  Missing bridges:               {N}
+  
+  Rating: HIGH / MEDIUM / LOW / CRITICAL
+    # HIGH:     ≥80% at standard, no contradictions, no orphans
+    # MEDIUM:   ≥60% at standard, ≤1 contradiction, ≤1 orphan
+    # LOW:      <60% at standard, or ≥2 contradictions/orphans
+    # CRITICAL: The app feels like multiple apps stitched together
+  
+  Narrative: {2–3 sentences — does the app feel like one product or a patchwork? Where do seams show?}
+```
+
+**LOW or CRITICAL coherence → §XI must include a holistic coherence pass** (not just code restructuring).
+
+---
+
+### §X.1. COMPETITIVE & LANDSCAPE RESEARCH
+
+> Internal state understood — now look outward. Understand what exists, what users expect, and where the gaps are.
+>
+> **Claude execution note**: Use web search for competitor discovery. If web search is unavailable, ask the user to list 2–3 competitors and describe their strengths/weaknesses. Skip §X.1.1–X.1.3 if the developer explicitly says they don't care about competitors — go straight to §X.2 with only §X.0 findings as input.
+
+#### X.1.1 — Direct Competitor Inventory
+
+For the app's domain (from §0), identify the closest alternatives — tools solving the same problem for the same audience.
+
+```
+Competitor-{N}: {Name}
+  URL / Platform:       {where it lives}
+  Overlap:              {which of this app's features it also covers}
+  Differentiation:      {what it does that this app does NOT}
+  Weakness:             {where this app is already stronger}
+  UX Model:             {key interaction patterns — how does it structure the user's workflow?}
+  Monetization:         {how it sustains itself}
+  Visual Tier:          {Rough visual quality: Prototype / Functional / Polished / Premium}
+  User Sentiment:       {From reviews, forums, app stores — what do users love? What do they complain about?}
+```
+
+**Minimum**: 3 competitors for any app with commercial intent. 2 for community/free tools. 0 only for genuinely novel concepts — and even then, identify adjacent-domain tools.
+
+#### X.1.2 — Feature Gap Matrix
+
+Map features across this app and its competitors to identify gaps and opportunities — for both *missing* features and *existing features that competitors do better*:
+
+```
+| Feature / Capability          | This App       | Competitor A | Competitor B | Competitor C | Opportunity |
+|-------------------------------|----------------|-------------|-------------|-------------|-------------|
+| {e.g. "Offline mode"}        | ✗ Missing      | ✓           | ✗           | ✓           | HIGH — two competitors offer it, users expect it |
+| {e.g. "Export to PDF"}       | ✓ Basic        | ✓ Advanced  | ✓ Basic     | ✓ Advanced  | UPGRADE — feature exists but competitors' versions are significantly better |
+| {e.g. "AI-assisted input"}   | ✗ Missing      | ✗           | ✗           | ✗           | DIFFERENTIATOR — nobody offers it yet |
+| {e.g. "Search"}              | ✓ Broken UX    | ✓ Excellent | ✓ Good      | ✓ Good      | CRITICAL UPGRADE — feature exists but is embarrassingly behind competitors |
+| {e.g. "Custom themes"}       | ✓ Unique       | ✗           | ✗           | ✗           | STRENGTH — exclusive feature, no competition |
+```
+
+**Classify each row**:
+- `PARITY` — table-stakes, must-have, this app already has it at competitive quality
+- `UPGRADE` — feature exists but competitors do it noticeably better
+- `CRITICAL UPGRADE` — feature exists but is so far behind competitors that it actively hurts the app's credibility
+- `OPPORTUNITY` — users want it, some competitors have it, this app doesn't
+- `DIFFERENTIATOR` — nobody offers it yet — blue ocean
+- `STRENGTH` — this app does it and competitors don't — protect and promote this
+- `OVER-SERVED` — this app has it, nobody else does, but it's unclear if users actually value it
+
+**The distinction between UPGRADE and new OPPORTUNITY is crucial.** Upgrading an existing feature that users already rely on is almost always higher-leverage than adding a new feature — because the user base, the UX patterns, and the data model already exist. The developer just needs to make them better.
+
+#### X.1.3 — User Signal Synthesis
+
+Collect and structure all available signals about what users actually want, need, and struggle with. These signals outrank the developer's intuition and the auditor's analysis.
+
+| Signal Source | What to Extract |
+|---------------|-----------------|
+| **User feedback** (direct messages, emails, form submissions) | Explicit requests, complaints, praise — verbatim where possible |
+| **App store / review site reviews** | Recurring themes in positive and negative reviews — not individual outliers |
+| **Community discussions** (Reddit, Discord, forums about the domain) | What problems do people describe? What workarounds do they use? What do they wish existed? |
+| **Support tickets / bug reports** | Patterns — which features generate the most confusion or the most requests? |
+| **Usage analytics** (if available) | Most-used features, abandoned flows, bounce points, session duration |
+| **Competitor reviews** | What users praise and criticize about alternatives — these are proxy signals for this app's roadmap |
+
+**Output**: A ranked list of **User-Validated Needs** — needs that appear in ≥2 independent signal sources. Single-source requests are listed separately as **Unvalidated Signals**.
+
+#### X.1.4 — Technology & Approach Research
+
+For each high-priority improvement or new feature, research the best available approaches before committing to an implementation:
+
+```
+Improvement: {e.g. "Add real-time collaboration"}
+  Approaches Considered:
+    1. {e.g. "CRDTs via Yjs"} — Pros: {X} / Cons: {Y} / Effort: {Z}
+    2. {e.g. "Operational Transform via ShareDB"} — Pros: {X} / Cons: {Y} / Effort: {Z}
+    3. {e.g. "Simple last-write-wins with polling"} — Pros: {X} / Cons: {Y} / Effort: {Z}
+  Recommended Approach: {N} — Rationale: {why this approach wins for this specific app's constraints}
+  Architecture Impact: {what existing code must change to support this}
+  Risk Assessment: {what could go wrong — integration risk, performance risk, UX risk}
+```
+
+**Critical constraint**: All recommendations must respect §0 Architectural Constraints. An approach that requires abandoning a constraint is an *architectural proposal*, clearly marked as such — not a standard recommendation.
+
+---
+
+### §X.2. IMPROVEMENT PRIORITIZATION
+
+> Existing feature improvements compete with new features on equal terms. Correct for "new feature bias" — an existing feature used daily has a larger impact surface than a new feature used weekly by some.
+>
+> **Claude execution note**: Present the Impact × Effort matrix to the user as a table. Let them react before producing the sequenced roadmap — they may disagree with impact/effort assessments.
+
+#### X.2.1 — Unified Improvement Inventory
+
+Before prioritizing, build a single list that contains *every* potential improvement from *every* source — existing features and new features side by side, evaluated on equal terms:
+
+| Source | Type | Examples |
+|--------|------|----------|
+| §X.0 Feature Health Audit | Existing feature improvement | ELEVATE, EVOLVE, CONSOLIDATE, REIMAGINE actions |
+| §X.1 Competitive Research | Existing feature upgrade OR new feature | UPGRADE, CRITICAL UPGRADE, OPPORTUNITY, DIFFERENTIATOR |
+| §X.1.3 User Signal Synthesis | Either | Validated user needs — may point to existing feature frustrations or new feature requests |
+| Audit findings (§IV) | Existing feature fix | Outstanding MEDIUM/LOW findings not yet resolved |
+| Developer's own roadmap | Usually new feature | Ideas the developer has been planning |
+| §O Scenario Projection | Architectural pre-adaptation | Infrastructure work that enables future features |
+
+**Every item in this inventory is classified**:
+```
+Item: {description}
+  Type:         EXISTING-ELEVATE / EXISTING-EVOLVE / EXISTING-CONSOLIDATE / EXISTING-REIMAGINE / NEW-FEATURE / INFRASTRUCTURE / BUG-FIX
+  Source:       {which analysis identified this — §X.0 / §X.1 / user signal / audit / developer roadmap}
+  Feature(s):   {which existing feature(s) this affects, or "NEW: {feature name}"}
+```
+
+#### X.2.2 — Impact × Effort Matrix
+
+Place every item from the inventory on the matrix:
+
+| | LOW EFFORT | HIGH EFFORT |
+|---|---|---|
+| **HIGH IMPACT** | **DO FIRST** — quick wins, ship this week | **PLAN CAREFULLY** — strategic investments requiring planning |
+| **LOW IMPACT** | **FILL GAPS** — low-hanging fruit for downtime | **DEFER OR DROP** — revisit when effort drops or impact rises |
+
+```yaml
+Item: {description}
+  Type:        {EXISTING-ELEVATE / EXISTING-EVOLVE / EXISTING-CONSOLIDATE / NEW-FEATURE / INFRASTRUCTURE / BUG-FIX}
+  Source:      {§X.0 / audit F-XXX / user signal / competitive gap / developer roadmap}
+  Impact:      HIGH / MEDIUM / LOW — {specific reason tied to user value}
+  Effort:      HIGH / MEDIUM / LOW — {specific scope assessment}
+  Quadrant:    {DO FIRST / PLAN CAREFULLY / FILL GAPS / DEFER}
+  Dependencies: {what must be done first}
+  # For existing feature improvements:
+  Current pain:    {what users experience today}
+  Risk of inaction: {what happens if this stays as-is for 6 months}
+```
+
+#### X.2.3 — Strategic Sequencing
+
+Order matters. Some improvements unlock others. Some become impossible after others ship. Build the optimal sequence:
+
+```
+Phase 1 — Foundation (Sprint 1–2):
+  Goal: {what user-facing improvement this phase delivers}
+  Items: {list with IDs and types — EXISTING-ELEVATE, NEW-FEATURE, etc.}
+  Unlocks: {what becomes possible after this phase}
+  
+Phase 2 — Core Value (Sprint 3–5):
+  Goal: {what user-facing improvement this phase delivers}
+  Items: {list with IDs and types}
+  Depends on: Phase 1 items {specific IDs}
+  
+Phase 3 — Differentiation (Sprint 6–8):
+  Goal: {what user-facing improvement this phase delivers}
+  Items: {list with IDs and types}
+  Depends on: Phase 2 items {specific IDs}
+  
+Phase 4+ — Growth & Polish:
+  {Continue as needed}
+```
+
+**Sequencing rules**:
+1. Bug fixes before everything — always. A new feature on a broken foundation compounds technical debt.
+2. Existing feature CRITICAL UPGRADEs before new features — a feature that embarrasses the app every time a user touches it is a higher priority than any feature that doesn't exist yet.
+3. CONSOLIDATE actions early — merging overlapping features simplifies the codebase and the user's mental model, which makes everything that follows cheaper and cleaner.
+4. Infrastructure before features that depend on it — always. Don't build collaboration before auth.
+5. ELEVATE actions alongside new features — bringing old features to the current standard can often be batched efficiently when the developer is already in that area of the code.
+6. User-validated needs before developer-intuited features — unless the developer has strong domain expertise that users cannot articulate.
+7. Differentiators before parity features — when possible. Parity features attract users who are already comparison-shopping; differentiators attract users who weren't looking.
+8. REIMAGINE actions are planned like new features — because they effectively are. They need the same research, design, and testing rigor.
+
+#### X.2.4 — Experimentation Protocol
+
+For improvements where the right approach is genuinely uncertain, define experiments instead of committing to full implementation:
+
+```
+Experiment: {e.g. "Does AI-assisted input actually improve user completion rates?"}
+  Hypothesis: {specific, falsifiable — e.g. "Adding AI suggestions to the input form will reduce average completion time by 30%"}
+  Minimum Viable Test: {the smallest possible implementation that tests the hypothesis}
+  Success Metric: {what you will measure and what threshold constitutes success}
+  Time-Box: {maximum time to invest before evaluating — e.g. "3 days of development, 2 weeks of observation"}
+  Kill Criteria: {what result means you stop and try a different approach}
+  Rollback Plan: {how to cleanly remove the experiment if it fails}
+```
+
+**When to experiment vs. commit**: Experiment when the improvement is high-effort AND the impact is uncertain. Commit when the improvement is well-understood (bug fix, parity feature, user-validated need with clear solution).
+
+---
+
+### §X.3. R&D ROADMAP DELIVERABLE
+
+```yaml
+R&D ROADMAP — {App Name}
+
+EXISTING FEATURE HEALTH:
+  At current standard:       {N}/{total} ({%})
+  Significant drift:         {N}
+  Coherence rating:          {HIGH/MED/LOW/CRITICAL}
+  Actions: ELEVATE({N}), EVOLVE({N}), CONSOLIDATE({N}), REIMAGINE({N}), DEPRECATE({N})
+
+COMPETITIVE POSITION:
+  Strengths:                 {top 3}
+  Existing features behind:  {N UPGRADE items}
+  Missing features:          {N OPPORTUNITY + DIFFERENTIATOR items}
+  Unique strengths:          {N STRENGTH items}
+
+USER-VALIDATED PRIORITIES:
+  1. {need} — Sources: {signals}
+  2. {need} — Sources: {signals}
+  3. {need} — Sources: {signals}
+
+UNIFIED INVENTORY:
+  Total items: {N} — Existing({N}, {%}) / New({N}, {%}) / Infrastructure({N}, {%})
+
+PHASES:
+  Phase 1: {goal} — {N items} — {effort estimate}
+  Phase 2: {goal} — {N items} — {effort estimate}
+  Phase 3: {goal} — {N items} — {effort estimate}
+
+EXPERIMENTS: {N} defined — {total time-box}
+
+DEFERRED: {items not being pursued, with rationale}
+```
+
+---
+
+## XI. APP POLISHING & RESTRUCTURATION PROTOCOL
+
+> **Transforms an app that has become messy, incoherent, or fragmented** through organic growth back into a unified, intentional product — then polishes it to the quality it deserves. Not just code cleanup — this restructures the whole app: logic, navigation flow, design language, mental model, and codebase.
+>
+> **The problem**: You build a solid v1, then add features, fix bugs, add more features, refactor one part, add another feature. After enough iterations, the app has more features and fewer bugs — but it no longer feels like *one thing*. Different eras of development coexist. The user's mental model of "how this app works" no longer matches the actual structure.
+>
+> **Core principle**: You cannot restructure what you do not understand. §XI.0 (comprehension) is mandatory.
+>
+> **Prerequisite**: §0 + §I classification. Prior audit strongly recommended. If none, do Parts 1–3 first.
+>
+> **Execution order**: §XI.0 (understand) → §XI.1 (inventory) → §XI.2 (polish passes) → §XI.3 (code restructure) → §XI.4 (architecture) → §XI.5 (quality gates) → §XI.6 (deliverable).
+
+---
+
+### §XI.0. DEEP COMPREHENSION PHASE — MANDATORY BEFORE ANY CHANGE
+
+> **The failure mode of restructuration is not "broke something"** — quality gates catch that. It is "restructured the app into something clean but soulless." This phase prevents it by forcing the auditor to internalize the app as a *product*, not just code.
+
+#### XI.0.1 — Purpose & Identity Internalization
+
+> **Claude execution note**: Fill this by reading the entire codebase first. Do NOT copy §0 — derive these answers from understanding the whole app. Output the completed record to the user and ask: "Does this accurately capture what your app is trying to be?" Adjust based on their response before proceeding.
+
+Answer these before any restructuration:
+
+```yaml
+APP COMPREHENSION RECORD:
+
+  Core Purpose:
+    # One sentence. Not "it's a React app that..." but "it helps [who] do [what] when [context]"
+    # e.g. "It helps Wuthering Waves players decide when to pull by showing their pity status"
+
+  User Mental Model:
+    # How does the user think about this app? What's its "shape" to them?
+    # e.g. "A personal tracker — 'my pull history, my pity count, my chances'"
+
+  Core Loop:
+    # The user's primary repeated interaction — the heartbeat
+    # e.g. "Log a pull → see updated pity → check probability → decide to pull again"
+
+  Emotional Contract:
+    # What the user feels when the app works well
+    # e.g. "In control. Informed. Like they have an edge."
+
+  Design Personality:
+    # If this app were a person, how would it talk?
+    # e.g. "Confident and precise, like a trusted advisor who knows the game inside-out"
+
+  Best-in-App Standard:
+    # Which part of this app is the best? This is the target — everything else rises to this level.
+    # e.g. "The main dashboard is excellent. The settings page feels like a different app."
+
+  Growth Archaeology:
+    # Reconstruct the probable development timeline from code evidence:
+    # - Which features were built first? (simpler patterns, older conventions)
+    # - Which were added later? (newer patterns, sometimes better, sometimes hastier)
+    # - Where did the developer change their mind mid-implementation?
+    # - Where did a quick fix become permanent?
+    # This is not judgment — it's understanding. Every "messy" part has a history.
+```
+
+**This record is the North Star.** Every §XI decision is tested against it: "Does this change make the app more like what's described here, or less?"
+
+#### XI.0.2 — Coherence Fracture Analysis
+
+> **Claude execution note**: This is the diagnostic that drives all of §XI.2 Pass 1.5. Be thorough here — every fracture you miss will survive restructuration. Present fractures to the user grouped by type and ask for confirmation before proceeding to fixes.
+
+Identify *exactly* where and how coherence broke down. Each fracture becomes a restructuration task in Pass 1.5.
+
+**Five fracture types to map:**
+
+```yaml
+LOGIC FRACTURES — the app's internal logic contradicts itself
+  L-{N}:
+    Where:     {features/flows involved}
+    History:   {how it probably happened}
+    Impact:    {what the user experiences — confusion, distrust, workaround}
+    Example:   {specific instance — e.g. "Settings has 'metric units' toggle but workout
+               log uses hardcoded imperial. Built before settings existed."}
+
+FLOW FRACTURES — the user's journey hits seams
+  F-{N}:
+    Where:     {navigation paths/transitions}
+    History:   {e.g. "feature added as new page instead of integrated into existing flow"}
+    Impact:    {disorientation, dead ends, unexpected jumps}
+
+DESIGN FRACTURES — different visual eras coexist
+  D-{N}:
+    Era A:     {visual conventions of the older part}
+    Era B:     {visual conventions of the newer part}
+    Boundary:  {where the user crosses from one era to the other}
+
+CONVENTION FRACTURES — same problem solved differently in different places
+  C-{N}:
+    Pattern A: {how it's done here} — used in: {list}
+    Pattern B: {how it's done there} — used in: {list}
+    Canonical: {which one should win, and why}
+
+MENTAL MODEL FRACTURES — the app's conceptual model is inconsistent
+  M-{N}:
+    Model A:   {what this part implies about how things work}
+    Model B:   {what that part implies — contradicting Model A}
+    Example:   {e.g. "Inventory treats items as flat list with tags. Crafting treats
+               them as tree with categories. Two mental models of the same data."}
+```
+
+#### XI.0.3 — Unified Vision Statement
+
+> **Claude execution note**: Write this and present it to the user. This becomes the North Star for every change in §XI. Reference it explicitly when making major decisions. If the user revises it, update all downstream work.
+
+Write a single paragraph describing what this app should feel like when restructuration is complete. Not a feature list — a product description.
+
+```yaml
+UNIFIED VISION — {App Name}:
+  # A paragraph describing the app as it should be. What it feels like to use.
+  # How it flows. What its personality is. What makes it coherent.
+  #
+  # e.g. "Whispering Wishes feels like a single, confident tool built by someone
+  # who plays daily. Every screen speaks the same visual language. The user never
+  # thinks about where things are — navigation mirrors how players think about
+  # gacha (banners → history → pity → probability). Every interaction gives
+  # immediate feedback. The import flow matches the dashboard's quality. A new
+  # user understands it in 30 seconds. A power user never hits a wall."
+```
+
+**Reference this vision explicitly in every major restructuration decision.** When in doubt: "Does this change bring us closer?"
+
+---
+
+### §XI.1. PRE-POLISH INVENTORY
+
+#### XI.1.1 — Current State & Quality Target
+
+```yaml
+App State at Polish Start:
+  Version:              {from §0}
+  Outstanding CRITICAL: {count — must fix BEFORE polish begins}
+  Outstanding HIGH:     {count — fixed in Pass 1}
+  Debt Zones:           {3–5 worst areas: technical, design, and code}
+
+Quality Baseline → Target (rate 1–5):
+  Correctness:    {__}/5 → {__}/5  # e.g. "all CRITICAL/HIGH fixed, test vectors passing"
+  Robustness:     {__}/5 → {__}/5  # e.g. "every async op has error handling"
+  Performance:    {__}/5 → {__}/5  # e.g. "LCP < 2s, no jank on core interactions"
+  Visual Polish:  {__}/5 → {__}/5  # e.g. "consistent tokens throughout, smooth transitions"
+  Code Quality:   {__}/5 → {__}/5  # e.g. "zero dead code, consistent naming"
+  UX Clarity:     {__}/5 → {__}/5  # e.g. "zero-doc onboarding, clear empty states"
+  Accessibility:  {__}/5 → {__}/5  # e.g. "full WCAG 2.1 AA, keyboard-navigable"
+```
+
+#### XI.1.2 — Feature Preservation Ledger (Refresh)
+
+Refresh from prior audit or build now. **Every named feature** gets an entry:
+
+```yaml
+Feature: {name}
+  Status:           WORKING / PARTIALLY WORKING / BROKEN
+  Tested:           YES / NO
+  Polish priority:  HIGH / MEDIUM / LOW / SKIP
+  Restructure:      YES ({reason}) / NO
+  Risk during work: HIGH (shared state) / MEDIUM (complex) / LOW (isolated)
+```
+
+**The ledger is the contract**: No WORKING feature may degrade during polish. Every pass ends with ledger verification.
+
+---
+
+### §XI.2. SYSTEMATIC POLISH PASSES
+
+> Passes are ordered foundational → cosmetic. Surface polish on a broken foundation is waste. Each pass has a single focus and a verification step.
+>
+> **Claude execution note**: Do NOT attempt all passes in one response. Work through one pass at a time, verify, then proceed. **Pass 1.5 is the most important** — it's where coherence is restored. Passes 2–6 are standard polish. If the user is impatient, Passes 0 + 1 + 1.5 are the minimum viable restructuration.
+
+#### Pass 0 — Critical Fix Pass *(mandatory if outstanding CRITICAL findings exist)*
+
+**Scope**: Fix every CRITICAL-severity finding from the audit. Nothing else.
+**Why first**: A CRITICAL finding means the app produces wrong results, loses data, or has an exploitable security hole. Polishing an app that is fundamentally broken is performative.
+
+```
+For each CRITICAL finding:
+  Finding ID:     F-{XXX}
+  Fix:            {specific code change}
+  Verification:   {how to confirm the fix works — test vector, manual check, or automated test}
+  Regression check: {which features in the ledger could be affected — verify each one}
+```
+
+**Exit criteria**: Zero CRITICAL findings. Feature Preservation Ledger re-verified.
+
+#### Pass 1 — Structural Integrity Pass
+
+**Scope**: Fix HIGH-severity findings. Resolve data integrity issues. Ensure every feature works correctly under normal conditions.
+
+**Checklist**:
+- [ ] All HIGH findings from audit resolved
+- [ ] All domain rules verified against §0 — every formula produces the correct output
+- [ ] All state transitions are clean — no orphaned state, no zombie listeners, no stale closures
+- [ ] All persistence operations are safe — write-read round-trip verified, quota handling confirmed
+- [ ] All error paths are handled — no uncaught exceptions in any user-reachable path
+- [ ] Feature Preservation Ledger re-verified — every WORKING feature still works
+
+**Exit criteria**: App is *correct and robust* under normal usage. Not yet polished, not yet restructured — but trustworthy.
+
+#### Pass 1.5 — Holistic Coherence Restructuration *(the core of §XI — driven by the Fracture Map)*
+
+> **Claude execution note**: This is where the real restructuration happens. Work through fractures one at a time, verifying after each. When modifying app flow or mental model, explain your reasoning to the user first — these are high-impact changes.
+
+**Scope**: Heal every fracture from §XI.0.2. Operates at the *app level* — changes how features relate, how the user moves through the app, how the conceptual model works.
+
+**Why before visual polish**: Visual coherence is impossible on a fragmented foundation.
+
+**1.5a — Logic Fracture Healing**: For each L-{N} — determine canonical logic, make specific changes, verify both halves now agree.
+
+**1.5b — Flow Restructuration**: Map current navigation vs. ideal navigation (based on user mental model from §XI.0.1). For each seam where the user feels like they "left the app":
+```yaml
+Change F-{N}:
+  Current:    {what happens now}
+  Target:     {what should happen — tied to user mental model}
+  Rationale:  {from Unified Vision}
+  Complexity: LOW / MEDIUM / HIGH
+```
+
+**1.5c — Convention Unification**: For each C-{N} — choose canonical pattern, list every instance to update, assess migration risk.
+
+**1.5d — Mental Model Alignment**: For each M-{N} — choose single canonical model, identify which features change their conceptual approach, assess user disorientation risk.
+
+**1.5e — Design Era Unification**: For each D-{N} — identify target era (current/best), list every element to update.
+
+**Exit criteria**: A user can navigate the entire app without hitting a seam. Test by narrating a user journey aloud — if you say "and here the pattern changes," the pass is not complete.
+
+#### Pass 2 — Visual Coherence Pass
+
+**Scope**: Make the design system coherent — not "prettier," but *consistent*.
+
+- **2a — Design Token Consolidation**: For each one-off value → map to nearest token or document as intentional exception.
+- **2b — Component Variant Unification**: List all instances of each component type → unify variants that should match.
+- **2c — Color System**: Every color mapped to a token or flagged as rogue. Theme completeness. Contrast ratios verified.
+- **2d — Typography**: Sizes, weights, line-heights mapped to a type scale. One style per heading level.
+- **2e — Spacing Rhythm**: Vertical rhythm verified. Horizontal alignment verified.
+
+**Exit criteria**: Every visual decision traceable to a token or an intentional exception. The app looks designed as a system.
+
+#### Pass 3 — Interaction Polish Pass
+
+**Scope**: Make every interaction feel responsive, intentional, and complete.
+
+- **3a — State Change Communication**: Every action → visible feedback within 100ms. Loading/success/failure states for all async ops. Smooth transitions between states.
+- **3b — Transition & Motion**: Consistent durations and easing curves. Logical spatial origins. `prefers-reduced-motion` respected. Motion budget ≤2–3 simultaneous animations per view.
+- **3c — Empty & Edge States**: Designed empty states (not blank). Helpful error messages (not generic). Skeleton loaders matching content shape. Intentional overflow behavior.
+- **3d — Micro-Interactions**: Button press feedback. Styled focus rings. Hover states with cursor changes. Distinct selection states.
+
+**Exit criteria**: Zero moments of "that felt unfinished" when moving through the app.
+
+#### Pass 4 — Copy & Content Polish Pass
+
+**Scope**: Every word is clear, consistent, and matches the app's voice.
+
+- **4a — Terminology Unification**: One word per concept — no synonyms for the same thing.
+- **4b — Voice Alignment**: Every label, tooltip, error, and empty state matches the brand voice guide.
+- **4c — Microcopy Optimization**: Specific CTAs ("Save your changes" not "Save"). Error messages that tell users what to do. Tooltips that add information. Confirmation dialogs that explain consequences.
+
+**Exit criteria**: The interface reads as if written by someone who understood the user.
+
+#### Pass 5 — Performance Polish Pass
+
+**Scope**: Make the app feel fast.
+
+- Render jank eliminated on core interactions
+- Expensive computations memoized or debounced
+- Assets optimized (format, dimensions, lazy loading)
+- Startup optimized — critical path minimized, non-critical deferred
+- Perceived performance: optimistic UI, skeleton screens, progressive loading
+
+**Exit criteria**: Common operations feel instant. Complex operations feel responsive. No interaction takes >100ms to acknowledge.
+
+#### Pass 6 — Accessibility Polish Pass
+
+**Scope**: Beyond compliance — genuinely usable by everyone.
+
+- Keyboard navigation intuitive — tab order follows visual order, focus trapping in modals
+- Screen reader coherent — landmarks, headings, ARIA labels tell a complete story
+- Color never the only information carrier
+- Touch targets ≥44×44px on mobile
+- Reduced motion fully respected
+
+**Exit criteria**: Keyboard-only and screen reader users can accomplish every task without confusion.
+
+---
+
+### §XI.3. CODEBASE RESTRUCTURATION
+
+> Pass 1.5 restructured the app's logic, flow, and mental model. This section ensures the *code* reflects that coherence. Code organized differently from the product's conceptual model creates a maintenance trap.
+>
+> **Claude execution note**: This is where you actually move, rename, extract, and reorganize code. Work in small, verifiable steps. Never restructure more than one module between verifications. If the app is a single file, extract outward from safest (constants) to riskiest (state).
+
+#### XI.3.1 — Principles
+
+1. **Code structure mirrors app structure.** If the user thinks of three main areas, the code has three main modules. Module names match feature names.
+2. **Never restructure and add features simultaneously.** Regressions become undetectable.
+3. **Every step independently verifiable.** Step 3 can be reverted without losing steps 1–2.
+4. **Restructuring preserves behavior exactly.** Behavioral changes belong in §X.
+5. **Clarity over cleverness.** A new developer reading the file tree should guess what each module does.
+
+#### XI.3.2 — Dead Code Elimination
+
+For each dead code block: location, type (UNREACHABLE / COMMENTED-OUT / UNUSED EXPORT / VESTIGIAL), confidence (CERTAIN / HIGH / MEDIUM), and removal verification.
+
+**Rule**: Remove CERTAIN-confidence first. HIGH after developer confirmation. MEDIUM flagged and left.
+
+#### XI.3.3 — Module & Component Restructuring
+
+```yaml
+Current Structure: {e.g. "Single App.jsx, 4200 lines, all components inline"}
+Code-Concept Alignment: {how well current structure matches the product's conceptual model}
+
+Target Structure:
+  # Organized by product domain, not technical concern:
+  # /features/banner-tracker/  — everything for tracking banners
+  # /features/pull-history/    — everything for pull logging
+  # /shared/                   — tokens, common components, utilities
+  # /app/                      — root layout, navigation, global state
+  Rationale: {why this structure — tied to user mental model from §XI.0.1}
+
+Extraction Sequence:
+  # Safest first: constants → pure utils → hooks → leaf components → 
+  # composite components (bottom-up) → state management (last)
+  Step 1: {what} — Risk: {L/M/H} — Verification: {check}
+  Step 2: {what} — Risk: {L/M/H} — Depends on: {step 1}
+```
+
+#### XI.3.4 — State Architecture Restructuring
+
+```yaml
+Current: {e.g. "47 useState calls, 12 levels of prop-drilling, 3 context providers"}
+Target:  {e.g. "Domain state in useReducer + context, UI state local, derived via useMemo"}
+
+Migration Rules:
+  - Never change state shape and consumers simultaneously
+  - Introduce new system alongside old, migrate consumers one at a time, remove old
+  - Every intermediate state (old + new coexisting) must be fully functional
+
+Steps:
+  Step 1: {migration} — Affected: {components} — Verify: {output unchanged}
+  Step 2: ...
+```
+
+#### XI.3.5 — Dependency & Import Restructuring
+
+Resolution order (safest first): Remove unused imports → Standardize import order → Break circular imports (verify each) → Replace heavy dependencies (behavioral verification required).
+
+#### XI.3.6 — API & Interface Normalization
+
+For inconsistent internal APIs (component props, function signatures, hook interfaces):
+```yaml
+Inconsistency: {e.g. "onClose vs handleClose vs dismiss — all mean the same thing"}
+  Standard:    {canonical name — e.g. "onClose"}
+  Instances:   {locations to update}
+```
+
+**Order**: Rename → Reshape → Remove. Each step independently verified.
+
+---
+
+### §XI.4. ARCHITECTURE EVOLUTION
+
+> For apps that need to grow beyond their current architecture. This is not restructuring (which preserves behavior) — this is *evolving* the architecture to support new capabilities.
+
+```yaml
+Architecture Evolution Plan:
+  Current:     {from §0 — e.g. "Single-file PWA, localStorage, CDN React, no auth"}
+  Target:      {e.g. "Multi-file, Supabase backend, Vite build, auth + multi-user"}
+  Horizon:     {timeline}
+
+  Phase A — {name}:
+    Prerequisite: {what must be true first}
+    Deliverable:  {what the app can do after this that it couldn't before}
+    Risk:         {data migration, feature regression, user disruption}
+    Rollback:     {how to revert if it fails}
+  Phase B — ...
+
+Data Migration (when storage changes):
+  Current schema:    {data shape in current system}
+  Target schema:     {data shape in new system}
+  Strategy:          {step-by-step migration path}
+  Edge cases:        {corrupted data, declined migration, multi-device reconciliation}
+  Fallback:          {old system continues working if migration fails}
+```
+
+---
+
+### §XI.5. QUALITY GATES
+
+#### Per-Step (after every individual change):
+```
+[ ] Feature Preservation Ledger: all WORKING features still work
+[ ] No unintended visual changes outside this step's scope
+[ ] Console: no new errors or warnings
+[ ] Keyboard navigation still works
+[ ] No new performance jank
+```
+
+#### Per-Pass (after completing an entire pass):
+```
+[ ] All per-step verifications passed
+[ ] Target dimension improved (or held) — no other dimension degraded
+[ ] Commit/checkpoint created — pass is independently revertible
+```
+
+#### Final Gate (§XI complete):
+
+```
+[ ] Every Quality Target from §XI.1.1 is met or exceeded
+[ ] Feature Preservation Ledger: 100% of WORKING features still working
+[ ] Zero CRITICAL or HIGH findings remain
+
+COHERENCE VERIFICATION:
+[ ] Every Logic Fracture from §XI.0.2 is healed — unified logic throughout
+[ ] Every Flow Fracture is healed — user journey has no seams
+[ ] Every Convention Fracture is healed — one pattern for each problem type
+[ ] Every Mental Model Fracture is healed — one conceptual model throughout
+[ ] Every Design Fracture is healed — one visual era throughout
+[ ] The Unified Vision Statement (§XI.0.3) accurately describes the app as it now exists
+
+POLISH VERIFICATION:
+[ ] Design system is internally consistent — no rogue tokens, no orphaned styles
+[ ] Copy is consistent — no terminology conflicts, no voice violations
+[ ] Accessibility baseline met — WCAG 2.1 AA throughout
+[ ] Performance baseline met — all core interactions within budget
+[ ] Code quality baseline met — no dead code, consistent patterns, clear naming
+[ ] Code structure mirrors product structure — a developer can navigate the code by thinking about features
+
+HOLISTIC CHECK — the most important test:
+[ ] A new user opening this app for the first time experiences ONE product, not a patchwork
+[ ] A developer opening this codebase for the first time can understand its organization in 5 minutes
+[ ] The app's best feature and its worst feature are now within one quality tier of each other
+[ ] The developer looks at the result and says: "This is still my app — but the version I always wanted it to be"
+```
+
+---
+
+### §XI.6. POLISH & RESTRUCTURATION DELIVERABLE
+
+```yaml
+POLISH & RESTRUCTURATION REPORT — {App Name}
+
+COMPREHENSION:
+  Purpose:    {one sentence from §XI.0.1}
+  Vision:     {one sentence from §XI.0.3}
+  Root cause: {key insight about how fragmentation happened}
+
+COHERENCE HEALED:
+  Logic({N}) | Flow({N}) | Design({N}) | Convention({N}) | Mental Model({N})
+  Coherence: {before} → {after}
+
+QUALITY: Baseline → Target → Achieved
+  Correctness:   {__} → {__} → {__}
+  Robustness:    {__} → {__} → {__}
+  Performance:   {__} → {__} → {__}
+  Visual Polish: {__} → {__} → {__}
+  Code Quality:  {__} → {__} → {__}
+  UX Clarity:    {__} → {__} → {__}
+  Accessibility: {__} → {__} → {__}
+
+PASSES:
+  0-Critical({N} fixes) | 1-Structural({N}) | 1.5-Coherence({N} fractures)
+  2-Visual({N}) | 3-Interaction({N}) | 4-Copy({N}) | 5-Perf({N}) | 6-A11y({N})
+
+CODE RESTRUCTURING:
+  Dead code removed: {N lines} | Modules extracted: {N}
+  Code-concept alignment: {before → after}
+  State simplified: {describe} | APIs normalized: {N}
+
+ARCHITECTURE: {phases completed, data migrated, next phase}
+
+FEATURES: {N}/{N} verified | {N} regressions caught (resolved) | {N} improved
+
+VISION CHECK: Does the app match the Unified Vision? {YES / PARTIALLY — gaps: ...}
+```

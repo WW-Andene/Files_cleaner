@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/browseFragment">
+    app:startDestination="@id/raccoonManagerFragment">
 
     <fragment
         android:id="@+id/browseFragment"
@@ -25,8 +25,52 @@
         android:label="Junk" />
 
     <fragment
+        android:id="@+id/raccoonManagerFragment"
+        android:name="com.filecleaner.app.ui.raccoon.RaccoonManagerFragment"
+        android:label="@string/nav_raccoon" />
+
+    <fragment
         android:id="@+id/arborescenceFragment"
         android:name="com.filecleaner.app.ui.arborescence.ArborescenceFragment"
         android:label="@string/tree_view" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.filecleaner.app.ui.settings.SettingsFragment"
+        android:label="@string/settings" />
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.filecleaner.app.ui.dashboard.StorageDashboardFragment"
+        android:label="@string/dashboard_title" />
+
+    <fragment
+        android:id="@+id/optimizeFragment"
+        android:name="com.filecleaner.app.ui.optimize.OptimizeFragment"
+        android:label="@string/optimize_title" />
+
+    <fragment
+        android:id="@+id/dualPaneFragment"
+        android:name="com.filecleaner.app.ui.dualpane.DualPaneFragment"
+        android:label="@string/dual_pane_title" />
+
+    <fragment
+        android:id="@+id/cloudBrowserFragment"
+        android:name="com.filecleaner.app.ui.cloud.CloudBrowserFragment"
+        android:label="@string/cloud_title" />
+
+    <fragment
+        android:id="@+id/antivirusFragment"
+        android:name="com.filecleaner.app.ui.security.AntivirusFragment"
+        android:label="@string/av_title" />
+
+    <fragment
+        android:id="@+id/fileViewerFragment"
+        android:name="com.filecleaner.app.ui.viewer.FileViewerFragment"
+        android:label="@string/viewer_title">
+        <argument
+            android:name="file_path"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

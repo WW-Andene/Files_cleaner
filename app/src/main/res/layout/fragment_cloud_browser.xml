@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/surfaceBase">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back"
+            android:scaleType="centerInside"
+            app:tint="@color/textPrimary" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/cloud_title"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+            android:textColor="@color/textPrimary"
+            android:layout_marginStart="@dimen/spacing_sm" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_sm"
+            android:text="@string/cloud_add"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:cornerRadius="@dimen/radius_pill"
+            app:icon="@drawable/ic_folder"
+            app:iconSize="16dp" />
+    </LinearLayout>
+
+    <!-- Connection selector -->
+    <LinearLayout
+        android:id="@+id/connection_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_xs"
+        android:background="@color/surfaceDim"
+        android:visibility="gone">
+
+        <Spinner
+            android:id="@+id/spinner_connection"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/button_height_sm"
+            android:background="@drawable/bg_spinner"
+            android:popupBackground="@drawable/bg_spinner_dropdown"
+            android:paddingHorizontal="@dimen/spacing_md" />
+
+        <ImageButton
+            android:id="@+id/btn_disconnect"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_close"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cloud_disconnect"
+            android:scaleType="centerInside"
+            android:padding="@dimen/spacing_md"
+            app:tint="@color/colorError" />
+
+        <ImageButton
+            android:id="@+id/btn_delete_connection"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cloud_remove"
+            android:scaleType="centerInside"
+            android:padding="@dimen/spacing_md"
+            app:tint="@color/colorError" />
+    </LinearLayout>
+
+    <!-- Path breadcrumb -->
+    <TextView
+        android:id="@+id/tv_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="/"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+        android:textColor="@color/textSecondary"
+        android:singleLine="true"
+        android:ellipsize="start"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_xs"
+        android:visibility="gone" />
+
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+    <!-- Empty state: no connections -->
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_4xl">
+
+        <ImageView
+            android:layout_width="@dimen/icon_empty_state"
+            android:layout_height="@dimen/icon_empty_state"
+            android:src="@drawable/ic_folder"
+            android:alpha="0.4"
+            android:importantForAccessibility="no"
+            app:tint="@color/textTertiary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="@string/cloud_empty"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+            android:textColor="@color/textSecondary"
+            android:gravity="center" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_first"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_sm"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="@string/cloud_add_connection"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="@dimen/radius_pill" />
+    </LinearLayout>
+
+    <!-- File list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_files"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_above_nav"
+        android:visibility="gone" />
+
+    <!-- Bottom bar for download -->
+    <LinearLayout
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm"
+        android:background="@color/surfaceDim"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_download"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/button_height_sm"
+            android:text="@string/cloud_download"
+            android:textAllCaps="false"
+            android:layout_marginEnd="@dimen/spacing_xs"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="@dimen/radius_pill" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_upload"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/button_height_sm"
+            android:text="@string/cloud_upload"
+            android:textAllCaps="false"
+            android:layout_marginStart="@dimen/spacing_xs"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:cornerRadius="@dimen/radius_pill"
+            app:strokeColor="@color/borderDefault" />
+    </LinearLayout>
+</LinearLayout>

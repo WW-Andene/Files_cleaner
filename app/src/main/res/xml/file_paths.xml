@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Broad path scope required: this is a file manager that opens/shares files
+  from anywhere on external storage. The FileProvider is NOT exported
+  (android:exported="false") and URIs are granted via FLAG_GRANT_READ_URI_PERMISSION
+  on a per-file basis, so no blanket access is leaked to other apps.
+-->
 <paths>
     <external-path name="external" path="." />
 </paths>

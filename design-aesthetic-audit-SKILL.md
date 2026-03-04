@@ -6,7 +6,9 @@ description: >
   "make it premium", "visual identity", "brand", "color palette", "typography review",
   "design language", "visual polish", "motion design", "design personality", "make it
   feel like [X]", "inspired by [source]", "look like [source]", "match the aesthetic
-  of", "deepen the personality", "more distinctive", "more on-brand", or any named
+  of", "deepen the personality", "more distinctive", "more on-brand", "my app feels
+  generic", "make it less template-y", "design tokens", "component character",
+  "state design", "empty states look bad", "my dark mode sucks", or any named
   game / show / brand / IP (triggers mandatory 5-pass source research). Covers: style
   classification, color science, typography, motion, hierarchy, surface & atmosphere,
   iconography, component character, copy alignment, illustration, data visualization,
@@ -20,24 +22,88 @@ description: >
 
 ---
 
+## SKILL MAP — Quick Reference
+
+### Section Index
+
+| Section | What It Does | Key Outputs |
+|---------|-------------|-------------|
+| **§TRIAGE** | Routes user to correct audit skill | Audit type selection |
+| **§COMPANION** | Integrates with app-audit when both run | Context handshake, section mapping |
+| **§0** | Captures design identity and axis profile | Five-Axis Quick Profile |
+| **I. Style Classification** | Identifies the design school | Primary style + coherence score |
+| **II. Color Science** | Audits palette architecture and craft | Perceptual color findings, palette role map |
+| **III. Typography** | Assesses type personality and craft | Type matrix placement, scale audit |
+| **IV. Motion** | Audits motion vocabulary and character | Motion vocabulary card, micro-interaction findings |
+| **V. Hierarchy & Gestalt** | Evaluates visual weight and reading flow | Hierarchy map, contrast analysis |
+| **VI. Surface & Atmosphere** | Assesses backgrounds, elevation, light | Material character, light source audit |
+| **VII. Iconography** | Audits icon coherence and expressiveness | Icon system assessment, custom direction brief |
+| **VIII. Trend Calibration** | Maps trend usage and strategy | Trend inventory, strategic posture |
+| **IX. Brand Identity** | Engineers distinctive visual identity | Brand archetype, Design DNA, anti-genericness findings |
+| **X. Competitive Positioning** | Benchmarks against visual competitors | Positioning matrix, whitespace opportunities |
+| **XI. Design Character** | Extracts, analyzes, and deepens personality | Character Brief, deepening protocol |
+| **XII. Source Material** | Researches named sources (games, brands, IPs) | 5-layer Source Style Brief, translation plan |
+| **XIII. State Design** | Audits empty/loading/error/success states | Per-state character assessment |
+| **XIV. Responsive Character** | Verifies character across viewports | Breakpoint character audit |
+| **XV. Component Character** | Audits buttons, inputs, cards, nav, modals, toasts | Per-component character findings |
+| **XVI. Copy × Visual** | Aligns written voice with visual character | Voice-character coherence score |
+| **XVII. Illustration** | Audits graphic language and illustration | Illustration character spec |
+| **XVIII. Data Visualization** | Audits chart styling and character | Chart-product alignment findings |
+| **XIX. Design Tokens** | Audits token architecture layers | Token gap findings, migration path |
+| **§FINDING FORMAT** | Standardized finding template | |
+| **§EXEC** | Execution order for three audit paths | |
+
+### Common Execution Paths
+
+```
+"Audit my app's design" (general)
+  → §TRIAGE → §0 → I (style) → XI.§DP0 (extract character)
+  → XI.§DP1–DP2 (character brief) → IX (brand) → II (color)
+  → III (type) → XV (components) → V (hierarchy)
+  → VI (surface) → IV (motion) → remaining sections
+
+"Make it feel like [source]" (source-referenced)
+  → §TRIAGE → XII.§SR0 (5-pass research — IMMEDIATELY)
+  → XII.§SR1 (source style brief) → XII.§SR2 (fidelity)
+  → XI.§DP0–DP2 (character) → XII.§SR3 (translation)
+  → II–III (color, type from source) → XV (components)
+  → remaining sections → XII.§SR4–SR6 (accuracy + log)
+
+"Deepen the personality" (character-focused)
+  → §TRIAGE → XI.§DP0 (extract) → XI.§DP1 (dimensions)
+  → XI.§DP2 (brief) → I (style) → IX.§DBI1 (archetype)
+  → XI.§DP3 (deepening) → IV.§DM5 (motion signature)
+  → XV (components) → XIII (states) → XVI (copy voice)
+
+Companion mode (alongside app-audit)
+  → Skip §TRIAGE, skip §0 → auto-populate from app-audit §0
+  → I → XI.§DP0–DP2 → II.§DC1 → IX.§DBI3
+  → expand as time allows
+```
+
+### Claude Execution Notes
+
+- **§TRIAGE is shared with app-audit.** If user already selected in app-audit, skip it here.
+- **For apps > 1,500 lines**: confirm with user after completing §0 + I + XI.§DP0–DP2. This gives them the character brief early.
+- **Minimum companion execution**: I.§DS1 → XI.§DP0 → XI.§DP2 → II.§DC1 → IX.§DBI3 (5 sections, highest value).
+- **XII (Source Material) activates ONLY when a named source is referenced.** Do not run §SR0–SR6 without a named source.
+- **Always extract character (§DP0) before analyzing it (§DP1).** Never fill dimensions from imagination.
+
+---
+
 ## §TRIAGE — MANDATORY AUDIT ROUTING (execute BEFORE reading the rest of this skill)
 
 **This gate fires whenever a user asks to "audit", "review", or "analyze" an app or file without specifying which audit type.**
 
-Before loading any audit framework, reading any source code, or filling any context block — **stop and ask the user which audit they want.** Present the following options:
+Before loading any audit framework — **stop and ask the user which audit they want:**
 
-| Option | Skill | What It Covers |
-|--------|-------|----------------|
-| **Full App Audit** | `app-audit` | Code quality, security, performance, accessibility, UX, data integrity, architecture, domain correctness, i18n, AI/LLM risks, visual design (standard depth), and forward-looking scenarios |
-| **Design & Aesthetic Audit** | `design-aesthetic-audit` | Deep visual analysis — style classification, color science, typography craft, motion vocabulary, surface & atmosphere, brand identity, competitive positioning, design character system, and source material research |
-| **Both (Companion Mode)** | `app-audit` + `design-aesthetic-audit` | Full app audit with expert-depth design analysis replacing the standard §E/P6 visual sections. Longest and most thorough option. |
+| Option | Skill | What You Get | What Claude Does |
+|--------|-------|-------------|-----------------|
+| **Full App Audit** | `app-audit` | Code quality, security, performance, accessibility, UX, data integrity, architecture, domain correctness, i18n, AI/LLM risks, visual design (standard depth), forward-looking scenarios | Load `app-audit/SKILL.md`, stop reading this skill |
+| **Design & Aesthetic Audit** | `design-aesthetic-audit` | Deep visual analysis — style classification, color science, typography craft, motion vocabulary, surface & atmosphere, brand identity, competitive positioning, design character system, source material research | Continue reading this skill from §ROLE onward |
+| **Both (Companion Mode)** | `app-audit` + `design-aesthetic-audit` | Full app audit with expert-depth design analysis replacing standard §E/P6 visual sections. Longest and most thorough option | Load both skills, follow §COMPANION integration protocol |
 
 **Use the `ask_user_input` tool to present these three choices.** Do not proceed until the user selects one.
-
-**After selection:**
-- **Full App Audit** → Stop reading this skill. Load and follow `app-audit/SKILL.md` instead.
-- **Design & Aesthetic Audit** → Continue reading this skill from §ROLE onward.
-- **Both (Companion Mode)** → Load `app-audit/SKILL.md` as well. Follow the companion integration protocol in §COMPANION below.
 
 **Skip this triage ONLY when:**
 - The user explicitly names which audit they want (e.g., "run the design audit", "do a visual critique")
@@ -57,6 +123,8 @@ This skill extends or replaces the design sections of app-audit (§E, §F6, §L3
 ---
 
 ## §COMPANION. APP-AUDIT INTEGRATION
+
+> **Claude execution note**: Check which mode you're in BEFORE starting. In companion mode, auto-populate §0 from app-audit's §0 — do NOT re-ask the user questions already answered. The minimum companion path (§DS1 → §DP0 → §DP2 → §DC1 → §DBI3) takes ~1 response and covers the highest-value findings.
 
 This skill operates in two modes. **Know which mode you are in before starting.**
 
@@ -116,6 +184,8 @@ This covers the highest-value findings in the shortest path.
 
 ## §0. AESTHETIC CONTEXT (standalone use — skip if app-audit §0 already filled)
 
+> **Claude execution note**: In standalone mode, fill this from the codebase. Ask the user to confirm the personality and protected elements — these are judgment calls they must own. In companion mode, auto-populate from app-audit §0 via the §COMPANION handshake and skip this entirely.
+
 ```yaml
 Design Identity:
   Current style:    # Describe what you see — e.g. "dark minimal with cyan accent"
@@ -134,6 +204,8 @@ Five-Axis Quick Profile:
 ---
 
 ## I. AESTHETIC STYLE CLASSIFICATION
+
+> **Claude execution note**: Always complete §DS1 + §DS2 before any other section. The style classification is the lens for all subsequent findings — a color recommendation correct for minimal design may be wrong for neo-brutalism. Present the style classification to the user and confirm before proceeding.
 
 **Identify the design school before writing any finding.** A recommendation correct for flat/minimal design may be actively wrong for neo-brutalist design.
 
@@ -173,6 +245,8 @@ Style-appropriate execution: [2–3 sentences on whether the style's specific ru
 ---
 
 ## II. COLOR SCIENCE DEEP DIVE
+
+> **Claude execution note**: §DC1 (perceptual architecture) and §DC2 (palette roles) are the highest-value color sections — always complete them. §DC3 (dark mode) only if the app has dark mode. §DC4 (brand distinctiveness) is high-value for products competing in crowded markets. §DC5 (color as narrative) is the deepest layer — skip if the user is pressed for time, but it produces the most differentiated findings.
 
 ### §DC1. Perceptual Color Architecture
 
@@ -419,6 +493,8 @@ For each key state: assess whether the typography is doing expressive work or ju
 ---
 
 ## IV. MOTION ARCHITECTURE
+
+> **Claude execution note**: §DM1 (vocabulary card) is the core deliverable — always produce it. §DM4 (micro-interactions) produces the most actionable findings for developers. §DM5 (motion signature) is highest-value when the user wants personality deepening. If the app has no animations at all, note the absence and recommend a starter vocabulary instead of auditing nothing.
 
 ### §DM1. Motion Vocabulary Card
 
@@ -670,6 +746,8 @@ WCAG requires 4.5:1 for body text and 3:1 for large text. But contrast ratio is 
 
 ## VI. SURFACE & ATMOSPHERE DESIGN
 
+> **Claude execution note**: §DSA1 (background as material) and §DSA2 (elevation) are foundational — always cover them. §DSA4 (light physics) produces the most sophisticated findings but requires careful observation. §DSA5 (focal vs ambient) is highest-value when the product has atmospheric treatments that feel indiscriminate.
+
 ### §DSA1. Background as Material
 
 The background is the foundation that everything else sits on — it communicates the app's "physical world."
@@ -859,6 +937,8 @@ If all 5 feel like they belong to the same system: the specification is valid. I
 
 ## VIII. DESIGN TREND CALIBRATION
 
+> **Claude execution note**: §DDT1 (trend inventory) is quick and high-value — flag any passed trends creating dated feel. §DDT2 (trend strategy) is strategic-layer work — most useful for products competing in trend-aware markets (consumer, creative). Skip entirely for expert tools where trends are irrelevant.
+
 ### §DDT1. Trend Inventory & Appropriateness
 
 Identify which current or recent design trends the app uses, intentionally or accidentally:
@@ -927,6 +1007,8 @@ TREND DEBT ITEM
 ---
 
 ## IX. BRAND IDENTITY ENGINEERING
+
+> **Claude execution note**: §DBI3 (anti-genericness audit, all 12 signals) is the single highest-value section for most developers — it produces immediately actionable findings. §DBI1 (archetype) provides strategic framing. §DBI2 (design DNA) is the forward-looking investment. If time is limited, run §DBI3 first — it has the fastest payoff.
 
 ### §DBI1. Brand Personality Archetype
 
@@ -1100,6 +1182,8 @@ Fix: Derive placeholder color from the input background with a specific ratio: i
 
 ## X. COMPETITIVE VISUAL POSITIONING
 
+> **Claude execution note**: Use web search to find competitor screenshots for §DCP1. If web search is unavailable, ask the user to name 2–3 competitors and describe their visual qualities. Skip this section entirely if the user explicitly says they don't care about competitors — the findings depend on external research. Present the positioning matrix (§DCP2) to the user before producing differentiation recommendations.
+
 ### §DCP1. Benchmark Identification
 
 For the app's domain, identify 3 directly comparable products and assess their visual positioning. For each: look at the actual UI (search for screenshots if needed — §SR0 protocol applies), not just a verbal description.
@@ -1170,16 +1254,16 @@ Competitive value: [who it differentiates from and why it matters]
 
 ---
 
-## XIII. DESIGN CHARACTER SYSTEM
+## XI. DESIGN CHARACTER SYSTEM
 
-> **Design personality is not a human trait applied to software.** It is the aggregate visual character that emerges from an app's actual design decisions — its colors, spacing, motion, surfaces, typography, and component choices, taken together. An app with a dark background, tight spacing, monospaced numbers, and instant 80ms transitions has a distinct personality whether its author named it or not. This section exists to name it precisely, assess its coherence, and deepen it.
+> Design personality is the aggregate visual character that emerges from an app's actual design decisions — its colors, spacing, motion, surfaces, typography, and component choices, taken together. This section names it precisely, assesses its coherence, and deepens it.
+
+> **Claude execution note**: Always execute in order: §DP0 (EXTRACT from code) → §DP1 (ASSESS dimensions) → §DP2 (produce Character Brief) → §DP3 (DEEPEN). Never skip §DP0 — you cannot assess character you haven't read from the code. Present the §DP2 Character Brief to the user and confirm before deepening. §DP3 techniques 1–5 are highest-value; techniques 6–7 are for completeness.
 
 **Three modes — all three always execute in order:**
 1. **EXTRACT** — Read the actual design decisions in the code. Name the character that already exists.
 2. **ASSESS** — Analyze that character along six dimensions. Find where the character is incoherent.
 3. **DEEPEN** — Given the character (found or declared), produce a concrete plan to make it more concentrated, consistent, and unmistakably itself.
-
-You cannot deepen what you have not named. You cannot name what you have not read.
 
 ---
 
@@ -1519,13 +1603,11 @@ Character Risks (watch for these as the product scales):
 
 ---
 
-## XIV. SOURCE MATERIAL INTELLIGENCE
+## XII. SOURCE MATERIAL INTELLIGENCE
 
-> **The cardinal rule of source material:** You never describe the visual language of a real source from memory, keyword association, or name recognition alone. This produces vague, inaccurate, and unusable guidance. The Wuthering Waves UI does not look like "Wuthering Waves-inspired design" you might imagine — it has specific colors, a specific iconography grammar, a specific atmospheric quality, a specific spatial rhythm. Your job is to find the real thing, understand *why* it makes the choices it does, extract it precisely, and then synthesize it into a generative identity you can use to produce new design decisions.
+> **The cardinal rule**: Never describe a named source's visual language from memory or keyword association. The goal is a living design specification that can generate correct answers to new design questions — "should this button have a glow?" — just by reasoning from the source's identity.
 
-**The goal is not a mood board. The goal is a living design specification that can generate correct answers to new design questions — "should this button have a glow or not?" — just by reasoning from the source's identity.**
-
-**This section activates whenever** the user references a specific real-world source as a design direction: a game, show, film, brand, cultural artifact, visual artist, movement, or any named property.
+> **Claude execution note**: This section activates ONLY when the user references a specific named source (game, show, brand, IP). Do NOT run §SR0–SR6 without a named source. Execute §SR0 (5-pass research) IMMEDIATELY before any other section when a source is named — even before §DS1. If web search is unavailable, ask the user to provide screenshots directly. Never fabricate source visual descriptions from training data.
 
 ---
 
@@ -1936,9 +2018,11 @@ If user can provide: [what specific screenshots, art books, or reference materia
 
 ---
 
-## XV. STATE DESIGN SYSTEM
+## XIII. STATE DESIGN SYSTEM
 
-> **States are where character most reliably collapses.** Error states revert to generic red boxes. Empty states become gray placeholders. Loading states are spinner-from-a-library. Success states are a green checkmark. These are the moments a product has designed carefully for the "happy path" and abandoned everywhere else. Designing all states with equal character investment is the single most visible quality separator between polished products and functional products.
+> States are where character most reliably collapses. Error states revert to generic red boxes. Empty states become gray placeholders. Designing all states with equal character investment is the single most visible quality separator between polished and functional products.
+
+> **Claude execution note**: Audit every state that exists in the codebase. §DST1 (empty states) and §DST3 (error states) are highest-impact — these are where character collapse is most visible. §DST4 (success states) is highest-value for character deepening. If the app has no designed states at all, flag this as a single HIGH finding and provide a starter specification for each state type.
 
 **The six states every screen has — and most designs only build one:**
 
@@ -2080,9 +2164,11 @@ SUCCESS MOMENT BRIEF
 
 ---
 
-## XVI. RESPONSIVE DESIGN CHARACTER
+## XIV. RESPONSIVE DESIGN CHARACTER
 
-> **Character that only works at one viewport is not a design system — it is a design scene.** Most products are designed at 1440px and adapted to mobile as an afterthought. The result: a polished desktop experience and a generic mobile experience. True design character survives — and sometimes intensifies — at every viewport.
+> Character that only works at one viewport is not a design system — it is a design scene. True design character survives and sometimes intensifies at every viewport.
+
+> **Claude execution note**: Skip this section entirely if the app is not responsive or is a single fixed-width layout. For responsive apps, §DRC1 (breakpoint audit) is the core deliverable. §DRC2 (mobile intensification) is highest-value when the product is mobile-primary.
 
 ---
 
@@ -2151,11 +2237,11 @@ ADAPTIVE ELEMENT SPECIFICATION
 
 ---
 
-## XVII. COMPONENT DESIGN CHARACTER
+## XV. COMPONENT DESIGN CHARACTER
 
-> **Components are where character lives or dies.** Color palettes, typography choices, and atmospheric treatments all create the context — but it is the individual components that users actually touch, read, and interact with thousands of times. A product can have a perfectly crafted character brief and then lose it entirely in its button design. This section audits every primary component class against the character brief.
+> Every component has three design obligations: (1) function correctly, (2) be legible and accessible, (3) express the product's design character. Most apps satisfy 1 and 2. This section focuses entirely on 3.
 
-**The component audit principle:** Every component has three design obligations: (1) function correctly, (2) be legible and accessible, (3) express the product's design character. Most apps satisfy 1 and 2. This section focuses entirely on 3.
+> **Claude execution note**: §DCO1 (buttons) is highest-priority — buttons are the most-seen interactive element. §DCO3 (cards) and §DCO4 (navigation) are next. Complete at least these three. §DCO2 (inputs), §DCO5 (modals), §DCO6 (toasts) add depth but can be deferred if time is short.
 
 ---
 
@@ -2370,11 +2456,11 @@ The toast must match the product's voice simultaneously in:
 
 ---
 
-## XVIII. COPY × VISUAL ALIGNMENT
+## XVI. COPY × VISUAL ALIGNMENT
 
-> **Design character without copy character is a mask without a face.** A product can have a perfectly calibrated visual system and then destroy the coherence by using chatty, informal microcopy in a clinical-precision interface, or terse, functional labels in a warm-consumer product. Typography tells users *how* information is displayed — copy tells users *what the product sounds like thinking*. Both must speak the same language.
+> Design character without copy character is a mask without a face. Typography tells users *how* information is displayed — copy tells users *what the product sounds like thinking*. Both must speak the same language.
 
-**This section activates whenever copy is visible in screenshots, HTML, or code being audited. If no copy is visible, note this gap and flag it for the developer.**
+> **Claude execution note**: This section activates when copy is visible in the code being audited. §DCVW1 (voice-character alignment) is the core deliverable — always produce it. §DCVW2 (microcopy) produces the most actionable findings for developers. If no copy is visible, note the gap and move on.
 
 ---
 
@@ -2469,7 +2555,9 @@ VOICE-VISUAL COHERENCE
 
 ---
 
-## XIX. ILLUSTRATION & GRAPHIC LANGUAGE
+## XVII. ILLUSTRATION & GRAPHIC LANGUAGE
+
+> **Claude execution note**: Skip this section if the app has no illustrations, custom graphics, or spot illustrations. §DIL1 (current audit) is the core. §DIL2 (character specification) is only needed if the product needs new illustration direction. §DIL3 (spot graphics) is useful for products with abstract shape systems.
 
 > **Illustration is where most products accidentally become generic.** The same five stock illustration libraries (Undraw, Storyset, DrawKit, Humaaans, Blush) appear across thousands of products with minimal customization. They carry no product identity — they carry the library's identity. A product with a carefully crafted design character that uses stock illustrations unchanged has inserted a foreign visual object into its identity. This section provides the framework to assess, direct, and specify illustration that carries character.
 
@@ -2565,7 +2653,9 @@ Many products use abstract shapes, blobs, geometric forms, or decorative graphic
 
 ---
 
-## XX. DATA VISUALIZATION CHARACTER
+## XVIII. DATA VISUALIZATION CHARACTER
+
+> **Claude execution note**: Skip this section entirely if the app has no charts, graphs, or data visualizations. §DDV1 (chart color) is highest-value — chart colors from a default library are one of the most visible genericness signals.
 
 > **Charts and data displays are the most-neglected design character carrier in data-heavy products.** Most products use the chart library's defaults — which carry the library's identity (Recharts blue, Chart.js gray grid, D3 defaults), not the product's. When a product has a carefully crafted dark surface, a specific accent color, and a distinctive typography system, and then shows a chart with gray grid lines, blue bars, and Helvetica axis labels — the character collapses entirely. Data visualization must be treated as a first-class design surface.
 
@@ -2665,7 +2755,9 @@ CHART STYLE SPECIFICATION
 
 ---
 
-## XXI. DESIGN TOKEN ARCHITECTURE
+## XIX. DESIGN TOKEN ARCHITECTURE
+
+> **Claude execution note**: §DTA1 (token layer audit) identifies which abstraction layers exist — this determines how much refactoring the character recommendations require. §DTA2 (character-carrying gaps) connects directly to the "find and replace" maintainability question. Skip this section for very small apps (<500 lines) where token architecture is premature.
 
 > **A design system without token architecture is a collection of magic numbers.** §DC2 defines what tokens should exist (semantic roles). This section defines how to *structure* the token system itself — the difference between a list of CSS variables and an actual token architecture that carries character, scales with growth, and prevents accidental genericness as the product evolves.
 
@@ -2769,6 +2861,10 @@ For each hardcoded character-critical value: flag it as a token gap, provide the
 
 ---
 
+## §FINDING FORMAT
+
+Every finding from this skill uses this template:
+
 ```
 [SEVERITY] — {Title}
 Dimension: §D{code} — {Name}
@@ -2778,17 +2874,21 @@ Recommendation: {Specific change — include exact values where applicable}
 Effort: LOW / MEDIUM / HIGH
 ```
 
-When used as a companion to app-audit, produce a **Design Aesthetic Supplement** appended to the relevant audit part (P6 — Visual Design · Polish · Design System), structured as:
+**Severity scale:** [CRITICAL] [HIGH] [MEDIUM] [LOW] [POLISH] — matches app-audit severity scale.
+
+When used as a companion to app-audit, produce a **Design Aesthetic Supplement** appended to the relevant audit part (P6 — Visual Design · Polish · Design System):
 
 ```
 ━━━ DESIGN AESTHETIC SUPPLEMENT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[findings in §V format, prefixed with §D to distinguish from §E findings]
+[findings in app-audit §V format (see §FINDING FORMAT above), prefixed with §D to distinguish from §E findings]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## XII. EXECUTION ORDER
+## §EXEC. EXECUTION ORDER
+
+> **Claude execution note**: Choose the path that matches the user's request. Do NOT attempt all 21 steps in one response — work through one path, presenting findings incrementally. For the general audit path, pause after step 3 (Character Brief) to confirm direction with the user. The mid-audit companion minimum (last line) is the fastest high-value path.
 
 ### If a named source is referenced (game, show, brand, IP) — SOURCE MATERIAL PATH:
 

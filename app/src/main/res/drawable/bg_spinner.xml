@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <corners android:radius="@dimen/radius_input" />
-    <solid android:color="@color/surfaceDim" />
-    <padding
-        android:left="12dp"
-        android:right="12dp"
-        android:top="8dp"
-        android:bottom="8dp" />
+    <corners android:radius="@dimen/radius_btn" />
+    <stroke android:width="@dimen/stroke_default" android:color="@color/borderDefault" />
+    <solid android:color="@color/surfaceColor" />
+    <padding android:left="12dp" android:right="12dp" android:top="8dp" android:bottom="8dp" />
 </shape>
