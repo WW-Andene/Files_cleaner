@@ -349,7 +349,7 @@ class CloudBrowserFragment : Fragment() {
                 val b2 = _binding ?: return@launch
                 b2.progress.visibility = View.GONE
                 Snackbar.make(b2.root,
-                    getString(R.string.cloud_connection_failed) + ": ${e.message}",
+                    getString(R.string.cloud_list_failed, e.localizedMessage ?: e.javaClass.simpleName),
                     Snackbar.LENGTH_LONG).styleAsError().show()
                 return@launch
             }

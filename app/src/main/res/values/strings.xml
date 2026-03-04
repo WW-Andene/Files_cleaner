@@ -311,7 +311,7 @@
     <string name="op_invalid_name">File names can\u0027t contain / : * ? \" &lt; &gt; or |</string>
     <string name="op_name_exists">A file with that name already exists</string>
     <string name="op_moved">Moved %s</string>
-    <string name="op_move_failed">Failed to move file</string>
+    <string name="op_move_failed">Raccoon couldn\'t move that file \u2014 check if the destination is accessible.</string>
     <string name="op_copied">Copied %s</string>
     <string name="op_copy_failed">Copy failed: %s</string>
     <string name="op_renamed">Renamed to %s</string>
@@ -619,6 +619,7 @@
     <string name="cloud_download_result">Downloaded %1$d files, %2$d failed</string>
     <string name="cloud_upload_success">Uploaded %s</string>
     <string name="cloud_upload_failed">Upload failed: %s</string>
+    <string name="cloud_list_failed">Raccoon couldn\'t load this folder: %s</string>
     <string name="cloud_directory">Directory</string>
     <string name="cloud_provider_type">Provider type</string>
     <string name="cloud_display_name">Connection name</string>
