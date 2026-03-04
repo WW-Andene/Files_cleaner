@@ -38,7 +38,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_reanalyze"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.FileCleaner.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/optimize_reanalyze"
@@ -110,7 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/button_height_sm"
                         android:text="@string/select_all"
-                        android:textSize="@dimen/text_body_small"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:layout_marginEnd="@dimen/spacing_sm"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
@@ -124,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/button_height_sm"
                         android:text="@string/deselect_all"
-                        android:textSize="@dimen/text_body_small"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         app:strokeColor="@color/colorOnPrimaryContainer"
@@ -191,16 +191,34 @@
             android:paddingBottom="@dimen/spacing_bottom_inset" />
 
         <!-- Empty state -->
-        <TextView
+        <LinearLayout
             android:id="@+id/tv_empty"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center"
-            android:text="@string/optimize_empty"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textColor="@color/textSecondary"
-            android:visibility="gone" />
+            android:padding="@dimen/spacing_4xl"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/icon_empty_state"
+                android:layout_height="@dimen/icon_empty_state"
+                android:src="@drawable/ic_raccoon_logo"
+                android:alpha="0.85"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:id="@+id/tv_empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/optimize_empty"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                android:textColor="@color/textSecondary"
+                android:gravity="center"
+                android:lineSpacingExtra="@dimen/spacing_xs" />
+        </LinearLayout>
 
         <!-- Apply button -->
         <com.google.android.material.button.MaterialButton
@@ -215,8 +233,7 @@
             android:paddingHorizontal="@dimen/spacing_3xl"
             android:text="@string/optimize_apply"
             android:textAllCaps="false"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:fontFamily="sans-serif-medium"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
             app:cornerRadius="@dimen/radius_btn" />
 
     </LinearLayout>
@@ -254,7 +271,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_clear_selection"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.FileCleaner.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/clear_selection"

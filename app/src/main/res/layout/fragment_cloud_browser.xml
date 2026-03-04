@@ -43,7 +43,7 @@
             android:textAllCaps="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.FileCleaner.Button.Outlined"
             app:cornerRadius="@dimen/radius_pill"
             app:icon="@drawable/ic_cloud"
             app:iconSize="@dimen/icon_small" />
@@ -151,10 +151,9 @@
         <ImageView
             android:layout_width="@dimen/icon_empty_state"
             android:layout_height="@dimen/icon_empty_state"
-            android:src="@drawable/ic_cloud"
-            android:alpha="0.4"
-            android:importantForAccessibility="no"
-            app:tint="@color/textTertiary" />
+            android:src="@drawable/ic_raccoon_logo"
+            android:alpha="0.85"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -222,7 +221,7 @@
             android:layout_marginStart="@dimen/spacing_xs"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.FileCleaner.Button.Outlined"
             app:cornerRadius="@dimen/radius_pill"
             app:strokeColor="@color/borderDefault" />
     </LinearLayout>

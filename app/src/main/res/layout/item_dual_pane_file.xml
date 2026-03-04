@@ -39,7 +39,7 @@
             android:id="@+id/tv_meta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
             android:textColor="@color/textTertiary"
             android:singleLine="true" />
     </LinearLayout>

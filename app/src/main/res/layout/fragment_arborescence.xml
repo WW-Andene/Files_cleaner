@@ -23,7 +23,7 @@
         app:boxStrokeColor="@color/borderDefault"
         app:hintTextColor="@color/colorPrimary"
         app:startIconTint="@color/textTertiary"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        style="@style/Widget.FileCleaner.TextInput">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search_tree"
@@ -153,7 +153,7 @@
                 android:id="@+id/tv_stats_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                 android:textColor="@color/textOnPrimary"
                 android:fontFamily="sans-serif-medium"
                 android:accessibilityLiveRegion="polite"

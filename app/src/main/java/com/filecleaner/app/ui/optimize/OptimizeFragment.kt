@@ -117,7 +117,7 @@ class OptimizeFragment : Fragment() {
 
         if (allFiles.isEmpty()) {
             binding.tvEmpty.visibility = View.VISIBLE
-            binding.tvEmpty.text = getString(R.string.optimize_no_scan_data)
+            binding.tvEmptyText.text = getString(R.string.optimize_no_scan_data)
             binding.recyclerSuggestions.visibility = View.GONE
             binding.btnApply.isEnabled = false
             binding.selectionControls.visibility = View.GONE

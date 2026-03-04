@@ -14,7 +14,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/spacing_sm"
         android:layout_marginBottom="@dimen/spacing_sm"
-        android:background="@drawable/bg_drag_handle" />
+        android:background="@drawable/bg_drag_handle"
+        android:importantForAccessibility="no" />
 
     <!-- File header -->
     <LinearLayout
@@ -67,7 +68,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/stroke_default"
         android:background="@color/borderDefault"
-        android:layout_marginHorizontal="@dimen/spacing_lg" />
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:importantForAccessibility="no" />
 
     <!-- Menu items -->
     <androidx.core.widget.NestedScrollView

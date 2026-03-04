@@ -298,6 +298,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_marginTop="@dimen/spacing_sm"
+            android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone" />
 
     </LinearLayout>

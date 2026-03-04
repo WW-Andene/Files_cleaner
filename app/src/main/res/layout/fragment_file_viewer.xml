@@ -332,10 +332,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_open_fallback"
+                style="@style/Widget.FileCleaner.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_lg"
-                android:text="@string/ctx_open" />
+                android:text="@string/ctx_open"
+                android:textAllCaps="false" />
         </LinearLayout>
     </FrameLayout>
 

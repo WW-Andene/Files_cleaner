@@ -264,6 +264,8 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
                 cb.visibility = View.VISIBLE
                 cb.isChecked = isSelected
                 cb.isClickable = false
+                cb.contentDescription = ctx.getString(
+                    if (isSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, fileItem.name)
             } else {
                 cb?.visibility = View.GONE
             }
@@ -352,6 +354,8 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
             cb.visibility = View.VISIBLE
             cb.isChecked = isSelected
             cb.isClickable = false // click handled by itemView
+            cb.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
         } else {
             cb?.visibility = View.GONE
         }

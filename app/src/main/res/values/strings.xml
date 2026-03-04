@@ -13,7 +13,7 @@
     <string name="scan_complete_simple">Scan complete</string>
     <string name="scanning_in_progress">Raccoon is rummaging through your files\u2026</string>
     <string name="scan_cancel">Cancel scan</string>
-    <string name="scan_cancelled">Scan cancelled</string>
+    <string name="scan_cancelled">Scan cancelled \u2014 Raccoon stopped mid-rummage.</string>
     <string name="scanning_phase_indexing">Scanning\u2026 %d files found</string>
     <string name="scanning_phase_duplicates">Finding duplicates\u2026 %d files</string>
     <string name="scanning_phase_analyzing">Analyzing sizes\u2026 %d files</string>
@@ -474,8 +474,8 @@
         <item quantity="one">%1$d file (%2$s)</item>
         <item quantity="other">%1$d files (%2$s)</item>
     </plurals>
-    <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
-    <string name="dashboard_scanning">Scanning\u2026 Results will appear when complete.</string>
+    <string name="dashboard_no_scan">Raccoon hasn\'t scanned yet \u2014 run a scan to see the breakdown!</string>
+    <string name="dashboard_scanning">Raccoon is working on it\u2026 Results will appear when complete.</string>
 
     <string name="onboarding_title_3">Raccoon Manager</string>
     <string name="onboarding_body_3">Tap the Manager tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nRaccoon\'s den \u2014 your one-stop control center for tidy storage.</string>
@@ -602,7 +602,7 @@
     <string name="cloud_add_connection">Add Connection</string>
     <string name="cloud_connect">Connect</string>
     <string name="cloud_disconnect">Disconnect</string>
-    <string name="cloud_disconnected">Disconnected</string>
+    <string name="cloud_disconnected">Raccoon disconnected from the cloud.</string>
     <string name="cloud_remove">Remove Connection</string>
     <string name="cloud_remove_confirm">Remove connection \"%s\"? This cannot be undone.</string>
     <string name="cloud_empty">Raccoon hasn\'t ventured to the cloud yet.\nAdd a connection to explore remote files!</string>
@@ -612,8 +612,8 @@
     <string name="cloud_no_network">No internet connection \u2014 Raccoon can\'t reach the cloud right now.</string>
     <string name="cloud_auth_failed">Authentication failed \u2014 double-check your credentials and try again.</string>
     <string name="cloud_timeout">Connection timed out \u2014 the server may be busy. Try again in a moment.</string>
-    <string name="cloud_host_not_found">Server not found. Check the hostname.</string>
-    <string name="cloud_added">Added %s</string>
+    <string name="cloud_host_not_found">Server not found \u2014 double-check the hostname and try again.</string>
+    <string name="cloud_added">Raccoon added %s to your connections!</string>
     <string name="cloud_download">Download</string>
     <string name="cloud_upload">Upload</string>
     <string name="cloud_download_result">Downloaded %1$d files, %2$d failed</string>
@@ -755,7 +755,7 @@
 
     <!-- Scan history -->
     <string name="av_history">Scan History</string>
-    <string name="av_no_history">No scan history yet.</string>
+    <string name="av_no_history">No scan history yet \u2014 run your first scan to start tracking.</string>
     <string name="av_clear_history">Clear History</string>
     <string name="av_scan_history_summary">%1$d findings (%2$dC %3$dH %4$dM)</string>
 

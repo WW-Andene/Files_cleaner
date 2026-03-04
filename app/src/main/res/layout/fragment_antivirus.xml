@@ -324,7 +324,7 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:visibility="gone"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.FileCleaner.Button.Outlined"
                 app:cornerRadius="@dimen/radius_pill"
                 app:strokeColor="@color/colorError"
                 android:textColor="@color/colorError" />
