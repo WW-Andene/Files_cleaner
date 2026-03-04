@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_sm"
-        android:paddingVertical="@dimen/spacing_xs">
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -33,7 +33,7 @@
             android:text="@string/dual_pane_title"
             android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
             android:textColor="@color/textPrimary"
-            android:layout_marginStart="@dimen/spacing_xs" />
+            android:layout_marginStart="@dimen/spacing_sm" />
 
         <!-- Swap panes button -->
         <ImageButton
