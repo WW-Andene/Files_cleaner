@@ -1541,6 +1541,10 @@ Produce this table for the app:
 - **Z-index governance**: Is stacking order explicitly managed? List every z-index value used. Collisions between layers (modals, toasts, dropdowns, sticky headers)?
 - **Animation token set**: Are duration values from a consistent set (e.g., 100/200/300/500ms)? Are easing curves consistent for the same type of motion?
 - **Token naming as documentation**: Are token names semantic (what they *mean*) rather than presentational (what they *look like*)? `--color-action-primary` scales to theming and dark mode; `--color-blue-500` does not. A well-named token system is itself product documentation — and for paid/multi-tenant products, also scales to whitelabeling and multi-brand use. For any product nature, naming tokens semantically reduces the cost of every future visual change.
+- **Android theme attribute coverage**: Are colors referenced via theme attributes (`?attr/colorPrimary`, `?attr/colorOnSurface`) or hardcoded hex values? Every hardcoded color is a dark mode bug waiting to happen. Check `themes.xml`, `colors.xml`, and all layout files for `#RRGGBB` literals vs `?attr/` or `@color/` references. Material 3 dynamic color support — is it leveraged?
+- **Dimension resource consistency**: Are dp/sp values defined in `dimens.xml` as named resources, or scattered as literals across layouts? Audit `android:padding="16dp"` vs `@dimen/spacing_md`. Literal values are token debt on Android just as `px` literals are in CSS.
+- **Style inheritance chain**: Is there a clean style hierarchy (`Theme.App` → `Widget.App.Button` → specific overrides)? Or are styles flat-copied with minor variations, creating maintenance debt? Count the number of `<style>` definitions and check for near-duplicate styles that should be consolidated via parent inheritance.
+- **Night mode token completeness**: Every color resource has a `-night` variant? Every drawable has a night-appropriate version? Missing night resources cause jarring fallbacks to light-mode values in dark theme.
 
 #### §E2. VISUAL RHYTHM & SPATIAL COMPOSITION
 - **Vertical rhythm**: Is there consistent spacing between sections, between cards, between form groups? Inconsistent vertical spacing destroys the feeling of order even when individual components look fine.
@@ -1550,6 +1554,10 @@ Produce this table for the app:
 - **Proportion**: Do related elements (label + value, icon + text, header + content) feel proportionally balanced?
 - **Focal point clarity**: On every key screen — is there one clear visual focal point that draws the eye first? If the answer is "everything has equal visual weight," the design has no hierarchy and users don't know where to look. Identify the intended focal point on each primary view, then assess whether the current visual treatment actually draws the eye there.
 - **Visual weight distribution**: Is visual mass (size, color saturation, contrast, bold weight) distributed intentionally across the screen? Heavy visual elements clustering in one corner makes the layout feel unbalanced. Scan each primary view for unintentional visual weight accumulation.
+- **Mobile screen real estate discipline**: On mobile, every pixel is expensive. Is vertical space used efficiently? Are there screens where excessive padding, oversized headers, or decorative spacing pushes primary content below the fold? Count how many primary-content items are visible without scrolling on a standard phone (360×640dp). If fewer than 3 items are visible, the density is likely too low.
+- **Edge-to-edge content**: Modern Android (API 30+) and iOS support edge-to-edge layouts behind system bars. Is the app using this for immersive content (image galleries, maps, media)? Are system bar insets handled correctly via `WindowInsetsCompat` so content doesn't hide under status/navigation bars?
+- **Landscape layout quality**: If landscape is supported — is there a dedicated layout, or does the portrait layout just stretch? Wide screens should use master-detail, side-by-side, or multi-column layouts. A single-column layout stretched to landscape wastes half the screen.
+- **Responsive grid breakpoints**: For tablets and foldables — does the layout adapt? `ConstraintLayout` with guidelines, or responsive grid layouts? A phone layout pixel-doubled on a tablet is a craft failure.
 
 #### §E3. COLOR CRAFT & CONTRAST
 - **Color harmony**: Does the accent color work harmoniously with the background and surface colors? Is there a clear hierarchy: background → surface → elevated surface → accent?
@@ -1560,6 +1568,8 @@ Produce this table for the app:
 - **Non-text contrast**: UI components (input borders, icon buttons, focus rings) meet 3:1 (WCAG 1.4.11).
 - **State colors**: Hover, active, disabled, error, success, warning — distinct, consistent, and on-brand?
 - **Color psychology alignment**: Does the palette's psychological character match the app's emotional target (§0)? Blues and cool grays signal reliability and precision — appropriate for financial and medical tools. Warm oranges and greens signal energy and growth — appropriate for gamified or wellness tools. Misalignment between color psychology and domain creates subconscious friction.
+- **Material 3 color system adherence**: If using Material 3 — are colors generated from a proper tonal palette (primary, secondary, tertiary, error, surface, outline)? Are `colorOnPrimary`, `colorOnSecondary`, etc. properly set for text/icon contrast on colored surfaces? Are surface tones (surface1–5) used for elevation rather than shadow on dark theme? Check `themes.xml` for complete Material 3 color attribute coverage.
+- **Dark mode color quality**: Not just inverted light mode — dark surfaces need intentional tonal elevation. Material 3 uses surface tint (primary color overlay at low opacity) for elevation rather than shadows. Pure `#000000` backgrounds are acceptable for OLED power savings but need intentional tonal surfaces for cards and elevated elements. Check every screen in dark mode for: text contrast, icon visibility, image background blending, divider visibility.
 - **Color saturation calibration**: Oversaturated colors (`#FF0000`, `#00FF00`) signal low craft regardless of product nature — a pure green is less refined than a calibrated `#14b8a6`. Assess the saturation and lightness of the palette: does it feel purposeful, or do any values feel like the first pick from a color wheel? *For paid/professional tools*: this directly affects trust and willingness to pay. *For fan/creative tools*: this affects whether the palette feels artistically considered or placeholder-level. The standard changes; the question doesn't.
 
 #### §E4. TYPOGRAPHY CRAFT
@@ -1584,14 +1594,49 @@ Produce this table for the app:
   - *Any product*: Is there any typographic personality (weight contrast, tracked caps, a purposeful accent) that makes the app feel designed rather than defaulted? Intentionality — not prestige — is the goal.
 
 #### §E5. COMPONENT VISUAL QUALITY
-- **Button states completeness**: Every button variant has all five states: default, hover, active/pressed, focus (keyboard-visible), disabled. Missing states feel broken during interaction.
-- **Input field states**: Default, focus, filled, error, disabled. The focus ring must be clearly visible.
-- **Card design quality**: Internal padding consistent. Border or shadow — not both unless intentional. Corner radius consistent. Content alignment consistent across all instances.
-- **Badge/chip/tag design**: Consistent padding, radius, typography across all instances.
-- **Modal/dialog quality**: Consistent backdrop opacity, border/shadow, corner radius, header/body/footer structure. Close button always in same position and same size.
-- **Icon quality**: All icons from the same family at the same base size. Mixed icon families are visually noisy. Icons sized to optical weight, not just pixel dimensions.
-- **Divider usage**: Lines/dividers used consistently — not as decoration but as structural separators. Too many dividers fragment the layout.
-- **Image presentation**: Images consistently cropped (same aspect ratios for same context), with consistent corner radius treatment.
+
+> Every UI component must be audited for visual consistency, state completeness, and craft. This section covers every element type that can appear in a modern app. On Android: check both XML layout definitions AND runtime-applied styles. On iOS: check both Storyboard/XIB and programmatic styling.
+
+**Core Interactive Components:**
+- **Button states completeness**: Every button variant has all five states: default, hover, active/pressed, focus (keyboard-visible), disabled. Missing states feel broken during interaction. On Android: check `StateListDrawable`, `ColorStateList`, ripple effects, Material Button styles. Every button type (text, outlined, contained, elevated, tonal) must have complete state coverage.
+- **FAB (Floating Action Button) quality**: Correct elevation and shadow? Consistent size (regular 56dp, mini 40dp, extended)? Proper color contrast against all backgrounds it floats over? Hide/show animation on scroll smooth? Position consistent across screens? Extended FAB with icon+text properly sized? FAB does not overlap critical content or navigation elements.
+- **Input field states**: Default, focus, filled, error, disabled. The focus ring must be clearly visible. On Android: `TextInputLayout` with proper hint animation, error text below field, helper text, character counter, prefix/suffix icons, end icon (clear, password toggle, dropdown). Check: does the field expand/contract smoothly? Is the label animation smooth? Does error state include both color change AND error text?
+- **Checkbox and radio button quality**: Visual size consistent (minimum 48dp touch target on mobile). Custom styled or default? If custom — are they visually consistent with the app's design language? Animation between checked/unchecked smooth? Indeterminate state designed (for checkboxes)? Group alignment consistent?
+- **Switch/toggle quality**: Track and thumb proportions feel balanced? On/off state visually unambiguous (not just color — also position, icon, or text)? Animation between states smooth? Disabled state clearly distinguishable? Label positioned consistently (before or after, never mixed)?
+- **Slider quality**: Track, thumb, and value label styled consistently? Active vs inactive track colors distinct? Discrete steps clearly marked if applicable? Range slider (two thumbs) handles overlap gracefully? Touch target large enough? Value tooltip positioned without clipping at edges?
+- **Dropdown/spinner quality**: Consistent trigger appearance across all instances? Dropdown menu elevation and shadow match the app's shadow hierarchy? Selected item clearly indicated? Menu positioned to avoid clipping at screen edges? Animation for open/close smooth?
+- **Search bar quality**: Consistent styling across all screens? Clear/cancel button appears when text is entered? Search icon properly positioned? Voice search icon if applicable? Suggestion dropdown styled consistently? Transition between collapsed and expanded states smooth?
+
+**Container Components:**
+- **Card design quality**: Internal padding consistent. Border or shadow — not both unless intentional. Corner radius consistent. Content alignment consistent across all instances. On Android: card elevation consistent across similar card types? Material CardView used with consistent `cardCornerRadius`, `cardElevation`, `strokeWidth`? Clickable cards have proper ripple and elevation change on press?
+- **Bottom sheet quality**: Handle/drag indicator consistent? Peek height appropriate for content preview? Expansion animation smooth? Backdrop dimming consistent? Half-expanded state properly designed? Does the bottom sheet conflict with system gesture navigation? Rounded top corners consistent radius?
+- **Modal/dialog quality**: Consistent backdrop opacity, border/shadow, corner radius, header/body/footer structure. Close button always in same position and same size. On Android: `MaterialAlertDialogBuilder` styled consistently? Title, message, and buttons properly spaced? Scrollable content within dialog handled? Full-screen dialog for complex forms?
+- **Tab bar/TabLayout quality**: Active and inactive tab states visually distinct (color, weight, indicator)? Tab indicator animation smooth? Scroll behavior for many tabs? Tab text not truncated? Icon+text tabs properly aligned? Tab indicator width (full-width vs content-width) consistent?
+- **Bottom navigation quality**: Active/inactive icon and label states distinct? Badge/notification dot positioned consistently? Animation between states smooth? Icons optically consistent in weight and size? Label text never truncated? Correct number of items (3-5, never more)?
+- **Toolbar/AppBar quality**: Title alignment consistent (centered vs left-aligned)? Overflow menu icon positioned correctly? Navigation icon (back, hamburger) consistent size and position? Collapsing toolbar parallax and fade effects smooth? Status bar color coordinated? Elevation changes on scroll correct?
+- **Navigation drawer quality**: Header section designed (not default)? Item height and padding consistent? Active item clearly highlighted? Dividers between groups consistent? Drawer width correct (standard: 256dp)? Edge-to-edge content or properly inset? Scrim overlay opacity consistent?
+
+**Informational Components:**
+- **Badge/chip/tag design**: Consistent padding, radius, typography across all instances. On Android: input chips, filter chips, choice chips, action chips, assist chips — each type has consistent styling? Chip close/remove icon consistent? Chip groups wrap properly or scroll horizontally?
+- **Snackbar/toast quality**: Consistent position (typically bottom), elevation, corner radius? Action button styled differently from message text? Text never truncated? Duration appropriate (short: 4s, long: 10s, indefinite for critical)? Multiple snackbars queued, not stacked? Does not overlap FAB or bottom nav?
+- **Progress indicator quality**: Determinate and indeterminate variants styled consistently? Linear progress bar height and color consistent? Circular progress size appropriate for context? Progress color matches app accent? Buffer state designed for streaming/download? Percentage text positioned clearly?
+- **Tooltip quality**: Consistent appearance (background color, text color, corner radius, padding)? Arrow/caret positioned correctly? Appears on hover/long-press without delay? Disappears when no longer relevant? Never clips at screen edges? Text concise (one line preferred)?
+- **Banner/alert quality**: Distinct visual treatment for info, warning, error, success? Icon used alongside color to differentiate? Dismissible with consistent close button? Action buttons styled consistently? Does not push content in a jarring way (smooth height animation)?
+
+**Content Display Components:**
+- **List item quality**: Consistent height for single-line, two-line, three-line variants? Leading element (icon, avatar, thumbnail) consistently sized and aligned? Trailing element (text, icon, switch) consistently positioned? Dividers between items consistent (full-bleed vs inset)? Long text properly truncated with ellipsis?
+- **Icon quality**: All icons from the same family at the same base size. Mixed icon families are visually noisy. Icons sized to optical weight, not just pixel dimensions. On Android: consistent use of outlined vs filled style? Icon tinting using `colorControlNormal` and theme attributes, not hardcoded colors? Vector drawables preferred over rasterized assets?
+- **Avatar/thumbnail quality**: Consistent size across same-context usage? Circular vs rounded-square applied consistently? Placeholder/loading state designed? Fallback for missing images (initials, generic icon)? Image scaling (center-crop, fit) consistent?
+- **Divider usage**: Lines/dividers used consistently — not as decoration but as structural separators. Too many dividers fragment the layout. On Android: `MaterialDivider` with consistent `dividerInsetStart` and `dividerInsetEnd`?
+- **Image presentation**: Images consistently cropped (same aspect ratios for same context), with consistent corner radius treatment. Loading placeholder (solid color, shimmer, blur-up)? Error state for failed loads? Transition animation on load?
+- **Empty state design quality**: Every empty state designed (not default system text). Illustration or icon consistent in style? Message text helpful and action-oriented? Primary action button prominent? Visual weight appropriate — not so heavy it feels like an error, not so light it feels like a bug.
+- **Date/time picker quality**: Styled consistently with app theme? Calendar view properly designed? Time picker format consistent (12h/24h matching device settings)? Range selection visual treatment clear? Today/selected state visually distinct?
+
+**Structural/Layout Components:**
+- **Status bar integration**: Color coordinated with toolbar/app bar? Light/dark status bar icons matching background? Transparent/translucent for edge-to-edge content? Consistent across all screens?
+- **System navigation bar integration**: Color or transparency consistent? Handles edge-to-edge content properly? Button bar vs gesture bar visual treatment consistent?
+- **Skeleton/shimmer loading quality**: Shimmer shapes match the actual content layout? Animation smooth and not distracting? Color and brightness appropriate (not too flashy, not invisible)? Consistent across all loading states in the app?
+- **RecyclerView/list visual quality**: Scroll performance smooth (no jank)? Item animations consistent (add, remove, move)? Overscroll effect styled or disabled intentionally? Grid vs linear layout spacing consistent?
 
 #### §E6. INTERACTION DESIGN QUALITY
 - **Hover feedback**: Every interactive element has a perceptible hover state that communicates interactivity. Elements that look interactive but have no hover state confuse users.
@@ -1733,6 +1778,31 @@ Produce this table for the app:
 - **Empty → populated visual storytelling**: The transition from empty state to populated state is one of the most important visual moments in the product. Does populating data feel like the app coming alive, or does it feel like a spreadsheet being filled in? Identify the specific visual improvements — animation, color, layout shift — that would make this transition feel more meaningful.
 - **Error as communication**: Error states should communicate clearly, not just signal failure. Does the visual design of error states match their urgency? A critical error and a mild warning should look visually distinct. Are error states designed with the same craft as the default states?
 
+#### §E11. MOBILE-SPECIFIC VISUAL QUALITY
+
+> Mobile platforms have unique visual concerns that web-centric audits miss entirely. This section covers Android and iOS-specific visual quality checks.
+
+**System Integration:**
+- **Material You / Dynamic Color**: On Android 12+, does the app support Material You dynamic color theming? If yes — do all custom colors harmonize with the user's wallpaper-derived palette? If no — is the static palette still high quality? Dynamic color is a free polish upgrade on Android.
+- **Dark mode completeness**: Switch to dark mode and audit EVERY screen. Common failures: hardcoded white backgrounds on individual views, hardcoded text colors that become invisible, images with white backgrounds that don't adapt, splash screen still light, WebView content still light, third-party views not themed.
+- **System font scaling**: Increase system font size to maximum. Does the layout survive? Text overflow, truncation, overlapping elements, buttons that can't fit their label — all are failures. Use `sp` for text sizes, and ensure layouts use `wrap_content` or constrain properly. This is not just accessibility — many users run slightly larger text.
+- **Display cutout handling**: Does the app handle notches, camera holes, and display cutouts correctly? Content should not be hidden behind cutouts. Use `WindowInsetsCompat` for proper safe area handling.
+- **Splash screen quality**: Android 12+ uses the Splash Screen API. Is the splash screen designed (themed icon, correct background color, proper branding moment) or default? The splash screen is the app's first visual impression — a white flash or mismatched color is a craft failure.
+
+**Visual Fidelity:**
+- **Screen density handling**: Are all raster assets provided at appropriate densities (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)? Missing density variants cause blurry upscaling or wasteful downscaling. Prefer vector drawables (`VectorDrawable`) for icons — they scale perfectly at all densities.
+- **Ripple effect consistency**: Material Design ripple effects on all touchable surfaces? Ripple bounded correctly (not spilling outside card edges, not clipped incorrectly)? Ripple color appropriate for the surface (light ripple on dark surfaces, dark ripple on light surfaces)?
+- **Elevation and shadow consistency**: On Android, elevation creates shadows. Are shadows consistent across similar component types? Do elevated surfaces in dark mode use surface tint instead of visible shadows? Are there any z-fighting issues where overlapping elevated surfaces produce visual artifacts?
+- **Animation performance**: Do animations run at 60fps (or 120fps on high-refresh devices)? Jank during fragment transitions, RecyclerView item animations, or bottom sheet expansion is a visual quality failure. Check for: layout passes during animation, overdraw, alpha animation on complex views.
+- **Overscroll effect**: The edge glow (pre-Android 12) or stretch overscroll (Android 12+) — does it feel natural? Is the color appropriate? On iOS, the bounce effect should feel physics-based and smooth.
+- **Font rendering quality**: On Android, check that custom fonts are loaded correctly via `ResourcesCompat.getFont()` or XML font resources. Font weight interpolation working? No fallback to system default causing visual inconsistency? Variable font axes properly configured?
+- **RTL (Right-to-Left) visual quality**: If supporting RTL languages — are all layouts mirrored correctly? Icons that have directional meaning (arrows, back buttons) flipped? Padding and margins mirrored? Text alignment correct? This is not just a layout check — it's a visual quality check for half the world's languages.
+
+**Platform Convention Fidelity:**
+- **Navigation pattern correctness**: Android uses bottom navigation + back button. iOS uses tab bar + swipe-back. Are the platform-correct patterns used, or is an iOS pattern forced onto Android (or vice versa)? Platform convention violations feel foreign to users.
+- **System dialog integration**: When the app invokes system dialogs (file picker, permission dialog, share sheet) — does the visual transition feel smooth? Is the app's theme compatible with the system dialog's appearance?
+- **Keyboard interaction visual quality**: When the keyboard appears — does the layout resize smoothly or jump? Is the focused field scrolled into view? Does the keyboard's color scheme (light/dark) match the app? Are input fields not hidden behind the keyboard?
+
 ---
 
 ### CATEGORY F — UX, Information Architecture & Copy
@@ -1743,15 +1813,31 @@ Produce this table for the app:
 - **Progressive disclosure**: Advanced/infrequently-used options hidden behind expandable sections? Or are all options shown at once overwhelming the user?
 - **Categorization logic**: Is content grouped in ways that feel natural to the target audience? Groups should reflect user mental models, not implementation structure.
 - **Section depth**: Is the navigation hierarchy the right depth — not so flat that everything is at the same level, not so deep that users lose track of where they are?
+- **Location awareness**: Does the user always know where they are? Breadcrumbs, highlighted nav items, screen titles, back button context — every screen must answer "where am I?" instantly. On Android: is the toolbar title updating per fragment? Is the bottom nav item highlighted correctly?
+- **Search UX**: If the app has search — is it discoverable (visible on primary screens, not buried)? Does it provide recent searches, suggestions, or filtered results? Does it handle empty results gracefully with actionable guidance? Is search scope clear (searching this screen vs entire app)?
+- **Cross-linking between related content**: When the user is looking at item A, can they easily navigate to related items B and C? Missing cross-links force users to go "back, scroll, find, tap" when a direct link would save 4 steps.
+- **Tab bar / bottom nav vs drawer**: Is the right navigation pattern chosen for the content volume and access frequency? Bottom nav for 3–5 high-frequency destinations. Drawer for 6+ low-frequency destinations. Tabs for same-level parallel content. Mixing patterns without clear hierarchy confuses users.
+- **Navigation affordances**: Are interactive elements visually distinguishable from static content? Clickable items must signal clickability — via chevrons, underlines, color, elevation, or cursor changes. "Flat" clickable items that look identical to text are discoverability failures.
+- **Cognitive load per screen**: How many distinct decisions or information items are on each screen? Screens with > 7 distinct items need grouping, progressive disclosure, or simplification. Count the decisions a user must make on each primary screen.
+- **Dead zones**: Are there screens or sections a user can navigate to but cannot navigate out of easily? Every screen must have a clear path back AND a clear path forward.
+- **Feature discoverability over time**: Are there powerful features that a new user wouldn't find for weeks? Long-press actions, swipe gestures, hidden menus, advanced filters — each one needs a discovery mechanism (contextual hints, onboarding tips, "did you know" prompts after N sessions).
 
 #### §F2. USER FLOW QUALITY
 - **Friction audit**: For each workflow in §0 — count the steps. Are any steps unnecessary, confusable, or surprising? Every unnecessary step is a design failure.
 - **Default value quality**: Are default values the most common/sensible choice? Good defaults dramatically reduce user effort.
 - **Action reversibility**: Can users undo or go back from every action? Irreversible actions are acceptable if the user is clearly warned with enough context to make an informed decision.
-- **Confirmation dialog quality**: Destructive confirmations tell the user specifically what will be destroyed and whether it is recoverable — not just "Are you sure?".
-- **Feedback immediacy**: Does every action produce immediate visual feedback? Clicks that feel unresponsive damage trust.
+- **Confirmation dialog quality**: Destructive confirmations tell the user specifically what will be destroyed and whether it is recoverable — not just "Are you sure?". The confirmation must name the item ("Delete 'vacation_photos.zip'?"), state the consequence ("This cannot be undone"), and offer an alternative when possible ("Move to trash instead?").
+- **Feedback immediacy**: Does every action produce immediate visual feedback? Clicks that feel unresponsive damage trust. Even a 100ms delay without any visual change makes users doubt the tap registered.
 - **Perceived performance**: During recomputation — does the UI show stale data, blank space, or a skeleton? Which is chosen, and is it the right choice?
 - **Keyboard shortcuts**: For power users — are common actions keyboard-accessible? Are shortcuts discoverable (tooltip mentions it)?
+- **Multi-step workflow state preservation**: If a user is mid-way through a multi-step flow (e.g., batch rename, file conversion, cloud setup) and the app is backgrounded, rotated, or interrupted by a phone call — is their progress preserved? On Android: does `onSaveInstanceState` cover the flow state? Does the ViewModel survive config changes?
+- **Error recovery flows**: When something fails mid-flow — can the user retry from the failure point, or must they restart from scratch? A file transfer that fails at 80% should offer "retry remaining" not "start over." Every error state needs a recovery path that preserves user work.
+- **Interruption handling**: What happens when the user leaves mid-action and returns? Draft state for forms? Pause state for operations? Or silent data loss? Map every interruptible flow and verify the resume behavior.
+- **Deep link entry points**: Can users enter the app at any screen (via notification, share intent, shortcut)? Does each entry point provide enough context, or does the user arrive disoriented? Every deep-linked screen must work standalone — not just as part of a navigation sequence.
+- **Gesture navigation conflicts**: On Android 10+, system gesture navigation (back swipe from edge) conflicts with app drawer swipes and edge-based gestures. On iOS, swipe-back conflicts with horizontal content. Map every conflict and verify the resolution.
+- **Batch operation UX**: When performing actions on multiple items — is the selection model clear (checkboxes, long-press-to-select, select all)? Is the count of selected items visible? Can the user preview what will happen before confirming? Is there progress feedback during batch operations?
+- **Contextual actions**: Are the right actions available at the right time? A file that's selected should show file-relevant actions. A folder should show folder-relevant actions. Actions that don't apply to the current context should be hidden or disabled with explanation — never shown and silently failing.
+- **Back navigation predictability**: Does the back button always do what the user expects? After a deep navigation chain, does back retrace the path or jump to an unexpected screen? After completing a flow (e.g., file conversion), does back go to the result or the starting screen? Back behavior must be predictable and consistent.
 
 #### §F3. ONBOARDING & FIRST USE
 - **First impression**: On the very first visit, does the user understand what the app does and what to do first? Without tooltips or documentation?
@@ -1769,6 +1855,12 @@ Produce this table for the app:
   - *Community / subject tools*: The result presented in a way that resonates with how the community experiences the subject — using the right vocabulary, the right visual weight.
   - *Emotional / sensitive tools*: A warm, gentle affirmation — not enthusiasm, just reassurance.
 - **Time-to-function legibility** *(all)*: Can a new user tell within 10 seconds what they will be able to do? This is a visual clarity question — the app's core function should be visually legible, not just textually stated.
+- **Permission request UX**: Permission dialogs are trust gates. Are permissions requested in context (when the user tries to use the feature that needs it) or upfront in a wall of permission dialogs? Context-triggered permission requests have dramatically higher acceptance rates. Is the reason explained BEFORE the system dialog? ("We need storage access to scan your files" → then system dialog). Denied permissions — does the app degrade gracefully with a clear explanation of what's lost, or does it break silently?
+- **Tutorial skippability**: Can the user skip the onboarding entirely and figure things out by doing? Forced tutorials that block the primary experience are a friction source. The best onboarding is no onboarding — the UI is self-explanatory.
+- **Re-engagement after absence**: A user who returns after 2 weeks — do they land on a useful screen or a stale empty state? Is there a "welcome back" moment that orients them? Is their last context preserved (last folder browsed, last tab open)?
+- **Contextual help and tooltips**: Beyond onboarding — are there in-context hints for complex features? Tooltips on icons, "?" buttons near advanced settings, info icons that explain jargon? Help should be available where the question arises, not in a separate FAQ screen.
+- **Feature discovery over time**: New features should surface gradually, not all at once. First session: core features only. After 3 sessions: introduce power features. After 10 sessions: surface advanced/hidden capabilities. Drip-feed discovery prevents overwhelm and creates ongoing delight.
+- **Settings discoverability**: Can users find how to change their preferences? Is the settings screen organized logically (grouped by function, not by implementation)? Are the most-changed settings near the top? Do settings explain their effect before the user changes them?
 
 #### §F4. COPY QUALITY
 - **Tone consistency**: Does every piece of UI copy feel like it came from the same voice? List any copy that sounds notably different from the rest.
@@ -1785,11 +1877,22 @@ Produce this table for the app:
 - **Brand voice extraction** *(all)*: Based on the copy that exists, extract a 3-adjective voice descriptor. Then identify every piece of copy that violates this voice — too formal, too casual, too generic, or out of register for this app's axis profile.
 
 #### §F5. MICRO-INTERACTION QUALITY
-- **Hover states communicate intent**: Every interactive element has a hover state that feels intentional (cursor change, color shift, underline, elevation change).
-- **Loading states**: Async operations have immediate feedback — even a short 200ms delay without feedback feels broken.
-- **Success confirmation**: Successful actions are confirmed visually — save, copy, export, submit all acknowledge completion.
-- **Scroll behavior**: Scroll-to-content after navigation? Scroll position preserved on back navigation? Smooth scrolling where appropriate?
+- **Hover states communicate intent**: Every interactive element has a hover state that feels intentional (cursor change, color shift, underline, elevation change). On mobile: the hover equivalent is ripple/highlight on touch.
+- **Loading states**: Async operations have immediate feedback — even a short 200ms delay without feedback feels broken. A scan that takes 10 seconds needs a progress indicator. A file delete that takes 500ms needs an optimistic removal with undo.
+- **Success confirmation**: Successful actions are confirmed visually — save, copy, export, submit all acknowledge completion. The confirmation must match the weight of the action: a settings toggle gets a subtle checkmark; a file deletion gets a snackbar with undo; a major operation gets a dedicated success state.
+- **Scroll behavior**: Scroll-to-content after navigation? Scroll position preserved on back navigation? Smooth scrolling where appropriate? RecyclerView scroll position restored after returning from detail screen?
 - **Focus indicator quality**: Visible and styled to match the app's design language — not just the browser default blue rectangle (unless the design is minimal).
+- **Pull-to-refresh**: If implemented — does it have a threshold that feels natural (not triggering on casual scrolls)? Does the refresh indicator match the app's design? Does it show meaningful feedback ("Scanning..." not just a generic spinner)? Is it available on every list screen where the user expects it?
+- **Swipe gesture feedback**: Swipe-to-delete, swipe-to-archive, swipe-to-reveal — does the gesture preview the action before committing? (Show the delete icon/color as the user drags.) Is the threshold for committing the action clear? Does the animation complete satisfyingly? Is there an undo path?
+- **Long-press interactions**: If long-press enters selection mode — is the transition clear (visual mode change, selection count, contextual toolbar)? Does the first long-press provide haptic feedback? Can the user exit selection mode easily (clear button, back press)?
+- **Drag-and-drop UX**: If supported — does the dragged item have a distinct visual state (elevated, semi-transparent)? Is the drop target highlighted? Does the placeholder show where the item will land? What happens on invalid drops (smooth return to origin, not a jarring snap)?
+- **Haptic feedback**: On Android/iOS — are haptic responses used for meaningful moments (selection, toggle, delete, completion)? Haptics that match the visual action reinforce the interaction. Over-use of haptics creates noise. Under-use misses a free quality signal. Map every interaction that should have haptic feedback and verify it exists.
+- **Selection feedback**: In multi-select modes — is the selection state of each item unambiguous? Checkmarks, color change, elevation change — the selected state must be instantly distinguishable from the unselected state. Is the selection count visible? Is "select all" available?
+- **Animation interruption**: If the user taps a button while an animation is playing — does the animation complete, cancel, or get interrupted gracefully? Animations that block input feel broken. Animations that get cut mid-way feel janky. The right behavior: new input cancels the current animation and immediately responds.
+- **Gesture cancellation**: If the user starts a swipe/drag but changes their mind — does the gesture cancel cleanly when they lift their finger in the original position? Or does it commit the action accidentally?
+- **Empty state interaction**: Empty states are not static dead ends — they are interaction opportunities. Every empty state should have a primary action (create, import, scan) that is tappable and prominent, not just decorative text.
+- **Error state interaction**: Error states must have actionable recovery — retry buttons, alternative paths, contact options. An error with no action is a dead end. The error state should be as interactive as the success state.
+- **Toast/snackbar interaction**: Toasts with actions (Undo, Retry, View) — is the action tap target large enough? Does the toast stay long enough for the user to read and decide? Does it dismiss on the right edge (action completed OR timeout, not both simultaneously)?
 
 #### §F6. ENGAGEMENT, DELIGHT & EMOTIONAL DESIGN
 
@@ -1908,12 +2011,26 @@ For every ✗ or uncertain cell: does the app crash or degrade gracefully?
 - **Install prompt**: `beforeinstallprompt` handled? iOS Add to Home Screen flow (no event) documented?
 
 #### §H3. MOBILE & TOUCH
+
+**Web-specific:**
 - **iOS Safari quirks**: `position: fixed` + virtual keyboard? `100vh` including address bar (use `dvh`)?
 - **Android**: Back gesture in PWA — navigates back or exits app?
 - **Touch vs hover**: Hover-only interactions blocked by `@media (hover: hover)`?
 - **Safe area insets**: `env(safe-area-inset-*)` respected in fixed/absolute elements on notched devices?
 - **Pinch-to-zoom**: `user-scalable=no` present? (Accessibility violation — WCAG 1.4.4)
 - **Swipe gestures**: Conflict with native scroll? Threshold too sensitive for intentional scroll?
+
+**Touch interaction quality (all platforms):**
+- **Touch target sizing**: Every tappable element ≥ 48×48dp (Android Material guideline) or 44×44pt (iOS HIG). This includes: list items, icons, toggle switches, close buttons, action buttons in toolbars. Measure the actual hit area, not just the visible element — a 24dp icon with no padding is a miss target. Use `Grep` to find `layout_height` and `layout_width` values < 48dp on interactive elements.
+- **Touch target spacing**: Adjacent touch targets must have sufficient spacing (≥ 8dp gap) to prevent accidental taps. Toolbar icons packed tightly together cause misfire. Bottom navigation items too close together cause wrong-tab taps.
+- **Touch feedback**: Every tappable element must provide immediate visual feedback on press. On Android: ripple effect (`?attr/selectableItemBackground` or `?attr/selectableItemBackgroundBorderless`). On iOS: highlight state. On web: `:active` state. Missing touch feedback makes the UI feel broken — the user doesn't know if their tap registered.
+- **Thumb zone ergonomics**: Primary actions should be in the natural thumb reach zone (bottom half of screen on mobile). Critical actions placed at the top of the screen require stretching — move them to bottom sheets, FABs, or bottom action bars. Map the most-used actions and verify they're in comfortable reach.
+- **Scroll vs tap ambiguity**: In scrollable lists with tappable items — is there enough distinction between a scroll gesture and a tap? Quick taps on list items while the list is still settling (momentum scroll) can trigger accidental selections. Minimum scroll distance threshold should prevent this.
+- **Edge gesture conflicts**: Android 10+ gesture navigation reserves the left and right edges for back-swipe. Apps with drawer menus, edge-based swipe actions, or horizontal scroll views near edges must handle this conflict. iOS swipe-from-left-edge is system back — app horizontal swipes near the left edge will conflict.
+- **Orientation handling**: Does the app support landscape? If so — does the layout adapt meaningfully (not just stretch)? Are dialogs, bottom sheets, and keyboards handled in landscape? If portrait-only — is `android:screenOrientation="portrait"` set, or does the app rotate and break?
+- **Keyboard interaction**: When a text input is focused — does the content scroll to keep the input visible above the keyboard? On Android: `android:windowSoftInputMode="adjustResize"` or `adjustPan`? Are action buttons (Submit, Next) still accessible when the keyboard is up, or do they disappear behind it?
+- **Multi-touch handling**: If the app supports multi-select via tap, or zoom via pinch — are these gestures correctly scoped? A pinch-to-zoom on an image viewer shouldn't accidentally trigger a list scroll. A two-finger gesture shouldn't register as two single taps.
+- **One-handed usability audit**: For phone-primary apps — can all primary workflows be completed one-handed? Map the full primary flow and mark every point where the user must reach to the top of the screen or use two hands. Each one is a friction point worth optimizing.
 
 #### §H4. NETWORK RESILIENCE
 - **CDN failure**: React/framework CDN unavailable — blank page or meaningful error?
