@@ -7,10 +7,10 @@
     <string name="scan_prompt">Tap here to let Raccoon scan your storage</string>
     <string name="scanning_progress">Scanning\u2026 %d files found</string>
     <plurals name="scan_complete">
-        <item quantity="one">Scan complete \u2014 %1$d file found (%2$s)</item>
-        <item quantity="other">Scan complete \u2014 %1$d files found (%2$s)</item>
+        <item quantity="one">Raccoon is done! %1$d file found (%2$s)</item>
+        <item quantity="other">Raccoon is done! %1$d files found (%2$s)</item>
     </plurals>
-    <string name="scan_complete_simple">Scan complete</string>
+    <string name="scan_complete_simple">Raccoon finished scanning!</string>
     <string name="scanning_in_progress">Raccoon is rummaging through your files\u2026</string>
     <string name="scan_cancel">Cancel scan</string>
     <string name="scan_cancelled">Scan cancelled \u2014 Raccoon stopped mid-rummage.</string>
@@ -340,7 +340,7 @@
 
     <!-- Post-scan summary -->
     <string name="scan_duration_suffix"> in %1$.1fs</string>
-    <string name="scan_summary">Found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
+    <string name="scan_summary">Raccoon found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
 
     <!-- Relative time -->
     <string name="time_just_now">Just now</string>
@@ -537,10 +537,10 @@
         <item quantity="other">Move %d files to their suggested locations?</item>
     </plurals>
     <plurals name="optimize_applied">
-        <item quantity="one">Moved %d file successfully</item>
-        <item quantity="other">Moved %d files successfully</item>
+        <item quantity="one">Raccoon tidied up %d file \u2014 looking organized!</item>
+        <item quantity="other">Raccoon tidied up %d files \u2014 looking organized!</item>
     </plurals>
-    <string name="optimize_none_selected">No suggestions selected</string>
+    <string name="optimize_none_selected">Pick some suggestions first \u2014 Raccoon needs something to work on!</string>
     <string name="optimize_info_title">How it works</string>
     <string name="optimize_info_body">This tool analyzes your files and suggests moving them into organized folders by type and date. Photos go to Pictures/YYYY-MM, videos to Videos/YYYY-MM, audio to Music, documents to Documents, and old downloads to OldDownloads. Uncheck any files you want to keep in place.</string>
     <string name="optimize_summary_detail">%1$d suggestions \u2022 %2$d selected</string>
@@ -616,9 +616,9 @@
     <string name="cloud_added">Raccoon added %s to your connections!</string>
     <string name="cloud_download">Download</string>
     <string name="cloud_upload">Upload</string>
-    <string name="cloud_download_result">Downloaded %1$d files, %2$d failed</string>
-    <string name="cloud_upload_success">Uploaded %s</string>
-    <string name="cloud_upload_failed">Upload failed: %s</string>
+    <string name="cloud_download_result">Raccoon grabbed %1$d files (%2$d failed)</string>
+    <string name="cloud_upload_success">Raccoon uploaded %s to the cloud!</string>
+    <string name="cloud_upload_failed">Upload failed: %s. Check your connection and try again.</string>
     <string name="cloud_list_failed">Raccoon couldn\'t load this folder: %s</string>
     <string name="cloud_directory">Directory</string>
     <string name="cloud_provider_type">Provider type</string>
@@ -682,8 +682,8 @@
     <string name="av_clean">Clean</string>
     <string name="av_last_scan">Last scan: %s</string>
     <plurals name="av_found_threats">
-        <item quantity="one">Found %d issue</item>
-        <item quantity="other">Found %d issues</item>
+        <item quantity="one">Raccoon spotted %d issue \u2014 review below.</item>
+        <item quantity="other">Raccoon spotted %d issues \u2014 review below.</item>
     </plurals>
 
     <!-- Scan phases (5-phase) -->
@@ -730,7 +730,7 @@
     <string name="av_fix_all_count">Fix All (%d)</string>
     <string name="av_fix_all_confirm">This will attempt to resolve all actionable threats:\n\n%s\n\nProceed?</string>
     <string name="av_proceed">Proceed</string>
-    <string name="av_fixed_count">Resolved %d threats</string>
+    <string name="av_fixed_count">Raccoon dealt with %d threats \u2014 your device is safer now!</string>
     <string name="av_dismiss">Dismiss</string>
 
     <!-- Threat detail dialog -->
