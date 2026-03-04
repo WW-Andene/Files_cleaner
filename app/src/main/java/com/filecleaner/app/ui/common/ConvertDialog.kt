@@ -721,7 +721,9 @@ object ConvertDialog {
 
         CoroutineScope(Dispatchers.Main).launch {
             val result = withContext(Dispatchers.IO) { action() }
-            progressDialog.dismiss()
+            try {
+                if (progressDialog.isShowing) progressDialog.dismiss()
+            } catch (_: Exception) { /* Window already destroyed */ }
             onResult(result)
         }
     }

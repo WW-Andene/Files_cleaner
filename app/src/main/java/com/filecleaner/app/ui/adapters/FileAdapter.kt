@@ -203,7 +203,10 @@ class FileAdapter(
             // G2-3: Grid mode with selection — no checkbox, use tap to toggle + stateDescription
             holder.itemView.setOnClickListener {
                 toggleSelection(item.path)
-                notifyItemChanged(holder.bindingAdapterPosition, PAYLOAD_SELECTION)
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    notifyItemChanged(pos, PAYLOAD_SELECTION)
+                }
                 notifySelectionChanged()
             }
             holder.itemView.setOnLongClickListener { v ->
@@ -223,6 +226,15 @@ class FileAdapter(
             }
             holder.itemView.contentDescription = ctx.getString(
                 R.string.a11y_file_info, item.name, holder.meta?.text ?: item.sizeReadable)
+        }
+    }
+
+    override fun onCurrentListChanged(previousList: MutableList<FileItem>, currentList: MutableList<FileItem>) {
+        super.onCurrentListChanged(previousList, currentList)
+        // Prune stale selections that no longer exist in the new list
+        val validPaths = currentList.mapTo(HashSet(currentList.size)) { it.path }
+        if (selectedPaths.retainAll(validPaths)) {
+            notifySelectionChanged()
         }
     }
 

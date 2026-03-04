@@ -338,7 +338,9 @@ class BrowseFragment : Fragment() {
     }
 
     private fun refresh() {
-        val catEntry = categories[binding.spinnerCategory.selectedItemPosition]
+        val catPos = binding.spinnerCategory.selectedItemPosition
+        if (catPos < 0 || catPos >= categories.size) return
+        val catEntry = categories[catPos]
         val selectedCat = catEntry.second
 
         val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
@@ -369,7 +371,8 @@ class BrowseFragment : Fragment() {
             searched.filter { it.extension in selectedExtensions }
         }
 
-        val sorted = SearchQueryParser.sortItems(filtered, binding.spinnerSort.selectedItemPosition)
+        val sortPos = binding.spinnerSort.selectedItemPosition.coerceAtLeast(0)
+        val sorted = SearchQueryParser.sortItems(filtered, sortPos)
 
         // Group files by parent folder and build list with section headers
         val browseItems = buildGroupedList(sorted)

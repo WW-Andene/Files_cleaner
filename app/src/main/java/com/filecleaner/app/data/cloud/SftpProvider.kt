@@ -26,6 +26,9 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     @Volatile
     private var channel: ChannelSftp? = null
 
+    /** Cached credential for reconnection after credential is cleared from connection */
+    private var cachedAuthToken: String = connection.authToken
+
     private val lock = Any()
 
     override val isConnected: Boolean
@@ -36,15 +39,16 @@ class SftpProvider(private var connection: CloudConnection, private val context:
             try {
                 retryOnNetworkError {
                     val jsch = JSch()
+                    val authToken = cachedAuthToken
                     // If authToken contains a private key path, use key-based auth
-                    if (connection.authToken.isNotEmpty() && connection.authToken.startsWith("/")) {
-                        jsch.addIdentity(connection.authToken)
+                    if (authToken.isNotEmpty() && authToken.startsWith("/")) {
+                        jsch.addIdentity(authToken)
                     }
 
                     val s = jsch.getSession(connection.username, connection.host, connection.port)
                     // If authToken is not a path, treat as password
-                    if (connection.authToken.isNotEmpty() && !connection.authToken.startsWith("/")) {
-                        s.setPassword(connection.authToken)
+                    if (authToken.isNotEmpty() && !authToken.startsWith("/")) {
+                        s.setPassword(authToken)
                     }
                     // TOFU (Trust On First Use): persist host keys, reject changed keys
                     val knownHostsFile = File(context.filesDir, "sftp_known_hosts")
@@ -56,7 +60,10 @@ class SftpProvider(private var connection: CloudConnection, private val context:
                         override fun getPassword(): String? = null
                         override fun promptPassword(message: String?): Boolean = false
                         override fun promptPassphrase(message: String?): Boolean = false
-                        override fun promptYesNo(message: String?): Boolean = true
+                        override fun promptYesNo(message: String?): Boolean {
+                            // TOFU: accept new keys, reject changed keys (potential MITM)
+                            return message?.contains("has changed", ignoreCase = true) == false
+                        }
                         override fun showMessage(message: String?) {}
                     }
                     s.connect(15000)

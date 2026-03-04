@@ -328,7 +328,8 @@ object AppIntegrityScanner {
         try {
             val maps = File("/proc/self/maps").readText()
             if (maps.contains("frida", ignoreCase = true) ||
-                maps.contains("gadget", ignoreCase = true)
+                maps.contains("frida-gadget", ignoreCase = true) ||
+                maps.contains("libfrida", ignoreCase = true)
             ) {
                 results.add(
                     ThreatResult(
@@ -443,7 +444,7 @@ object AppIntegrityScanner {
 
         // Check developer options enabled
         try {
-            val devEnabled = Settings.Secure.getInt(
+            val devEnabled = Settings.Global.getInt(
                 context.contentResolver,
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
             )
@@ -465,7 +466,7 @@ object AppIntegrityScanner {
 
         // Check USB debugging
         try {
-            val adbEnabled = Settings.Secure.getInt(
+            val adbEnabled = Settings.Global.getInt(
                 context.contentResolver,
                 Settings.Global.ADB_ENABLED, 0
             )

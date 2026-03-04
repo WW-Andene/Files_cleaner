@@ -71,6 +71,9 @@ object CompressDialog {
             .setView(container)
             .setPositiveButton(context.getString(R.string.ctx_compress)) { _, _ ->
                 var name = nameInput.text.toString().trim()
+                // Sanitize: strip path separators and traversal sequences
+                name = name.replace("/", "").replace("\\", "").replace("..", "")
+                    .replace("\u0000", "")
                 if (name.isNotEmpty()) {
                     if (!name.endsWith(".zip", ignoreCase = true)) name += ".zip"
                     onConfirm(name, files.map { it.path })

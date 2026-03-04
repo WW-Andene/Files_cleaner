@@ -27,13 +27,17 @@ class WebDavProvider(private var connection: CloudConnection) : CloudProvider {
     // F-C3-02: Cache the auth header to allow clearing the raw credential
     private var cachedAuthHeader: String? = null
 
+    /** Cached original credentials for reconnection after credential clearing */
+    private val originalUsername: String = connection.username
+    private val originalAuthToken: String = connection.authToken
+
     // Base URL must end without trailing slash
     private val baseUrl: String
         get() {
             val raw = connection.host.trimEnd('/')
             // Enforce HTTPS for Basic Auth credential safety
             return if (raw.startsWith("http://", ignoreCase = true)) {
-                "https://" + raw.removePrefix("http://").removePrefix("HTTP://")
+                "https://" + raw.substring(7) // "http://".length == 7
             } else if (!raw.startsWith("https://", ignoreCase = true)) {
                 "https://$raw"
             } else {
@@ -214,7 +218,8 @@ class WebDavProvider(private var connection: CloudConnection) : CloudProvider {
 
     private fun authHeader(): String {
         cachedAuthHeader?.let { return it }
-        val credentials = "${connection.username}:${connection.authToken}"
+        // Use original credentials (connection fields may have been cleared after first connect)
+        val credentials = "$originalUsername:$originalAuthToken"
         return "Basic ${Base64.encodeToString(credentials.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)}"
     }
 
@@ -262,8 +267,8 @@ class WebDavProvider(private var connection: CloudConnection) : CloudProvider {
                             if (inResponse && href.isNotEmpty()) {
                                 // Skip the directory itself (first entry)
                                 val hrefPath = URL(if (href.startsWith("http")) href else "$baseUrl$href").path
-                                val normalRequest = requestPath.trimEnd('/')
-                                val normalHref = hrefPath.trimEnd('/')
+                                val normalRequest = java.net.URLDecoder.decode(requestPath.trimEnd('/'), "UTF-8")
+                                val normalHref = java.net.URLDecoder.decode(hrefPath.trimEnd('/'), "UTF-8")
                                 if (normalHref != normalRequest) {
                                     val name = hrefPath.trimEnd('/').substringAfterLast('/')
                                     if (name.isNotEmpty()) {

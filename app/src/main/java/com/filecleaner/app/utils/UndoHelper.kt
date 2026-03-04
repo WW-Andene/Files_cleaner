@@ -36,7 +36,8 @@ object UndoHelper {
                 .setAction(ctx.getString(R.string.undo)) { vm.undoDelete() }
                 .addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(bar: Snackbar?, event: Int) {
-                        if (event != DISMISS_EVENT_ACTION) {
+                        // Don't auto-confirm when displaced by a consecutive snackbar
+                        if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
                             vm.confirmDelete()
                         }
                     }

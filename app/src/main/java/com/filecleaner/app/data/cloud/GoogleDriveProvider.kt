@@ -121,7 +121,7 @@ class GoogleDriveProvider(
         retryOnNetworkError {
             var conn: HttpURLConnection? = null
             try {
-                val fileId = remotePath
+                val fileId = URLEncoder.encode(remotePath, "UTF-8")
                 val url = URL("https://www.googleapis.com/drive/v3/files/$fileId?alt=media")
                 conn = (url.openConnection() as HttpURLConnection).apply {
                     setRequestProperty("Authorization", "Bearer $accessToken")
@@ -192,7 +192,7 @@ class GoogleDriveProvider(
         retryOnNetworkError {
             var conn: HttpURLConnection? = null
             try {
-                val fileId = remotePath
+                val fileId = URLEncoder.encode(remotePath, "UTF-8")
                 val url = URL("https://www.googleapis.com/drive/v3/files/$fileId")
                 conn = (url.openConnection() as HttpURLConnection).apply {
                     requestMethod = "DELETE"
@@ -200,7 +200,8 @@ class GoogleDriveProvider(
                     connectTimeout = 15000
                 }
                 val code = conn.responseCode
-                if (code !in 200..299 && code != 204) {
+                // Treat 404 as success for DELETE (idempotent — file already gone)
+                if (code !in 200..299 && code != 204 && code != 404) {
                     throw java.io.IOException("Delete failed with HTTP $code")
                 }
             } finally {

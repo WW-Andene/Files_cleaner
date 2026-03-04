@@ -699,14 +699,17 @@ class FileViewerFragment : Fragment() {
         binding.webView.visibility = View.VISIBLE
         binding.webView.settings.apply {
             javaScriptEnabled = false
-            allowFileAccess = true
+            allowFileAccess = false
+            allowContentAccess = false
             loadWithOverviewMode = true
             useWideViewPort = true
             builtInZoomControls = true
             displayZoomControls = false
             layoutAlgorithm = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
         }
-        binding.webView.loadUrl("file://${file.absolutePath}")
+        // Load file content as data URL to avoid granting file:// access
+        val htmlContent = file.readText()
+        binding.webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
         binding.webView.contentDescription = getString(R.string.a11y_webview_content, file.name)
     }
 
@@ -716,7 +719,8 @@ class FileViewerFragment : Fragment() {
         binding.webView.visibility = View.VISIBLE
         binding.webView.settings.apply {
             javaScriptEnabled = false
-            allowFileAccess = true
+            allowFileAccess = false
+            allowContentAccess = false
             loadWithOverviewMode = true
             useWideViewPort = true
             builtInZoomControls = true

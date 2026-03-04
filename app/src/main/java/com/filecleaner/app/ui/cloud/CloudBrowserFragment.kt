@@ -400,9 +400,9 @@ class CloudBrowserFragment : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     currentProvider?.disconnect()
                     currentProvider = null
+                    CloudConnectionStore.removeConnection(conn.id)
+                    loadConnections()
                 }
-                CloudConnectionStore.removeConnection(conn.id)
-                loadConnections()
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()

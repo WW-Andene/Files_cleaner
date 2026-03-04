@@ -167,7 +167,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
 
         val isCollapsed = header.folderPath in collapsedFolders
         holder.chevron.setImageResource(
-            if (isCollapsed) R.drawable.ic_chevron_up else R.drawable.ic_arrow_down
+            if (isCollapsed) R.drawable.ic_arrow_down else R.drawable.ic_chevron_up
         )
         // Rotate chevron: 0 degrees when expanded (arrow pointing down), 180 when collapsed
         holder.chevron.rotation = 0f

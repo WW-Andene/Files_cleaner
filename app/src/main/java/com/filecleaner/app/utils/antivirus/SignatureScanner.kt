@@ -211,8 +211,8 @@ object SignatureScanner {
                 return
             }
 
-            // SHA-256 for higher confidence (only for files < 10MB to limit IO)
-            if (item.size <= 10_485_760) {
+            // SHA-256 for higher confidence (file is already <=5MB per the check above)
+            run {
                 val sha256 = hashFile(file, "SHA-256")
                 if (sha256 in KNOWN_MALWARE_SHA256) {
                     results.add(

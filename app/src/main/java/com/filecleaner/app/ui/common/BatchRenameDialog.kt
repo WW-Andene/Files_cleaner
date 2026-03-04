@@ -260,9 +260,13 @@ object BatchRenameDialog {
             val thread = Thread(task)
             thread.isDaemon = true
             thread.start()
-            task.get(500, TimeUnit.MILLISECONDS)
-        } catch (_: TimeoutException) {
-            null
+            try {
+                task.get(500, TimeUnit.MILLISECONDS)
+            } catch (_: TimeoutException) {
+                task.cancel(true)
+                thread.interrupt()
+                null
+            }
         } catch (_: Exception) {
             null
         }

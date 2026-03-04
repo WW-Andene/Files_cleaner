@@ -88,15 +88,15 @@ class OptimizeFragment : Fragment() {
             applyFiltersAndRebuild()
         }
 
-        // Global select / deselect all
+        // Global select / deselect all — operates on ALL suggestions, not just filtered
         binding.btnSelectAll.setOnClickListener {
-            filteredSuggestions.forEach { it.accepted = true }
+            allSuggestions.forEach { it.accepted = true }
             rebuildAdapter()
             updateGlobalSummary()
         }
 
         binding.btnDeselectAll.setOnClickListener {
-            filteredSuggestions.forEach { it.accepted = false }
+            allSuggestions.forEach { it.accepted = false }
             rebuildAdapter()
             updateGlobalSummary()
         }

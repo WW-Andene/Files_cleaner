@@ -56,7 +56,9 @@ object FileOpener {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            context.startActivity(Intent.createChooser(intent, context.getString(R.string.ctx_share)))
+            val chooser = Intent.createChooser(intent, context.getString(R.string.ctx_share))
+            if (context !is Activity) chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(chooser)
         } catch (_: ActivityNotFoundException) {
             showNoAppFound(context)
         } catch (_: IllegalArgumentException) {
@@ -82,7 +84,9 @@ object FileOpener {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            context.startActivity(Intent.createChooser(intent, context.getString(R.string.open_with)))
+            val chooser = Intent.createChooser(intent, context.getString(R.string.open_with))
+            if (context !is Activity) chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(chooser)
         } catch (_: ActivityNotFoundException) {
             showNoAppFound(context)
         } catch (_: IllegalArgumentException) {

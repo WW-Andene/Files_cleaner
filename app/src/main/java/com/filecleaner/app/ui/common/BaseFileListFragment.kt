@@ -264,8 +264,10 @@ abstract class BaseFileListFragment : Fragment() {
         val searched = SearchQueryParser.filterItems(rawItems, searchQuery)
         val filtered = SearchQueryParser.sortItems(searched, binding.spinnerSort.selectedItemPosition)
 
+        // Show filtered count when a search is active, raw count otherwise
+        val displayItems = if (searchQuery.isNotEmpty()) filtered else rawItems
         binding.tvSummary.text = if (rawItems.isEmpty()) emptySummary
-        else summaryText(rawItems.size, UndoHelper.totalSize(rawItems))
+        else summaryText(displayItems.size, UndoHelper.totalSize(displayItems))
 
         // Toggle empty/list visibility BEFORE submitting items so the RecyclerView
         // measures at its correct height (fixes items appearing too low on first scan).
@@ -291,6 +293,9 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     private fun confirmDelete() {
+        // Re-read selection from adapter to avoid stale state
+        val selected = adapter.getSelectedItems()
+        if (selected.isEmpty()) return
         val totalSize = com.filecleaner.app.utils.UndoHelper.totalSize(selected)
         val undoSeconds = try { com.filecleaner.app.data.UserPreferences.undoTimeoutMs / 1000 } catch (_: Exception) { 8 }
         val detailMessage = resources.getQuantityString(com.filecleaner.app.R.plurals.confirm_delete_detail,

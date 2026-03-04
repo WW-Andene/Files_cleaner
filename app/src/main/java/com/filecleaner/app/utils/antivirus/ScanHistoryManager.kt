@@ -28,9 +28,6 @@ object ScanHistoryManager {
         val p = prefs(context)
         val now = System.currentTimeMillis()
 
-        // Save last scan time
-        p.edit().putLong(KEY_LAST_SCAN, now).apply()
-
         // Build scan record
         val record = JSONObject().apply {
             put("timestamp", now)
@@ -73,7 +70,11 @@ object ScanHistoryManager {
             updated.put(history.getJSONObject(i))
         }
 
-        p.edit().putString(KEY_HISTORY, updated.toString()).apply()
+        // Atomic write: save both last scan time and history in a single edit
+        p.edit()
+            .putLong(KEY_LAST_SCAN, now)
+            .putString(KEY_HISTORY, updated.toString())
+            .apply()
     }
 
     fun getLastScanTime(context: Context): Long {
@@ -133,6 +134,7 @@ object ScanHistoryManager {
         val diff = System.currentTimeMillis() - timestampMs
 
         return when {
+            diff < 0 -> SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(Date(timestampMs))
             diff < 60_000 -> context.getString(R.string.time_just_now)
             diff < 3_600_000 -> context.getString(R.string.time_minutes_ago, (diff / 60_000).toInt())
             diff < 86_400_000 -> context.getString(R.string.time_hours_ago, (diff / 3_600_000).toInt())

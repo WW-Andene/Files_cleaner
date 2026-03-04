@@ -70,7 +70,8 @@ class SettingsFragment : Fragment() {
 
         // Stale download age (7–365 days)
         binding.seekStaleAge.max = 35 // 7 to 365 in steps of ~10
-        binding.seekStaleAge.progress = (UserPreferences.staleDownloadDays - 7) / 10
+        // Round to nearest step to avoid lossy round-trip (e.g., 30 → progress 2 → 27)
+        binding.seekStaleAge.progress = ((UserPreferences.staleDownloadDays - 7 + 5) / 10).coerceIn(0, 35)
         updateStaleAgeLabel()
         binding.seekStaleAge.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
