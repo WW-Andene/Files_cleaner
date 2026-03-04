@@ -7,6 +7,8 @@ import com.jcraft.jsch.Session
 import com.jcraft.jsch.UserInfo
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
@@ -29,13 +31,13 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     /** Cached credential for reconnection after credential is cleared from connection */
     private var cachedAuthToken: String = connection.authToken
 
-    private val lock = Any()
+    private val lock = Mutex()
 
     override val isConnected: Boolean
         get() = session?.isConnected == true && channel?.isConnected == true
 
     override suspend fun connect(): Boolean = withContext(Dispatchers.IO) {
-        synchronized(lock) {
+        lock.withLock {
             try {
                 retryOnNetworkError {
                     val jsch = JSch()
@@ -90,7 +92,7 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     }
 
     override suspend fun disconnect() = withContext(Dispatchers.IO) {
-        synchronized(lock) {
+        lock.withLock {
             try { channel?.disconnect() } catch (_: Exception) {}
             try { session?.disconnect() } catch (_: Exception) {}
             channel = null
@@ -100,8 +102,8 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     }
 
     override suspend fun listFiles(remotePath: String): List<CloudFile> = withContext(Dispatchers.IO) {
-        synchronized(lock) {
-            val ch = channel ?: return@synchronized emptyList()
+        lock.withLock {
+            val ch = channel ?: return@withLock emptyList()
             try {
                 retryOnNetworkError {
                     @Suppress("UNCHECKED_CAST")
@@ -129,7 +131,7 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     }
 
     override suspend fun download(remotePath: String, output: OutputStream) = withContext(Dispatchers.IO) {
-        synchronized(lock) {
+        lock.withLock {
             val ch = channel ?: throw IllegalStateException("Not connected")
             retryOnNetworkError {
                 ch.get(remotePath, output)
@@ -140,7 +142,7 @@ class SftpProvider(private var connection: CloudConnection, private val context:
 
     override suspend fun upload(remotePath: String, input: InputStream, fileName: String, mimeType: String) =
         withContext(Dispatchers.IO) {
-            synchronized(lock) {
+            lock.withLock {
                 val ch = channel ?: throw IllegalStateException("Not connected")
                 val fullPath = if (remotePath.endsWith("/")) "$remotePath$fileName"
                 else "$remotePath/$fileName"
@@ -152,7 +154,7 @@ class SftpProvider(private var connection: CloudConnection, private val context:
         }
 
     override suspend fun delete(remotePath: String) = withContext(Dispatchers.IO) {
-        synchronized(lock) {
+        lock.withLock {
             val ch = channel ?: throw IllegalStateException("Not connected")
             try {
                 ch.rm(remotePath)
@@ -169,7 +171,7 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     }
 
     override suspend fun createDirectory(remotePath: String) = withContext(Dispatchers.IO) {
-        synchronized(lock) {
+        lock.withLock {
             val ch = channel ?: throw IllegalStateException("Not connected")
             ch.mkdir(remotePath)
         }
