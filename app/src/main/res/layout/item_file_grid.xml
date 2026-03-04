@@ -39,8 +39,7 @@
                 <ImageView
                     android:id="@+id/iv_file_icon"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:minHeight="@dimen/grid_thumbnail_min_height"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"

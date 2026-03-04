@@ -74,8 +74,7 @@
     <!-- Menu items -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="@dimen/dialog_max_height">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/menu_container"
