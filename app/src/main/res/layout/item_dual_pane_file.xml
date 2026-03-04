@@ -11,6 +11,14 @@
     android:background="?attr/selectableItemBackground"
     android:minHeight="@dimen/spacing_4xl">
 
+    <CheckBox
+        android:id="@+id/cb_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:buttonTint="@color/colorPrimary"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/iv_icon"
         android:layout_width="@dimen/icon_dual_pane"
