@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         // All bottom nav tab destination IDs (including the raccoon manager hub)
         val bottomNavIds = setOf(
-            R.id.analysisFragment, R.id.browseFragment, R.id.duplicatesFragment,
+            R.id.browseFragment, R.id.duplicatesFragment,
             R.id.raccoonManagerFragment,
             R.id.largeFilesFragment, R.id.junkFragment
         )
