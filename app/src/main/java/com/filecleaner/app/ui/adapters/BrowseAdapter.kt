@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
-import com.filecleaner.app.ui.adapters.FileItemUtils.dpToPx
+import android.util.TypedValue
 import com.filecleaner.app.utils.UndoHelper
 
 class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(DIFF) {
@@ -186,12 +186,13 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
 
     private fun bindFile(holder: FileViewHolder, item: FileItem) {
         holder.name.text = item.name
-        val c = colors ?: FileItemUtils.resolveColors(holder.itemView.context).also { colors = it }
+        val c = colors ?: FileItemUtils.resolveColorsWithSelection(holder.itemView.context).also { colors = it }
 
         if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
             val lp = holder.icon.layoutParams
-            lp.width = 72.dpToPx(holder.itemView)
-            lp.height = 72.dpToPx(holder.itemView)
+            val px72 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 72f, holder.itemView.resources.displayMetrics).toInt()
+            lp.width = px72
+            lp.height = px72
             holder.icon.layoutParams = lp
         }
 

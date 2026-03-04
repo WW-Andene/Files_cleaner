@@ -142,9 +142,7 @@ object FileItemUtils {
 
     fun buildMeta(textView: TextView, item: FileItem) {
         val ctx = textView.context
-        val dateStr = DateFormat.format(
-            ctx.getString(R.string.date_format_short), Date(item.lastModified)
-        )
+        val dateStr = DateFormat.format("dd MMM yyyy", Date(item.lastModified))
         textView.text = "${item.sizeReadable}  \u2022  $dateStr"
     }
 }

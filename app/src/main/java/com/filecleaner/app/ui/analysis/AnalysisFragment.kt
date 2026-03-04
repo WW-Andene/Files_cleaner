@@ -246,7 +246,7 @@ class AnalysisFragment : Fragment() {
         }
 
         val nameView = TextView(ctx).apply {
-            text = cat.displayName
+            text = getString(cat.displayNameRes)
             setTextAppearance(R.style.TextAppearance_FileCleaner_Body)
             setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
