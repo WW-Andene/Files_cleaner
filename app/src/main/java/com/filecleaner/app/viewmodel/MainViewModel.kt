@@ -292,8 +292,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
                 // Finding 2 fix: Run heavy I/O outside stateMutex
                 _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.DUPLICATES, progressPercent = ScanPhase.DUPLICATES.baseProgress()))
-                val dupes = DuplicateFinder.findDuplicates(files)
-                    .filter { it.path !in protectedPaths }
+                val dupBase = ScanPhase.DUPLICATES.baseProgress()
+                val dupEnd = ScanPhase.DUPLICATES.endProgress()
+                val dupes = DuplicateFinder.findDuplicates(files) { done, total ->
+                    if (total > 0) {
+                        val pct = dupBase + (done * (dupEnd - dupBase)) / total
+                        _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.DUPLICATES, progressPercent = pct))
+                    }
+                }.filter { it.path !in protectedPaths }
 
                 _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING, progressPercent = ScanPhase.ANALYZING.baseProgress()))
                 val maxLargeFileCount = try { UserPreferences.maxLargeFiles } catch (_: Exception) { 200 }
