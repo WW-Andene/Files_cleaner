@@ -22,9 +22,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -121,6 +122,7 @@ object CloudSetupDialog {
         val tvTestResult = dialogView.findViewById<TextView>(R.id.tv_test_result)
         val progressTest = dialogView.findViewById<ProgressBar>(R.id.progress_test)
 
+        val dialogScope = MainScope()
         var testJob: Job? = null
 
         // Configure fields based on provider
@@ -235,7 +237,7 @@ object CloudSetupDialog {
             progressTest.visibility = View.VISIBLE
             testResultContainer.visibility = View.GONE
 
-            testJob = CoroutineScope(Dispatchers.Main).launch {
+            testJob = dialogScope.launch {
                 try {
                     val provider = createProvider(connection)
                     val success = provider.connect()
@@ -290,7 +292,7 @@ object CloudSetupDialog {
             oauthDivider?.visibility = View.VISIBLE
             oauthConfigSection?.visibility = View.VISIBLE
             btnOAuth?.text = when (providerType) {
-                ProviderType.GOOGLE_DRIVE -> context.getString(R.string.cloud_oauth_google)
+                ProviderType.GOOGLE_DRIVE -> context.getString(R.string.cloud_gdrive_sign_in)
                 ProviderType.GITHUB -> context.getString(R.string.cloud_oauth_github)
                 else -> ""
             }
@@ -325,7 +327,7 @@ object CloudSetupDialog {
                     btnOAuth.isEnabled = false
                     progressTest.visibility = View.VISIBLE
                     testResultContainer.visibility = View.GONE
-                    CoroutineScope(Dispatchers.Main).launch {
+                    dialogScope.launch {
                         val result = OAuthHelper.exchangeCodeForToken(context, code, providerType)
                         progressTest.visibility = View.GONE
                         btnOAuth.isEnabled = true
@@ -358,7 +360,7 @@ object CloudSetupDialog {
             .setView(dialogView)
             .setPositiveButton(context.getString(R.string.cloud_connect), null)
             .setNegativeButton(context.getString(R.string.cancel), null)
-            .setOnDismissListener { testJob?.cancel() }
+            .setOnDismissListener { dialogScope.cancel() }
             .show()
 
         // Override positive button to prevent dismiss on validation failure

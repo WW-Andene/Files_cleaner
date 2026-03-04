@@ -266,7 +266,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- GitHub repo input -->
@@ -283,7 +283,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Pending reports status -->

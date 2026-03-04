@@ -261,9 +261,14 @@ object FileConverter {
     // =========================================================================
 
     /** Convert a text file to PDF (monospace rendering, A4 pages). */
+    private const val MAX_TEXT_TO_PDF_BYTES = 10L * 1024 * 1024 // 10 MB
+
     fun textToPdf(inputPath: String, outputPath: String, fontSize: Float = 10f): ConvertResult {
         val src = File(inputPath)
         if (!src.exists()) return ConvertResult(false, "", "Source file not found")
+        if (src.length() > MAX_TEXT_TO_PDF_BYTES) {
+            return ConvertResult(false, "", "File too large (max ${MAX_TEXT_TO_PDF_BYTES / 1024 / 1024} MB)")
+        }
 
         val doc = PdfDocument()
         return try {

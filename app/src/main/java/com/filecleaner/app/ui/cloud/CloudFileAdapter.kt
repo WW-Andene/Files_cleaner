@@ -26,7 +26,7 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
         val isDirectory: Boolean,
         val size: Long,
         val lastModified: Long,
-        var selected: Boolean = false
+        val selected: Boolean = false
     )
 
     companion object {
@@ -44,8 +44,7 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
     fun getSelectedItems(): List<CloudFileItem> = currentList.filter { it.selected }
 
     fun clearSelection() {
-        currentList.forEach { it.selected = false }
-        notifyItemRangeChanged(0, itemCount)
+        submitList(currentList.map { it.copy(selected = false) })
         onSelectionChanged?.invoke()
     }
 
@@ -77,7 +76,11 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
         holder.checkbox.setOnCheckedChangeListener(null)
         holder.checkbox.isChecked = item.selected
         holder.checkbox.setOnCheckedChangeListener { _, checked ->
-            item.selected = checked
+            val pos = holder.bindingAdapterPosition
+            if (pos == RecyclerView.NO_POSITION) return@setOnCheckedChangeListener
+            val updated = currentList.toMutableList()
+            updated[pos] = updated[pos].copy(selected = checked)
+            submitList(updated)
             onSelectionChanged?.invoke()
         }
 

@@ -2,10 +2,15 @@
 <resources>
     <string name="app_name">Raccoon File Manager</string>
 
+    <!-- Analysis quick action emojis -->
+    <string name="emoji_trash">\uD83D\uDDD1\uFE0F</string>
+    <string name="emoji_folder">\uD83D\uDCC2</string>
+    <string name="emoji_refresh">\uD83D\uDD04</string>
+
     <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
     <string name="scan_prompt">Tap here to let Raccoon scan your storage</string>
-    <string name="scanning_progress">Scanning\u2026 %d files found</string>
+    <!-- scanning_progress removed: duplicate of scanning_phase_indexing -->
     <plurals name="scan_complete">
         <item quantity="one">Raccoon is done! %1$d file found (%2$s)</item>
         <item quantity="other">Raccoon is done! %1$d files found (%2$s)</item>
@@ -42,7 +47,7 @@
 
     <!-- Confirm dialog -->
     <string name="confirm_delete_title">Confirm Delete</string>
-    <string name="confirm_delete_message">Files will be moved to trash. You can undo within %d seconds.</string>
+    <string name="confirm_delete_message">Files will be moved to trash. You can undo within %1$d seconds.</string>
     <plurals name="confirm_delete_detail">
         <item quantity="one">%1$d file (%2$s) will be moved to trash.\nYou can undo within %3$d seconds.</item>
         <item quantity="other">%1$d files (%2$s) will be moved to trash.\nYou can undo within %3$d seconds.</item>
@@ -566,8 +571,7 @@
     <string name="dual_pane_content_mode">Content mode</string>
     <string name="dual_pane_mode_browser">File Browser</string>
     <string name="dual_pane_selected">%d selected</string>
-    <string name="dual_pane_select_all">Select all</string>
-    <string name="dual_pane_deselect_all">Deselect all</string>
+    <!-- dual_pane_select_all / dual_pane_deselect_all removed: use select_all / deselect_all -->
     <string name="dual_pane_divider_handle">Resize panes</string>
     <string name="dual_pane_category_count">%1$d files \u2022 %2$s</string>
     <string name="dual_pane_long_press_hint">Long-press to select files</string>
@@ -893,7 +897,7 @@
     <string name="display_mode_grid">Grid</string>
 
     <!-- Dashboard enhancements -->
-    <string name="dashboard_back">Back</string>
+    <!-- dashboard_back removed: use back -->
     <string name="dashboard_top_files">Top 10 Largest Files</string>
     <string name="dashboard_quick_actions">Quick Actions</string>
     <string name="dashboard_clean_junk">Clean Junk</string>
@@ -909,16 +913,15 @@
 
     <!-- Cloud OAuth -->
     <string name="cloud_oauth_sign_in">Sign in with OAuth</string>
-    <string name="cloud_oauth_google">Sign in with Google</string>
+    <!-- cloud_oauth_google removed: use cloud_gdrive_sign_in -->
     <string name="cloud_oauth_github">Sign in with GitHub</string>
     <string name="cloud_oauth_or_manual">or enter token manually</string>
     <string name="cloud_oauth_success">OAuth authentication successful</string>
     <string name="cloud_oauth_failed">OAuth failed: %s</string>
-    <string name="cloud_sign_in_google">Sign in with Google</string>
+    <!-- cloud_sign_in_google removed: use cloud_gdrive_sign_in -->
     <string name="cloud_connect_github">Connect with GitHub</string>
     <string name="cloud_oauth_note">Uses secure OAuth 2.0 authentication</string>
-    <string name="cloud_oauth_sign_in_google">Sign in with Google</string>
-    <string name="cloud_oauth_connect_github">Connect with GitHub</string>
+    <!-- cloud_oauth_sign_in_google and cloud_oauth_connect_github removed: use cloud_gdrive_sign_in / cloud_connect_github -->
     <string name="cloud_oauth_authenticating">Authenticating\u2026</string>
     <string name="cloud_oauth_config_title">OAuth Configuration</string>
     <string name="cloud_oauth_client_id_hint">OAuth Client ID</string>

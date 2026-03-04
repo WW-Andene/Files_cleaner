@@ -30,8 +30,7 @@ import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanPhase
 import com.filecleaner.app.viewmodel.ScanState
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -291,7 +290,7 @@ class MainActivity : AppCompatActivity() {
         // and create the connection directly.
         val pendingProvider = OAuthHelper.getPendingProvider()
         if (pendingProvider != null) {
-            CoroutineScope(Dispatchers.Main).launch {
+            lifecycleScope.launch {
                 val result = OAuthHelper.exchangeCodeForToken(this@MainActivity, code, pendingProvider)
                 if (result.isSuccess) {
                     CloudSetupDialog.showOAuthResult(
@@ -317,46 +316,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun requestPermissionsAndScan() {
-        when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                // Android 11+ needs MANAGE_EXTERNAL_STORAGE
-                if (Environment.isExternalStorageManager()) {
-                    startScan()
-                } else {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(getString(R.string.storage_access_needed))
-                        .setMessage(getString(R.string.storage_access_message))
-                        .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
-                            manageFilesLauncher.launch(
-                                Intent(
-                                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                    Uri.parse("package:$packageName")
-                                )
+        // minSdk 29 (Android 10). Android 11+ (R) uses MANAGE_EXTERNAL_STORAGE;
+        // Android 10 falls through to legacy READ/WRITE_EXTERNAL_STORAGE.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11+ needs MANAGE_EXTERNAL_STORAGE
+            if (Environment.isExternalStorageManager()) {
+                startScan()
+            } else {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(getString(R.string.storage_access_needed))
+                    .setMessage(getString(R.string.storage_access_message))
+                    .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
+                        manageFilesLauncher.launch(
+                            Intent(
+                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                Uri.parse("package:$packageName")
                             )
-                        }
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .show()
-                }
+                        )
+                    }
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .show()
             }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                // Android 13+
-                permLauncher.launch(arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                    Manifest.permission.READ_MEDIA_AUDIO
-                ))
-            }
-            else -> {
-                // Android 10
-                val needed = arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ).filter {
-                    ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
-                }.toTypedArray()
+        } else {
+            // Android 10 (API 29)
+            val needed = arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ).filter {
+                ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            }.toTypedArray()
 
-                if (needed.isEmpty()) startScan() else permLauncher.launch(needed)
-            }
+            if (needed.isEmpty()) startScan() else permLauncher.launch(needed)
         }
     }
 

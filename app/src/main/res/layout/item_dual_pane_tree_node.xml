@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
         android:textColor="@color/textPrimary"
-        android:singleLine="true"
+        android:maxLines="1"
         android:ellipsize="end"
         android:layout_marginStart="@dimen/spacing_xs" />
 
@@ -48,6 +48,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
         android:textColor="@color/textTertiary"
-        android:singleLine="true"
+        android:maxLines="1"
         android:layout_marginStart="@dimen/spacing_xs" />
 </LinearLayout>

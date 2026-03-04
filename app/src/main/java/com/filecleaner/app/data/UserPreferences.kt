@@ -70,12 +70,14 @@ object UserPreferences {
         get() = prefs.getStringSet("protected_paths", emptySet()) ?: emptySet()
         set(value) = prefs.edit().putStringSet("protected_paths", value).apply()
 
+    @Synchronized
     fun toggleFavorite(path: String) {
         val current = favoritePaths.toMutableSet()
         if (path in current) current.remove(path) else current.add(path)
         favoritePaths = current
     }
 
+    @Synchronized
     fun toggleProtected(path: String) {
         val current = protectedPaths.toMutableSet()
         if (path in current) current.remove(path) else current.add(path)

@@ -65,7 +65,7 @@ class ScanService : Service() {
         }
     }
 
-    private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var scanJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? = null

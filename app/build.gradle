@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-parcelize'
-    id 'kotlin-kapt'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -64,13 +64,13 @@ dependencies {
 
     // Glide for image thumbnails
     implementation 'com.github.bumptech.glide:glide:4.16.0'
-    kapt 'com.github.bumptech.glide:compiler:4.16.0'
+    ksp 'com.github.bumptech.glide:ksp:4.16.0'
 
     // AndroidX Browser – Custom Chrome Tabs for OAuth flows
     implementation 'androidx.browser:browser:1.8.0'
 
     // AndroidX Security – EncryptedSharedPreferences
-    implementation 'androidx.security:security-crypto:1.0.0'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
 
     // SFTP (SSH) – maintained JSch fork with Terrapin (CVE-2023-48795) fix
     implementation 'com.github.mwiede:jsch:0.2.21'

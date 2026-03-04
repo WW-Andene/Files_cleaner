@@ -1,6 +1,7 @@
 package com.filecleaner.app.utils
 
 import com.jcraft.jsch.JSchException
+import kotlinx.coroutines.delay
 import java.io.IOException
 import java.util.concurrent.CancellationException
 
@@ -8,9 +9,12 @@ import java.util.concurrent.CancellationException
  * Retries a block up to [maxRetries] times with exponential backoff
  * on transient network errors. Non-retryable exceptions (e.g. auth
  * failures) are thrown immediately.
+ *
+ * Must be called from a coroutine context. Uses [delay] instead of
+ * Thread.sleep to cooperate with coroutine cancellation.
  */
 @Suppress("MagicNumber")
-inline fun <T> retryOnNetworkError(
+suspend inline fun <T> retryOnNetworkError(
     maxRetries: Int = 3,
     initialDelayMs: Long = 1000L,
     block: () -> T
@@ -25,8 +29,8 @@ inline fun <T> retryOnNetworkError(
             if (!isRetryable(e)) throw e
             lastException = e
             if (attempt < maxRetries - 1) {
-                val delay = (initialDelayMs * (1L shl attempt)).coerceAtMost(30_000L)
-                Thread.sleep(delay)
+                val delayMs = (initialDelayMs * (1L shl attempt)).coerceAtMost(30_000L)
+                delay(delayMs)
             }
         }
     }

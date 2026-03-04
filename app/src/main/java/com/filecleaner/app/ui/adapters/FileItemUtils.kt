@@ -214,13 +214,13 @@ object FileItemUtils {
 
     // ── Meta text builder ────────────────────────────────────────────────
 
-    // D1: Cache date format to avoid per-call allocation
-    private val dateFormat by lazy {
-        java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
+    // D1: ThreadLocal date format to avoid per-call allocation while remaining thread-safe
+    private val dateFormat = object : ThreadLocal<java.text.SimpleDateFormat>() {
+        override fun initialValue() = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
     }
 
     fun buildMeta(textView: TextView, item: FileItem) {
-        val dateStr = dateFormat.format(Date(item.lastModified))
+        val dateStr = dateFormat.get()!!.format(Date(item.lastModified))
         textView.text = "${item.sizeReadable}  \u2022  $dateStr"
     }
 }

@@ -294,15 +294,21 @@ class OptimizeFragment : Fragment() {
             .setTitle(getString(R.string.optimize_confirm_title))
             .setMessage(resources.getQuantityString(R.plurals.optimize_confirm_message, accepted.size, accepted.size))
             .setPositiveButton(getString(R.string.move)) { _, _ ->
-                for (suggestion in accepted) {
-                    val targetDir = File(suggestion.suggestedPath).parent ?: continue
-                    File(targetDir).mkdirs()
-                    vm.moveFile(suggestion.currentPath, targetDir)
+                // Move sequentially via coroutine so each moveFile completes
+                // before the next, preventing SingleLiveEvent drops.
+                viewLifecycleOwner.lifecycleScope.launch {
+                    for (suggestion in accepted) {
+                        val targetDir = File(suggestion.suggestedPath).parent ?: continue
+                        File(targetDir).mkdirs()
+                        vm.moveFile(suggestion.currentPath, targetDir)
+                    }
+                    if (_binding != null) {
+                        Snackbar.make(binding.root,
+                            resources.getQuantityString(R.plurals.optimize_applied, accepted.size, accepted.size),
+                            Snackbar.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    }
                 }
-                Snackbar.make(binding.root,
-                    resources.getQuantityString(R.plurals.optimize_applied, accepted.size, accepted.size),
-                    Snackbar.LENGTH_SHORT).show()
-                findNavController().popBackStack()
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()

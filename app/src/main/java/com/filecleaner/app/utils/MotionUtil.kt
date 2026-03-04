@@ -24,14 +24,14 @@ object MotionUtil {
 
     // ── Reduced-motion check (§DM4) ─────────────────────────────────────
 
-    /** Returns true when the user prefers reduced motion (animation scale below normal). */
+    /** Returns true when the user prefers reduced motion (animation scale below normal, including 0.5x). */
     fun isReducedMotion(context: Context): Boolean {
         val scale = Settings.Global.getFloat(
             context.contentResolver,
             Settings.Global.ANIMATOR_DURATION_SCALE,
             1f
         )
-        return scale <= 0f
+        return scale < 1f
     }
 
     // ── Duration helpers ─────────────────────────────────────────────────

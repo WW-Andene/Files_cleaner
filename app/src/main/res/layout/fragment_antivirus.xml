@@ -263,7 +263,7 @@
                             android:text="0"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Title"
                             android:fontFeatureSettings="tnum"
-                            android:textColor="@color/catVideo" />
+                            android:textColor="@color/colorWarning" />
 
                         <TextView
                             android:layout_width="wrap_content"

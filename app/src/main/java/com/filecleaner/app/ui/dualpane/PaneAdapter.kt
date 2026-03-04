@@ -28,7 +28,7 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
         val name: String,
         val size: Long,
         val lastModified: Long,
-        var selected: Boolean = false
+        val selected: Boolean = false
     )
 
     companion object {
@@ -53,21 +53,21 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
     fun getSelectedItems(): List<PaneItem> = currentList.filter { it.selected }
 
     fun clearSelection() {
-        currentList.forEach { it.selected = false }
-        notifyItemRangeChanged(0, itemCount)
+        submitList(currentList.map { it.copy(selected = false) })
         onSelectionChanged?.invoke()
     }
 
     fun selectAll() {
-        currentList.forEach { it.selected = true }
-        notifyItemRangeChanged(0, itemCount)
+        submitList(currentList.map { it.copy(selected = true) })
         onSelectionChanged?.invoke()
     }
 
     private fun toggleSelection(position: Int) {
-        val item = getItem(position)
-        item.selected = !item.selected
-        notifyItemChanged(position)
+        if (position == RecyclerView.NO_POSITION) return
+        val updated = currentList.toMutableList()
+        val item = updated[position]
+        updated[position] = item.copy(selected = !item.selected)
+        submitList(updated)
         onSelectionChanged?.invoke()
     }
 
@@ -115,21 +115,24 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
         }
 
         holder.itemView.setOnClickListener {
+            val pos = holder.bindingAdapterPosition
+            if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
             if (isSelectionActive) {
                 // In selection mode, tap toggles selection
-                toggleSelection(holder.bindingAdapterPosition)
+                toggleSelection(pos)
             } else {
-                onItemClick?.invoke(item)
+                onItemClick?.invoke(getItem(pos))
             }
         }
 
         holder.itemView.setOnLongClickListener { v ->
+            val pos = holder.bindingAdapterPosition
+            if (pos == RecyclerView.NO_POSITION) return@setOnLongClickListener true
+            val current = getItem(pos)
             if (!isSelectionActive) {
-                // Not in selection mode — start a drag operation
-                onDragStartRequested?.invoke(item, v)
+                onDragStartRequested?.invoke(current, v)
             } else {
-                // Already in selection mode — show context menu for files
-                onItemLongClick?.invoke(item, v)
+                onItemLongClick?.invoke(current, v)
             }
             true
         }

@@ -557,7 +557,7 @@ class AntivirusFragment : Fragment() {
         return when (severity) {
             ThreatResult.Severity.CRITICAL -> R.color.colorError to ctx.getString(R.string.av_critical)
             ThreatResult.Severity.HIGH -> R.color.colorError to ctx.getString(R.string.av_high)
-            ThreatResult.Severity.MEDIUM -> R.color.catVideo to ctx.getString(R.string.av_medium)
+            ThreatResult.Severity.MEDIUM -> R.color.colorWarning to ctx.getString(R.string.av_medium)
             ThreatResult.Severity.LOW -> R.color.colorAccent to ctx.getString(R.string.av_low)
             ThreatResult.Severity.INFO -> R.color.textTertiary to ctx.getString(R.string.av_info)
         }
