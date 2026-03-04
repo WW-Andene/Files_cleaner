@@ -82,7 +82,7 @@ class FileAdapter(
     override fun getItemViewType(position: Int): Int = when (viewMode) {
         ViewMode.LIST_COMPACT -> TYPE_COMPACT
         ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> TYPE_LIST
-        ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> TYPE_GRID
+        ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE -> TYPE_GRID
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
@@ -105,14 +105,17 @@ class FileAdapter(
             val card = holder.itemView as? MaterialCardView
 
             // Partial rebind: only update selection visual state (skip icon, text, thumbnail)
-            if (item.duplicateGroup < 0) {
-                if (isSelected) {
-                    card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
-                    card?.strokeColor = c.selectedBorder
-                } else {
-                    card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
-                    card?.strokeColor = c.border
-                }
+            // For dup/junk/size modes, background stays; selection shown via border only
+            if (item.duplicateGroup >= 0) {
+                card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+            } else if (colorMode == ColorMode.JUNK_CATEGORY || colorMode == ColorMode.SIZE_SEVERITY) {
+                card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+            } else if (isSelected) {
+                card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
+                card?.strokeColor = c.selectedBorder
+            } else {
+                card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
+                card?.strokeColor = c.border
             }
             if (selectable && holder.check != null) {
                 holder.check.isChecked = isSelected
@@ -151,31 +154,31 @@ class FileAdapter(
         }
 
         // Load thumbnail for images/videos, category icon for everything else
-        val isGrid = viewMode != ViewMode.LIST && viewMode != ViewMode.LIST_WITH_THUMBNAILS && viewMode != ViewMode.LIST_COMPACT
+        val isGrid = viewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
         FileItemUtils.loadThumbnail(holder.icon, item, isGrid)
 
         // Accent stripe (color-coded indicator)
         bindAccentStripe(holder, item)
 
-        // Visual state: duplicate group colouring → junk/size bg → selection highlight → default
+        // Visual state: duplicate/junk/size bg always shown (selection via border only) → selection → default
         val c = colors!!
         val card = holder.itemView as? MaterialCardView
         val dupColors = resolvedDupColors
         if (item.duplicateGroup >= 0 && dupColors != null) {
             val color = dupColors[item.duplicateGroup % dupColors.size]
             card?.setCardBackgroundColor(color) ?: holder.itemView.setBackgroundColor(color)
-            card?.strokeColor = c.border
-        } else if (isSelected) {
-            card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
-            card?.strokeColor = c.selectedBorder
+            card?.strokeColor = if (isSelected) c.selectedBorder else c.border
         } else if (colorMode == ColorMode.JUNK_CATEGORY) {
             val bgColor = FileItemUtils.junkBgColor(ctx, item)
             card?.setCardBackgroundColor(bgColor) ?: holder.itemView.setBackgroundColor(bgColor)
-            card?.strokeColor = c.border
+            card?.strokeColor = if (isSelected) c.selectedBorder else c.border
         } else if (colorMode == ColorMode.SIZE_SEVERITY) {
             val bgColor = FileItemUtils.sizeBgColor(ctx, item)
             card?.setCardBackgroundColor(bgColor) ?: holder.itemView.setBackgroundColor(bgColor)
-            card?.strokeColor = c.border
+            card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+        } else if (isSelected) {
+            card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
+            card?.strokeColor = c.selectedBorder
         } else {
             card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
             card?.strokeColor = c.border

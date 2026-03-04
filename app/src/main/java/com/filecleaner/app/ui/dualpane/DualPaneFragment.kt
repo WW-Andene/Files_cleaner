@@ -36,8 +36,8 @@ import java.io.File
 
 /**
  * Dual-pane file manager (Total Commander style).
- * Two side-by-side panels, each with independent directory navigation,
- * content mode selection (file browser, category filter, tree view),
+ * Two side-by-side panels, each with independent section tabs
+ * (Browse, Duplicates, Large Files, Junk, Manager)
  * and long-press multi-selection with floating action bar.
  */
 class DualPaneFragment : Fragment() {
@@ -51,13 +51,9 @@ class DualPaneFragment : Fragment() {
         Environment.getExternalStorageDirectory().absolutePath
     }
 
-    // File list adapters (used for FILE_BROWSER and category modes)
+    // File list adapters (used for all content modes)
     private lateinit var leftAdapter: PaneAdapter
     private lateinit var rightAdapter: PaneAdapter
-
-    // Tree view adapters (used for TREE_VIEW mode)
-    private lateinit var leftTreeAdapter: TreeNodeAdapter
-    private lateinit var rightTreeAdapter: TreeNodeAdapter
 
     private var leftPath: String = ""
     private var rightPath: String = ""
@@ -100,13 +96,10 @@ class DualPaneFragment : Fragment() {
         // -- Setup adapters --
         leftAdapter = PaneAdapter()
         rightAdapter = PaneAdapter()
-        leftTreeAdapter = TreeNodeAdapter()
-        rightTreeAdapter = TreeNodeAdapter()
 
         // Setup left pane
         setupPane(
             adapter = leftAdapter,
-            treeAdapter = leftTreeAdapter,
             recycler = binding.recyclerLeft,
             pathLabel = binding.tvPathLeft,
             countLabel = binding.tvCountLeft,
@@ -119,7 +112,6 @@ class DualPaneFragment : Fragment() {
         // Setup right pane
         setupPane(
             adapter = rightAdapter,
-            treeAdapter = rightTreeAdapter,
             recycler = binding.recyclerRight,
             pathLabel = binding.tvPathRight,
             countLabel = binding.tvCountRight,
@@ -164,38 +156,34 @@ class DualPaneFragment : Fragment() {
             refreshBothPanes()
         }
 
-        // Observe directory tree for tree view mode
-        vm.directoryTree.observe(viewLifecycleOwner) { tree ->
-            if (tree != null) {
-                if (leftMode.isTreeView) leftTreeAdapter.setRootNode(tree)
-                if (rightMode.isTreeView) rightTreeAdapter.setRootNode(tree)
-            }
+        // Observe scan data for all scan-result modes
+        vm.duplicates.observe(viewLifecycleOwner) {
+            if (leftMode == PaneContentMode.DUPLICATES) loadScanResults(Pane.LEFT, leftMode)
+            if (rightMode == PaneContentMode.DUPLICATES) loadScanResults(Pane.RIGHT, rightMode)
         }
-
-        // Observe file categories for category modes
-        vm.filesByCategory.observe(viewLifecycleOwner) { categories ->
-            if (leftMode.isCategoryMode) loadCategoryFiles(Pane.LEFT, leftMode)
-            if (rightMode.isCategoryMode) loadCategoryFiles(Pane.RIGHT, rightMode)
+        vm.largeFiles.observe(viewLifecycleOwner) {
+            if (leftMode == PaneContentMode.LARGE_FILES) loadScanResults(Pane.LEFT, leftMode)
+            if (rightMode == PaneContentMode.LARGE_FILES) loadScanResults(Pane.RIGHT, rightMode)
+        }
+        vm.junkFiles.observe(viewLifecycleOwner) {
+            if (leftMode == PaneContentMode.JUNK) loadScanResults(Pane.LEFT, leftMode)
+            if (rightMode == PaneContentMode.JUNK) loadScanResults(Pane.RIGHT, rightMode)
         }
     }
 
     /** Tab labels for PaneContentMode entries (short form). */
     private val tabLabels by lazy {
         arrayOf(
-            R.string.dual_pane_tab_files,
-            R.string.dual_pane_tab_images,
-            R.string.dual_pane_tab_videos,
-            R.string.dual_pane_tab_audio,
-            R.string.dual_pane_tab_docs,
-            R.string.dual_pane_tab_apks,
-            R.string.dual_pane_tab_archives,
-            R.string.dual_pane_tab_tree
+            R.string.dual_pane_tab_browse,
+            R.string.dual_pane_tab_duplicates,
+            R.string.dual_pane_tab_large,
+            R.string.dual_pane_tab_junk,
+            R.string.dual_pane_tab_manager
         )
     }
 
     private fun setupPane(
         adapter: PaneAdapter,
-        treeAdapter: TreeNodeAdapter,
         recycler: RecyclerView,
         pathLabel: TextView,
         countLabel: TextView,
@@ -244,18 +232,6 @@ class DualPaneFragment : Fragment() {
         // --- Drag listener on the recycler (drop target) ---
         val paneContainer = if (pane == Pane.LEFT) binding.paneLeft else binding.paneRight
         recycler.setOnDragListener(createPaneDragListener(pane, paneContainer))
-
-        // --- Tree adapter callbacks ---
-        treeAdapter.onDirectorySelected = { path ->
-            activePane = pane
-            updatePaneHighlight()
-            // Switch to file browser mode and navigate to this directory
-            if (pane == Pane.LEFT) leftMode = PaneContentMode.FILE_BROWSER
-            else rightMode = PaneContentMode.FILE_BROWSER
-            syncTabSelection(pane)
-            applyContentMode(pane)
-            loadDirectory(pane, path)
-        }
 
         // Tap pane container to set active
         paneContainer.setOnClickListener {
@@ -395,7 +371,6 @@ class DualPaneFragment : Fragment() {
         val mode = if (pane == Pane.LEFT) leftMode else rightMode
         val recycler = if (pane == Pane.LEFT) binding.recyclerLeft else binding.recyclerRight
         val adapter = if (pane == Pane.LEFT) leftAdapter else rightAdapter
-        val treeAdapter = if (pane == Pane.LEFT) leftTreeAdapter else rightTreeAdapter
         val pathBar = if (pane == Pane.LEFT) binding.pathBarLeft else binding.pathBarRight
 
         when {
@@ -404,21 +379,15 @@ class DualPaneFragment : Fragment() {
                 pathBar.visibility = View.VISIBLE
                 loadDirectory(pane, if (pane == Pane.LEFT) leftPath else rightPath)
             }
-            mode.isCategoryMode -> {
+            mode.isScanResultMode -> {
                 recycler.adapter = adapter
                 pathBar.visibility = View.GONE
-                loadCategoryFiles(pane, mode)
+                loadScanResults(pane, mode)
             }
-            mode.isTreeView -> {
-                recycler.adapter = treeAdapter
+            mode.isManager -> {
+                recycler.adapter = adapter
                 pathBar.visibility = View.GONE
-                val tree = vm.directoryTree.value
-                if (tree != null) {
-                    treeAdapter.setRootNode(tree)
-                    updateCountLabel(pane, "${tree.totalFileCount} files")
-                } else {
-                    updateCountLabel(pane, getString(R.string.dual_pane_tree_empty))
-                }
+                loadManagerSummary(pane)
             }
         }
     }
@@ -463,11 +432,15 @@ class DualPaneFragment : Fragment() {
         }
     }
 
-    private fun loadCategoryFiles(pane: Pane, mode: PaneContentMode) {
-        val category = mode.category ?: return
-        val categoryFiles = vm.filesByCategory.value?.get(category) ?: emptyList()
+    private fun loadScanResults(pane: Pane, mode: PaneContentMode) {
+        val items = when (mode) {
+            PaneContentMode.DUPLICATES -> vm.duplicates.value ?: emptyList()
+            PaneContentMode.LARGE_FILES -> vm.largeFiles.value ?: emptyList()
+            PaneContentMode.JUNK -> vm.junkFiles.value ?: emptyList()
+            else -> emptyList()
+        }
 
-        val items = categoryFiles
+        val paneItems = items
             .sortedByDescending { it.lastModified }
             .map { fileItem ->
                 PaneAdapter.PaneItem(
@@ -480,10 +453,21 @@ class DualPaneFragment : Fragment() {
             }
 
         val adapter = if (pane == Pane.LEFT) leftAdapter else rightAdapter
-        adapter.submitList(items)
+        adapter.submitList(paneItems)
 
-        val totalSize = UndoHelper.formatBytes(categoryFiles.sumOf { it.size })
-        updateCountLabel(pane, getString(R.string.dual_pane_category_count, items.size, totalSize))
+        val totalSize = UndoHelper.formatBytes(items.sumOf { it.size })
+        updateCountLabel(pane, getString(R.string.dual_pane_category_count, paneItems.size, totalSize))
+    }
+
+    private fun loadManagerSummary(pane: Pane) {
+        // Show a simple summary of all scan results
+        val adapter = if (pane == Pane.LEFT) leftAdapter else rightAdapter
+        adapter.submitList(emptyList())
+
+        val dupCount = vm.duplicates.value?.size ?: 0
+        val largeCount = vm.largeFiles.value?.size ?: 0
+        val junkCount = vm.junkFiles.value?.size ?: 0
+        updateCountLabel(pane, "Duplicates: $dupCount \u2022 Large: $largeCount \u2022 Junk: $junkCount")
     }
 
     private fun updateCountLabel(pane: Pane, text: String) {

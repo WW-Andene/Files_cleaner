@@ -19,7 +19,9 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.filecleaner.app.data.UserPreferences
+import com.filecleaner.app.data.cloud.OAuthHelper
 import com.filecleaner.app.databinding.ActivityMainBinding
+import com.filecleaner.app.ui.cloud.CloudSetupDialog
 import com.filecleaner.app.ui.onboarding.OnboardingDialog
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
@@ -278,6 +280,22 @@ class MainActivity : AppCompatActivity() {
                     UserPreferences.hasSeenPrivacyNotice = true
                 }
                 .show()
+        }
+
+        // Handle OAuth callback
+        handleOAuthIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleOAuthIntent(intent)
+    }
+
+    private fun handleOAuthIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        val code = OAuthHelper.parseCallbackCode(uri)
+        if (code != null) {
+            CloudSetupDialog.handleOAuthCallback(code)
         }
     }
 

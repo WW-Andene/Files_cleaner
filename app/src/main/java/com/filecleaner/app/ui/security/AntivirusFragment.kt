@@ -5,6 +5,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.databinding.FragmentAntivirusBinding
+import com.filecleaner.app.services.ScanService
 import com.filecleaner.app.utils.antivirus.*
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.button.MaterialButton
@@ -50,6 +53,26 @@ class AntivirusFragment : Fragment() {
     private val allThreats = mutableListOf<ThreatResult>()
     private var currentFilter: SeverityFilter = SeverityFilter.ALL
     private var pulseAnimation: Animation? = null
+
+    private val progressHandler = Handler(Looper.getMainLooper())
+    private val progressRunnable = object : Runnable {
+        override fun run() {
+            if (ScanService.isRunning) {
+                updateProgress(ScanService.currentProgress)
+                _binding?.tvPhase?.text = ScanService.currentPhase
+                progressHandler.postDelayed(this, 500)
+            } else if (ScanService.scanComplete) {
+                val results = ScanService.scanResults
+                if (results != null) {
+                    allThreats.clear()
+                    allThreats.addAll(results)
+                    isScanning = false
+                    stopShieldPulse()
+                    showResults()
+                }
+            }
+        }
+    }
 
     private enum class SeverityFilter {
         ALL, CRITICAL, HIGH, MEDIUM, LOW_INFO
@@ -88,6 +111,20 @@ class AntivirusFragment : Fragment() {
 
         // Show last scan time
         showLastScanTime()
+
+        // Restore state if the service is running or has completed results
+        if (ScanService.isRunning) {
+            isScanning = true
+            binding.btnScan.isEnabled = false
+            binding.btnScan.text = getString(R.string.av_scanning)
+            binding.progressContainer.visibility = View.VISIBLE
+            startShieldPulse()
+            progressHandler.post(progressRunnable)
+        } else if (ScanService.scanComplete && ScanService.scanResults != null) {
+            allThreats.clear()
+            allThreats.addAll(ScanService.scanResults!!)
+            showResults()
+        }
     }
 
     private fun showLastScanTime() {
@@ -114,6 +151,7 @@ class AntivirusFragment : Fragment() {
         isScanning = true
         allThreats.clear()
         currentFilter = SeverityFilter.ALL
+        ScanService.clearResults()
 
         val b = _binding ?: return
         b.btnScan.isEnabled = false
@@ -132,64 +170,11 @@ class AntivirusFragment : Fragment() {
         // Pulse the shield icon during scan
         startShieldPulse()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val ctx = context ?: return@launch
+        // Start the foreground service
+        ScanService.start(requireContext())
 
-            // Phase 1: App Integrity (0-20%)
-            updatePhase(R.string.av_phase_integrity, R.string.av_phase_integrity_desc)
-            val integrityResults = AppIntegrityScanner.scan(ctx) { pct ->
-                updateProgress(pct / 5)
-            }
-            allThreats.addAll(integrityResults)
-
-            // Phase 2: File Signatures (20-40%)
-            updatePhase(R.string.av_phase_signature, R.string.av_phase_signature_desc)
-            val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
-            if (allFiles.isNotEmpty()) {
-                val signatureResults = SignatureScanner.scan(ctx, allFiles) { scanned, total ->
-                    val pct = if (total > 0) (scanned * 20 / total) + 20 else 20
-                    updateProgress(pct)
-                }
-                allThreats.addAll(signatureResults)
-            }
-            updateProgress(40)
-
-            // Phase 3: Privacy Audit (40-60%)
-            updatePhase(R.string.av_phase_privacy, R.string.av_phase_privacy_desc)
-            val ctx2 = context ?: return@launch
-            val privacyResults = PrivacyAuditor.audit(ctx2) { pct ->
-                updateProgress(40 + (pct / 5))
-            }
-            allThreats.addAll(privacyResults)
-
-            // Phase 4: Network Security (60-80%)
-            updatePhase(R.string.av_phase_network, R.string.av_phase_network_desc)
-            val ctx3 = context ?: return@launch
-            val networkResults = NetworkSecurityScanner.scan(ctx3) { pct ->
-                updateProgress(60 + (pct / 5))
-            }
-            allThreats.addAll(networkResults)
-
-            // Phase 5: App Verification (80-100%)
-            updatePhase(R.string.av_phase_verification, R.string.av_phase_verification_desc)
-            val ctx4 = context ?: return@launch
-            val verificationResults = AppVerificationScanner.scan(ctx4) { pct ->
-                updateProgress(80 + (pct / 5))
-            }
-            allThreats.addAll(verificationResults)
-
-            updateProgress(100)
-
-            // Save scan history
-            val ctx5 = context ?: return@launch
-            withContext(Dispatchers.IO) {
-                ScanHistoryManager.saveResult(ctx5, allThreats)
-            }
-
-            isScanning = false
-            stopShieldPulse()
-            if (_binding != null) showResults()
-        }
+        // Start polling for progress
+        progressHandler.post(progressRunnable)
     }
 
     private fun updatePhase(titleRes: Int, descRes: Int) {
@@ -739,6 +724,7 @@ class AntivirusFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        progressHandler.removeCallbacksAndMessages(null)
         stopShieldPulse()
         super.onDestroyView()
         _binding = null

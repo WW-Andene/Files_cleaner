@@ -346,14 +346,15 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     private fun applyLayoutManager() {
-        val spanCount = currentViewMode.spanCount
         dividerDecoration?.let { binding.recyclerView.removeItemDecoration(it) }
-        binding.recyclerView.layoutManager = if (spanCount == 1) {
-            LinearLayoutManager(requireContext())
+        val isGridMode = currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
+        binding.recyclerView.layoutManager = if (isGridMode && currentViewMode.spanCount > 1) {
+            GridLayoutManager(requireContext(), currentViewMode.spanCount)
         } else {
-            GridLayoutManager(requireContext(), spanCount)
+            // List modes and GRID_XLARGE (single-column grid cards)
+            LinearLayoutManager(requireContext())
         }
-        if (spanCount == 1) {
+        if (!isGridMode) {
             dividerDecoration?.let { binding.recyclerView.addItemDecoration(it) }
         }
     }
@@ -361,9 +362,9 @@ abstract class BaseFileListFragment : Fragment() {
     private fun updateViewModeIcon() {
         val iconRes = when (currentViewMode) {
             ViewMode.LIST_COMPACT, ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> R.drawable.ic_view_list
-            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> R.drawable.ic_view_grid
+            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE -> R.drawable.ic_view_grid
         }
-        binding.btnViewMode.setImageResource(iconRes)
+        (binding.btnViewMode as? com.google.android.material.button.MaterialButton)?.setIconResource(iconRes)
         updateGridColumnsVisibility()
     }
 
@@ -372,6 +373,7 @@ abstract class BaseFileListFragment : Fragment() {
     private fun setupGridColumnChips() {
         val chipGroup = binding.chipGroupGridColumns
         val gridModes = listOf(
+            "1" to ViewMode.GRID_XLARGE,
             "2" to ViewMode.GRID_LARGE,
             "3" to ViewMode.GRID_MEDIUM,
             "4" to ViewMode.GRID_SMALL
@@ -402,7 +404,7 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     private fun updateGridColumnsVisibility() {
-        val isGrid = currentViewMode.spanCount > 1
+        val isGrid = currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
         binding.gridColumnsRow.visibility = if (isGrid) View.VISIBLE else View.GONE
         // Sync chip selection to current mode
         if (isGrid) {

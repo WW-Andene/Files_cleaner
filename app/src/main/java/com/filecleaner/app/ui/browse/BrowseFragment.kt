@@ -329,11 +329,10 @@ class BrowseFragment : Fragment() {
     }
 
     private fun applyLayoutManager() {
-        val spanCount = currentViewMode.spanCount
         dividerDecoration?.let { binding.recyclerView.removeItemDecoration(it) }
-        binding.recyclerView.layoutManager = if (spanCount == 1) {
-            LinearLayoutManager(requireContext())
-        } else {
+        val isGridMode = currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
+        binding.recyclerView.layoutManager = if (isGridMode && currentViewMode.spanCount > 1) {
+            val spanCount = currentViewMode.spanCount
             GridLayoutManager(requireContext(), spanCount).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -341,8 +340,11 @@ class BrowseFragment : Fragment() {
                     }
                 }
             }
+        } else {
+            // List modes and GRID_XLARGE (single-column grid cards)
+            LinearLayoutManager(requireContext())
         }
-        if (spanCount == 1) {
+        if (!isGridMode) {
             dividerDecoration?.let { binding.recyclerView.addItemDecoration(it) }
         }
     }
@@ -350,9 +352,9 @@ class BrowseFragment : Fragment() {
     private fun updateViewModeIcon() {
         val iconRes = when (currentViewMode) {
             ViewMode.LIST_COMPACT, ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> R.drawable.ic_view_list
-            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> R.drawable.ic_view_grid
+            ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE -> R.drawable.ic_view_grid
         }
-        binding.btnViewMode.setImageResource(iconRes)
+        (binding.btnViewMode as? com.google.android.material.button.MaterialButton)?.setIconResource(iconRes)
         updateGridColumnsVisibility()
     }
 
@@ -361,6 +363,7 @@ class BrowseFragment : Fragment() {
     private fun setupGridColumnChips() {
         val chipGroup = binding.chipGroupGridColumns
         val gridModes = listOf(
+            "1" to ViewMode.GRID_XLARGE,
             "2" to ViewMode.GRID_LARGE,
             "3" to ViewMode.GRID_MEDIUM,
             "4" to ViewMode.GRID_SMALL
@@ -391,7 +394,7 @@ class BrowseFragment : Fragment() {
     }
 
     private fun updateGridColumnsVisibility() {
-        val isGrid = currentViewMode.spanCount > 1
+        val isGrid = currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
         binding.gridColumnsRow.visibility = if (isGrid) View.VISIBLE else View.GONE
         // Sync chip selection to current mode
         if (isGrid) {
@@ -436,7 +439,7 @@ class BrowseFragment : Fragment() {
                 text = label
                 isCheckable = true
                 isChecked = when (mode) {
-                    ViewMode.GRID_MEDIUM -> currentViewMode.spanCount > 1
+                    ViewMode.GRID_MEDIUM -> currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
                     else -> currentViewMode == mode
                 }
                 tag = mode
@@ -462,11 +465,12 @@ class BrowseFragment : Fragment() {
     private fun syncDisplayModeChips() {
         suppressDisplayModeChipListener = true
         val chipGroup = binding.chipGroupDisplayMode
+        val isGridMode = currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
         for (i in 0 until chipGroup.childCount) {
             val chip = chipGroup.getChildAt(i) as? Chip ?: continue
             val chipMode = chip.tag as? ViewMode ?: continue
             chip.isChecked = when (chipMode) {
-                ViewMode.GRID_MEDIUM -> currentViewMode.spanCount > 1
+                ViewMode.GRID_MEDIUM -> isGridMode
                 else -> currentViewMode == chipMode
             }
         }
@@ -476,6 +480,7 @@ class BrowseFragment : Fragment() {
     private fun setupDisplayGridColumnChips() {
         val chipGroup = binding.chipGroupDisplayGridColumns
         val gridModes = listOf(
+            "1" to ViewMode.GRID_XLARGE,
             "2" to ViewMode.GRID_LARGE,
             "3" to ViewMode.GRID_MEDIUM,
             "4" to ViewMode.GRID_SMALL
@@ -507,7 +512,7 @@ class BrowseFragment : Fragment() {
     }
 
     private fun updateDisplayGridColumnsVisibility() {
-        val isGrid = currentViewMode.spanCount > 1
+        val isGrid = currentViewMode in setOf(ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE, ViewMode.GRID_XLARGE)
         binding.displayGridColumnsRow.visibility = if (isGrid) View.VISIBLE else View.GONE
         if (isGrid) {
             suppressDisplayGridChipListener = true

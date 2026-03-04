@@ -115,8 +115,8 @@ object FileItemUtils {
         ColorMode.NONE            -> null
         ColorMode.DUPLICATE_GROUP -> null   // handled via background colors
         ColorMode.CATEGORY        -> categoryColor(ctx, item.category)
-        ColorMode.JUNK_CATEGORY   -> junkColor(ctx, item)
-        ColorMode.SIZE_SEVERITY   -> sizeColor(ctx, item)
+        ColorMode.JUNK_CATEGORY   -> null   // background color only, consistent with duplicates
+        ColorMode.SIZE_SEVERITY   -> null   // background color only, consistent with duplicates
     }
 
     // ── Thumbnail / icon loading ─────────────────────────────────────────
@@ -134,7 +134,7 @@ object FileItemUtils {
         // Load real thumbnails for images and videos
         if ((item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) && file.exists()) {
             imageView.clearColorFilter()
-            imageView.scaleType = if (isGrid) android.widget.ImageView.ScaleType.CENTER_CROP else android.widget.ImageView.ScaleType.CENTER_CROP
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             Glide.with(ctx)
                 .load(file)
                 .transform(CenterCrop(), RoundedCorners(cornerRadius))
@@ -144,9 +144,42 @@ object FileItemUtils {
             return
         }
 
+        // Load audio album art (Glide can extract embedded cover art from audio files)
+        if (item.category == FileCategory.AUDIO && file.exists() && isGrid) {
+            imageView.clearColorFilter()
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            Glide.with(ctx)
+                .load(android.net.Uri.fromFile(file))
+                .transform(CenterCrop(), RoundedCorners(cornerRadius))
+                .placeholder(R.drawable.ic_audio)
+                .error(R.drawable.ic_audio)
+                .into(imageView)
+            return
+        }
+
+        // Load APK icons in grid mode
+        if (item.category == FileCategory.APK && file.exists() && isGrid) {
+            try {
+                val pm = ctx.packageManager
+                val info = pm.getPackageArchiveInfo(item.path, 0)
+                if (info != null) {
+                    info.applicationInfo?.sourceDir = item.path
+                    info.applicationInfo?.publicSourceDir = item.path
+                    val icon = info.applicationInfo?.loadIcon(pm)
+                    if (icon != null) {
+                        Glide.with(ctx).clear(imageView)
+                        imageView.clearColorFilter()
+                        imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+                        imageView.setImageDrawable(icon)
+                        return
+                    }
+                }
+            } catch (_: Exception) { }
+        }
+
         // Fallback: category icon for all other file types
         Glide.with(ctx).clear(imageView)
-        imageView.scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+        imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         val iconRes = when (item.category) {
             FileCategory.IMAGE    -> R.drawable.ic_image
             FileCategory.VIDEO    -> R.drawable.ic_video

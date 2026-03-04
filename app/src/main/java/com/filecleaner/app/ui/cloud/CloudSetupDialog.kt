@@ -14,6 +14,7 @@ import com.filecleaner.app.data.cloud.CloudConnectionStore
 import com.filecleaner.app.data.cloud.CloudProvider
 import com.filecleaner.app.data.cloud.GitHubProvider
 import com.filecleaner.app.data.cloud.GoogleDriveProvider
+import com.filecleaner.app.data.cloud.OAuthHelper
 import com.filecleaner.app.data.cloud.ProviderType
 import com.filecleaner.app.data.cloud.SftpProvider
 import com.filecleaner.app.data.cloud.WebDavProvider
@@ -38,6 +39,17 @@ import kotlinx.coroutines.withContext
  * opens the [CloudProviderPickerDialog] automatically.
  */
 object CloudSetupDialog {
+
+    /**
+     * Handle the OAuth callback by exchanging the code for a token
+     * and auto-filling the token field.
+     */
+    private var pendingOAuthCallback: ((String) -> Unit)? = null
+
+    fun handleOAuthCallback(code: String) {
+        pendingOAuthCallback?.invoke(code)
+        pendingOAuthCallback = null
+    }
 
     /**
      * Legacy entry point: opens the provider picker first, then this dialog.
@@ -230,6 +242,56 @@ object CloudSetupDialog {
                     )
                 }
             }
+        }
+
+        // OAuth sign-in button for token-based providers
+        val btnOAuth = dialogView.findViewById<MaterialButton>(R.id.btn_oauth_sign_in)
+        val oauthDivider = dialogView.findViewById<View>(R.id.oauth_divider)
+        if (providerType == ProviderType.GOOGLE_DRIVE || providerType == ProviderType.GITHUB) {
+            btnOAuth?.visibility = View.VISIBLE
+            oauthDivider?.visibility = View.VISIBLE
+            btnOAuth?.text = when (providerType) {
+                ProviderType.GOOGLE_DRIVE -> context.getString(R.string.cloud_oauth_google)
+                ProviderType.GITHUB -> context.getString(R.string.cloud_oauth_github)
+                else -> ""
+            }
+            btnOAuth?.setOnClickListener {
+                val authUrl = when (providerType) {
+                    ProviderType.GOOGLE_DRIVE -> OAuthHelper.buildGoogleAuthUrl()
+                    ProviderType.GITHUB -> OAuthHelper.buildGitHubAuthUrl()
+                    else -> return@setOnClickListener
+                }
+                // Register callback to fill token after OAuth completes
+                pendingOAuthCallback = { code ->
+                    btnOAuth.isEnabled = false
+                    progressTest.visibility = View.VISIBLE
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val result = when (providerType) {
+                            ProviderType.GOOGLE_DRIVE -> OAuthHelper.exchangeGoogleCode(code)
+                            ProviderType.GITHUB -> OAuthHelper.exchangeGitHubCode(code)
+                            else -> OAuthHelper.OAuthTokenResult(error = "Unsupported")
+                        }
+                        progressTest.visibility = View.GONE
+                        btnOAuth.isEnabled = true
+                        if (result.isSuccess) {
+                            etPassword.setText(result.accessToken)
+                            testResultContainer.visibility = View.VISIBLE
+                            ivTestIcon.setImageResource(R.drawable.ic_check_circle)
+                            tvTestResult.text = context.getString(R.string.cloud_oauth_success)
+                            tvTestResult.setTextColor(context.getColor(R.color.colorSuccess))
+                        } else {
+                            testResultContainer.visibility = View.VISIBLE
+                            ivTestIcon.setImageResource(R.drawable.ic_status_disconnected)
+                            tvTestResult.text = context.getString(R.string.cloud_oauth_failed, result.error)
+                            tvTestResult.setTextColor(context.getColor(R.color.colorError))
+                        }
+                    }
+                }
+                OAuthHelper.launchAuthBrowser(context, authUrl)
+            }
+        } else {
+            btnOAuth?.visibility = View.GONE
+            oauthDivider?.visibility = View.GONE
         }
 
         val dialog = MaterialAlertDialogBuilder(context)

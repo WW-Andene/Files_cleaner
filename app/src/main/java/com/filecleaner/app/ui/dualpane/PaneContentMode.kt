@@ -1,43 +1,33 @@
 package com.filecleaner.app.ui.dualpane
 
 import com.filecleaner.app.R
-import com.filecleaner.app.data.FileCategory
 
 /**
  * Defines the content display mode for a dual-pane panel.
- * Each mode determines what files are shown and how navigation works.
+ * Each mode maps to a main app section that can be shown in either pane.
  */
-enum class PaneContentMode(val labelRes: Int, val category: FileCategory? = null) {
+enum class PaneContentMode(val labelRes: Int) {
     /** Default file browser — navigates directories. */
-    FILE_BROWSER(R.string.dual_pane_mode_browser),
+    FILE_BROWSER(R.string.dual_pane_tab_browse),
 
-    /** Show only images from the scanned file list. */
-    IMAGES(R.string.dual_pane_mode_images, FileCategory.IMAGE),
+    /** Show duplicate files from the scan. */
+    DUPLICATES(R.string.dual_pane_tab_duplicates),
 
-    /** Show only videos from the scanned file list. */
-    VIDEOS(R.string.dual_pane_mode_videos, FileCategory.VIDEO),
+    /** Show large files from the scan. */
+    LARGE_FILES(R.string.dual_pane_tab_large),
 
-    /** Show only audio files from the scanned file list. */
-    AUDIO(R.string.dual_pane_mode_audio, FileCategory.AUDIO),
+    /** Show junk files from the scan. */
+    JUNK(R.string.dual_pane_tab_junk),
 
-    /** Show only document files from the scanned file list. */
-    DOCUMENTS(R.string.dual_pane_mode_documents, FileCategory.DOCUMENT),
-
-    /** Show only APK files from the scanned file list. */
-    APKS(R.string.dual_pane_mode_apks, FileCategory.APK),
-
-    /** Show only archive files from the scanned file list. */
-    ARCHIVES(R.string.dual_pane_mode_archives, FileCategory.ARCHIVE),
-
-    /** Directory tree (arborescence) view. */
-    TREE_VIEW(R.string.dual_pane_mode_tree);
+    /** Show optimize/manager view. */
+    MANAGER(R.string.dual_pane_tab_manager);
 
     /** Whether this mode shows a directory path bar and supports file browsing. */
     val isFileBrowser: Boolean get() = this == FILE_BROWSER
 
-    /** Whether this mode shows files by category (no directory navigation). */
-    val isCategoryMode: Boolean get() = category != null
+    /** Whether this mode shows scanned file results (not directory navigation). */
+    val isScanResultMode: Boolean get() = this in setOf(DUPLICATES, LARGE_FILES, JUNK)
 
-    /** Whether this mode shows the tree view. */
-    val isTreeView: Boolean get() = this == TREE_VIEW
+    /** Whether this mode is the manager view. */
+    val isManager: Boolean get() = this == MANAGER
 }
