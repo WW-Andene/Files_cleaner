@@ -41,6 +41,7 @@
     <dimen name="icon_small">16dp</dimen>
     <dimen name="icon_inline">20dp</dimen>
     <dimen name="icon_file_list">64dp</dimen>
+    <dimen name="icon_file_list_default">40dp</dimen>
     <dimen name="icon_file_list_large">72dp</dimen>
     <dimen name="icon_file_grid">140dp</dimen>
     <dimen name="icon_nav">24dp</dimen>
