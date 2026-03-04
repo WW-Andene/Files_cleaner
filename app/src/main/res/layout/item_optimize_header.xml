@@ -31,8 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="@dimen/spacing_xs"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
             android:textColor="@color/textPrimary"
             tools:text="Photos" />
 
@@ -73,9 +72,8 @@
             android:background="@drawable/bg_badge"
             android:paddingHorizontal="@dimen/spacing_sm"
             android:paddingVertical="@dimen/spacing_micro"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+            android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
             android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
             tools:text="5/10 selected" />
     </LinearLayout>
 

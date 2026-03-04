@@ -293,9 +293,8 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                android:textColor="@color/colorPrimary"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
+                android:textColor="@color/colorPrimary" />
 
             <ImageButton
                 android:id="@+id/btn_select_all"

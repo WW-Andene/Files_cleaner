@@ -58,8 +58,7 @@
                     android:id="@+id/tv_storage_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                     android:textColor="@color/colorOnPrimaryContainer"
                     android:textAlignment="center" />
 
@@ -120,8 +119,7 @@
                     android:id="@+id/tv_potential_savings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
                     android:textColor="@color/analysisSavingsText"
                     android:textAlignment="center" />
             </LinearLayout>
@@ -149,8 +147,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_scan_stats"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium" />
 
                 <TextView
                     android:id="@+id/tv_stats_detail"
@@ -184,8 +181,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_category_title"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                     android:layout_marginBottom="@dimen/spacing_sm" />
 
                 <!-- Fallback text when no scan data -->
@@ -228,8 +224,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_top_files"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                     android:layout_marginBottom="@dimen/spacing_sm" />
 
                 <LinearLayout
@@ -263,8 +258,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_quick_actions"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                     android:layout_marginBottom="@dimen/spacing_md" />
 
                 <com.google.android.material.button.MaterialButton

@@ -26,43 +26,60 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_appearance_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:layout_marginBottom="@dimen/spacing_sm" />
 
-        <TextView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_theme_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
-
-        <RadioGroup
-            android:id="@+id/rg_theme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/spacing_sm"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_subtle"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_lg">
 
-            <RadioButton
-                android:id="@+id/rb_theme_system"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/theme_system" />
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
 
-            <RadioButton
-                android:id="@+id/rb_theme_light"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/theme_light" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_theme_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
 
-            <RadioButton
-                android:id="@+id/rb_theme_dark"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/theme_dark" />
-        </RadioGroup>
+                <RadioGroup
+                    android:id="@+id/rg_theme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/spacing_sm">
+
+                    <RadioButton
+                        android:id="@+id/rb_theme_system"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/theme_system" />
+
+                    <RadioButton
+                        android:id="@+id/rb_theme_light"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/theme_light" />
+
+                    <RadioButton
+                        android:id="@+id/rb_theme_dark"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/theme_dark" />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Scan Settings section -->
         <TextView
@@ -70,64 +87,82 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_scan_section"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:layout_marginBottom="@dimen/spacing_sm" />
 
-        <!-- Large file threshold -->
-        <TextView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_large_file_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_subtle"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:layout_marginBottom="@dimen/spacing_lg">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <SeekBar
-                android:id="@+id/seek_large_file"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/a11y_seek_large_file_threshold" />
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
 
-            <TextView
-                android:id="@+id/tv_large_file_value"
-                android:layout_width="@dimen/seekbar_value_width"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
-        </LinearLayout>
+                <!-- Large file threshold -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_large_file_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
 
-        <!-- Stale download age -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_stale_age_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:layout_marginTop="@dimen/spacing_md" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+                    <SeekBar
+                        android:id="@+id/seek_large_file"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/a11y_seek_large_file_threshold" />
 
-            <SeekBar
-                android:id="@+id/seek_stale_age"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/a11y_seek_stale_download_age" />
+                    <TextView
+                        android:id="@+id/tv_large_file_value"
+                        android:layout_width="@dimen/seekbar_value_width"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_stale_age_value"
-                android:layout_width="@dimen/seekbar_value_width"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
-        </LinearLayout>
+                <!-- Stale download age -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_stale_age_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:layout_marginTop="@dimen/spacing_md" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <SeekBar
+                        android:id="@+id/seek_stale_age"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/a11y_seek_stale_download_age" />
+
+                    <TextView
+                        android:id="@+id/tv_stale_age_value"
+                        android:layout_width="@dimen/seekbar_value_width"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- F1: Safety section header -->
         <TextView

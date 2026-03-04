@@ -62,6 +62,7 @@ class OptimizeFragment : Fragment() {
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
         binding.recyclerSuggestions.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerSuggestions.setHasFixedSize(true)
         // §DM4: Disable stagger animation when user prefers reduced motion
         if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
             binding.recyclerSuggestions.layoutAnimation = null
