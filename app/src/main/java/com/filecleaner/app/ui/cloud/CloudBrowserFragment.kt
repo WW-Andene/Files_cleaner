@@ -28,8 +28,6 @@ import com.filecleaner.app.data.cloud.ProviderType
 import com.filecleaner.app.data.cloud.SftpProvider
 import com.filecleaner.app.data.cloud.WebDavProvider
 import com.filecleaner.app.databinding.FragmentCloudBrowserBinding
-import com.filecleaner.app.ui.dualpane.PaneAdapter
-import com.filecleaner.app.utils.UndoHelper
 import com.google.android.material.snackbar.Snackbar
 import com.jcraft.jsch.JSchException
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +42,13 @@ import java.net.UnknownHostException
 /**
  * Cloud/network file browser fragment.
  * Allows browsing, downloading, and uploading files to cloud providers.
+ *
+ * The "Add" flow uses a two-step approach:
+ * 1. [CloudProviderPickerDialog] — branded service cards (Google Drive, SFTP, WebDAV)
+ * 2. [CloudSetupDialog] — provider-specific credential entry with "Test Connection"
+ *
+ * The connection bar shows a status indicator dot (green = connected, red = disconnected)
+ * and a "Test Connection" button for verifying connectivity without browsing.
  */
 class CloudBrowserFragment : Fragment() {
 
@@ -54,6 +59,8 @@ class CloudBrowserFragment : Fragment() {
     private var currentProvider: CloudProvider? = null
     private var currentPath = "/"
     private var currentFiles = listOf<CloudFile>()
+    /** Tracks whether we are currently connected to a provider */
+    private var isProviderConnected = false
 
     private lateinit var fileAdapter: CloudFileAdapter
 
@@ -104,7 +111,7 @@ class CloudBrowserFragment : Fragment() {
         binding.recyclerFiles.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerFiles.adapter = fileAdapter
 
-        // Add connection buttons
+        // Add connection buttons — now opens provider picker
         binding.btnAdd.setOnClickListener { showAddDialog() }
         binding.btnAddFirst.setOnClickListener { showAddDialog() }
 
@@ -113,6 +120,9 @@ class CloudBrowserFragment : Fragment() {
 
         // Remove connection
         binding.btnDeleteConnection.setOnClickListener { removeCurrentConnection() }
+
+        // Test connection button in the connection bar
+        binding.btnTestConnection.setOnClickListener { testCurrentConnection() }
 
         // Connection spinner
         binding.spinnerConnection.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -149,10 +159,38 @@ class CloudBrowserFragment : Fragment() {
             b.connectionBar.visibility = View.VISIBLE
 
             val ctx = context ?: return
-            val labels = connections.map { "${it.displayName} (${it.type.name})" }
+            val labels = connections.map { conn ->
+                val typeLabel = when (conn.type) {
+                    ProviderType.GOOGLE_DRIVE -> ctx.getString(R.string.cloud_type_google_drive)
+                    ProviderType.SFTP -> ctx.getString(R.string.cloud_type_sftp)
+                    ProviderType.WEBDAV -> ctx.getString(R.string.cloud_type_webdav)
+                }
+                "${conn.displayName} ($typeLabel)"
+            }
             val adapter = ArrayAdapter(ctx,
                 android.R.layout.simple_spinner_dropdown_item, labels)
             b.spinnerConnection.adapter = adapter
+        }
+        updateConnectionStatus()
+    }
+
+    /**
+     * Update the connection status indicator dot.
+     * Green = provider is connected, Red = disconnected.
+     */
+    private fun updateConnectionStatus() {
+        val b = _binding ?: return
+        val connected = currentProvider?.isConnected == true
+        isProviderConnected = connected
+
+        if (connected) {
+            b.ivConnectionStatus.setImageResource(R.drawable.ic_status_connected)
+            b.ivConnectionStatus.contentDescription =
+                getString(R.string.a11y_connection_status, getString(R.string.cloud_status_connected))
+        } else {
+            b.ivConnectionStatus.setImageResource(R.drawable.ic_status_disconnected)
+            b.ivConnectionStatus.contentDescription =
+                getString(R.string.a11y_connection_status, getString(R.string.cloud_status_disconnected))
         }
     }
 
@@ -170,11 +208,13 @@ class CloudBrowserFragment : Fragment() {
                     getString(R.string.cloud_no_network),
                     Snackbar.LENGTH_LONG).show()
             }
+            updateConnectionStatus()
             return
         }
 
         val provider = createProvider(connection, ctx)
         currentProvider = provider
+        updateConnectionStatus()
 
         _binding?.progress?.visibility = View.VISIBLE
         _binding?.recyclerFiles?.visibility = View.GONE
@@ -183,6 +223,7 @@ class CloudBrowserFragment : Fragment() {
             try {
                 val success = provider.connect()
                 _binding?.progress?.visibility = View.GONE
+                updateConnectionStatus()
 
                 if (success) {
                     _binding?.root?.let { root ->
@@ -202,6 +243,7 @@ class CloudBrowserFragment : Fragment() {
             } catch (e: Exception) {
                 // H4-04: Differentiated error messages based on failure type
                 _binding?.progress?.visibility = View.GONE
+                updateConnectionStatus()
                 val message = when {
                     e is SocketTimeoutException ->
                         getString(R.string.cloud_timeout)
@@ -219,6 +261,60 @@ class CloudBrowserFragment : Fragment() {
                 _binding?.root?.let { root ->
                     Snackbar.make(root, message, Snackbar.LENGTH_LONG).show()
                 }
+            }
+        }
+    }
+
+    /**
+     * Test the currently-selected connection without browsing files.
+     * Connects, reports success/failure, then disconnects.
+     */
+    private fun testCurrentConnection() {
+        val b = _binding ?: return
+        val idx = b.spinnerConnection.selectedItemPosition
+        if (idx < 0 || idx >= connections.size) return
+        val connection = connections[idx]
+        val ctx = context ?: return
+
+        // Pre-flight network check
+        val cm = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
+        val hasNet = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        if (!hasNet) {
+            Snackbar.make(b.root, getString(R.string.cloud_no_network), Snackbar.LENGTH_LONG).show()
+            return
+        }
+
+        b.progress.visibility = View.VISIBLE
+        Snackbar.make(b.root, getString(R.string.cloud_testing_connection), Snackbar.LENGTH_SHORT).show()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val testProvider = createProvider(connection, ctx)
+                val success = testProvider.connect()
+                // Always disconnect after test
+                try { testProvider.disconnect() } catch (_: Exception) {}
+
+                val b2 = _binding ?: return@launch
+                b2.progress.visibility = View.GONE
+
+                if (success) {
+                    Snackbar.make(b2.root,
+                        getString(R.string.cloud_test_success),
+                        Snackbar.LENGTH_SHORT).show()
+                } else {
+                    Snackbar.make(b2.root,
+                        getString(R.string.cloud_test_failed,
+                            getString(R.string.cloud_connection_failed, connection.displayName)),
+                        Snackbar.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                val b2 = _binding ?: return@launch
+                b2.progress.visibility = View.GONE
+                Snackbar.make(b2.root,
+                    getString(R.string.cloud_test_failed,
+                        e.localizedMessage ?: e.javaClass.simpleName),
+                    Snackbar.LENGTH_LONG).show()
             }
         }
     }
@@ -284,6 +380,7 @@ class CloudBrowserFragment : Fragment() {
             b.recyclerFiles.visibility = View.GONE
             b.tvPath.visibility = View.GONE
             b.actionBar.visibility = View.GONE
+            updateConnectionStatus()
             Snackbar.make(b.root,
                 getString(R.string.cloud_disconnected), Snackbar.LENGTH_SHORT).show()
         }
@@ -402,9 +499,14 @@ class CloudBrowserFragment : Fragment() {
         }
     }
 
+    /**
+     * Open the two-step add-connection flow:
+     * 1. Provider picker dialog (branded service cards)
+     * 2. Connection setup dialog (credentials for the chosen provider)
+     */
     private fun showAddDialog() {
         val ctx = context ?: return
-        CloudSetupDialog.show(ctx) { connection ->
+        CloudProviderPickerDialog.show(ctx) { connection ->
             loadConnections()
             _binding?.root?.let { root ->
                 Snackbar.make(root,

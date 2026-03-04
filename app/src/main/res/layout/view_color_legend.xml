@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Color legend strip: horizontally scrolling row of colored-dot + label pairs.
+     Inserted below the header card in fragment_list_action.xml. -->
+<HorizontalScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/legend_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="6dp"
+    android:scrollbars="none"
+    android:fadingEdge="horizontal"
+    android:requiresFadingEdge="horizontal"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:id="@+id/legend_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="4dp" />
+
+</HorizontalScrollView>

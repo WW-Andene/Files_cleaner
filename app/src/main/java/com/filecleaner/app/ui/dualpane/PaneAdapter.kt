@@ -83,12 +83,10 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
 
         if (item.isDirectory) {
             holder.icon.setImageResource(R.drawable.ic_folder)
-            // Avoid calling listFiles on bind for performance — show a simple indicator
-            holder.meta.text = ctx.getString(R.string.dual_pane_go_up).let {
-                // Show "Folder" or count if possible
-                val childCount = item.file.listFiles()?.size ?: 0
-                ctx.resources.getQuantityString(R.plurals.n_items, childCount, childCount)
-            }
+            val childCount = item.file.listFiles()?.size ?: 0
+            holder.meta.text = ctx.resources.getQuantityString(
+                R.plurals.n_items, childCount, childCount
+            )
             holder.chevron.visibility = View.VISIBLE
         } else {
             holder.icon.setImageResource(iconForFile(item.name))

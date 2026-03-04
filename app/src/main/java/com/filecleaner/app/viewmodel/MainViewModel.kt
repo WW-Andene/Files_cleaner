@@ -29,11 +29,23 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 
-enum class ScanPhase { INDEXING, DUPLICATES, ANALYZING, JUNK }
+enum class ScanPhase(val order: Int, val totalPhases: Int = 4) {
+    INDEXING(0),
+    DUPLICATES(1),
+    ANALYZING(2),
+    JUNK(3);
+
+    fun baseProgress(): Int = (order * 100) / totalPhases
+    fun endProgress(): Int = ((order + 1) * 100) / totalPhases
+}
 
 sealed class ScanState {
     object Idle : ScanState()
-    data class Scanning(val filesFound: Int, val phase: ScanPhase = ScanPhase.INDEXING) : ScanState()
+    data class Scanning(
+        val filesFound: Int,
+        val phase: ScanPhase = ScanPhase.INDEXING,
+        val progressPercent: Int = -1
+    ) : ScanState()
     object Done : ScanState()
     object Cancelled : ScanState()
     data class Error(val message: String) : ScanState()
@@ -268,7 +280,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             val scanStartMs = System.currentTimeMillis()
             runCatching {
                 val (files, tree) = FileScanner.scanWithTree(getApplication()) { count ->
-                    _scanState.postValue(ScanState.Scanning(count, ScanPhase.INDEXING))
+                    _scanState.postValue(ScanState.Scanning(count, ScanPhase.INDEXING, progressPercent = -1))
                 }
 
                 stateMutex.withLock {
@@ -279,17 +291,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
                     val protectedPaths = try { UserPreferences.protectedPaths } catch (_: Exception) { emptySet<String>() }
 
-                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.DUPLICATES))
+                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.DUPLICATES, progressPercent = ScanPhase.DUPLICATES.baseProgress()))
                     val dupes = DuplicateFinder.findDuplicates(files)
                         .filter { it.path !in protectedPaths }
                     _duplicates.postValue(dupes)
 
-                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING))
+                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING, progressPercent = ScanPhase.ANALYZING.baseProgress()))
                     val maxLargeFileCount = try { UserPreferences.maxLargeFiles } catch (_: Exception) { 200 }
                     val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L, maxLargeFileCount)
                     _largeFiles.postValue(large)
 
-                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.JUNK))
+                    _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.JUNK, progressPercent = ScanPhase.JUNK.baseProgress()))
                     val junk = JunkFinder.findJunk(files)
                         .filter { it.path !in protectedPaths }
                     _junkFiles.postValue(junk)

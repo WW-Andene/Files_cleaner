@@ -3,7 +3,9 @@ package com.filecleaner.app.ui.large
 import androidx.lifecycle.LiveData
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.ui.adapters.ColorMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
+import com.filecleaner.app.ui.common.ColorLegendHelper
 
 class LargeFilesFragment : BaseFileListFragment() {
     override val screenTitle get() = getString(R.string.title_large)
@@ -16,4 +18,9 @@ class LargeFilesFragment : BaseFileListFragment() {
     override val emptySummary get() = getString(R.string.no_large_found)
     override val emptyPreScan get() = getString(R.string.empty_large_pre_scan)
     override val emptyPostScan get() = getString(R.string.empty_large_post_scan)
+
+    override val colorMode: ColorMode get() = ColorMode.SIZE_SEVERITY
+    override fun legendEntries(): List<ColorLegendHelper.LegendEntry> =
+        ColorLegendHelper.sizeLegend(requireContext())
+    override val legendTitleRes: Int get() = R.string.legend_large_title
 }

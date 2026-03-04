@@ -1,14 +1,21 @@
 package com.filecleaner.app.ui.viewer
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
@@ -25,23 +32,23 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.zip.ZipFile
 
 /**
- * Full-screen file viewer supporting:
- * - Images (Glide, including GIF animation and SVG)
+ * Full-screen in-app file viewer supporting:
+ * - Images (Glide with pinch-to-zoom and pan, including GIF animation)
  * - PDFs (PdfRenderer with page navigation)
- * - Text/code files (monospace scrollable view, 60+ extensions)
- * - Audio (MediaPlayer with play/pause/seek)
- * - Video (thumbnail + open externally)
+ * - Text/code files (monospace scrollable view with syntax highlighting for common languages)
+ * - Video (native VideoView with play/pause/seek controls)
+ * - Audio (MediaPlayer with play/pause/seek and album art)
  * - HTML/Markdown (WebView rendering)
- * - Archives (ZIP/JAR content listing)
+ * - Fallback: offer to open with external app
  */
 class FileViewerFragment : Fragment() {
 
     companion object {
         const val ARG_FILE_PATH = "file_path"
-        private const val MAX_TEXT_BYTES = 50 * 1024 // 50 KB for full viewer
+        private const val MAX_TEXT_BYTES = 50 * 1024 // 50 KB
+
         private val TEXT_EXTENSIONS = setOf(
             // Plain text & config
             "txt", "csv", "log", "ini", "cfg", "conf", "properties",
@@ -58,7 +65,7 @@ class FileViewerFragment : Fragment() {
             "c", "cpp", "cc", "cxx", "h", "hpp", "hxx",
             "rs", "go", "zig",
             // Code: Scripting
-            "py", "rb", "php", "pl", "pm", "lua", "r", "R",
+            "py", "rb", "php", "pl", "pm", "lua", "r",
             "sh", "bash", "zsh", "fish", "bat", "ps1", "cmd",
             // Code: Mobile / other
             "swift", "m", "mm", "dart",
@@ -73,29 +80,92 @@ class FileViewerFragment : Fragment() {
             "tex", "latex", "bib", "srt", "sub", "ass", "vtt",
             "diff", "patch",
             // Other
-            "json5", "jsonc", "jsonl"
+            "json", "json5", "jsonc", "jsonl"
         )
 
         private val HTML_EXTENSIONS = setOf("html", "htm")
         private val MARKDOWN_EXTENSIONS = setOf("md", "markdown", "mdown", "mkd")
-        private val ARCHIVE_EXTENSIONS = setOf("zip", "jar", "apk")
+
         private val AUDIO_EXTENSIONS = setOf(
             "mp3", "aac", "flac", "wav", "ogg", "m4a", "wma", "opus",
             "aiff", "mid", "amr", "ape", "wv", "m4b", "dsf"
+        )
+
+        private val VIDEO_EXTENSIONS = setOf(
+            "mp4", "mkv", "avi", "mov", "wmv", "flv", "webm",
+            "m4v", "3gp", "ts", "mpeg", "mpg"
+        )
+
+        // Extensions that get syntax highlighting
+        private val CODE_EXTENSIONS = setOf(
+            "kt", "kts", "java", "groovy", "gradle", "scala",
+            "js", "jsx", "ts", "tsx", "css", "scss", "sass", "less",
+            "vue", "svelte",
+            "c", "cpp", "cc", "cxx", "h", "hpp", "hxx",
+            "rs", "go", "zig",
+            "py", "rb", "php", "pl", "pm", "lua", "r",
+            "sh", "bash", "zsh", "fish", "bat", "ps1", "cmd",
+            "swift", "m", "mm", "dart",
+            "hs", "ml", "ex", "exs", "erl", "clj",
+            "sql", "graphql", "gql", "proto",
+            "xml", "svg", "plist", "json", "json5", "jsonc", "jsonl",
+            "html", "htm", "css", "scss"
+        )
+
+        // Syntax highlighting colors
+        private const val COLOR_KEYWORD = 0xFF7B68EE.toInt()   // Medium slate blue
+        private const val COLOR_STRING = 0xFF2E8B57.toInt()    // Sea green
+        private const val COLOR_COMMENT = 0xFF808080.toInt()   // Gray
+        private const val COLOR_NUMBER = 0xFFCD853F.toInt()    // Peru / brown
+        private const val COLOR_TYPE = 0xFF4682B4.toInt()      // Steel blue
+
+        // Common keywords across many languages
+        private val COMMON_KEYWORDS = setOf(
+            "if", "else", "for", "while", "do", "switch", "case", "break",
+            "continue", "return", "try", "catch", "finally", "throw", "throws",
+            "class", "interface", "object", "enum", "struct", "trait",
+            "fun", "function", "def", "fn", "func", "val", "var", "let", "const",
+            "import", "package", "from", "export", "module", "require",
+            "public", "private", "protected", "internal", "static", "final",
+            "abstract", "override", "open", "sealed", "data",
+            "new", "this", "self", "super", "null", "nil", "None",
+            "true", "false", "True", "False",
+            "void", "int", "long", "float", "double", "boolean", "bool",
+            "string", "String", "char", "byte", "short",
+            "async", "await", "yield", "suspend",
+            "when", "is", "as", "in", "not", "and", "or",
+            "type", "typealias", "typedef", "impl", "use", "mod",
+            "lambda", "inline", "extern", "unsafe", "where",
+            "select", "from", "where", "insert", "update", "delete", "create",
+            "table", "index", "view", "alter", "drop"
         )
     }
 
     private var _binding: FragmentFileViewerBinding? = null
     private val binding get() = _binding!!
 
+    // PDF state
     private var pdfRenderer: PdfRenderer? = null
     private var pdfFd: ParcelFileDescriptor? = null
     private var currentPdfPage = 0
     private var currentPdfBitmap: Bitmap? = null
 
+    // Audio state
     private var mediaPlayer: MediaPlayer? = null
     private val handler = Handler(Looper.getMainLooper())
     private var isAudioPlaying = false
+
+    // Video state
+    private var isVideoPlaying = false
+    private var isVideoInitialized = false
+
+    // Image zoom/pan state
+    private var scaleFactor = 1.0f
+    private var translateX = 0f
+    private var translateY = 0f
+    private var lastTouchX = 0f
+    private var lastTouchY = 0f
+    private var activePointerId = MotionEvent.INVALID_POINTER_ID
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View {
         _binding = FragmentFileViewerBinding.inflate(i, c, false)
@@ -139,12 +209,13 @@ class FileViewerFragment : Fragment() {
             ext in MARKDOWN_EXTENSIONS -> showMarkdown(file)
             category == FileCategory.IMAGE -> showImage(file)
             ext == "pdf" -> showPdf(file, savedInstanceState)
-            ext in ARCHIVE_EXTENSIONS -> showArchiveContents(file)
-            ext in TEXT_EXTENSIONS || ext == "json" -> showText(file)
-            category == FileCategory.VIDEO -> showVideoFallback(file)
+            category == FileCategory.VIDEO || ext in VIDEO_EXTENSIONS -> showVideo(file)
+            ext in TEXT_EXTENSIONS -> showText(file, ext)
             else -> showUnsupported(file)
         }
     }
+
+    // ── Image Viewer with Zoom/Pan ──────────────────────────────────────────
 
     private fun showImage(file: File) {
         binding.ivImage.visibility = View.VISIBLE
@@ -152,7 +223,89 @@ class FileViewerFragment : Fragment() {
             .load(file)
             .into(binding.ivImage)
         binding.ivImage.contentDescription = getString(R.string.a11y_image_preview, file.name)
+
+        // Set up pinch-to-zoom and pan
+        setupImageZoom()
     }
+
+    private fun setupImageZoom() {
+        val imageView = binding.ivImage
+        val scaleDetector = ScaleGestureDetector(requireContext(),
+            object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    scaleFactor *= detector.scaleFactor
+                    scaleFactor = scaleFactor.coerceIn(0.5f, 5.0f)
+                    imageView.scaleX = scaleFactor
+                    imageView.scaleY = scaleFactor
+                    return true
+                }
+            })
+
+        imageView.setOnTouchListener { v, event ->
+            scaleDetector.onTouchEvent(event)
+
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    lastTouchX = event.x
+                    lastTouchY = event.y
+                    activePointerId = event.getPointerId(0)
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (scaleFactor > 1.0f) {
+                        val pointerIndex = event.findPointerIndex(activePointerId)
+                        if (pointerIndex >= 0) {
+                            val x = event.getX(pointerIndex)
+                            val y = event.getY(pointerIndex)
+                            val dx = x - lastTouchX
+                            val dy = y - lastTouchY
+
+                            translateX += dx
+                            translateY += dy
+                            imageView.translationX = translateX
+                            imageView.translationY = translateY
+
+                            lastTouchX = x
+                            lastTouchY = y
+                        }
+                    }
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    activePointerId = MotionEvent.INVALID_POINTER_ID
+                }
+                MotionEvent.ACTION_POINTER_UP -> {
+                    val pointerIndex = event.actionIndex
+                    val pointerId = event.getPointerId(pointerIndex)
+                    if (pointerId == activePointerId) {
+                        val newPointerIndex = if (pointerIndex == 0) 1 else 0
+                        if (newPointerIndex < event.pointerCount) {
+                            lastTouchX = event.getX(newPointerIndex)
+                            lastTouchY = event.getY(newPointerIndex)
+                            activePointerId = event.getPointerId(newPointerIndex)
+                        }
+                    }
+                }
+            }
+
+            // Double-tap to reset zoom
+            v.performClick()
+            true
+        }
+
+        // Double-tap to reset
+        imageView.setOnClickListener {
+            if (scaleFactor != 1.0f) {
+                scaleFactor = 1.0f
+                translateX = 0f
+                translateY = 0f
+                imageView.scaleX = 1.0f
+                imageView.scaleY = 1.0f
+                imageView.translationX = 0f
+                imageView.translationY = 0f
+            }
+        }
+    }
+
+    // ── PDF Viewer ──────────────────────────────────────────────────────────
 
     private fun showPdf(file: File, savedInstanceState: Bundle?) {
         binding.pdfContainer.visibility = View.VISIBLE
@@ -189,11 +342,10 @@ class FileViewerFragment : Fragment() {
         val bitmap = Bitmap.createBitmap(
             page.width * scale, page.height * scale, Bitmap.Config.ARGB_8888
         )
-        bitmap.eraseColor(android.graphics.Color.WHITE)
+        bitmap.eraseColor(Color.WHITE)
         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         page.close()
 
-        // Recycle previous page bitmap to prevent memory accumulation
         currentPdfBitmap?.recycle()
         currentPdfBitmap = bitmap
         binding.ivPdfPage.setImageBitmap(bitmap)
@@ -204,9 +356,11 @@ class FileViewerFragment : Fragment() {
         binding.btnPdfNext.isEnabled = currentPdfPage < pageCount - 1
     }
 
-    private fun showText(file: File) {
+    // ── Text/Code Viewer with Syntax Highlighting ───────────────────────────
+
+    private fun showText(file: File, ext: String) {
         binding.scrollText.visibility = View.VISIBLE
-        val content = try {
+        val rawContent = try {
             val bytes = file.inputStream().use { it.readNBytes(MAX_TEXT_BYTES) }
             val text = String(bytes, Charsets.UTF_8)
             if (file.length() > MAX_TEXT_BYTES) {
@@ -217,8 +371,254 @@ class FileViewerFragment : Fragment() {
         } catch (e: Exception) {
             getString(R.string.preview_error, e.localizedMessage ?: "")
         }
-        binding.tvTextContent.text = content
+
+        if (ext in CODE_EXTENSIONS) {
+            binding.tvTextContent.text = applySyntaxHighlighting(rawContent, ext)
+        } else {
+            binding.tvTextContent.text = rawContent
+        }
     }
+
+    /**
+     * Applies basic syntax highlighting to code text. Highlights:
+     * - Single-line comments (// and #)
+     * - Multi-line comments
+     * - String literals (double and single quotes)
+     * - Keywords
+     * - Numbers
+     */
+    private fun applySyntaxHighlighting(code: String, ext: String): SpannableStringBuilder {
+        val spannable = SpannableStringBuilder(code)
+        val length = code.length
+
+        // Determine comment style based on language
+        val lineCommentPrefix = when (ext) {
+            "py", "rb", "r", "sh", "bash", "zsh", "fish", "pl", "pm",
+            "yml", "yaml", "toml", "conf", "cfg", "ini", "dockerfile",
+            "makefile", "cmake", "tf", "hcl", "nix" -> "#"
+            "lua", "hs", "sql" -> "--"
+            "html", "htm", "xml", "svg", "plist" -> null // no line comments
+            else -> "//"
+        }
+        val hasBlockComments = ext !in setOf(
+            "py", "rb", "sh", "bash", "zsh", "fish", "yml", "yaml",
+            "toml", "conf", "cfg", "ini", "makefile"
+        )
+
+        // Track which character positions are already highlighted
+        val highlighted = BooleanArray(length)
+
+        var i = 0
+        while (i < length) {
+            // Block comments: /* ... */
+            if (hasBlockComments && i + 1 < length && code[i] == '/' && code[i + 1] == '*') {
+                val start = i
+                i += 2
+                while (i + 1 < length && !(code[i] == '*' && code[i + 1] == '/')) i++
+                if (i + 1 < length) i += 2
+                val end = i.coerceAtMost(length)
+                spannable.setSpan(
+                    ForegroundColorSpan(COLOR_COMMENT), start, end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                for (j in start until end) highlighted[j] = true
+                continue
+            }
+
+            // XML/HTML comments: <!-- ... -->
+            if (ext in setOf("html", "htm", "xml", "svg", "plist") &&
+                i + 3 < length && code.substring(i).startsWith("<!--")) {
+                val start = i
+                val endIdx = code.indexOf("-->", i + 4)
+                i = if (endIdx >= 0) endIdx + 3 else length
+                spannable.setSpan(
+                    ForegroundColorSpan(COLOR_COMMENT), start, i,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                for (j in start until i) highlighted[j] = true
+                continue
+            }
+
+            // Line comments
+            if (lineCommentPrefix != null && code.startsWith(lineCommentPrefix, i)) {
+                val start = i
+                while (i < length && code[i] != '\n') i++
+                spannable.setSpan(
+                    ForegroundColorSpan(COLOR_COMMENT), start, i,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                for (j in start until i) highlighted[j] = true
+                continue
+            }
+
+            // String literals (double-quoted)
+            if (code[i] == '"') {
+                val start = i
+                i++
+                while (i < length && code[i] != '"') {
+                    if (code[i] == '\\' && i + 1 < length) i++ // skip escaped char
+                    i++
+                }
+                if (i < length) i++ // closing quote
+                spannable.setSpan(
+                    ForegroundColorSpan(COLOR_STRING), start, i,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                for (j in start until i) highlighted[j] = true
+                continue
+            }
+
+            // String literals (single-quoted)
+            if (code[i] == '\'') {
+                val start = i
+                i++
+                while (i < length && code[i] != '\'') {
+                    if (code[i] == '\\' && i + 1 < length) i++
+                    i++
+                }
+                if (i < length) i++
+                spannable.setSpan(
+                    ForegroundColorSpan(COLOR_STRING), start, i,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                for (j in start until i) highlighted[j] = true
+                continue
+            }
+
+            // Numbers
+            if (code[i].isDigit() && (i == 0 || !code[i - 1].isLetterOrDigit())) {
+                val start = i
+                while (i < length && (code[i].isDigit() || code[i] == '.' ||
+                            code[i] == 'x' || code[i] == 'f' || code[i] == 'L' ||
+                            (code[i] in 'a'..'f') || (code[i] in 'A'..'F'))) i++
+                if (!highlighted.sliceArray(start until i.coerceAtMost(length)).any { it }) {
+                    spannable.setSpan(
+                        ForegroundColorSpan(COLOR_NUMBER), start, i,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    for (j in start until i) highlighted[j] = true
+                }
+                continue
+            }
+
+            // Keywords and identifiers
+            if (code[i].isLetter() || code[i] == '_') {
+                val start = i
+                while (i < length && (code[i].isLetterOrDigit() || code[i] == '_')) i++
+                val word = code.substring(start, i)
+                if (word in COMMON_KEYWORDS) {
+                    spannable.setSpan(
+                        ForegroundColorSpan(COLOR_KEYWORD), start, i,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    for (j in start until i) highlighted[j] = true
+                } else if (word.first().isUpperCase() && word.length > 1) {
+                    // Type names (PascalCase)
+                    spannable.setSpan(
+                        ForegroundColorSpan(COLOR_TYPE), start, i,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    for (j in start until i) highlighted[j] = true
+                }
+                continue
+            }
+
+            i++
+        }
+
+        return spannable
+    }
+
+    // ── Video Player ────────────────────────────────────────────────────────
+
+    private fun showVideo(file: File) {
+        binding.videoContainer.visibility = View.VISIBLE
+        val videoView = binding.videoView
+        val playOverlay = binding.ivVideoPlayOverlay
+        val controls = binding.videoControls
+
+        videoView.setVideoURI(Uri.fromFile(file))
+
+        // Show thumbnail first via Glide on the play overlay background
+        videoView.setOnPreparedListener { mp ->
+            isVideoInitialized = true
+            binding.seekVideo.max = mp.duration
+            binding.tvVideoDuration.text = formatTime(mp.duration)
+            binding.tvVideoCurrent.text = formatTime(0)
+
+            mp.setOnCompletionListener {
+                isVideoPlaying = false
+                _binding?.btnVideoPlay?.setImageResource(android.R.drawable.ic_media_play)
+                _binding?.ivVideoPlayOverlay?.visibility = View.VISIBLE
+                _binding?.videoControls?.visibility = View.GONE
+                _binding?.seekVideo?.progress = 0
+                _binding?.tvVideoCurrent?.text = formatTime(0)
+            }
+        }
+
+        videoView.setOnErrorListener { _, _, _ ->
+            _binding?.videoContainer?.visibility = View.GONE
+            showUnsupported(file)
+            true
+        }
+
+        // Tap play overlay to start video
+        playOverlay.setOnClickListener {
+            playOverlay.visibility = View.GONE
+            controls.visibility = View.VISIBLE
+            videoView.start()
+            isVideoPlaying = true
+            binding.btnVideoPlay.setImageResource(android.R.drawable.ic_media_pause)
+            updateVideoSeekBar()
+        }
+
+        // Tap video to toggle controls visibility
+        videoView.setOnClickListener {
+            if (isVideoInitialized) {
+                controls.visibility = if (controls.visibility == View.VISIBLE)
+                    View.GONE else View.VISIBLE
+            }
+        }
+
+        // Play/pause button
+        binding.btnVideoPlay.setOnClickListener {
+            if (isVideoPlaying) {
+                videoView.pause()
+                isVideoPlaying = false
+                binding.btnVideoPlay.setImageResource(android.R.drawable.ic_media_play)
+            } else {
+                videoView.start()
+                isVideoPlaying = true
+                binding.btnVideoPlay.setImageResource(android.R.drawable.ic_media_pause)
+                updateVideoSeekBar()
+            }
+        }
+
+        // Seek bar
+        binding.seekVideo.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    videoView.seekTo(progress)
+                    _binding?.tvVideoCurrent?.text = formatTime(progress)
+                }
+            }
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+            override fun onStopTrackingTouch(sb: SeekBar?) {}
+        })
+    }
+
+    private fun updateVideoSeekBar() {
+        if (isVideoPlaying && isVideoInitialized) {
+            try {
+                val pos = binding.videoView.currentPosition
+                _binding?.seekVideo?.progress = pos
+                _binding?.tvVideoCurrent?.text = formatTime(pos)
+            } catch (_: Exception) { }
+            handler.postDelayed({ updateVideoSeekBar() }, 500)
+        }
+    }
+
+    // ── Audio Player ────────────────────────────────────────────────────────
 
     private fun showAudio(file: File) {
         binding.audioContainer.visibility = View.VISIBLE
@@ -258,7 +658,7 @@ class FileViewerFragment : Fragment() {
                     mp.start()
                     isAudioPlaying = true
                     binding.btnAudioPlay.setImageResource(android.R.drawable.ic_media_pause)
-                    updateSeekBar()
+                    updateAudioSeekBar()
                 }
             }
 
@@ -284,21 +684,16 @@ class FileViewerFragment : Fragment() {
         }
     }
 
-    private fun updateSeekBar() {
+    private fun updateAudioSeekBar() {
         val mp = mediaPlayer ?: return
         if (isAudioPlaying && mp.isPlaying) {
             _binding?.seekAudio?.progress = mp.currentPosition
             _binding?.tvAudioCurrent?.text = formatTime(mp.currentPosition)
-            handler.postDelayed({ updateSeekBar() }, 500)
+            handler.postDelayed({ updateAudioSeekBar() }, 500)
         }
     }
 
-    private fun formatTime(ms: Int): String {
-        val totalSec = ms / 1000
-        val min = totalSec / 60
-        val sec = totalSec % 60
-        return "%d:%02d".format(min, sec)
-    }
+    // ── HTML Viewer ─────────────────────────────────────────────────────────
 
     private fun showHtml(file: File) {
         binding.webView.visibility = View.VISIBLE
@@ -314,6 +709,8 @@ class FileViewerFragment : Fragment() {
         binding.webView.loadUrl("file://${file.absolutePath}")
         binding.webView.contentDescription = getString(R.string.a11y_webview_content, file.name)
     }
+
+    // ── Markdown Viewer ─────────────────────────────────────────────────────
 
     private fun showMarkdown(file: File) {
         binding.webView.visibility = View.VISIBLE
@@ -333,7 +730,6 @@ class FileViewerFragment : Fragment() {
             "Error reading file: ${e.localizedMessage}"
         }
 
-        // Simple Markdown to HTML conversion (handles common patterns)
         val html = buildString {
             append("<!DOCTYPE html><html><head>")
             append("<meta charset='utf-8'>")
@@ -352,7 +748,6 @@ class FileViewerFragment : Fragment() {
             append("th{background:#f4f4f4;}")
             append("</style></head><body>")
 
-            // Process markdown line by line
             var inCodeBlock = false
             for (line in content.lines()) {
                 if (line.trimStart().startsWith("```")) {
@@ -436,44 +831,24 @@ class FileViewerFragment : Fragment() {
         binding.webView.contentDescription = getString(R.string.a11y_webview_content, file.name)
     }
 
-    private fun showArchiveContents(file: File) {
-        binding.scrollText.visibility = View.VISIBLE
-        val content = try {
-            ZipFile(file).use { zf ->
-                val entries = zf.entries().toList().sortedBy { it.name }
-                val sb = StringBuilder()
-                sb.appendLine("Archive: ${file.name}")
-                sb.appendLine("Entries: ${entries.size}")
-                sb.appendLine("─".repeat(50))
-                sb.appendLine()
-                for (entry in entries) {
-                    val size = if (entry.size >= 0) UndoHelper.formatBytes(entry.size) else "?"
-                    val dir = if (entry.isDirectory) "/" else ""
-                    sb.appendLine("  $size  ${entry.name}$dir")
-                }
-                sb.toString()
-            }
-        } catch (e: Exception) {
-            getString(R.string.viewer_archive_error, e.localizedMessage ?: "")
-        }
-        binding.tvTextContent.text = content
-    }
-
-    private fun showVideoFallback(file: File) {
-        // Show video thumbnail with a prompt to open externally
-        binding.ivImage.visibility = View.VISIBLE
-        Glide.with(this)
-            .load(file)
-            .into(binding.ivImage)
-        binding.ivImage.contentDescription = getString(R.string.a11y_image_preview, file.name)
-        binding.ivImage.setOnClickListener { FileOpener.open(requireContext(), file) }
-    }
+    // ── Unsupported Fallback ────────────────────────────────────────────────
 
     private fun showUnsupported(file: File) {
         binding.unsupportedContainer.visibility = View.VISIBLE
         binding.tvUnsupported.text = getString(R.string.viewer_unsupported, file.name.substringAfterLast('.', ""))
         binding.btnOpenFallback.setOnClickListener { FileOpener.open(requireContext(), file) }
     }
+
+    // ── Utility ─────────────────────────────────────────────────────────────
+
+    private fun formatTime(ms: Int): String {
+        val totalSec = ms / 1000
+        val min = totalSec / 60
+        val sec = totalSec % 60
+        return "%d:%02d".format(min, sec)
+    }
+
+    // ── Lifecycle ───────────────────────────────────────────────────────────
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -482,6 +857,7 @@ class FileViewerFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        // Pause audio if playing
         mediaPlayer?.let {
             if (it.isPlaying) {
                 it.pause()
@@ -489,21 +865,33 @@ class FileViewerFragment : Fragment() {
                 _binding?.btnAudioPlay?.setImageResource(android.R.drawable.ic_media_play)
             }
         }
+        // Pause video if playing
+        if (isVideoPlaying) {
+            _binding?.videoView?.pause()
+            isVideoPlaying = false
+            _binding?.btnVideoPlay?.setImageResource(android.R.drawable.ic_media_play)
+        }
     }
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
+        // Release audio
         mediaPlayer?.setOnCompletionListener(null)
         mediaPlayer?.release()
         mediaPlayer = null
         isAudioPlaying = false
+        // Release video
+        _binding?.videoView?.stopPlayback()
+        isVideoPlaying = false
+        isVideoInitialized = false
+        // Release PDF
         currentPdfBitmap?.recycle()
         currentPdfBitmap = null
         pdfRenderer?.close()
         pdfFd?.close()
         pdfRenderer = null
         pdfFd = null
-        // WebView must be removed from parent before destroy()
+        // WebView cleanup
         _binding?.webView?.let { wv ->
             (wv.parent as? ViewGroup)?.removeView(wv)
             wv.destroy()

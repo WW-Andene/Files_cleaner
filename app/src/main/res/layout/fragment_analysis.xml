@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surfaceBase"
+    android:clipToPadding="false"
+    android:paddingBottom="80dp"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ═══ Empty state (shown before scan) ═══ -->
+        <LinearLayout
+            android:id="@+id/empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="48dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_raccoon_face"
+                android:alpha="0.55"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/analysis_empty_title"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:textColor="@color/textSecondary"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/analysis_empty_subtitle"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textColor="@color/textTertiary"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- ═══ Content (shown after scan) ═══ -->
+        <LinearLayout
+            android:id="@+id/content_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- ──── Storage Overview Card ──── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="@dimen/radius_header"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/colorPrimaryContainer"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/analysis_storage_overview"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/colorOnPrimaryContainer"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/tv_storage_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
+                        android:textColor="@color/colorOnPrimaryContainer" />
+
+                    <!-- Storage bar -->
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="12dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_storage_bar_track">
+
+                        <View
+                            android:id="@+id/view_storage_bar_fill"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_storage_bar_fill" />
+                    </FrameLayout>
+
+                    <!-- Segmented color bar showing per-category usage -->
+                    <LinearLayout
+                        android:id="@+id/layout_segmented_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:clipChildren="true" />
+
+                    <TextView
+                        android:id="@+id/tv_total_files"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                        android:textColor="@color/colorOnPrimaryContainer"
+                        android:alpha="0.8" />
+
+                    <!-- Potential savings banner -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_savings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardCornerRadius="@dimen/radius_sm"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/analysisSavingsBackground"
+                        app:strokeWidth="0dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/tv_savings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                            android:textColor="@color/analysisSavingsText"
+                            android:fontFamily="sans-serif-medium"
+                            android:drawablePadding="8dp" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ──── Quick Actions Row ──── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/analysis_quick_actions"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                android:fontFamily="sans-serif-medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="8dp"
+                android:baselineAligned="false">
+
+                <!-- Junk card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_junk"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/surfaceColor"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/borderSubtle"
+                    android:foreground="@drawable/ripple_card"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="\uD83D\uDDD1\uFE0F"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/analysis_quick_junk"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:id="@+id/tv_junk_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Large files card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_large"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/surfaceColor"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/borderSubtle"
+                    android:foreground="@drawable/ripple_card"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="\uD83D\uDCC2"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/analysis_quick_large"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:id="@+id/tv_large_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Duplicates card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_duplicates"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/surfaceColor"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/borderSubtle"
+                    android:foreground="@drawable/ripple_card"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="\uD83D\uDD04"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/analysis_quick_duplicates"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:id="@+id/tv_duplicates_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ──── Category Breakdown ──── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/analysis_category_breakdown"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                android:fontFamily="sans-serif-medium" />
+
+            <LinearLayout
+                android:id="@+id/layout_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="16dp" />
+
+            <!-- ──── Top 10 Largest Files ──── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/analysis_top_files"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/analysis_top_files_subtitle"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textTertiary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_top_files"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

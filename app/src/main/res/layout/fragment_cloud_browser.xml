@@ -45,11 +45,11 @@
             android:insetBottom="0dp"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:cornerRadius="@dimen/radius_pill"
-            app:icon="@drawable/ic_folder"
+            app:icon="@drawable/ic_cloud"
             app:iconSize="16dp" />
     </LinearLayout>
 
-    <!-- Connection selector -->
+    <!-- Connection selector with status indicator -->
     <LinearLayout
         android:id="@+id/connection_bar"
         android:layout_width="match_parent"
@@ -61,6 +61,15 @@
         android:background="@color/surfaceDim"
         android:visibility="gone">
 
+        <!-- Connection status dot (green=connected, red=disconnected) -->
+        <ImageView
+            android:id="@+id/iv_connection_status"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:src="@drawable/ic_status_disconnected"
+            android:contentDescription="@string/cloud_status_disconnected" />
+
         <Spinner
             android:id="@+id/spinner_connection"
             android:layout_width="0dp"
@@ -70,6 +79,18 @@
             android:popupBackground="@drawable/bg_spinner_dropdown"
             android:contentDescription="@string/a11y_connection_selector"
             android:paddingHorizontal="@dimen/spacing_md" />
+
+        <!-- Test connection button -->
+        <ImageButton
+            android:id="@+id/btn_test_connection"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_cloud"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cloud_test_connection"
+            android:scaleType="centerInside"
+            android:padding="@dimen/spacing_md"
+            app:tint="@color/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btn_disconnect"
@@ -129,7 +150,7 @@
         <ImageView
             android:layout_width="@dimen/icon_empty_state"
             android:layout_height="@dimen/icon_empty_state"
-            android:src="@drawable/ic_folder"
+            android:src="@drawable/ic_cloud"
             android:alpha="0.4"
             android:importantForAccessibility="no"
             app:tint="@color/textTertiary" />

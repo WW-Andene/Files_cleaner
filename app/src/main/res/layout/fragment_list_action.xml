@@ -114,6 +114,13 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Color legend strip (populated programmatically per screen) -->
+    <include
+        layout="@layout/view_color_legend"
+        android:id="@+id/legend_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <!-- Search bar -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search"

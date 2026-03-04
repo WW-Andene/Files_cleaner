@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
@@ -55,10 +54,7 @@ class TreeNodeAdapter : RecyclerView.Adapter<TreeNodeAdapter.ViewHolder>() {
     }
 
     private fun findRoot(): DirectoryNode? {
-        return flatList.firstOrNull()?.node?.let { first ->
-            // Walk up to depth 0
-            flatList.find { it.depth == 0 }?.node
-        }
+        return flatList.find { it.depth == 0 }?.node
     }
 
     override fun getItemCount(): Int = flatList.size

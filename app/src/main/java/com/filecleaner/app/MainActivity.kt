@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         // All bottom nav tab destination IDs (including the raccoon manager hub)
         val bottomNavIds = setOf(
-            R.id.browseFragment, R.id.duplicatesFragment,
+            R.id.analysisFragment, R.id.browseFragment, R.id.duplicatesFragment,
             R.id.raccoonManagerFragment,
             R.id.largeFilesFragment, R.id.junkFragment
         )
@@ -173,12 +173,11 @@ class MainActivity : AppCompatActivity() {
         // Cancel scan button
         binding.btnCancelScan.setOnClickListener { viewModel.cancelScan() }
 
-        // Scan state observer
+        // Scan state observer — drives the Material LinearProgressIndicator and phase labels
         viewModel.scanState.observe(this) { state ->
             when (state) {
                 is ScanState.Idle     -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnCancelScan.visibility = View.GONE
+                    hideScanProgress()
                     binding.tvScanStatus.text = getString(R.string.scan_prompt)
                     // F3: Make scan bar tappable to start scan
                     binding.tvScanStatus.setOnClickListener {
@@ -186,18 +185,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 is ScanState.Scanning -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.btnCancelScan.visibility = View.VISIBLE
-                    binding.tvScanStatus.text = when (state.phase) {
-                        ScanPhase.INDEXING   -> getString(R.string.scanning_phase_indexing, state.filesFound)
-                        ScanPhase.DUPLICATES -> getString(R.string.scanning_phase_duplicates, state.filesFound)
-                        ScanPhase.ANALYZING  -> getString(R.string.scanning_phase_analyzing, state.filesFound)
-                        ScanPhase.JUNK       -> getString(R.string.scanning_phase_junk, state.filesFound)
-                    }
+                    showScanProgress(state)
                 }
                 is ScanState.Done     -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnCancelScan.visibility = View.GONE
+                    hideScanProgress()
                     val stats = viewModel.storageStats.value
                     if (stats != null) {
                         val durationText = if (stats.scanDurationMs > 0) {
@@ -229,13 +220,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 is ScanState.Cancelled -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnCancelScan.visibility = View.GONE
+                    hideScanProgress()
                     binding.tvScanStatus.text = getString(R.string.scan_cancelled)
                 }
                 is ScanState.Error    -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnCancelScan.visibility = View.GONE
+                    hideScanProgress()
                     binding.tvScanStatus.text = getString(R.string.error_scan_failed)
                     Snackbar.make(binding.root,
                         getString(R.string.error_prefix, state.message),
@@ -358,5 +347,54 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+    }
+
+    // ── Progress indicator helpers ──
+
+    private fun showScanProgress(state: ScanState.Scanning) {
+        binding.btnCancelScan.visibility = View.VISIBLE
+        binding.scanProgressIndicator.visibility = View.VISIBLE
+        binding.scanPhaseRow.visibility = View.VISIBLE
+
+        binding.tvScanStatus.text = when (state.phase) {
+            ScanPhase.INDEXING   -> getString(R.string.scanning_phase_indexing, state.filesFound)
+            ScanPhase.DUPLICATES -> getString(R.string.scanning_phase_duplicates, state.filesFound)
+            ScanPhase.ANALYZING  -> getString(R.string.scanning_phase_analyzing, state.filesFound)
+            ScanPhase.JUNK       -> getString(R.string.scanning_phase_junk, state.filesFound)
+        }
+
+        val indicator = binding.scanProgressIndicator
+        if (state.progressPercent < 0) {
+            indicator.isIndeterminate = true
+            binding.tvScanPercent.visibility = View.GONE
+        } else {
+            if (indicator.isIndeterminate) {
+                indicator.isIndeterminate = false
+                indicator.max = 100
+            }
+            indicator.setProgressCompat(state.progressPercent, true)
+            binding.tvScanPercent.visibility = View.VISIBLE
+            binding.tvScanPercent.text = getString(R.string.scan_percent, state.progressPercent)
+        }
+
+        binding.tvPhaseLabel.text = when (state.phase) {
+            ScanPhase.INDEXING   -> getString(R.string.phase_label_indexing)
+            ScanPhase.DUPLICATES -> getString(R.string.phase_label_duplicates)
+            ScanPhase.ANALYZING  -> getString(R.string.phase_label_analyzing)
+            ScanPhase.JUNK       -> getString(R.string.phase_label_junk)
+        }
+        binding.tvPhaseStep.text = getString(
+            R.string.phase_step,
+            state.phase.order + 1,
+            state.phase.totalPhases
+        )
+    }
+
+    private fun hideScanProgress() {
+        binding.btnCancelScan.visibility = View.GONE
+        binding.scanProgressIndicator.visibility = View.GONE
+        binding.scanPhaseRow.visibility = View.GONE
+        binding.tvScanPercent.visibility = View.GONE
+        binding.scanProgressIndicator.isIndeterminate = true
     }
 }

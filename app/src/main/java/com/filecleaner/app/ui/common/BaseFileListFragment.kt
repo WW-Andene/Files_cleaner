@@ -20,6 +20,9 @@ import com.filecleaner.app.MainActivity
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentListActionBinding
+import android.widget.HorizontalScrollView
+import androidx.annotation.StringRes
+import com.filecleaner.app.ui.adapters.ColorMode
 import com.filecleaner.app.ui.adapters.FileAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
 import com.filecleaner.app.utils.FileOpener
@@ -91,6 +94,16 @@ abstract class BaseFileListFragment : Fragment() {
     /** Empty state text when scan completed but category is clean (positive framing). */
     abstract val emptyPostScan: String
 
+    /** Color-coding mode for the accent stripe on each file card. Override per-screen. */
+    open val colorMode: ColorMode get() = ColorMode.NONE
+
+    /** Legend entries to display below the header card. Override per-screen. */
+    open fun legendEntries(): List<ColorLegendHelper.LegendEntry> = emptyList()
+
+    /** Legend title string resource. Override per-screen. */
+    @get:StringRes
+    open val legendTitleRes: Int? get() = null
+
     /** Called when "Select All" is tapped. Override for custom behavior (e.g. duplicates). */
     open fun onSelectAll() {
         adapter.selectAll()
@@ -120,7 +133,8 @@ abstract class BaseFileListFragment : Fragment() {
             binding.btnBatchCompress.visibility = if (sel.isNotEmpty()) View.VISIBLE else View.GONE
         }
         adapter.viewMode = currentViewMode
-        adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
+        adapter.colorMode = colorMode
+        adapter.onItemClick = { item -> FileOpener.openInViewer(requireContext(), item.file) }
         adapter.onItemLongClick = { item, anchor ->
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
                 hasClipboard = vm.clipboardEntry.value != null)
@@ -129,6 +143,14 @@ abstract class BaseFileListFragment : Fragment() {
         applyLayoutManager()
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
+
+        // Populate color legend strip
+        val legendScroll = binding.root.findViewById<HorizontalScrollView>(R.id.legend_scroll)
+        if (legendScroll != null) {
+            val entries = legendEntries()
+            ColorLegendHelper.populate(legendScroll, entries, legendTitleRes)
+        }
+
         // Disable stagger animation when user prefers reduced motion (§G4)
         if (MotionUtil.isReducedMotion(requireContext())) {
             binding.recyclerView.layoutAnimation = null

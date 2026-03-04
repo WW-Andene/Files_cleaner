@@ -138,6 +138,86 @@
                 android:textIsSelectable="true" />
         </ScrollView>
 
+        <!-- Video player (hidden by default) -->
+        <FrameLayout
+            android:id="@+id/video_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <VideoView
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+            <!-- Play overlay shown before video starts -->
+            <ImageView
+                android:id="@+id/iv_video_play_overlay"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play_circle"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/viewer_video_play"
+                app:tint="@android:color/white"
+                android:alpha="0.9" />
+
+            <!-- Video controls bar -->
+            <LinearLayout
+                android:id="@+id/video_controls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_sm"
+                android:background="#80000000"
+                android:visibility="gone">
+
+                <SeekBar
+                    android:id="@+id/seek_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageButton
+                        android:id="@+id/btn_video_play"
+                        android:layout_width="@dimen/icon_button"
+                        android:layout_height="@dimen/icon_button"
+                        android:src="@android:drawable/ic_media_pause"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/viewer_video_play"
+                        app:tint="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/tv_video_current"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0:00"
+                        android:textColor="@android:color/white"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tv_video_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0:00"
+                        android:textColor="@android:color/white"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
         <!-- Audio player (hidden by default) -->
         <LinearLayout
             android:id="@+id/audio_container"

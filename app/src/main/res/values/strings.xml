@@ -21,6 +21,15 @@
     <string name="error_prefix">Error: %s. Check permissions and try again.</string>
     <string name="error_scan_failed">Scan failed. Check storage permissions and try again.</string>
 
+    <!-- Scan progress indicators -->
+    <string name="scan_percent">%d%%</string>
+    <string name="phase_label_indexing">Scanning files\u2026</string>
+    <string name="phase_label_duplicates">Finding duplicates\u2026</string>
+    <string name="phase_label_analyzing">Analyzing sizes\u2026</string>
+    <string name="phase_label_junk">Classifying junk\u2026</string>
+    <string name="phase_step">Step %1$d of %2$d</string>
+    <string name="browse_scan_file_count">%d files</string>
+
     <!-- Actions -->
     <string name="delete_selected">Delete selected</string>
     <string name="clean_selected">Clean selected</string>
@@ -124,10 +133,30 @@
     </plurals>
 
     <!-- Bottom nav -->
+    <string name="nav_analysis">Analysis</string>
     <string name="nav_browse">Browse</string>
     <string name="nav_duplicates">Duplicates</string>
     <string name="nav_large">Large Files</string>
     <string name="nav_junk">Junk Files</string>
+
+    <!-- Analysis tab -->
+    <string name="analysis_storage_overview">Storage Overview</string>
+    <string name="analysis_storage_used">%1$s used of %2$s</string>
+    <string name="analysis_total_files">%d files scanned</string>
+    <string name="analysis_category_breakdown">Category Breakdown</string>
+    <string name="analysis_category_count">%1$d files \u2022 %2$s</string>
+    <string name="analysis_top_files">Largest Files</string>
+    <string name="analysis_top_files_subtitle">Top 10 space consumers</string>
+    <string name="analysis_quick_actions">Quick Actions</string>
+    <string name="analysis_quick_junk">Junk Files</string>
+    <string name="analysis_quick_large">Large Files</string>
+    <string name="analysis_quick_duplicates">Duplicates</string>
+    <string name="analysis_quick_junk_detail">%1$d files \u2022 %2$s reclaimable</string>
+    <string name="analysis_quick_large_detail">%1$d files \u2022 %2$s total</string>
+    <string name="analysis_quick_duplicates_detail">%1$d files \u2022 %2$s wasted</string>
+    <string name="analysis_empty_title">No data yet</string>
+    <string name="analysis_empty_subtitle">Tap Scan Storage to analyze your files</string>
+    <string name="analysis_potential_savings">Potential savings: %s</string>
 
     <!-- Accessibility -->
     <string name="a11y_select_file">Select %s</string>
@@ -204,17 +233,54 @@
     <string name="convert_unsupported">No conversions available for this file type</string>
     <string name="convert_failed">Conversion failed: %s</string>
     <string name="convert_progress">Converting\u2026</string>
-    <!-- Conversion action labels (N1 audit) -->
+    <!-- Conversion action labels -->
+    <string name="convert_action">Convert</string>
     <string name="convert_format_with_ext">%1$s (.%2$s)</string>
     <string name="convert_pdf">PDF (.pdf)</string>
     <string name="convert_format_per_page">%1$s (one per page)</string>
     <string name="convert_png_thumbnail">PNG thumbnail</string>
     <string name="convert_jpg_thumbnail">JPG thumbnail</string>
-    <string name="convert_extract_10_frames_jpg">Extract 10 frames (JPG)</string>
-    <string name="convert_extract_20_frames_png">Extract 20 frames (PNG)</string>
-    <string name="convert_extract_album_art_png">Extract album art (PNG)</string>
-    <string name="convert_extract_album_art_jpg">Extract album art (JPG)</string>
     <string name="convert_formatted_table_txt">Formatted table (.txt)</string>
+
+    <!-- Image conversions -->
+    <string name="convert_to_format">Convert to %s</string>
+    <string name="convert_image_desc">Re-encode this image as a %1$s file (.%2$s). The original file is kept.</string>
+    <string name="convert_to_pdf">Convert to PDF</string>
+    <string name="convert_image_to_pdf_desc">Embed this image into a single-page PDF document.</string>
+    <string name="convert_resize">Resize image</string>
+    <string name="convert_resize_desc">Scale this image down to fit within a maximum width and height, keeping the aspect ratio.</string>
+    <string name="convert_resize_instruction">Enter the maximum dimensions. The image will be scaled down proportionally to fit, preserving its aspect ratio. Images smaller than the specified size will not be enlarged.</string>
+    <string name="convert_max_width">Max width (px)</string>
+    <string name="convert_max_height">Max height (px)</string>
+    <string name="convert_resize_format_note">The output format will match the original file.</string>
+
+    <!-- PDF conversions -->
+    <string name="convert_pdf_to_images">Extract pages as %s</string>
+    <string name="convert_pdf_to_images_desc">Render each page of this PDF as a separate %s image file at 2x resolution.</string>
+
+    <!-- Video conversions -->
+    <string name="convert_video_section_single_frame">Extract frame at timestamp</string>
+    <string name="convert_video_single_frame_desc">Use the slider to pick a point in the video, then save that frame as an image.</string>
+    <string name="convert_video_timestamp">%1$s / %2$s</string>
+    <string name="convert_extract_as_png">Save as PNG</string>
+    <string name="convert_extract_as_jpg">Save as JPG</string>
+    <string name="convert_video_section_key_frames">Extract key frames</string>
+    <string name="convert_video_key_frames_desc">Capture evenly-spaced frames across the entire video and save them as individual image files in a new folder.</string>
+    <string name="convert_video_frame_count">Number of frames:</string>
+    <string name="convert_extract_key_png">As PNG</string>
+    <string name="convert_extract_key_jpg">As JPG</string>
+
+    <!-- Audio conversions -->
+    <string name="convert_extract_album_art_png">Extract album art as PNG</string>
+    <string name="convert_extract_album_art_jpg">Extract album art as JPG</string>
+    <string name="convert_extract_album_art_desc">Save the embedded cover image from this audio file.</string>
+
+    <!-- Text/document conversions -->
+    <string name="convert_text_to_pdf_desc">Render this text file as a monospace PDF document (A4 pages).</string>
+    <string name="convert_html_to_pdf_desc">Render this HTML file as a PDF document.</string>
+    <string name="convert_markdown_to_pdf_desc">Render this Markdown file as a plain-text PDF document.</string>
+    <string name="convert_csv_to_table">Convert to formatted table</string>
+    <string name="convert_csv_to_table_desc">Convert CSV data into a neatly aligned text table with column headers.</string>
     <string name="ctx_properties">Properties</string>
     <string name="ctx_preview">Preview</string>
     <string name="preview_error">Cannot preview: %s</string>
@@ -226,6 +292,16 @@
     <string name="viewer_audio_play">Play / Pause</string>
     <string name="viewer_audio_error">Cannot play this audio file</string>
     <string name="viewer_archive_error">Cannot read archive: %s</string>
+    <string name="viewer_video_play">Play video</string>
+    <string name="viewer_video_error">Cannot play this video</string>
+    <string name="back">Back</string>
+
+    <!-- Accessibility: viewer -->
+    <string name="a11y_pdf_prev_page">Previous page</string>
+    <string name="a11y_pdf_next_page">Next page</string>
+    <string name="a11y_image_preview">Image preview of %s</string>
+    <string name="a11y_webview_content">Document content for %s</string>
+
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
     <string name="ctx_protect">Exclude from cleanup</string>
@@ -308,6 +384,25 @@
     <string name="cat_archives">Archives</string>
     <string name="cat_downloads">Downloads</string>
     <string name="cat_other">Other</string>
+
+    <!-- Junk sub-categories -->
+    <string name="junk_cache">Cache</string>
+    <string name="junk_temp">Temp files</string>
+    <string name="junk_thumbnails">Thumbnails</string>
+    <string name="junk_old_downloads">Old downloads</string>
+    <string name="junk_logs">Logs/backups</string>
+
+    <!-- Size severity labels -->
+    <string name="size_huge">500 MB+</string>
+    <string name="size_large">100\u2013500 MB</string>
+    <string name="size_medium">50\u2013100 MB</string>
+
+    <!-- Legend headers -->
+    <string name="legend_junk_title">Color by junk type</string>
+    <string name="legend_large_title">Color by file size</string>
+    <string name="legend_category_title">Color by category</string>
+    <string name="legend_duplicates_title">Color by duplicate group</string>
+    <string name="legend_group_n">Group %d</string>
 
     <!-- File properties dialog -->
     <string name="prop_name">Name</string>
@@ -544,6 +639,35 @@
     <string name="cloud_sftp_help">Connect to any SSH/SFTP server. Use your server\'s IP address or hostname.</string>
     <string name="cloud_webdav_help">Works with Nextcloud, ownCloud, and other WebDAV servers. Enter the full WebDAV URL.</string>
     <string name="cloud_gdrive_help">Paste your Google Drive OAuth2 token. You can generate one from the Google API Console.</string>
+
+    <!-- Cloud provider picker -->
+    <string name="cloud_choose_service">Choose a service</string>
+    <string name="cloud_choose_service_subtitle">Select where you want to connect</string>
+    <string name="cloud_gdrive_card_title">Google Drive</string>
+    <string name="cloud_gdrive_card_desc">Access your Google Drive files, photos, and shared folders</string>
+    <string name="cloud_gdrive_sign_in">Sign in with Google</string>
+    <string name="cloud_gdrive_default_name">My Google Drive</string>
+    <string name="cloud_sftp_card_title">SFTP Server</string>
+    <string name="cloud_sftp_card_desc">Connect to any SSH/SFTP server on your network or the internet</string>
+    <string name="cloud_sftp_connect_btn">Connect to SSH Server</string>
+    <string name="cloud_sftp_default_name">My SFTP Server</string>
+    <string name="cloud_webdav_card_title">WebDAV</string>
+    <string name="cloud_webdav_card_desc">Compatible with Nextcloud, ownCloud, and other WebDAV services</string>
+    <string name="cloud_webdav_connect_btn">Connect to WebDAV</string>
+    <string name="cloud_webdav_default_name">My WebDAV Server</string>
+    <string name="cloud_setup_title_gdrive">Connect Google Drive</string>
+    <string name="cloud_setup_title_sftp">Connect SFTP Server</string>
+    <string name="cloud_setup_title_webdav">Connect WebDAV Server</string>
+    <string name="cloud_test_connection">Test Connection</string>
+    <string name="cloud_testing_connection">Testing connection\u2026</string>
+    <string name="cloud_test_success">Connection successful!</string>
+    <string name="cloud_test_failed">Connection failed: %s</string>
+    <string name="cloud_status_connected">Connected</string>
+    <string name="cloud_status_disconnected">Not connected</string>
+    <string name="a11y_connection_status">Connection status: %s</string>
+    <string name="a11y_provider_google_drive">Google Drive provider</string>
+    <string name="a11y_provider_sftp">SFTP server provider</string>
+    <string name="a11y_provider_webdav">WebDAV provider</string>
 
     <!-- Antivirus / Security Scanner -->
     <string name="av_title">Security Scanner</string>

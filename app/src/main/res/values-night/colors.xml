@@ -61,6 +61,34 @@
     <color name="catDownload">#90A4AE</color>
     <color name="catOther">#B0BEC5</color>
 
+    <!-- Cloud provider branding (dark mode) -->
+    <color name="googleBlue">#8AB4F8</color>
+    <color name="googleBlueDark">#669DF6</color>
+    <color name="googleButtonBg">#1F2723</color>
+    <color name="googleButtonBorder">#3C4043</color>
+    <color name="googleButtonText">#E8EAED</color>
+    <color name="sftpAccent">#90A4AE</color>
+    <color name="sftpAccentLight">#1C2326</color>
+    <color name="webdavAccent">#4DD0E1</color>
+    <color name="webdavAccentLight">#1A2D30</color>
+    <color name="providerCardIconBg">#252E2A</color>
+
+    <!-- Category light backgrounds (for analysis bars) -->
+    <color name="catImageBg">#1F1A2E</color>
+    <color name="catVideoBg">#2E1A22</color>
+    <color name="catAudioBg">#2E241A</color>
+    <color name="catDocumentBg">#1A2438</color>
+    <color name="catApkBg">#1A2E2B</color>
+    <color name="catArchiveBg">#261F1A</color>
+    <color name="catDownloadBg">#1E2527</color>
+    <color name="catOtherBg">#1E2527</color>
+
+    <!-- Analysis card colors -->
+    <color name="analysisStorageBarBg">#252E2A</color>
+    <color name="analysisStorageBarFill">#66BB9A</color>
+    <color name="analysisSavingsBackground">#2E261A</color>
+    <color name="analysisSavingsText">#F0A856</color>
+
     <!-- Duplicate group backgrounds -->
     <color name="dupGroup0">#1B3D28</color>
     <color name="dupGroup1">#1A2E3D</color>
@@ -68,4 +96,20 @@
     <color name="dupGroup3">#2E1A3D</color>
     <color name="dupGroup4">#3D1A1A</color>
     <color name="dupGroup5">#1A3D3D</color>
+
+    <!-- Junk category accent colors (left stripe) -->
+    <color name="junkCache">#FF8A65</color>
+    <color name="junkTemp">#CE93D8</color>
+    <color name="junkThumbnail">#9FA8DA</color>
+    <color name="junkOldDownload">#90A4AE</color>
+    <color name="junkLog">#A1887F</color>
+
+    <!-- Size severity accent colors (left stripe) -->
+    <color name="sizeHuge">#EF5350</color>
+    <color name="sizeLarge">#FFA726</color>
+    <color name="sizeMedium">#FFEE58</color>
+
+    <!-- Legend chip background -->
+    <color name="legendChipBg">#252E2A</color>
+    <color name="legendTextColor">#9FA5A2</color>
 </resources>

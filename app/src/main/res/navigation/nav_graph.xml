@@ -5,6 +5,11 @@
     app:startDestination="@id/raccoonManagerFragment">
 
     <fragment
+        android:id="@+id/analysisFragment"
+        android:name="com.filecleaner.app.ui.analysis.AnalysisFragment"
+        android:label="@string/nav_analysis" />
+
+    <fragment
         android:id="@+id/browseFragment"
         android:name="com.filecleaner.app.ui.browse.BrowseFragment"
         android:label="Browse" />

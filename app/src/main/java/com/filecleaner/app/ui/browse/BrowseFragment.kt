@@ -91,7 +91,7 @@ class BrowseFragment : Fragment() {
         // RecyclerView with BrowseAdapter (supports folder headers)
         adapter = BrowseAdapter()
         adapter.viewMode = currentViewMode
-        adapter.onItemClick = { item -> FileOpener.open(requireContext(), item.file) }
+        adapter.onItemClick = { item -> FileOpener.openInViewer(requireContext(), item.file) }
         adapter.onItemLongClick = { item, anchor ->
             FileContextMenu.show(requireContext(), anchor, item, contextMenuCallback,
                 hasClipboard = vm.clipboardEntry.value != null)

@@ -4,15 +4,42 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import androidx.navigation.findNavController
 import com.filecleaner.app.R
+import com.filecleaner.app.ui.viewer.FileViewerFragment
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
 object FileOpener {
 
+    /**
+     * Opens a file in the native in-app viewer (FileViewerFragment).
+     * Falls back to external app if navigation fails.
+     */
+    fun openInViewer(context: Context, file: File) {
+        try {
+            val activity = context as? Activity ?: run {
+                open(context, file)
+                return
+            }
+            val navController = activity.findNavController(R.id.nav_host_fragment)
+            val args = Bundle().apply {
+                putString(FileViewerFragment.ARG_FILE_PATH, file.absolutePath)
+            }
+            navController.navigate(R.id.fileViewerFragment, args)
+        } catch (_: Exception) {
+            // Fallback to external app if navigation fails
+            open(context, file)
+        }
+    }
+
+    /**
+     * Shares a file via the system share sheet.
+     */
     fun share(context: Context, file: File) {
         try {
             val uri = FileProvider.getUriForFile(
@@ -37,6 +64,9 @@ object FileOpener {
         }
     }
 
+    /**
+     * Opens a file with an external app via the system chooser.
+     */
     fun open(context: Context, file: File) {
         try {
             val uri = FileProvider.getUriForFile(

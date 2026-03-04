@@ -59,6 +59,15 @@ class FileAdapter(
             }
         }
 
+    /** Color-coding mode — set by the hosting fragment to match its screen context. */
+    var colorMode: ColorMode = ColorMode.NONE
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     var onItemClick: ((FileItem) -> Unit)? = null
     var onItemLongClick: ((FileItem, View) -> Unit)? = null
 
@@ -67,6 +76,7 @@ class FileAdapter(
         val name: TextView = view.findViewById(R.id.tv_file_name)
         val meta: TextView? = view.findViewById(R.id.tv_file_meta)
         val check: CheckBox? = view.findViewById(R.id.cb_select)
+        val accentStripe: View? = view.findViewById(R.id.view_accent_stripe)
     }
 
     override fun getItemViewType(position: Int): Int = when (viewMode) {
@@ -137,6 +147,9 @@ class FileAdapter(
         // Load thumbnail for images/videos, category icon for everything else
         val isGrid = viewMode != ViewMode.LIST && viewMode != ViewMode.LIST_WITH_THUMBNAILS && viewMode != ViewMode.LIST_COMPACT
         FileItemUtils.loadThumbnail(holder.icon, item, isGrid)
+
+        // Accent stripe (color-coded indicator)
+        bindAccentStripe(holder, item)
 
         // Visual state: duplicate group colouring → selection highlight → default
         val c = colors!!
@@ -263,6 +276,22 @@ class FileAdapter(
         selectedPaths.addAll(paths)
         notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
+    }
+
+    /**
+     * Binds the 4dp accent stripe on the left (list) or top (grid) edge of
+     * the card, using the current [colorMode] to determine the color.
+     */
+    private fun bindAccentStripe(holder: FileViewHolder, item: FileItem) {
+        val stripe = holder.accentStripe ?: return
+        val ctx = holder.itemView.context
+        val accentColor = FileItemUtils.accentColor(ctx, item, colorMode)
+        if (accentColor != null) {
+            stripe.setBackgroundColor(accentColor)
+            stripe.visibility = View.VISIBLE
+        } else {
+            stripe.visibility = View.GONE
+        }
     }
 
 }

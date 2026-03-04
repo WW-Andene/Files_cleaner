@@ -4,34 +4,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/spacing_xs"
+    android:layout_margin="4dp"
     app:cardCornerRadius="@dimen/radius_card"
-    app:cardElevation="@dimen/elevation_none"
+    app:cardElevation="0dp"
     app:cardBackgroundColor="@color/surfaceColor"
-    app:strokeWidth="@dimen/stroke_default"
+    app:strokeWidth="1dp"
     app:strokeColor="@color/borderDefault"
-    app:rippleColor="@color/colorPrimaryContainer"
-    android:foreground="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    app:rippleColor="@color/colorPrimaryContainer">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Color accent stripe (4dp top edge indicator for grid mode) -->
+        <View
+            android:id="@+id/view_accent_stripe"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:visibility="gone" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:strokeWidth="@dimen/stroke_none"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
             app:cardBackgroundColor="@color/surfaceDim">
 
             <ImageView
                 android:id="@+id/iv_file_icon"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/icon_file_grid"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="80dp"
                 android:scaleType="centerCrop"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no" />
@@ -41,29 +47,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingTop="@dimen/spacing_sm"
-            android:paddingBottom="@dimen/spacing_sm">
+            android:paddingHorizontal="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textColor="@color/textPrimary"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:textAlignment="center" />
+                android:fontFamily="sans-serif-medium" />
 
             <TextView
                 android:id="@+id/tv_file_meta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:layout_marginTop="@dimen/spacing_xs"
-                android:textAlignment="center" />
+                android:layout_marginTop="2dp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

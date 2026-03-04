@@ -3,29 +3,63 @@ package com.filecleaner.app.ui.cloud
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.filecleaner.app.R
 import com.filecleaner.app.data.cloud.CloudConnection
 import com.filecleaner.app.data.cloud.CloudConnectionStore
-import com.google.android.material.chip.ChipGroup
+import com.filecleaner.app.data.cloud.CloudProvider
+import com.filecleaner.app.data.cloud.GoogleDriveProvider
+import com.filecleaner.app.data.cloud.ProviderType
+import com.filecleaner.app.data.cloud.SftpProvider
+import com.filecleaner.app.data.cloud.WebDavProvider
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
- * Dialog for adding/configuring a new cloud connection.
- * Uses Material Design input fields and shows/hides fields based on provider type.
+ * Step 2 of the cloud connection flow: provider-specific credential entry.
+ *
+ * Called after [CloudProviderPickerDialog] selects a provider type.
+ * Shows only the fields relevant to that provider, plus a "Test Connection"
+ * button that verifies connectivity before saving.
+ *
+ * Legacy [show] method is still available for backwards compatibility and
+ * opens the [CloudProviderPickerDialog] automatically.
  */
 object CloudSetupDialog {
 
-    private const val PROVIDER_SFTP = 0
-    private const val PROVIDER_WEBDAV = 1
-    private const val PROVIDER_GDRIVE = 2
-
+    /**
+     * Legacy entry point: opens the provider picker first, then this dialog.
+     * Kept for backwards compatibility with call sites that haven't been updated.
+     */
     fun show(context: Context, onAdded: (CloudConnection) -> Unit) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_cloud_setup, null)
+        CloudProviderPickerDialog.show(context, onAdded)
+    }
 
-        val chipGroup = dialogView.findViewById<ChipGroup>(R.id.chip_group_provider)
+    /**
+     * Show the connection setup dialog for a specific provider type.
+     * This is called by [CloudProviderPickerDialog] after the user picks a service.
+     */
+    fun showForProvider(
+        context: Context,
+        providerType: ProviderType,
+        onAdded: (CloudConnection) -> Unit
+    ) {
+        val dialogView = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_cloud_connect, null)
+
+        val tvHelp = dialogView.findViewById<TextView>(R.id.tv_provider_help)
+        val etName = dialogView.findViewById<TextInputEditText>(R.id.et_name)
         val tilHost = dialogView.findViewById<TextInputLayout>(R.id.til_host)
         val etHost = dialogView.findViewById<TextInputEditText>(R.id.et_host)
         val tilPort = dialogView.findViewById<TextInputLayout>(R.id.til_port)
@@ -34,101 +68,166 @@ object CloudSetupDialog {
         val etUsername = dialogView.findViewById<TextInputEditText>(R.id.et_username)
         val tilPassword = dialogView.findViewById<TextInputLayout>(R.id.til_password)
         val etPassword = dialogView.findViewById<TextInputEditText>(R.id.et_password)
-        val etName = dialogView.findViewById<TextInputEditText>(R.id.et_name)
-        val tvHelp = dialogView.findViewById<TextView>(R.id.tv_provider_help)
+        val btnTest = dialogView.findViewById<MaterialButton>(R.id.btn_test_connection)
+        val testResultContainer = dialogView.findViewById<LinearLayout>(R.id.test_result_container)
+        val ivTestIcon = dialogView.findViewById<ImageView>(R.id.iv_test_result_icon)
+        val tvTestResult = dialogView.findViewById<TextView>(R.id.tv_test_result)
+        val progressTest = dialogView.findViewById<ProgressBar>(R.id.progress_test)
 
-        var selectedProvider = PROVIDER_SFTP
+        var testJob: Job? = null
 
-        fun updateFieldVisibility(provider: Int) {
-            selectedProvider = provider
-            tilHost.error = null
-            tilPort.error = null
-            tilUsername.error = null
-            when (provider) {
-                PROVIDER_SFTP -> {
-                    tilHost.visibility = View.VISIBLE
-                    tilPort.visibility = View.VISIBLE
-                    tilUsername.visibility = View.VISIBLE
-                    tilPassword.visibility = View.VISIBLE
-                    tilHost.hint = context.getString(R.string.cloud_sftp_host_hint)
-                    tilPassword.hint = context.getString(R.string.cloud_password_hint)
-                    etPort.setText("22")
-                    tvHelp.text = context.getString(R.string.cloud_sftp_help)
-                    tvHelp.visibility = View.VISIBLE
-                }
-                PROVIDER_WEBDAV -> {
-                    tilHost.visibility = View.VISIBLE
-                    tilPort.visibility = View.VISIBLE
-                    tilUsername.visibility = View.VISIBLE
-                    tilPassword.visibility = View.VISIBLE
-                    tilHost.hint = context.getString(R.string.cloud_webdav_host_hint)
-                    tilPassword.hint = context.getString(R.string.cloud_password_hint)
-                    etPort.setText("443")
-                    tvHelp.text = context.getString(R.string.cloud_webdav_help)
-                    tvHelp.visibility = View.VISIBLE
-                }
-                PROVIDER_GDRIVE -> {
-                    tilHost.visibility = View.GONE
-                    tilPort.visibility = View.GONE
-                    tilUsername.visibility = View.GONE
-                    tilPassword.visibility = View.VISIBLE
-                    tilPassword.hint = context.getString(R.string.cloud_gdrive_token_hint)
-                    tvHelp.text = context.getString(R.string.cloud_gdrive_help)
-                    tvHelp.visibility = View.VISIBLE
-                }
+        // Configure fields based on provider
+        val title: String
+        when (providerType) {
+            ProviderType.SFTP -> {
+                title = context.getString(R.string.cloud_setup_title_sftp)
+                tilHost.visibility = View.VISIBLE
+                tilPort.visibility = View.VISIBLE
+                tilUsername.visibility = View.VISIBLE
+                tilPassword.visibility = View.VISIBLE
+                tilHost.hint = context.getString(R.string.cloud_sftp_host_hint)
+                tilPassword.hint = context.getString(R.string.cloud_password_hint)
+                etPort.setText("22")
+                etName.setText(context.getString(R.string.cloud_sftp_default_name))
+                tvHelp.text = context.getString(R.string.cloud_sftp_help)
+                tvHelp.visibility = View.VISIBLE
+            }
+            ProviderType.WEBDAV -> {
+                title = context.getString(R.string.cloud_setup_title_webdav)
+                tilHost.visibility = View.VISIBLE
+                tilPort.visibility = View.VISIBLE
+                tilUsername.visibility = View.VISIBLE
+                tilPassword.visibility = View.VISIBLE
+                tilHost.hint = context.getString(R.string.cloud_webdav_host_hint)
+                tilPassword.hint = context.getString(R.string.cloud_password_hint)
+                etPort.setText("443")
+                etName.setText(context.getString(R.string.cloud_webdav_default_name))
+                tvHelp.text = context.getString(R.string.cloud_webdav_help)
+                tvHelp.visibility = View.VISIBLE
+            }
+            ProviderType.GOOGLE_DRIVE -> {
+                title = context.getString(R.string.cloud_setup_title_gdrive)
+                tilHost.visibility = View.GONE
+                tilPort.visibility = View.GONE
+                tilUsername.visibility = View.GONE
+                tilPassword.visibility = View.VISIBLE
+                tilPassword.hint = context.getString(R.string.cloud_gdrive_token_hint)
+                etName.setText(context.getString(R.string.cloud_gdrive_default_name))
+                tvHelp.text = context.getString(R.string.cloud_gdrive_help)
+                tvHelp.visibility = View.VISIBLE
             }
         }
 
-        chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
-            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
-            val provider = when (checkedIds[0]) {
-                R.id.chip_sftp -> PROVIDER_SFTP
-                R.id.chip_webdav -> PROVIDER_WEBDAV
-                R.id.chip_gdrive -> PROVIDER_GDRIVE
-                else -> PROVIDER_SFTP
+        // Helper to build a CloudConnection from the current form state, or null if invalid
+        fun buildConnection(): CloudConnection? {
+            val displayName = etName.text.toString().trim().ifEmpty {
+                context.getString(R.string.cloud_default_server_name)
             }
-            updateFieldVisibility(provider)
-        }
-
-        updateFieldVisibility(PROVIDER_SFTP)
-
-        val dialog = AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.cloud_add_connection))
-            .setView(dialogView)
-            .setPositiveButton(context.getString(R.string.cloud_connect), null)
-            .setNegativeButton(context.getString(R.string.cancel), null)
-            .show()
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val displayName = etName.text.toString().trim().ifEmpty { context.getString(R.string.cloud_default_server_name) }
             val host = etHost.text.toString().trim()
             val port = etPort.text.toString().toIntOrNull() ?: -1
             val username = etUsername.text.toString().trim()
             val password = etPassword.text.toString()
 
-            // P4-B3-03: Validate inputs
+            // Clear previous errors
+            tilHost.error = null
+            tilPort.error = null
+            tilUsername.error = null
+
             var valid = true
-            if (selectedProvider != PROVIDER_GDRIVE && host.isBlank()) {
+            if (providerType != ProviderType.GOOGLE_DRIVE && host.isBlank()) {
                 tilHost.error = context.getString(R.string.cloud_error_host_required)
                 valid = false
             }
-            if (selectedProvider != PROVIDER_GDRIVE && port !in 1..65535) {
+            if (providerType != ProviderType.GOOGLE_DRIVE && port !in 1..65535) {
                 tilPort.error = context.getString(R.string.cloud_error_port_range)
                 valid = false
             }
-            if (selectedProvider in listOf(PROVIDER_SFTP, PROVIDER_WEBDAV) && username.isBlank()) {
+            if (providerType in listOf(ProviderType.SFTP, ProviderType.WEBDAV) && username.isBlank()) {
                 tilUsername.error = context.getString(R.string.cloud_error_username_required)
                 valid = false
             }
-            if (!valid) return@setOnClickListener
+            if (!valid) return null
 
-            val connection = when (selectedProvider) {
-                PROVIDER_SFTP -> CloudConnection.sftp(displayName, host, port, username).copy(authToken = password)
-                PROVIDER_WEBDAV -> CloudConnection.webdav(displayName, host, username, password)
-                PROVIDER_GDRIVE -> CloudConnection.googleDrive(displayName, password)
-                else -> return@setOnClickListener
+            return when (providerType) {
+                ProviderType.SFTP -> CloudConnection.sftp(displayName, host, port, username)
+                    .copy(authToken = password)
+                ProviderType.WEBDAV -> CloudConnection.webdav(displayName, host, username, password)
+                ProviderType.GOOGLE_DRIVE -> CloudConnection.googleDrive(displayName, password)
             }
+        }
 
+        // Helper to create a provider for testing
+        fun createProvider(connection: CloudConnection): CloudProvider {
+            return when (connection.type) {
+                ProviderType.SFTP -> SftpProvider(connection, context)
+                ProviderType.WEBDAV -> WebDavProvider(connection)
+                ProviderType.GOOGLE_DRIVE -> GoogleDriveProvider(connection, context)
+            }
+        }
+
+        // Test Connection button
+        btnTest.setOnClickListener {
+            val connection = buildConnection() ?: return@setOnClickListener
+
+            testJob?.cancel()
+            btnTest.isEnabled = false
+            progressTest.visibility = View.VISIBLE
+            testResultContainer.visibility = View.GONE
+
+            testJob = CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    val provider = createProvider(connection)
+                    val success = provider.connect()
+                    // Always disconnect after test
+                    try { provider.disconnect() } catch (_: Exception) {}
+
+                    progressTest.visibility = View.GONE
+                    testResultContainer.visibility = View.VISIBLE
+                    btnTest.isEnabled = true
+
+                    if (success) {
+                        ivTestIcon.setImageResource(R.drawable.ic_check_circle)
+                        tvTestResult.text = context.getString(R.string.cloud_test_success)
+                        tvTestResult.setTextColor(
+                            context.getColor(R.color.colorSuccess)
+                        )
+                    } else {
+                        ivTestIcon.setImageResource(R.drawable.ic_status_disconnected)
+                        tvTestResult.text = context.getString(
+                            R.string.cloud_test_failed,
+                            context.getString(R.string.cloud_connection_failed, connection.displayName)
+                        )
+                        tvTestResult.setTextColor(
+                            context.getColor(R.color.colorError)
+                        )
+                    }
+                } catch (e: Exception) {
+                    progressTest.visibility = View.GONE
+                    testResultContainer.visibility = View.VISIBLE
+                    btnTest.isEnabled = true
+                    ivTestIcon.setImageResource(R.drawable.ic_status_disconnected)
+                    tvTestResult.text = context.getString(
+                        R.string.cloud_test_failed,
+                        e.localizedMessage ?: e.javaClass.simpleName
+                    )
+                    tvTestResult.setTextColor(
+                        context.getColor(R.color.colorError)
+                    )
+                }
+            }
+        }
+
+        val dialog = MaterialAlertDialogBuilder(context)
+            .setTitle(title)
+            .setView(dialogView)
+            .setPositiveButton(context.getString(R.string.cloud_connect), null)
+            .setNegativeButton(context.getString(R.string.cancel), null)
+            .setOnDismissListener { testJob?.cancel() }
+            .show()
+
+        // Override positive button to prevent dismiss on validation failure
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val connection = buildConnection() ?: return@setOnClickListener
             CloudConnectionStore.saveConnection(connection)
             onAdded(connection)
             dialog.dismiss()

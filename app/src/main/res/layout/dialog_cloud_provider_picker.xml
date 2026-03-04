@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_xxl"
+        android:paddingTop="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_lg">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cloud_choose_service"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+            android:textColor="@color/textPrimary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            android:text="@string/cloud_choose_service_subtitle"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary" />
+
+        <!-- ═══ Google Drive Card ═══ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_google_drive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_provider_google_drive"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/borderDefault"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:rippleColor="@color/selectedBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <!-- Icon + Title row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Google Drive icon in rounded container -->
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_rounded"
+                        android:backgroundTint="@color/providerCardIconBg">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_google_drive"
+                            android:importantForAccessibility="no" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cloud_gdrive_card_title"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/cloud_gdrive_card_desc"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Google Sign-In style button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_google_sign_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/cloud_gdrive_sign_in"
+                    android:textAllCaps="false"
+                    android:textColor="@color/googleButtonText"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.01"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:icon="@drawable/ic_google_drive"
+                    app:iconGravity="textStart"
+                    app:iconSize="20dp"
+                    app:iconPadding="@dimen/spacing_md"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:strokeColor="@color/googleButtonBorder"
+                    app:strokeWidth="1dp"
+                    app:backgroundTint="@color/googleButtonBg"
+                    app:rippleColor="#1A4285F4" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ═══ SFTP Card ═══ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_sftp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_provider_sftp"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/borderDefault"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:rippleColor="@color/selectedBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <!-- Icon + Title row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_rounded"
+                        android:backgroundTint="@color/sftpAccentLight">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_server"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/sftpAccent" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cloud_sftp_card_title"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/cloud_sftp_card_desc"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Connect button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_sftp_connect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/cloud_sftp_connect_btn"
+                    android:textAllCaps="false"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:icon="@drawable/ic_server"
+                    app:iconGravity="textStart"
+                    app:iconSize="20dp"
+                    app:iconPadding="@dimen/spacing_md"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:strokeColor="@color/sftpAccent"
+                    app:strokeWidth="1dp"
+                    app:iconTint="@color/sftpAccent"
+                    android:textColor="@color/sftpAccent"
+                    app:rippleColor="#1A546E7A" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ═══ WebDAV Card ═══ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_webdav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_provider_webdav"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/borderDefault"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:rippleColor="@color/selectedBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <!-- Icon + Title row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_rounded"
+                        android:backgroundTint="@color/webdavAccentLight">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_webdav"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/webdavAccent" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cloud_webdav_card_title"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/cloud_webdav_card_desc"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Connect button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_webdav_connect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/cloud_webdav_connect_btn"
+                    android:textAllCaps="false"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:icon="@drawable/ic_webdav"
+                    app:iconGravity="textStart"
+                    app:iconSize="20dp"
+                    app:iconPadding="@dimen/spacing_md"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:strokeColor="@color/webdavAccent"
+                    app:strokeWidth="1dp"
+                    app:iconTint="@color/webdavAccent"
+                    android:textColor="@color/webdavAccent"
+                    app:rippleColor="#1A0097A7" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>
