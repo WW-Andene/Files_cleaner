@@ -171,7 +171,7 @@
                 android:layout_gravity="bottom"
                 android:orientation="vertical"
                 android:padding="@dimen/spacing_sm"
-                android:background="#80000000"
+                android:background="@color/overlayDark"
                 android:visibility="gone">
 
                 <SeekBar

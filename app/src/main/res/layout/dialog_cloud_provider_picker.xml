@@ -67,8 +67,8 @@
                         android:backgroundTint="@color/providerCardIconBg">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_nav"
+                            android:layout_height="@dimen/icon_nav"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_google_drive"
                             android:importantForAccessibility="no" />
@@ -91,7 +91,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:text="@string/cloud_gdrive_card_desc"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
@@ -133,7 +133,7 @@
                     app:strokeColor="@color/googleButtonBorder"
                     app:strokeWidth="1dp"
                     app:backgroundTint="@color/googleButtonBg"
-                    app:rippleColor="#1A4285F4" />
+                    app:rippleColor="@color/rippleGoogle" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -174,8 +174,8 @@
                         android:backgroundTint="@color/githubAccentLight">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_nav"
+                            android:layout_height="@dimen/icon_nav"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_archive"
                             android:importantForAccessibility="no"
@@ -199,7 +199,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:text="@string/cloud_github_card_desc"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
@@ -240,7 +240,7 @@
                     app:cornerRadius="@dimen/radius_btn"
                     app:backgroundTint="@color/githubAccent"
                     app:iconTint="@color/textOnPrimary"
-                    app:rippleColor="#4DFFFFFF" />
+                    app:rippleColor="@color/rippleGithub" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -281,8 +281,8 @@
                         android:backgroundTint="@color/sftpAccentLight">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_nav"
+                            android:layout_height="@dimen/icon_nav"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_server"
                             android:importantForAccessibility="no"
@@ -306,7 +306,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:text="@string/cloud_sftp_card_desc"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
@@ -335,7 +335,7 @@
                     app:strokeWidth="1dp"
                     app:iconTint="@color/sftpAccent"
                     android:textColor="@color/sftpAccent"
-                    app:rippleColor="#1A546E7A" />
+                    app:rippleColor="@color/rippleSftp" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -375,8 +375,8 @@
                         android:backgroundTint="@color/webdavAccentLight">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_nav"
+                            android:layout_height="@dimen/icon_nav"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_webdav"
                             android:importantForAccessibility="no"
@@ -400,7 +400,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:text="@string/cloud_webdav_card_desc"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
@@ -429,7 +429,7 @@
                     app:strokeWidth="1dp"
                     app:iconTint="@color/webdavAccent"
                     android:textColor="@color/webdavAccent"
-                    app:rippleColor="#1A0097A7" />
+                    app:rippleColor="@color/rippleWebdav" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

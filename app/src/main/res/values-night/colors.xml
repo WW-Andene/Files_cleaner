@@ -112,4 +112,17 @@
     <!-- Legend chip background -->
     <color name="legendChipBg">#252E2A</color>
     <color name="legendTextColor">#9FA5A2</color>
+
+    <!-- Overlay -->
+    <color name="overlayDark">#80000000</color>
+
+    <!-- Brand / Provider ripple colors -->
+    <color name="rippleGoogle">#1A4285F4</color>
+    <color name="rippleGithub">#4DFFFFFF</color>
+    <color name="rippleSftp">#1A546E7A</color>
+    <color name="rippleWebdav">#1A0097A7</color>
+
+    <!-- Google Sign-In button colors (dark mode) -->
+    <color name="googleSignInBg">#1F2723</color>
+    <color name="googleSignInBorder">#3C4043</color>
 </resources>
