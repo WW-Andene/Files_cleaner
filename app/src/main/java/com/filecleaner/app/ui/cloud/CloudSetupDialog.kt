@@ -52,6 +52,31 @@ object CloudSetupDialog {
     }
 
     /**
+     * Create a connection directly from an OAuth-obtained token.
+     * Used when the OAuth flow was launched from the provider picker (not the setup dialog)
+     * and the callback returns after the setup dialog was never opened.
+     */
+    fun showOAuthResult(
+        context: Context,
+        provider: ProviderType,
+        token: String,
+        onAdded: (CloudConnection) -> Unit
+    ) {
+        val displayName = when (provider) {
+            ProviderType.GOOGLE_DRIVE -> context.getString(R.string.cloud_gdrive_default_name)
+            ProviderType.GITHUB -> context.getString(R.string.cloud_github_default_name)
+            else -> "Cloud"
+        }
+        val connection = when (provider) {
+            ProviderType.GOOGLE_DRIVE -> CloudConnection.googleDrive(displayName, token)
+            ProviderType.GITHUB -> CloudConnection.github(displayName, token)
+            else -> return
+        }
+        CloudConnectionStore.saveConnection(connection)
+        onAdded(connection)
+    }
+
+    /**
      * Legacy entry point: opens the provider picker first, then this dialog.
      * Kept for backwards compatibility with call sites that haven't been updated.
      */
@@ -244,33 +269,55 @@ object CloudSetupDialog {
             }
         }
 
-        // OAuth sign-in button for token-based providers
+        // OAuth sign-in button and configuration for token-based providers
         val btnOAuth = dialogView.findViewById<MaterialButton>(R.id.btn_oauth_sign_in)
         val oauthDivider = dialogView.findViewById<View>(R.id.oauth_divider)
+        val oauthConfigSection = dialogView.findViewById<LinearLayout>(R.id.oauth_config_section)
+        val etOAuthClientId = dialogView.findViewById<TextInputEditText>(R.id.et_oauth_client_id)
+        val etOAuthClientSecret = dialogView.findViewById<TextInputEditText>(R.id.et_oauth_client_secret)
+
         if (providerType == ProviderType.GOOGLE_DRIVE || providerType == ProviderType.GITHUB) {
             btnOAuth?.visibility = View.VISIBLE
             oauthDivider?.visibility = View.VISIBLE
+            oauthConfigSection?.visibility = View.VISIBLE
             btnOAuth?.text = when (providerType) {
                 ProviderType.GOOGLE_DRIVE -> context.getString(R.string.cloud_oauth_google)
                 ProviderType.GITHUB -> context.getString(R.string.cloud_oauth_github)
                 else -> ""
             }
+
+            // Pre-fill OAuth config from saved preferences
+            val savedConfig = OAuthHelper.getConfig(context, providerType)
+            if (savedConfig != null) {
+                etOAuthClientId?.setText(savedConfig.clientId)
+                etOAuthClientSecret?.setText(savedConfig.clientSecret)
+            }
+
             btnOAuth?.setOnClickListener {
-                val authUrl = when (providerType) {
-                    ProviderType.GOOGLE_DRIVE -> OAuthHelper.buildGoogleAuthUrl()
-                    ProviderType.GITHUB -> OAuthHelper.buildGitHubAuthUrl()
-                    else -> return@setOnClickListener
+                // Read client ID/secret from the config fields
+                val clientId = etOAuthClientId?.text?.toString()?.trim() ?: ""
+                val clientSecret = etOAuthClientSecret?.text?.toString()?.trim() ?: ""
+
+                if (clientId.isBlank()) {
+                    testResultContainer.visibility = View.VISIBLE
+                    ivTestIcon.setImageResource(R.drawable.ic_status_disconnected)
+                    tvTestResult.text = context.getString(R.string.cloud_oauth_failed,
+                        "Client ID is required for OAuth")
+                    tvTestResult.setTextColor(context.getColor(R.color.colorError))
+                    return@setOnClickListener
                 }
-                // Register callback to fill token after OAuth completes
+
+                // Save OAuth config for future use
+                val config = OAuthHelper.OAuthConfig(clientId, clientSecret)
+                OAuthHelper.saveConfig(context, providerType, config)
+
+                // Register callback to exchange code for token after OAuth redirect
                 pendingOAuthCallback = { code ->
                     btnOAuth.isEnabled = false
                     progressTest.visibility = View.VISIBLE
+                    testResultContainer.visibility = View.GONE
                     CoroutineScope(Dispatchers.Main).launch {
-                        val result = when (providerType) {
-                            ProviderType.GOOGLE_DRIVE -> OAuthHelper.exchangeGoogleCode(code)
-                            ProviderType.GITHUB -> OAuthHelper.exchangeGitHubCode(code)
-                            else -> OAuthHelper.OAuthTokenResult(error = "Unsupported")
-                        }
+                        val result = OAuthHelper.exchangeCodeForToken(context, code, providerType)
                         progressTest.visibility = View.GONE
                         btnOAuth.isEnabled = true
                         if (result.isSuccess) {
@@ -287,11 +334,14 @@ object CloudSetupDialog {
                         }
                     }
                 }
-                OAuthHelper.launchAuthBrowser(context, authUrl)
+
+                // Launch the OAuth flow with PKCE in a Custom Chrome Tab
+                OAuthHelper.launchAuthFlow(context, providerType, clientId)
             }
         } else {
             btnOAuth?.visibility = View.GONE
             oauthDivider?.visibility = View.GONE
+            oauthConfigSection?.visibility = View.GONE
         }
 
         val dialog = MaterialAlertDialogBuilder(context)
