@@ -20,11 +20,8 @@ import kotlinx.coroutines.*
 
 class ScanService : Service() {
 
-    private companion object {
-        private const val TAG = "ScanService"
-    }
-
     companion object {
+        private const val TAG = "ScanService"
         const val CHANNEL_ID = "antivirus_scan"
         const val NOTIFICATION_ID = 1001
         const val ACTION_START = "com.filecleaner.app.ACTION_START_SCAN"

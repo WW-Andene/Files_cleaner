@@ -14,7 +14,9 @@
         android:orientation="vertical">
 
         <!-- ═══ Empty state (shown before scan) ═══ -->
-        <include layout="@layout/include_empty_state" />
+        <include
+            android:id="@+id/empty_state"
+            layout="@layout/include_empty_state" />
 
         <!-- ═══ Content (shown after scan) ═══ -->
         <LinearLayout
