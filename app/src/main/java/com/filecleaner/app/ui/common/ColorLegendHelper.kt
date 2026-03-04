@@ -2,6 +2,7 @@ package com.filecleaner.app.ui.common
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -92,15 +93,21 @@ object ColorLegendHelper {
         }
 
         val ctx = scrollView.context
-        val density = ctx.resources.displayMetrics.density
+        val res = ctx.resources
+        val density = res.displayMetrics.density
+
+        // Cached dimension lookups
+        val textLabelPx = res.getDimension(R.dimen.text_label)
+        val padStartPx = res.getDimensionPixelSize(R.dimen.spacing_xs)
+        val padEndPx = res.getDimensionPixelSize(R.dimen.spacing_sm)
 
         // Optional title label
         if (title != null) {
             val titleView = TextView(ctx).apply {
                 text = ctx.getString(title)
                 setTextColor(ContextCompat.getColor(ctx, R.color.legendTextColor))
-                textSize = 11f
-                setPadding((4 * density).toInt(), 0, (8 * density).toInt(), 0)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, textLabelPx)
+                setPadding(padStartPx, 0, padEndPx, 0)
             }
             container.addView(titleView)
         }
@@ -115,16 +122,25 @@ object ColorLegendHelper {
     }
 
     private fun buildChip(ctx: Context, entry: LegendEntry, density: Float): LinearLayout {
+        val res = ctx.resources
+
+        // Cached dimension lookups
+        val chipPadPx = res.getDimensionPixelSize(R.dimen.spacing_chip)
+        val spacingXsPx = res.getDimensionPixelSize(R.dimen.spacing_xs)
+        val cornerRadiusPx = res.getDimension(R.dimen.radius_md)
+        val textLabelPx = res.getDimension(R.dimen.text_label)
+
+        val vPad = (3 * density).toInt()  // no 3dp token
+        val dotSize = (10 * density).toInt()  // no 10dp token
+
         val chipLayout = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            val hPad = (6 * density).toInt()
-            val vPad = (3 * density).toInt()
-            setPadding(hPad, vPad, hPad, vPad)
+            setPadding(chipPadPx, vPad, chipPadPx, vPad)
 
             val bg = GradientDrawable().apply {
                 setColor(ContextCompat.getColor(ctx, R.color.legendChipBg))
-                cornerRadius = 12 * density
+                cornerRadius = cornerRadiusPx
             }
             background = bg
 
@@ -132,13 +148,12 @@ object ColorLegendHelper {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                marginEnd = (4 * density).toInt()
+                marginEnd = spacingXsPx
             }
             layoutParams = lp
         }
 
         // Colored dot
-        val dotSize = (10 * density).toInt()
         val dot = View(ctx).apply {
             val dotBg = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
@@ -146,7 +161,7 @@ object ColorLegendHelper {
             }
             background = dotBg
             layoutParams = LinearLayout.LayoutParams(dotSize, dotSize).apply {
-                marginEnd = (4 * density).toInt()
+                marginEnd = spacingXsPx
             }
         }
         chipLayout.addView(dot)
@@ -155,7 +170,7 @@ object ColorLegendHelper {
         val label = TextView(ctx).apply {
             text = entry.label
             setTextColor(ContextCompat.getColor(ctx, R.color.legendTextColor))
-            textSize = 11f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, textLabelPx)
             maxLines = 1
         }
         chipLayout.addView(label)

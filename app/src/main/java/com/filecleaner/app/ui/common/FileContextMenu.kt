@@ -104,7 +104,14 @@ object FileContextMenu {
         ivIcon.setImageResource(iconRes)
 
         val container = contentView.findViewById<LinearLayout>(R.id.menu_container)
-        val dp = context.resources.displayMetrics.density
+        val res = context.resources
+        val buttonHeight = res.getDimensionPixelSize(R.dimen.button_height)
+        val spacingXl = res.getDimensionPixelSize(R.dimen.spacing_xl)
+        val spacingLg = res.getDimensionPixelSize(R.dimen.spacing_lg)
+        val spacingXs = res.getDimensionPixelSize(R.dimen.spacing_xs)
+        val iconNav = res.getDimensionPixelSize(R.dimen.icon_nav)
+        val strokeDefault = res.getDimensionPixelSize(R.dimen.stroke_default)
+        val bodySize = res.getDimension(R.dimen.text_body)
 
         fun addItem(label: String, iconDrawable: Int, action: () -> Unit) {
             val row = LinearLayout(context).apply {
@@ -112,9 +119,9 @@ object FileContextMenu {
                 gravity = Gravity.CENTER_VERTICAL
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    (48 * dp).toInt()
+                    buttonHeight
                 )
-                setPadding((20 * dp).toInt(), 0, (20 * dp).toInt(), 0)
+                setPadding(spacingXl, 0, spacingXl, 0)
                 val outValue = TypedValue()
                 context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
                 setBackgroundResource(outValue.resourceId)
@@ -128,17 +135,16 @@ object FileContextMenu {
             }
 
             val icon = ImageView(context).apply {
-                layoutParams = LinearLayout.LayoutParams((24 * dp).toInt(), (24 * dp).toInt())
+                layoutParams = LinearLayout.LayoutParams(iconNav, iconNav)
                 setImageResource(iconDrawable)
                 setColorFilter(ContextCompat.getColor(context, R.color.textSecondary))
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
             }
             row.addView(icon)
 
-            val bodySize = context.resources.getDimension(R.dimen.text_body)
             val text = TextView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                    marginStart = (16 * dp).toInt()
+                    marginStart = spacingLg
                 }
                 this.text = label
                 setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
@@ -152,12 +158,12 @@ object FileContextMenu {
         fun addDivider() {
             val div = View(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (1 * dp).toInt()
+                    ViewGroup.LayoutParams.MATCH_PARENT, strokeDefault
                 ).apply {
-                    topMargin = (4 * dp).toInt()
-                    bottomMargin = (4 * dp).toInt()
-                    marginStart = (20 * dp).toInt()
-                    marginEnd = (20 * dp).toInt()
+                    topMargin = spacingXs
+                    bottomMargin = spacingXs
+                    marginStart = spacingXl
+                    marginEnd = spacingXl
                 }
                 setBackgroundColor(ContextCompat.getColor(context, R.color.borderDefault))
             }
@@ -306,9 +312,9 @@ object FileContextMenu {
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                (48 * dp).toInt()
+                buttonHeight
             )
-            setPadding((20 * dp).toInt(), 0, (20 * dp).toInt(), 0)
+            setPadding(spacingXl, 0, spacingXl, 0)
             val outValue = TypedValue()
             context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
             setBackgroundResource(outValue.resourceId)
@@ -331,7 +337,7 @@ object FileContextMenu {
             }
         }
         val deleteIcon = ImageView(context).apply {
-            layoutParams = LinearLayout.LayoutParams((24 * dp).toInt(), (24 * dp).toInt())
+            layoutParams = LinearLayout.LayoutParams(iconNav, iconNav)
             setImageResource(R.drawable.ic_delete)
             setColorFilter(ContextCompat.getColor(context, R.color.colorError))
             scaleType = ImageView.ScaleType.CENTER_INSIDE
@@ -339,11 +345,11 @@ object FileContextMenu {
         deleteRow.addView(deleteIcon)
         val deleteText = TextView(context).apply {
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                marginStart = (16 * dp).toInt()
+                marginStart = spacingLg
             }
             text = context.getString(R.string.ctx_delete)
             setTextColor(ContextCompat.getColor(context, R.color.colorError))
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, bodySize)
             typeface = Typeface.DEFAULT_BOLD
         }
         deleteRow.addView(deleteText)

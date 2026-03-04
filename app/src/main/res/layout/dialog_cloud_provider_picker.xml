@@ -226,7 +226,7 @@
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:text="@string/cloud_oauth_connect_github"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/textOnPrimary"
                     android:textSize="@dimen/text_body"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.01"
@@ -239,7 +239,7 @@
                     app:iconPadding="@dimen/spacing_md"
                     app:cornerRadius="@dimen/radius_btn"
                     app:backgroundTint="@color/githubAccent"
-                    app:iconTint="#FFFFFF"
+                    app:iconTint="@color/textOnPrimary"
                     app:rippleColor="#4DFFFFFF" />
 
             </LinearLayout>

@@ -136,12 +136,11 @@ object ConvertDialog {
         options: List<ConvertOption>,
         onResult: (FileConverter.ConvertResult) -> Unit
     ) {
-        val dp = context.resources.displayMetrics.density
+        val spacingSm = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
         val scrollView = ScrollView(context)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val pad = (16 * dp).toInt()
-            setPadding(0, pad / 2, 0, pad / 2)
+            setPadding(0, spacingSm, 0, spacingSm)
         }
         scrollView.addView(container)
 
@@ -169,16 +168,18 @@ object ConvertDialog {
     }
 
     private fun showResizeDialog(context: Context, item: FileItem, onResult: (FileConverter.ConvertResult) -> Unit) {
-        val dp = context.resources.displayMetrics.density
+        val spacingSm = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
+        val spacingMd = context.resources.getDimensionPixelSize(R.dimen.spacing_md)
+        val spacingLg = context.resources.getDimensionPixelSize(R.dimen.spacing_lg)
+        val spacingXxl = context.resources.getDimensionPixelSize(R.dimen.spacing_xxl)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val pad = (24 * dp).toInt()
-            setPadding(pad, (16 * dp).toInt(), pad, (8 * dp).toInt())
+            setPadding(spacingXxl, spacingLg, spacingXxl, spacingSm)
         }
 
         val descText = TextView(context).apply {
             text = context.getString(R.string.convert_resize_instruction)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             setTextColor(ContextCompat.getColor(context, R.color.textSecondary))
         }
         container.addView(descText)
@@ -186,13 +187,13 @@ object ConvertDialog {
         // Width input
         val widthLabel = TextView(context).apply {
             text = context.getString(R.string.convert_max_width)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (16 * dp).toInt()
+            lp.topMargin = spacingLg
             layoutParams = lp
         }
         container.addView(widthLabel)
@@ -200,20 +201,20 @@ object ConvertDialog {
         val widthInput = EditText(context).apply {
             hint = "1920"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
         }
         container.addView(widthInput)
 
         // Height input
         val heightLabel = TextView(context).apply {
             text = context.getString(R.string.convert_max_height)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (8 * dp).toInt()
+            lp.topMargin = spacingSm
             layoutParams = lp
         }
         container.addView(heightLabel)
@@ -221,20 +222,20 @@ object ConvertDialog {
         val heightInput = EditText(context).apply {
             hint = "1080"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
         }
         container.addView(heightInput)
 
         // Format selector note
         val noteText = TextView(context).apply {
             text = context.getString(R.string.convert_resize_format_note)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
             setTextColor(ContextCompat.getColor(context, R.color.textTertiary))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (12 * dp).toInt()
+            lp.topMargin = spacingMd
             layoutParams = lp
         }
         container.addView(noteText)
@@ -270,20 +271,26 @@ object ConvertDialog {
      */
     private fun showVideoConvertDialog(context: Context, item: FileItem, onResult: (FileConverter.ConvertResult) -> Unit) {
         val dp = context.resources.displayMetrics.density
+        val spacingXs = context.resources.getDimensionPixelSize(R.dimen.spacing_xs)
+        val spacingSm = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
+        val spacingMd = context.resources.getDimensionPixelSize(R.dimen.spacing_md)
+        val spacingLg = context.resources.getDimensionPixelSize(R.dimen.spacing_lg)
+        val spacingXl = context.resources.getDimensionPixelSize(R.dimen.spacing_xl)
+        val spacingXxl = context.resources.getDimensionPixelSize(R.dimen.spacing_xxl)
+        val strokeDefault = context.resources.getDimensionPixelSize(R.dimen.stroke_default)
         val durationMs = FileConverter.getVideoDurationMs(item.path)
 
         val scrollView = ScrollView(context)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val pad = (24 * dp).toInt()
-            setPadding(pad, (16 * dp).toInt(), pad, (8 * dp).toInt())
+            setPadding(spacingXxl, spacingLg, spacingXxl, spacingSm)
         }
         scrollView.addView(container)
 
         // ---- Section 1: Extract single frame ----
         val sectionTitle1 = TextView(context).apply {
             text = context.getString(R.string.convert_video_section_single_frame)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
             setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
             typeface = Typeface.DEFAULT_BOLD
         }
@@ -291,13 +298,13 @@ object ConvertDialog {
 
         val sectionDesc1 = TextView(context).apply {
             text = context.getString(R.string.convert_video_single_frame_desc)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_chip))
             setTextColor(ContextCompat.getColor(context, R.color.textSecondary))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (4 * dp).toInt()
+            lp.topMargin = spacingXs
             layoutParams = lp
         }
         container.addView(sectionDesc1)
@@ -306,14 +313,14 @@ object ConvertDialog {
         val timeDisplay = TextView(context).apply {
             text = context.getString(R.string.convert_video_timestamp, "0:00",
                 if (durationMs > 0) FileConverter.formatTimeDisplay(durationMs) else "?:??")
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
             gravity = Gravity.CENTER
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (12 * dp).toInt()
+            lp.topMargin = spacingMd
             layoutParams = lp
         }
         container.addView(timeDisplay)
@@ -327,7 +334,7 @@ object ConvertDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (4 * dp).toInt()
+            lp.topMargin = spacingXs
             layoutParams = lp
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -355,7 +362,7 @@ object ConvertDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (12 * dp).toInt()
+            lp.topMargin = spacingMd
             layoutParams = lp
         }
 
@@ -369,10 +376,10 @@ object ConvertDialog {
         val divider = View(context).apply {
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                (1 * dp).toInt()
+                strokeDefault
             )
-            lp.topMargin = (20 * dp).toInt()
-            lp.bottomMargin = (16 * dp).toInt()
+            lp.topMargin = spacingXl
+            lp.bottomMargin = spacingLg
             layoutParams = lp
             setBackgroundColor(ContextCompat.getColor(context, R.color.borderDefault))
         }
@@ -381,7 +388,7 @@ object ConvertDialog {
         // ---- Section 2: Extract key frames ----
         val sectionTitle2 = TextView(context).apply {
             text = context.getString(R.string.convert_video_section_key_frames)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
             setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
             typeface = Typeface.DEFAULT_BOLD
         }
@@ -389,13 +396,13 @@ object ConvertDialog {
 
         val sectionDesc2 = TextView(context).apply {
             text = context.getString(R.string.convert_video_key_frames_desc)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_chip))
             setTextColor(ContextCompat.getColor(context, R.color.textSecondary))
             val lp = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (4 * dp).toInt()
+            lp.topMargin = spacingXs
             layoutParams = lp
         }
         container.addView(sectionDesc2)
@@ -408,13 +415,13 @@ object ConvertDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (12 * dp).toInt()
+            lp.topMargin = spacingMd
             layoutParams = lp
         }
 
         val countLabel = TextView(context).apply {
             text = context.getString(R.string.convert_video_frame_count)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
             setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         }
@@ -424,7 +431,7 @@ object ConvertDialog {
             hint = "10"
             setText("10")
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams((80 * dp).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         }
@@ -439,7 +446,7 @@ object ConvertDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.topMargin = (12 * dp).toInt()
+            lp.topMargin = spacingMd
             layoutParams = lp
         }
 
@@ -595,12 +602,11 @@ object ConvertDialog {
         options: List<ConvertOption>,
         onResult: (FileConverter.ConvertResult) -> Unit
     ) {
-        val dp = context.resources.displayMetrics.density
+        val spacingSm = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
         val scrollView = ScrollView(context)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val pad = (16 * dp).toInt()
-            setPadding(0, pad / 2, 0, pad / 2)
+            setPadding(0, spacingSm, 0, spacingSm)
         }
         scrollView.addView(container)
 
@@ -628,13 +634,13 @@ object ConvertDialog {
      * Builds a tappable row with a title and description for a conversion option.
      */
     private fun buildOptionRow(context: Context, option: ConvertOption): LinearLayout {
-        val dp = context.resources.displayMetrics.density
+        val spacingMicro = context.resources.getDimensionPixelSize(R.dimen.spacing_micro)
+        val spacingMd = context.resources.getDimensionPixelSize(R.dimen.spacing_md)
+        val spacingXxl = context.resources.getDimensionPixelSize(R.dimen.spacing_xxl)
 
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val padH = (24 * dp).toInt()
-            val padV = (12 * dp).toInt()
-            setPadding(padH, padV, padH, padV)
+            setPadding(spacingXxl, spacingMd, spacingXxl, spacingMd)
 
             val outValue = TypedValue()
             context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
@@ -645,7 +651,7 @@ object ConvertDialog {
 
             val titleView = TextView(context).apply {
                 text = option.title
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
                 setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
@@ -653,13 +659,13 @@ object ConvertDialog {
 
             val descView = TextView(context).apply {
                 text = option.description
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_chip))
                 setTextColor(ContextCompat.getColor(context, R.color.textSecondary))
                 val lp = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                lp.topMargin = (2 * dp).toInt()
+                lp.topMargin = spacingMicro
                 layoutParams = lp
             }
             addView(descView)
@@ -670,15 +676,15 @@ object ConvertDialog {
      * Builds a Material-styled outlined action button.
      */
     private fun buildActionButton(context: Context, label: String): com.google.android.material.button.MaterialButton {
-        val dp = context.resources.displayMetrics.density
+        val spacingSm = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
         return com.google.android.material.button.MaterialButton(
             context, null, com.google.android.material.R.attr.materialButtonOutlinedStyle
         ).apply {
             text = label
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_chip))
             isAllCaps = false
             val lp = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-            lp.marginEnd = (8 * dp).toInt()
+            lp.marginEnd = spacingSm
             layoutParams = lp
         }
     }
@@ -691,15 +697,15 @@ object ConvertDialog {
         action: () -> FileConverter.ConvertResult,
         onResult: (FileConverter.ConvertResult) -> Unit
     ) {
-        val dp = context.resources.displayMetrics.density
+        val spacingLg = context.resources.getDimensionPixelSize(R.dimen.spacing_lg)
+        val spacingXxl = context.resources.getDimensionPixelSize(R.dimen.spacing_xxl)
         val progressContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val pad = (24 * dp).toInt()
-            setPadding(pad, (16 * dp).toInt(), pad, (16 * dp).toInt())
+            setPadding(spacingXxl, spacingLg, spacingXxl, spacingLg)
 
             addView(TextView(context).apply {
                 text = context.getString(R.string.convert_progress)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
                 setTextColor(ContextCompat.getColor(context, R.color.textPrimary))
             })
 
@@ -709,7 +715,7 @@ object ConvertDialog {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                lp.topMargin = (16 * dp).toInt()
+                lp.topMargin = spacingLg
                 layoutParams = lp
             })
         }

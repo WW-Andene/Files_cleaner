@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.StatFs
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -162,7 +163,10 @@ class StorageDashboardFragment : Fragment() {
         container.visibility = View.VISIBLE
 
         val ctx = requireContext()
-        val density = resources.displayMetrics.density
+        val spacingXs = ctx.resources.getDimensionPixelSize(R.dimen.spacing_xs)
+        val spacingSm = ctx.resources.getDimensionPixelSize(R.dimen.spacing_sm)
+        val spacingMd = ctx.resources.getDimensionPixelSize(R.dimen.spacing_md)
+        val spacingChip = ctx.resources.getDimensionPixelSize(R.dimen.spacing_chip)
         val newKeys = entries.map { it.key }
         val canUpdateInPlace = lastCategoryKeys == newKeys && container.childCount == newKeys.size
 
@@ -213,17 +217,15 @@ class StorageDashboardFragment : Fragment() {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        bottomMargin = (8 * density).toInt()
+                        bottomMargin = spacingSm
                     }
-                    setPadding((4 * density).toInt(), (6 * density).toInt(),
-                        (4 * density).toInt(), (6 * density).toInt())
+                    setPadding(spacingXs, spacingChip, spacingXs, spacingChip)
                 }
 
                 // Color dot indicator
                 val dot = View(ctx).apply {
-                    val dotSize = (12 * density).toInt()
-                    layoutParams = LinearLayout.LayoutParams(dotSize, dotSize).apply {
-                        marginEnd = (8 * density).toInt()
+                    layoutParams = LinearLayout.LayoutParams(spacingMd, spacingMd).apply {
+                        marginEnd = spacingSm
                     }
                     background = GradientDrawable().apply {
                         shape = GradientDrawable.OVAL
@@ -242,7 +244,7 @@ class StorageDashboardFragment : Fragment() {
                 val nameText = TextView(ctx).apply {
                     text = "${cat.emoji} ${getString(cat.displayNameRes)}"
                     setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
-                    textSize = 14f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, ctx.resources.getDimension(R.dimen.text_body))
                 }
                 infoColumn.addView(nameText)
 
@@ -253,7 +255,7 @@ class StorageDashboardFragment : Fragment() {
                         UndoHelper.formatBytes(catSize))
                     text = "$countAndSize ($pct%)"
                     setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
-                    textSize = 12f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, ctx.resources.getDimension(R.dimen.text_body_small))
                 }
                 infoColumn.addView(detailText)
 
@@ -261,9 +263,9 @@ class StorageDashboardFragment : Fragment() {
                 val progressBar = ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        (6 * density).toInt()
+                        spacingChip
                     ).apply {
-                        topMargin = (4 * density).toInt()
+                        topMargin = spacingXs
                     }
                     max = 100
                     progress = pct
@@ -300,6 +302,11 @@ class StorageDashboardFragment : Fragment() {
         binding.cardTopFiles.visibility = View.VISIBLE
         val ctx = requireContext()
         val density = resources.displayMetrics.density
+        val spacingXs = ctx.resources.getDimensionPixelSize(R.dimen.spacing_xs)
+        val spacingSm = ctx.resources.getDimensionPixelSize(R.dimen.spacing_sm)
+        val spacingChip = ctx.resources.getDimensionPixelSize(R.dimen.spacing_chip)
+        val spacingXl = ctx.resources.getDimensionPixelSize(R.dimen.spacing_xl)
+        val strokeDefault = ctx.resources.getDimensionPixelSize(R.dimen.stroke_default)
         val newPaths = topFiles.map { it.path }
 
         // For N files the container has N rows + (N-1) dividers = 2N-1 children.
@@ -337,36 +344,35 @@ class StorageDashboardFragment : Fragment() {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        bottomMargin = (4 * density).toInt()
+                        bottomMargin = spacingXs
                     }
-                    setPadding((4 * density).toInt(), (6 * density).toInt(),
-                        (4 * density).toInt(), (6 * density).toInt())
+                    setPadding(spacingXs, spacingChip, spacingXs, spacingChip)
                 }
 
                 // Rank number
                 val rank = TextView(ctx).apply {
                     text = "${index + 1}."
                     setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
-                    textSize = 12f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, ctx.resources.getDimension(R.dimen.text_body_small))
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        marginEnd = (8 * density).toInt()
+                        marginEnd = spacingSm
                     }
-                    minWidth = (20 * density).toInt()
+                    minWidth = spacingXl
                 }
                 row.addView(rank)
 
                 // Category emoji
                 val emoji = TextView(ctx).apply {
                     text = file.category.emoji
-                    textSize = 14f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, ctx.resources.getDimension(R.dimen.text_body))
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        marginEnd = (8 * density).toInt()
+                        marginEnd = spacingSm
                     }
                 }
                 row.addView(emoji)
@@ -375,7 +381,7 @@ class StorageDashboardFragment : Fragment() {
                 val nameText = TextView(ctx).apply {
                     text = file.name
                     setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
-                    textSize = 13f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, ctx.resources.getDimension(R.dimen.text_chip))
                     maxLines = 1
                     ellipsize = android.text.TextUtils.TruncateAt.MIDDLE
                     layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
@@ -386,12 +392,12 @@ class StorageDashboardFragment : Fragment() {
                 val sizeText = TextView(ctx).apply {
                     text = UndoHelper.formatBytes(file.size)
                     setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
-                    textSize = 12f
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, ctx.resources.getDimension(R.dimen.text_body_small))
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        marginStart = (8 * density).toInt()
+                        marginStart = spacingSm
                     }
                 }
                 row.addView(sizeText)
@@ -403,7 +409,7 @@ class StorageDashboardFragment : Fragment() {
                     val divider = View(ctx).apply {
                         layoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
-                            (1 * density).toInt()
+                            strokeDefault
                         ).apply {
                             topMargin = (2 * density).toInt()
                             bottomMargin = (2 * density).toInt()

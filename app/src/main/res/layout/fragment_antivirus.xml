@@ -195,7 +195,7 @@
                             android:text="@string/av_critical"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/colorError"
-                            android:textSize="10sp" />
+                            android:textSize="@dimen/text_caption" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -232,7 +232,7 @@
                             android:text="@string/av_high"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
-                            android:textSize="10sp" />
+                            android:textSize="@dimen/text_caption" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -269,7 +269,7 @@
                             android:text="@string/av_medium"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
-                            android:textSize="10sp" />
+                            android:textSize="@dimen/text_caption" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -306,7 +306,7 @@
                             android:text="@string/av_clean"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
-                            android:textSize="10sp" />
+                            android:textSize="@dimen/text_caption" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>

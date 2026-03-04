@@ -4,11 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_margin="@dimen/spacing_xs"
     app:cardCornerRadius="@dimen/radius_card"
-    app:cardElevation="0dp"
+    app:cardElevation="@dimen/elevation_none"
     app:cardBackgroundColor="@color/surfaceColor"
-    app:strokeWidth="1dp"
+    app:strokeWidth="@dimen/stroke_default"
     app:strokeColor="@color/borderDefault"
     app:rippleColor="@color/colorPrimaryContainer">
 
@@ -28,8 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
+            app:cardElevation="@dimen/elevation_none"
+            app:strokeWidth="@dimen/stroke_none"
             app:cardBackgroundColor="@color/surfaceDim">
 
             <FrameLayout
@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
-                    android:layout_margin="4dp"
+                    android:layout_margin="@dimen/spacing_xs"
                     android:clickable="false"
                     android:buttonTint="@color/colorPrimary"
                     android:visibility="gone" />
@@ -62,9 +62,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="8dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="8dp">
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingTop="@dimen/spacing_chip"
+            android:paddingBottom="@dimen/spacing_sm">
 
             <TextView
                 android:id="@+id/tv_file_name"

@@ -73,7 +73,7 @@
                 android:text="@string/dual_pane_tab_browse"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_body_small"
                 android:gravity="start|center_vertical"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -96,13 +96,13 @@
 
                 <ImageButton
                     android:id="@+id/btn_up_left"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/spacing_3xl"
+                    android:layout_height="@dimen/spacing_3xl"
                     android:src="@drawable/ic_arrow_up"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_go_up"
                     android:scaleType="centerInside"
-                    android:padding="6dp"
+                    android:padding="@dimen/spacing_chip"
                     app:tint="@color/textSecondary" />
 
                 <TextView
@@ -121,13 +121,13 @@
 
                 <ImageButton
                     android:id="@+id/btn_pick_dir_left"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/spacing_3xl"
+                    android:layout_height="@dimen/spacing_3xl"
                     android:src="@drawable/ic_folder"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_pick_directory"
                     android:scaleType="centerInside"
-                    android:padding="6dp"
+                    android:padding="@dimen/spacing_chip"
                     app:tint="@color/textSecondary" />
             </LinearLayout>
 
@@ -154,7 +154,7 @@
         <!-- Divider handle -->
         <FrameLayout
             android:id="@+id/divider_handle"
-            android:layout_width="12dp"
+            android:layout_width="@dimen/spacing_md"
             android:layout_height="match_parent"
             android:background="@color/surfaceDim"
             android:contentDescription="@string/dual_pane_divider_handle">
@@ -162,7 +162,7 @@
             <!-- Visual grip dots -->
             <View
                 android:layout_width="4dp"
-                android:layout_height="40dp"
+                android:layout_height="@dimen/icon_file_list_default"
                 android:layout_gravity="center"
                 android:background="@color/borderDefault" />
         </FrameLayout>
@@ -187,7 +187,7 @@
                 android:text="@string/dual_pane_tab_browse"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_body_small"
                 android:gravity="start|center_vertical"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -210,13 +210,13 @@
 
                 <ImageButton
                     android:id="@+id/btn_up_right"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/spacing_3xl"
+                    android:layout_height="@dimen/spacing_3xl"
                     android:src="@drawable/ic_arrow_up"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_go_up"
                     android:scaleType="centerInside"
-                    android:padding="6dp"
+                    android:padding="@dimen/spacing_chip"
                     app:tint="@color/textSecondary" />
 
                 <TextView
@@ -235,13 +235,13 @@
 
                 <ImageButton
                     android:id="@+id/btn_pick_dir_right"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="@dimen/spacing_3xl"
+                    android:layout_height="@dimen/spacing_3xl"
                     android:src="@drawable/ic_folder"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_pick_directory"
                     android:scaleType="centerInside"
-                    android:padding="6dp"
+                    android:padding="@dimen/spacing_chip"
                     app:tint="@color/textSecondary" />
             </LinearLayout>
 
@@ -273,7 +273,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/surfaceColor"
-        android:elevation="8dp"
+        android:elevation="@dimen/elevation_nav"
         android:visibility="gone">
 
         <!-- Selection info row -->
@@ -302,7 +302,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/dual_pane_select_all"
                 android:scaleType="centerInside"
-                android:padding="8dp"
+                android:padding="@dimen/spacing_sm"
                 app:tint="@color/textSecondary" />
 
             <ImageButton
@@ -313,7 +313,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/dual_pane_deselect_all"
                 android:scaleType="centerInside"
-                android:padding="8dp"
+                android:padding="@dimen/spacing_sm"
                 app:tint="@color/textSecondary" />
         </LinearLayout>
 
@@ -338,7 +338,7 @@
                 android:insetBottom="0dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 app:icon="@drawable/ic_copy"
-                app:iconSize="16dp"
+                app:iconSize="@dimen/icon_small"
                 app:cornerRadius="@dimen/radius_pill"
                 app:strokeColor="@color/borderDefault" />
 
@@ -354,7 +354,7 @@
                 android:insetBottom="0dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 app:icon="@drawable/ic_move"
-                app:iconSize="16dp"
+                app:iconSize="@dimen/icon_small"
                 app:cornerRadius="@dimen/radius_pill"
                 app:strokeColor="@color/borderDefault" />
 
@@ -370,7 +370,7 @@
                 android:insetBottom="0dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 app:icon="@drawable/ic_delete"
-                app:iconSize="16dp"
+                app:iconSize="@dimen/icon_small"
                 app:cornerRadius="@dimen/radius_pill"
                 app:strokeColor="@color/colorError"
                 android:textColor="@color/colorError"
