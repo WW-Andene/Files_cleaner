@@ -45,6 +45,12 @@ class StorageDashboardFragment : Fragment() {
         FileCategory.OTHER to R.color.catOther
     )
 
+    /** Cached keys from last buildCategoryRows call for diff-based view reuse. */
+    private var lastCategoryKeys: List<FileCategory>? = null
+
+    /** Cached file paths from last buildTopFiles call for diff-based view reuse. */
+    private var lastTopFilePaths: List<String>? = null
+
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View {
         _binding = FragmentDashboardBinding.inflate(i, c, false)
         return binding.root
@@ -136,10 +142,11 @@ class StorageDashboardFragment : Fragment() {
 
     /**
      * Build individual category rows with colored indicators and progress bars.
+     * Uses view recycling: if the category keys are unchanged, existing row views
+     * are updated in-place to avoid layout thrashing and GC pressure.
      */
     private fun buildCategoryRows(catMap: Map<FileCategory, List<FileItem>>) {
         val container = binding.categoryRowsContainer
-        container.removeAllViews()
 
         val entries = catMap.entries.sortedByDescending { it.value.sumOf { f -> f.size } }
         val totalSize = entries.sumOf { it.value.sumOf { f -> f.size } }
@@ -147,6 +154,7 @@ class StorageDashboardFragment : Fragment() {
         if (entries.isEmpty()) {
             binding.tvCategoryBreakdown.visibility = View.VISIBLE
             container.visibility = View.GONE
+            lastCategoryKeys = null
             return
         }
 
@@ -155,192 +163,265 @@ class StorageDashboardFragment : Fragment() {
 
         val ctx = requireContext()
         val density = resources.displayMetrics.density
+        val newKeys = entries.map { it.key }
+        val canUpdateInPlace = lastCategoryKeys == newKeys && container.childCount == newKeys.size
 
-        for ((cat, files) in entries) {
-            val catSize = files.sumOf { it.size }
-            val pct = if (totalSize > 0) ((catSize * 100.0) / totalSize).toInt() else 0
-            val colorRes = categoryColorRes[cat] ?: R.color.catOther
-            val color = ContextCompat.getColor(ctx, colorRes)
+        if (canUpdateInPlace) {
+            // Update existing row views in-place without removing/recreating
+            for ((i, entry) in entries.withIndex()) {
+                val (cat, files) = entry
+                val catSize = files.sumOf { it.size }
+                val pct = if (totalSize > 0) ((catSize * 100.0) / totalSize).toInt() else 0
+                val colorRes = categoryColorRes[cat] ?: R.color.catOther
+                val color = ContextCompat.getColor(ctx, colorRes)
 
-            // Row container
-            val row = LinearLayout(ctx).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = (8 * density).toInt()
-                }
-                setPadding((4 * density).toInt(), (6 * density).toInt(),
-                    (4 * density).toInt(), (6 * density).toInt())
-            }
+                val row = container.getChildAt(i) as LinearLayout
+                // Child 0 is the dot, child 1 is the infoColumn
+                val dot = row.getChildAt(0)
+                (dot.background as? GradientDrawable)?.setColor(color)
 
-            // Color dot indicator
-            val dot = View(ctx).apply {
-                val dotSize = (12 * density).toInt()
-                layoutParams = LinearLayout.LayoutParams(dotSize, dotSize).apply {
-                    marginEnd = (8 * density).toInt()
-                }
-                background = GradientDrawable().apply {
-                    shape = GradientDrawable.OVAL
-                    setColor(color)
-                }
-            }
-            row.addView(dot)
+                val infoColumn = row.getChildAt(1) as LinearLayout
+                // infoColumn child 0 = nameText, child 1 = detailText, child 2 = progressBar
+                val nameText = infoColumn.getChildAt(0) as TextView
+                nameText.text = "${cat.emoji} ${getString(cat.displayNameRes)}"
 
-            // Category info (name + count + size) column
-            val infoColumn = LinearLayout(ctx).apply {
-                orientation = LinearLayout.VERTICAL
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            }
-
-            // Category name with emoji and file count
-            val nameText = TextView(ctx).apply {
-                text = "${cat.emoji} ${getString(cat.displayNameRes)}"
-                setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
-                textSize = 14f
-            }
-            infoColumn.addView(nameText)
-
-            // File count and size
-            val detailText = TextView(ctx).apply {
+                val detailText = infoColumn.getChildAt(1) as TextView
                 val countAndSize = resources.getQuantityString(
                     R.plurals.n_files_with_size, files.size, files.size,
                     UndoHelper.formatBytes(catSize))
-                text = "$countAndSize ($pct%)"
-                setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
-                textSize = 12f
-            }
-            infoColumn.addView(detailText)
+                detailText.text = "$countAndSize ($pct%)"
 
-            // Progress bar showing proportion
-            val progressBar = ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    (6 * density).toInt()
-                ).apply {
-                    topMargin = (4 * density).toInt()
+                val progressBar = infoColumn.getChildAt(2) as ProgressBar
+                progressBar.progress = pct
+                progressBar.progressTintList = android.content.res.ColorStateList.valueOf(color)
+            }
+        } else {
+            // Category keys changed — full rebuild required
+            container.removeAllViews()
+
+            for ((cat, files) in entries) {
+                val catSize = files.sumOf { it.size }
+                val pct = if (totalSize > 0) ((catSize * 100.0) / totalSize).toInt() else 0
+                val colorRes = categoryColorRes[cat] ?: R.color.catOther
+                val color = ContextCompat.getColor(ctx, colorRes)
+
+                // Row container
+                val row = LinearLayout(ctx).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        bottomMargin = (8 * density).toInt()
+                    }
+                    setPadding((4 * density).toInt(), (6 * density).toInt(),
+                        (4 * density).toInt(), (6 * density).toInt())
                 }
-                max = 100
-                progress = pct
-                progressTintList = android.content.res.ColorStateList.valueOf(color)
-                progressBackgroundTintList = android.content.res.ColorStateList.valueOf(
-                    ContextCompat.getColor(ctx, R.color.borderDefault))
-            }
-            infoColumn.addView(progressBar)
 
-            row.addView(infoColumn)
-            container.addView(row)
+                // Color dot indicator
+                val dot = View(ctx).apply {
+                    val dotSize = (12 * density).toInt()
+                    layoutParams = LinearLayout.LayoutParams(dotSize, dotSize).apply {
+                        marginEnd = (8 * density).toInt()
+                    }
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(color)
+                    }
+                }
+                row.addView(dot)
+
+                // Category info (name + count + size) column
+                val infoColumn = LinearLayout(ctx).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                }
+
+                // Category name with emoji and file count
+                val nameText = TextView(ctx).apply {
+                    text = "${cat.emoji} ${getString(cat.displayNameRes)}"
+                    setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
+                    textSize = 14f
+                }
+                infoColumn.addView(nameText)
+
+                // File count and size
+                val detailText = TextView(ctx).apply {
+                    val countAndSize = resources.getQuantityString(
+                        R.plurals.n_files_with_size, files.size, files.size,
+                        UndoHelper.formatBytes(catSize))
+                    text = "$countAndSize ($pct%)"
+                    setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
+                    textSize = 12f
+                }
+                infoColumn.addView(detailText)
+
+                // Progress bar showing proportion
+                val progressBar = ProgressBar(ctx, null, android.R.attr.progressBarStyleHorizontal).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        (6 * density).toInt()
+                    ).apply {
+                        topMargin = (4 * density).toInt()
+                    }
+                    max = 100
+                    progress = pct
+                    progressTintList = android.content.res.ColorStateList.valueOf(color)
+                    progressBackgroundTintList = android.content.res.ColorStateList.valueOf(
+                        ContextCompat.getColor(ctx, R.color.borderDefault))
+                }
+                infoColumn.addView(progressBar)
+
+                row.addView(infoColumn)
+                container.addView(row)
+            }
         }
+
+        lastCategoryKeys = newKeys
     }
 
     /**
      * Build the top 10 largest files list.
+     * Uses view recycling: if the file paths are unchanged, existing row views
+     * are updated in-place to avoid layout thrashing and GC pressure.
      */
     private fun buildTopFiles(largeFiles: List<FileItem>) {
         val container = binding.topFilesContainer
-        container.removeAllViews()
 
         val topFiles = largeFiles.sortedByDescending { it.size }.take(10)
 
         if (topFiles.isEmpty()) {
             binding.cardTopFiles.visibility = View.GONE
+            lastTopFilePaths = null
             return
         }
 
         binding.cardTopFiles.visibility = View.VISIBLE
         val ctx = requireContext()
         val density = resources.displayMetrics.density
+        val newPaths = topFiles.map { it.path }
 
-        for ((index, file) in topFiles.withIndex()) {
-            val row = LinearLayout(ctx).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = (4 * density).toInt()
-                }
-                setPadding((4 * density).toInt(), (6 * density).toInt(),
-                    (4 * density).toInt(), (6 * density).toInt())
+        // For N files the container has N rows + (N-1) dividers = 2N-1 children.
+        // Rows are at even indices (0, 2, 4, ...), dividers at odd indices.
+        val expectedChildCount = topFiles.size * 2 - 1
+        val canUpdateInPlace = lastTopFilePaths == newPaths && container.childCount == expectedChildCount
+
+        if (canUpdateInPlace) {
+            // Update existing row views in-place without removing/recreating
+            for ((index, file) in topFiles.withIndex()) {
+                val rowIndex = index * 2 // rows are at even positions, dividers at odd
+                val row = container.getChildAt(rowIndex) as LinearLayout
+                // Row children: [0] rank, [1] emoji, [2] nameText, [3] sizeText
+                val rank = row.getChildAt(0) as TextView
+                rank.text = "${index + 1}."
+
+                val emoji = row.getChildAt(1) as TextView
+                emoji.text = file.category.emoji
+
+                val nameText = row.getChildAt(2) as TextView
+                nameText.text = file.name
+
+                val sizeText = row.getChildAt(3) as TextView
+                sizeText.text = UndoHelper.formatBytes(file.size)
             }
+        } else {
+            // File list structure changed — full rebuild required
+            container.removeAllViews()
 
-            // Rank number
-            val rank = TextView(ctx).apply {
-                text = "${index + 1}."
-                setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
-                textSize = 12f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginEnd = (8 * density).toInt()
-                }
-                minWidth = (20 * density).toInt()
-            }
-            row.addView(rank)
-
-            // Category emoji
-            val emoji = TextView(ctx).apply {
-                text = file.category.emoji
-                textSize = 14f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginEnd = (8 * density).toInt()
-                }
-            }
-            row.addView(emoji)
-
-            // File name (truncated)
-            val nameText = TextView(ctx).apply {
-                text = file.name
-                setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
-                textSize = 13f
-                maxLines = 1
-                ellipsize = android.text.TextUtils.TruncateAt.MIDDLE
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            }
-            row.addView(nameText)
-
-            // File size
-            val sizeText = TextView(ctx).apply {
-                text = UndoHelper.formatBytes(file.size)
-                setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
-                textSize = 12f
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginStart = (8 * density).toInt()
-                }
-            }
-            row.addView(sizeText)
-
-            container.addView(row)
-
-            // Add divider between items (not after last)
-            if (index < topFiles.size - 1) {
-                val divider = View(ctx).apply {
+            for ((index, file) in topFiles.withIndex()) {
+                val row = LinearLayout(ctx).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        (1 * density).toInt()
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        topMargin = (2 * density).toInt()
-                        bottomMargin = (2 * density).toInt()
+                        bottomMargin = (4 * density).toInt()
                     }
-                    setBackgroundColor(ContextCompat.getColor(ctx, R.color.borderSubtle))
+                    setPadding((4 * density).toInt(), (6 * density).toInt(),
+                        (4 * density).toInt(), (6 * density).toInt())
                 }
-                container.addView(divider)
+
+                // Rank number
+                val rank = TextView(ctx).apply {
+                    text = "${index + 1}."
+                    setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
+                    textSize = 12f
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        marginEnd = (8 * density).toInt()
+                    }
+                    minWidth = (20 * density).toInt()
+                }
+                row.addView(rank)
+
+                // Category emoji
+                val emoji = TextView(ctx).apply {
+                    text = file.category.emoji
+                    textSize = 14f
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        marginEnd = (8 * density).toInt()
+                    }
+                }
+                row.addView(emoji)
+
+                // File name (truncated)
+                val nameText = TextView(ctx).apply {
+                    text = file.name
+                    setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
+                    textSize = 13f
+                    maxLines = 1
+                    ellipsize = android.text.TextUtils.TruncateAt.MIDDLE
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                }
+                row.addView(nameText)
+
+                // File size
+                val sizeText = TextView(ctx).apply {
+                    text = UndoHelper.formatBytes(file.size)
+                    setTextColor(ContextCompat.getColor(ctx, R.color.textSecondary))
+                    textSize = 12f
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        marginStart = (8 * density).toInt()
+                    }
+                }
+                row.addView(sizeText)
+
+                container.addView(row)
+
+                // Add divider between items (not after last)
+                if (index < topFiles.size - 1) {
+                    val divider = View(ctx).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            (1 * density).toInt()
+                        ).apply {
+                            topMargin = (2 * density).toInt()
+                            bottomMargin = (2 * density).toInt()
+                        }
+                        setBackgroundColor(ContextCompat.getColor(ctx, R.color.borderSubtle))
+                    }
+                    container.addView(divider)
+                }
             }
         }
+
+        lastTopFilePaths = newPaths
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        lastCategoryKeys = null
+        lastTopFilePaths = null
     }
 }

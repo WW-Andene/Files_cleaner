@@ -206,6 +206,22 @@ class ArborescenceView @JvmOverloads constructor(
     }
     private val tempPath = Path()
 
+    // P5: Pre-computed dp-scaled constants used in drawBlock (avoid repeated multiply per frame)
+    private val padDp = 8f * dp
+    private val indicatorWidthDp = 18f * dp
+    private val dotRadius = 3f * dp
+    private val fileXStart = 18f * dp
+    private val fileTextX = 28f * dp
+    private val fileSizeEndPad = 6f * dp
+    private val ghostPad = 16f * dp
+    private val ghostHeight = 20f * dp
+    private val ghostYOffset = 6f * dp
+    private val ghostTextOffset = 3f * dp
+    private val ghostCorner = 8f * dp
+
+    // P5: Reusable float array for screenToWorld — avoids allocation on every drag move
+    private val tempPts = FloatArray(2)
+
     // ── Node layout data ──
     data class NodeLayout(
         val node: DirectoryNode,
@@ -216,7 +232,12 @@ class ArborescenceView @JvmOverloads constructor(
         var expanded: Boolean = false,
         var filesExpanded: Boolean = false,
         var cachedFiles: List<FileItem> = emptyList(),
-        var dominantCategory: FileCategory = FileCategory.OTHER
+        var dominantCategory: FileCategory = FileCategory.OTHER,
+        // P5/D4: Cached strings to avoid allocation in onDraw
+        var cachedSubtitle: String = "",
+        var cachedSizeStr: String = "",
+        var cachedMoreText: String = "",
+        var cachedFileSizes: Array<String> = emptyArray()
     )
 
     private var rootNode: DirectoryNode? = null
@@ -480,9 +501,17 @@ class ArborescenceView @JvmOverloads constructor(
         val displayFiles = if (filesExp) min(filtered.size, EXPANDED_MAX_FILES) else min(filtered.size, DEFAULT_MAX_FILES)
         val hasMore = filtered.size > displayFiles
         val h = headerHeight + displayFiles * fileLineHeight +
-            (if (hasMore) fileLineHeight else 0f) + 8f * dp
+            (if (hasMore) fileLineHeight else 0f) + padDp
         val dominant = node.files.groupBy { it.category }
             .maxByOrNull { it.value.size }?.key ?: FileCategory.OTHER
+        // P5/D4: Pre-compute strings at layout time — zero string allocation in onDraw
+        val sizeStr = formatSize(node.totalSize)
+        val subtitleText = context.resources.getQuantityString(
+            R.plurals.tree_node_subtitle, node.totalFileCount, node.totalFileCount, sizeStr)
+        val remaining = filtered.size - displayFiles
+        val moreText = if (hasMore) context.resources.getQuantityString(
+            R.plurals.tree_more_files, remaining, remaining) else ""
+        val fileSizes = Array(filtered.size) { i -> formatSize(filtered[i].size) }
         layouts[node.path] = NodeLayout(
             node = node,
             w = blockWidth,
@@ -490,7 +519,11 @@ class ArborescenceView @JvmOverloads constructor(
             expanded = expanded,
             filesExpanded = filesExp,
             cachedFiles = filtered,
-            dominantCategory = dominant
+            dominantCategory = dominant,
+            cachedSubtitle = subtitleText,
+            cachedSizeStr = sizeStr,
+            cachedMoreText = moreText,
+            cachedFileSizes = fileSizes
         )
         if (expanded) {
             for (child in node.children) {
@@ -590,8 +623,12 @@ class ArborescenceView @JvmOverloads constructor(
         val displayFiles = if (layout.filesExpanded) min(fileCount, EXPANDED_MAX_FILES) else min(fileCount, DEFAULT_MAX_FILES)
         val hasMore = fileCount > displayFiles
         val h = headerHeight + displayFiles * fileLineHeight +
-            (if (hasMore) fileLineHeight else 0f) + 8f * dp
+            (if (hasMore) fileLineHeight else 0f) + padDp
         layout.h = max(blockMinHeight, h)
+        // P5/D4: Refresh "more" text cache when file list expansion changes
+        val remaining = fileCount - displayFiles
+        layout.cachedMoreText = if (hasMore) context.resources.getQuantityString(
+            R.plurals.tree_more_files, remaining, remaining) else ""
     }
 
     private fun removeDescendantLayouts(node: DirectoryNode) {
@@ -656,11 +693,13 @@ class ArborescenceView @JvmOverloads constructor(
         invalidate()
     }
 
+    // P5: Reuse tempPts to avoid allocating a new FloatArray on every call (drag = 60fps)
     private fun screenToWorld(sx: Float, sy: Float): FloatArray {
         viewMatrix.invert(inverseMatrix)
-        val pts = floatArrayOf(sx, sy)
-        inverseMatrix.mapPoints(pts)
-        return pts
+        tempPts[0] = sx
+        tempPts[1] = sy
+        inverseMatrix.mapPoints(tempPts)
+        return tempPts
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -26,6 +26,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         private const val TYPE_FILE = 1
         private const val TYPE_FILE_GRID = 11
         private const val TYPE_FILE_COMPACT = 12
+        private const val PAYLOAD_SELECTION = "selection"
 
         private val DIFF = object : DiffUtil.ItemCallback<Item>() {
             override fun areItemsTheSame(a: Item, b: Item): Boolean = when {
@@ -67,20 +68,23 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         if (initialPath != null) {
             selectedPaths.add(initialPath)
         }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 
     fun exitSelectionMode() {
         selectionMode = false
         selectedPaths.clear()
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         onSelectionChanged?.invoke(emptyList())
     }
 
     fun toggleSelection(path: String) {
         if (path in selectedPaths) selectedPaths.remove(path) else selectedPaths.add(path)
-        notifyDataSetChanged()
+        val position = currentList.indexOfFirst { it is Item.File && it.fileItem.path == path }
+        if (position >= 0) {
+            notifyItemChanged(position, PAYLOAD_SELECTION)
+        }
         notifySelectionChanged()
     }
 
@@ -104,7 +108,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     fun selectAll() {
         enterSelectionMode()
         currentList.filterIsInstance<Item.File>().forEach { selectedPaths.add(it.fileItem.path) }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 
@@ -113,7 +117,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         currentList.filterIsInstance<Item.File>()
             .filter { !java.io.File(it.fileItem.path).isDirectory }
             .forEach { selectedPaths.add(it.fileItem.path) }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 
@@ -122,7 +126,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         currentList.filterIsInstance<Item.File>()
             .filter { java.io.File(it.fileItem.path).isDirectory }
             .forEach { selectedPaths.add(it.fileItem.path) }
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
     }
 
@@ -237,6 +241,41 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         }
     }
 
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
+        if (payloads.contains(PAYLOAD_SELECTION) && holder is FileViewHolder) {
+            val item = getItem(position) as? Item.File ?: return
+            val fileItem = item.fileItem
+            val isSelected = fileItem.path in selectedPaths
+            val ctx = holder.itemView.context
+            val c = colors ?: FileItemUtils.resolveColorsWithSelection(ctx).also { colors = it }
+
+            // Partial rebind: only update selection visual state (skip icon, text, thumbnail)
+            val card = holder.itemView as? com.google.android.material.card.MaterialCardView
+            if (isSelected) {
+                card?.setCardBackgroundColor(c.selectedBg)
+                card?.strokeColor = c.selectedBorder
+            } else {
+                card?.setCardBackgroundColor(c.surface)
+                card?.strokeColor = c.border
+            }
+
+            val cb = holder.check as? CheckBox
+            if (selectionMode && cb != null) {
+                cb.visibility = View.VISIBLE
+                cb.isChecked = isSelected
+                cb.isClickable = false
+            } else {
+                cb?.visibility = View.GONE
+            }
+
+            holder.itemView.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_info,
+                fileItem.name, holder.meta?.text ?: fileItem.sizeReadable)
+            return
+        }
+        super.onBindViewHolder(holder, position, payloads)
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is Item.Header -> bindHeader(holder as HeaderViewHolder, item)
@@ -325,7 +364,6 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
                 if (current is Item.File) {
                     if (selectionMode) {
                         toggleSelection(current.fileItem.path)
-                        notifyItemChanged(pos)
                     } else {
                         onItemClick?.invoke(current.fileItem)
                     }

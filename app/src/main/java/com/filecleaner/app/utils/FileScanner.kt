@@ -77,14 +77,20 @@ object FileScanner {
         val nodeMap = LinkedHashMap<String, DirectoryNode>()
         val sortedPaths = dirMap.entries.sortedByDescending { it.value.depth }
 
+        val storageName = context.getString(R.string.internal_storage)
         for ((path, info) in sortedPaths) {
             val childNodes = info.childPaths.mapNotNull { nodeMap[it] }
             val ownFileSize = info.files.sumOf { it.size }
             val ownFileCount = info.files.size
-            val totalSize = ownFileSize + childNodes.sumOf { it.totalSize }
-            val totalFileCount = ownFileCount + childNodes.sumOf { it.totalFileCount }
+            var childSize = 0L
+            var childCount = 0
+            for (child in childNodes) {
+                childSize += child.totalSize
+                childCount += child.totalFileCount
+            }
+            val totalSize = ownFileSize + childSize
+            val totalFileCount = ownFileCount + childCount
 
-            val storageName = context.getString(R.string.internal_storage)
             nodeMap[path] = DirectoryNode(
                 path = path,
                 name = if (path == rootPath) storageName else info.file.name,

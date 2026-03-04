@@ -2,7 +2,6 @@ package com.filecleaner.app.ui.adapters
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
-import android.text.format.DateFormat
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -157,24 +156,16 @@ object FileItemUtils {
             return
         }
 
-        // Load APK icons in grid mode
+        // Load APK icon asynchronously via Glide (avoids blocking UI thread with getPackageArchiveInfo)
         if (item.category == FileCategory.APK && file.exists() && isGrid) {
-            try {
-                val pm = ctx.packageManager
-                val info = pm.getPackageArchiveInfo(item.path, 0)
-                if (info != null) {
-                    info.applicationInfo?.sourceDir = item.path
-                    info.applicationInfo?.publicSourceDir = item.path
-                    val icon = info.applicationInfo?.loadIcon(pm)
-                    if (icon != null) {
-                        Glide.with(ctx).clear(imageView)
-                        imageView.clearColorFilter()
-                        imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                        imageView.setImageDrawable(icon)
-                        return
-                    }
-                }
-            } catch (_: Exception) { }
+            imageView.clearColorFilter()
+            imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            Glide.with(ctx)
+                .load(android.net.Uri.fromFile(file))
+                .placeholder(R.drawable.ic_apk)
+                .error(R.drawable.ic_apk)
+                .into(imageView)
+            return
         }
 
         // Fallback: category icon for all other file types
@@ -223,9 +214,13 @@ object FileItemUtils {
 
     // ── Meta text builder ────────────────────────────────────────────────
 
+    // D1: Cache date format to avoid per-call allocation
+    private val dateFormat by lazy {
+        java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
+    }
+
     fun buildMeta(textView: TextView, item: FileItem) {
-        val ctx = textView.context
-        val dateStr = DateFormat.format("dd MMM yyyy", Date(item.lastModified))
+        val dateStr = dateFormat.format(Date(item.lastModified))
         textView.text = "${item.sizeReadable}  \u2022  $dateStr"
     }
 }
