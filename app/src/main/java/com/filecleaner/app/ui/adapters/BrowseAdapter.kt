@@ -40,7 +40,8 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         set(value) {
             if (field != value) {
                 field = value
-                notifyItemRangeChanged(0, itemCount)
+                // Must use notifyDataSetChanged when view types change (list <-> grid)
+                notifyDataSetChanged()
             }
         }
 
@@ -180,7 +181,11 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         }
 
         holder.itemView.setOnClickListener {
-            onHeaderClick?.invoke(header.folderPath)
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                val h = getItem(pos) as? Item.Header ?: return@setOnClickListener
+                onHeaderClick?.invoke(h.folderPath)
+            }
         }
     }
 
@@ -188,13 +193,18 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         holder.name.text = item.name
         val c = colors ?: FileItemUtils.resolveColorsWithSelection(holder.itemView.context).also { colors = it }
 
+        // Reset icon size for recycled views; enlarge only for thumbnail mode
+        val lp = holder.icon.layoutParams
         if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
-            val lp = holder.icon.layoutParams
             val px72 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 72f, holder.itemView.resources.displayMetrics).toInt()
             lp.width = px72
             lp.height = px72
-            holder.icon.layoutParams = lp
+        } else {
+            val px40 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40f, holder.itemView.resources.displayMetrics).toInt()
+            lp.width = px40
+            lp.height = px40
         }
+        holder.icon.layoutParams = lp
 
         // Load thumbnail or icon
         val isGrid = viewMode != ViewMode.LIST && viewMode != ViewMode.LIST_WITH_THUMBNAILS && viewMode != ViewMode.LIST_COMPACT
@@ -211,10 +221,20 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         // Hide checkbox
         holder.check?.visibility = View.GONE
 
-        // Click handlers
-        holder.itemView.setOnClickListener { onItemClick?.invoke(item) }
+        // Click handlers (use bindingAdapterPosition to avoid stale item capture)
+        holder.itemView.setOnClickListener {
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                val current = getItem(pos)
+                if (current is Item.File) onItemClick?.invoke(current.fileItem)
+            }
+        }
         holder.itemView.setOnLongClickListener { v ->
-            onItemLongClick?.invoke(item, v)
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                val current = getItem(pos)
+                if (current is Item.File) onItemLongClick?.invoke(current.fileItem, v)
+            }
             true
         }
 

@@ -339,7 +339,16 @@ class CloudBrowserFragment : Fragment() {
         b.actionBar.visibility = View.VISIBLE
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val files = provider.listFiles(path)
+            val files = try {
+                provider.listFiles(path)
+            } catch (e: Exception) {
+                val b2 = _binding ?: return@launch
+                b2.progress.visibility = View.GONE
+                Snackbar.make(b2.root,
+                    getString(R.string.cloud_connection_failed) + ": ${e.message}",
+                    Snackbar.LENGTH_LONG).show()
+                return@launch
+            }
             val b2 = _binding ?: return@launch
             b2.progress.visibility = View.GONE
             currentFiles = files
@@ -534,7 +543,7 @@ class CloudBrowserFragment : Fragment() {
                 try { provider.disconnect() } catch (_: Exception) {}
             }
         }
-        binding.spinnerConnection.onItemSelectedListener = null
+        _binding?.spinnerConnection?.onItemSelectedListener = null
         super.onDestroyView()
         _binding = null
     }

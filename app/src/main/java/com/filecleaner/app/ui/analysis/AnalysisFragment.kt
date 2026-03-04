@@ -120,11 +120,12 @@ class AnalysisFragment : Fragment() {
         } else 0f
 
         binding.viewStorageBarFill.post {
-            val parent = binding.viewStorageBarFill.parent as View
+            val b = _binding ?: return@post
+            val parent = b.viewStorageBarFill.parent as View
             val targetWidth = (parent.width * fraction).toInt()
-            val lp = binding.viewStorageBarFill.layoutParams
+            val lp = b.viewStorageBarFill.layoutParams
             lp.width = targetWidth
-            binding.viewStorageBarFill.layoutParams = lp
+            b.viewStorageBarFill.layoutParams = lp
         }
     }
 
@@ -282,8 +283,9 @@ class AnalysisFragment : Fragment() {
 
         barTrack.addView(barFill)
 
-        // Set bar fill width after layout
+        // Set bar fill width after layout (guard against detached fragment)
         barTrack.post {
+            if (!isAdded) return@post
             val targetWidth = (barTrack.width * barFraction).toInt().coerceAtLeast(dpToPx(4))
             barFill.layoutParams = FrameLayout.LayoutParams(targetWidth, ViewGroup.LayoutParams.MATCH_PARENT)
         }
@@ -408,6 +410,7 @@ class AnalysisFragment : Fragment() {
 
         barTrack.addView(barFill)
         barTrack.post {
+            if (!isAdded) return@post
             val targetWidth = (barTrack.width * barFraction).toInt().coerceAtLeast(dpToPx(2))
             barFill.layoutParams = FrameLayout.LayoutParams(targetWidth, ViewGroup.LayoutParams.MATCH_PARENT)
         }

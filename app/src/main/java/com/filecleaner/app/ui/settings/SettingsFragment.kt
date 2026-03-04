@@ -86,7 +86,7 @@ class SettingsFragment : Fragment() {
 
         // Undo timeout (3–30 seconds)
         binding.seekUndoTimeout.max = 27 // 3 to 30
-        binding.seekUndoTimeout.progress = (UserPreferences.undoTimeoutMs / 1000) - 3
+        binding.seekUndoTimeout.progress = ((UserPreferences.undoTimeoutMs / 1000) - 3).coerceIn(0, 27)
         updateUndoLabel()
         binding.seekUndoTimeout.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -109,30 +109,34 @@ class SettingsFragment : Fragment() {
         binding.tvSettingsNote.text = getString(R.string.settings_rescan_note)
 
         // Clear All Data (P3 Security: GDPR data erasure)
-        val clearButton = com.google.android.material.button.MaterialButton(requireContext()).apply {
-            text = getString(R.string.settings_clear_data)
-            setBackgroundColor(android.graphics.Color.parseColor("#B00020"))
-            setTextColor(android.graphics.Color.WHITE)
-            val lp = android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            val margin = resources.getDimensionPixelSize(R.dimen.spacing_lg)
-            lp.setMargins(margin, margin * 2, margin, margin)
-            layoutParams = lp
+        // Avoid duplicate button on configuration change by checking for existing tagged button
+        if (binding.settingsContainer.findViewWithTag<View>(TAG_CLEAR_BUTTON) == null) {
+            val clearButton = com.google.android.material.button.MaterialButton(requireContext()).apply {
+                tag = TAG_CLEAR_BUTTON
+                text = getString(R.string.settings_clear_data)
+                setBackgroundColor(android.graphics.Color.parseColor("#B00020"))
+                setTextColor(android.graphics.Color.WHITE)
+                val lp = android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                val margin = resources.getDimensionPixelSize(R.dimen.spacing_lg)
+                lp.setMargins(margin, margin * 2, margin, margin)
+                layoutParams = lp
+            }
+            clearButton.setOnClickListener {
+                val ctx = context ?: return@setOnClickListener
+                AlertDialog.Builder(ctx)
+                    .setTitle(getString(R.string.settings_clear_data_confirm_title))
+                    .setMessage(getString(R.string.settings_clear_data_confirm_message))
+                    .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                        clearAllData()
+                    }
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .show()
+            }
+            binding.settingsContainer.addView(clearButton)
         }
-        clearButton.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.settings_clear_data_confirm_title))
-                .setMessage(getString(R.string.settings_clear_data_confirm_message))
-                .setPositiveButton(getString(R.string.delete)) { _, _ ->
-                    clearAllData()
-                }
-                .setNegativeButton(getString(R.string.cancel), null)
-                .show()
-        }
-        // Add to the inner LinearLayout (not the ScrollView root)
-        binding.settingsContainer.addView(clearButton)
     }
 
     private fun updateLargeFileLabel() {
@@ -147,8 +151,12 @@ class SettingsFragment : Fragment() {
         binding.tvUndoValue.text = getString(R.string.settings_undo_value, UserPreferences.undoTimeoutMs / 1000)
     }
 
+    companion object {
+        private const val TAG_CLEAR_BUTTON = "clear_all_data_button"
+    }
+
     private fun clearAllData() {
-        val ctx = requireContext()
+        val ctx = context ?: return
         // Clear scan cache
         File(ctx.filesDir, "scan_cache.json").delete()
         File(ctx.filesDir, "scan_cache.json.tmp").delete()

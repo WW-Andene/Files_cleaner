@@ -217,6 +217,7 @@ abstract class BaseFileListFragment : Fragment() {
                 searchRunnable?.let { handler.removeCallbacks(it) }
                 val query = s?.toString()?.trim() ?: ""
                 searchRunnable = Runnable {
+                    if (_binding == null) return@Runnable  // Fragment view destroyed
                     searchQuery = query
                     applySearch()
                 }

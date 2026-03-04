@@ -135,12 +135,18 @@ class FileAdapter(
 
         holder.name.text = item.name
 
-        // Larger thumbnails for LIST_WITH_THUMBNAILS mode
+        // Reset icon size for recycled views; enlarge only for thumbnail mode
         if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
             val thumbSize = ctx.resources.getDimensionPixelSize(R.dimen.icon_file_list_large)
             val lp = holder.icon.layoutParams
             lp.width = thumbSize
             lp.height = thumbSize
+            holder.icon.layoutParams = lp
+        } else {
+            val defaultSize = ctx.resources.getDimensionPixelSize(R.dimen.icon_file_list_default)
+            val lp = holder.icon.layoutParams
+            lp.width = defaultSize
+            lp.height = defaultSize
             holder.icon.layoutParams = lp
         }
 
@@ -176,41 +182,58 @@ class FileAdapter(
             holder.check.isChecked = isSelected
             holder.check.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
+            // Use bindingAdapterPosition to avoid stale item capture from ViewHolder recycling
             val toggle = {
-                toggleSelection(item.path)
-                val nowSelected = item.path in selectedPaths
-                holder.check.isChecked = nowSelected
-                holder.check.contentDescription = ctx.getString(
-                    if (nowSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
-                // Immediate card visual feedback for selection (§DP3)
-                if (item.duplicateGroup < 0) {
-                    if (nowSelected) {
-                        card?.setCardBackgroundColor(c.selectedBg)
-                        card?.strokeColor = c.selectedBorder
-                    } else {
-                        card?.setCardBackgroundColor(c.surface)
-                        card?.strokeColor = c.border
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val currentItem = getItem(pos)
+                    toggleSelection(currentItem.path)
+                    val nowSelected = currentItem.path in selectedPaths
+                    holder.check.isChecked = nowSelected
+                    holder.check.contentDescription = ctx.getString(
+                        if (nowSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, currentItem.name)
+                    // Immediate card visual feedback for selection (§DP3)
+                    if (currentItem.duplicateGroup < 0) {
+                        if (nowSelected) {
+                            card?.setCardBackgroundColor(c.selectedBg)
+                            card?.strokeColor = c.selectedBorder
+                        } else {
+                            card?.setCardBackgroundColor(c.surface)
+                            card?.strokeColor = c.border
+                        }
                     }
+                    notifySelectionChanged()
                 }
-                notifySelectionChanged()
             }
-            holder.check.setOnClickListener { toggle() }
+            // Only wire click on itemView, not on checkbox separately (avoids double-toggle)
+            holder.check.isClickable = false
             holder.itemView.setOnClickListener { toggle() }
+            holder.itemView.setOnLongClickListener { v ->
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemLongClick?.invoke(getItem(pos), v)
+                }
+                true
+            }
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: "")
         } else if (selectable) {
             // G2-3: Grid mode with selection — no checkbox, use tap to toggle + stateDescription
             holder.itemView.setOnClickListener {
-                toggleSelection(item.path)
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
+                    val currentItem = getItem(pos)
+                    toggleSelection(currentItem.path)
                     notifyItemChanged(pos, PAYLOAD_SELECTION)
+                    notifySelectionChanged()
                 }
-                notifySelectionChanged()
             }
             holder.itemView.setOnLongClickListener { v ->
-                onItemLongClick?.invoke(item, v)
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemLongClick?.invoke(getItem(pos), v)
+                }
                 true
             }
             holder.itemView.contentDescription = ctx.getString(
@@ -218,10 +241,18 @@ class FileAdapter(
                 item.name, holder.meta?.text ?: item.sizeReadable)
         } else {
             holder.check?.visibility = View.GONE
-            // Wire click and long-click for non-selectable mode
-            holder.itemView.setOnClickListener { onItemClick?.invoke(item) }
+            // Wire click and long-click for non-selectable mode (use bindingAdapterPosition)
+            holder.itemView.setOnClickListener {
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemClick?.invoke(getItem(pos))
+                }
+            }
             holder.itemView.setOnLongClickListener { v ->
-                onItemLongClick?.invoke(item, v)
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemLongClick?.invoke(getItem(pos), v)
+                }
                 true
             }
             holder.itemView.contentDescription = ctx.getString(

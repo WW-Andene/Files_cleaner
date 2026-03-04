@@ -367,7 +367,7 @@ class ArborescenceFragment : Fragment() {
 
     private val contextMenuCallback by lazy {
         FileContextMenu.defaultCallback(vm,
-            onOpenInTree = { binding.arborescenceView.highlightFilePath(it.path) },
+            onOpenInTree = { _binding?.arborescenceView?.highlightFilePath(it.path) },
             onMoveTo = { item -> showDirectoryPicker(item) })
     }
 
@@ -394,6 +394,7 @@ class ArborescenceFragment : Fragment() {
         savedExpandedPaths = binding.arborescenceView.getExpandedPaths()
         binding.spinnerTreeCategory.onItemSelectedListener = null
         binding.spinnerTreeSort.onItemSelectedListener = null
+        lastTreeRef = null  // Release reference to prevent tree memory leak
         super.onDestroyView()
         _binding = null
     }

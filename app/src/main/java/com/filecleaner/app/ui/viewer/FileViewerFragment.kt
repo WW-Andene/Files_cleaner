@@ -608,9 +608,10 @@ class FileViewerFragment : Fragment() {
     }
 
     private fun updateVideoSeekBar() {
+        if (_binding == null) return // Guard against post-destruction callback
         if (isVideoPlaying && isVideoInitialized) {
             try {
-                val pos = binding.videoView.currentPosition
+                val pos = _binding?.videoView?.currentPosition ?: return
                 _binding?.seekVideo?.progress = pos
                 _binding?.tvVideoCurrent?.text = formatTime(pos)
             } catch (_: Exception) { }
@@ -825,8 +826,9 @@ class FileViewerFragment : Fragment() {
             append("</body></html>")
         }
 
+        // Use null base URL to prevent local file access (consistent with showHtml)
         binding.webView.loadDataWithBaseURL(
-            "file://${file.parent}/",
+            null,
             html,
             "text/html",
             "UTF-8",

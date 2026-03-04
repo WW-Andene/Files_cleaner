@@ -184,8 +184,9 @@ class AntivirusFragment : Fragment() {
     }
 
     private fun updatePhase(titleRes: Int, descRes: Int) {
-        _binding?.tvPhase?.text = getString(titleRes)
-        _binding?.tvPhaseDesc?.text = getString(descRes)
+        val ctx = _binding?.tvPhase?.context ?: return
+        _binding?.tvPhase?.text = ctx.getString(titleRes)
+        _binding?.tvPhaseDesc?.text = ctx.getString(descRes)
     }
 
     private fun startShieldPulse() {
@@ -488,7 +489,18 @@ class AntivirusFragment : Fragment() {
         quarantineDir.mkdirs()
         val src = File(filePath)
         val dst = File(quarantineDir, "${System.currentTimeMillis()}_${src.name}")
-        return src.renameTo(dst)
+        // renameTo fails across filesystems; fall back to copy + delete
+        if (src.renameTo(dst)) return true
+        return try {
+            src.copyTo(dst, overwrite = false)
+            if (!src.delete()) {
+                dst.delete()
+                false
+            } else true
+        } catch (_: Exception) {
+            dst.delete()
+            false
+        }
     }
 
     private fun confirmDelete(filePath: String) {
@@ -613,6 +625,9 @@ class AntivirusFragment : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
             val ctx = holder.itemView.context
+
+            // Reset state from recycled ViewHolder
+            holder.actionBtn.isEnabled = true
 
             holder.name.text = item.name
             holder.description.text = item.description

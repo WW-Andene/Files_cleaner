@@ -719,7 +719,11 @@ object ConvertDialog {
             .setCancelable(false)
             .show()
 
-        CoroutineScope(Dispatchers.Main).launch {
+        // Use SupervisorJob so the coroutine is scoped to the dialog lifecycle
+        val job = kotlinx.coroutines.SupervisorJob()
+        val scope = CoroutineScope(Dispatchers.Main + job)
+        progressDialog.setOnDismissListener { job.cancel() }
+        scope.launch {
             val result = withContext(Dispatchers.IO) { action() }
             try {
                 if (progressDialog.isShowing) progressDialog.dismiss()

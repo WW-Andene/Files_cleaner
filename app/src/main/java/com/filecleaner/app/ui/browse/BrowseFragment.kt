@@ -143,6 +143,7 @@ class BrowseFragment : Fragment() {
                 searchRunnable?.let { handler.removeCallbacks(it) }
                 val query = s?.toString()?.trim() ?: ""
                 searchRunnable = Runnable {
+                    if (_binding == null) return@Runnable  // Fragment view destroyed
                     searchQuery = query
                     shouldScrollToTop = true
                     refresh()
@@ -346,11 +347,11 @@ class BrowseFragment : Fragment() {
         val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
         val raw: List<FileItem> = when {
             selectedCat == null -> allFiles
-            selectedCat === VIRTUAL_RECENT -> {
+            selectedCat == VIRTUAL_RECENT -> {
                 val cutoff = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L
                 allFiles.filter { it.lastModified >= cutoff }.sortedByDescending { it.lastModified }
             }
-            selectedCat === VIRTUAL_FAVORITES -> {
+            selectedCat == VIRTUAL_FAVORITES -> {
                 val favPaths = try { UserPreferences.favoritePaths } catch (_: Exception) { emptySet() }
                 allFiles.filter { it.path in favPaths }
             }

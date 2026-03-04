@@ -30,7 +30,8 @@ import com.google.android.material.snackbar.Snackbar
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    val viewModel: MainViewModel by viewModels()
+    // Internal access: fragments use activityViewModels() to access the shared ViewModel
+    internal val viewModel: MainViewModel by viewModels()
 
     // Permissions request launcher
     private val permLauncher = registerForActivityResult(
@@ -268,7 +269,8 @@ class MainActivity : AppCompatActivity() {
         OnboardingDialog.showIfNeeded(this)
 
         // P3 Security: Privacy disclosure on first launch (F-C6-01)
-        if (!UserPreferences.hasSeenPrivacyNotice) {
+        // Only show on fresh launch (not rotation) to prevent duplicate dialogs
+        if (savedInstanceState == null && !UserPreferences.hasSeenPrivacyNotice) {
             AlertDialog.Builder(this)
                 .setTitle(getString(R.string.privacy_notice_title))
                 .setMessage(getString(R.string.privacy_notice_message))
