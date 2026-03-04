@@ -291,16 +291,9 @@
     <string name="viewer_open_fullscreen">View fullscreen</string>
     <string name="viewer_audio_play">Play / Pause</string>
     <string name="viewer_audio_error">Cannot play this audio file</string>
-    <string name="viewer_archive_error">Cannot read archive: %s</string>
     <string name="viewer_video_play">Play video</string>
     <string name="viewer_video_error">Cannot play this video</string>
-    <string name="back">Back</string>
-
-    <!-- Accessibility: viewer -->
-    <string name="a11y_pdf_prev_page">Previous page</string>
-    <string name="a11y_pdf_next_page">Next page</string>
-    <string name="a11y_image_preview">Image preview of %s</string>
-    <string name="a11y_webview_content">Document content for %s</string>
+    <string name="viewer_archive_error">Cannot read archive: %s</string>
 
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
