@@ -75,7 +75,7 @@ object CloudSetupDialog {
         val displayName = when (provider) {
             ProviderType.GOOGLE_DRIVE -> context.getString(R.string.cloud_gdrive_default_name)
             ProviderType.GITHUB -> context.getString(R.string.cloud_github_default_name)
-            else -> "Cloud"
+            else -> context.getString(R.string.cloud_default_name)
         }
         val connection = when (provider) {
             ProviderType.GOOGLE_DRIVE -> CloudConnection.googleDrive(displayName, token)

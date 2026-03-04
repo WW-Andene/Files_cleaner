@@ -63,7 +63,7 @@
 
     <!-- Permission dialogs -->
     <string name="storage_access_needed">Storage access needed</string>
-    <string name="storage_access_message">Raccoon needs permission to scan your files. Your data stays on-device \u2014 nothing is uploaded.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
+    <string name="storage_access_message">Raccoon needs permission to scan your files. Scan data stays on-device. Cloud features (SFTP, WebDAV, Google Drive) only transfer files when you choose to.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
     <string name="open_settings">Open Settings</string>
     <string name="permission_required">Permission required</string>
     <string name="permission_required_message">Storage permission is needed to scan files. Please grant it in Settings so Raccoon can help manage your storage.</string>
@@ -634,6 +634,7 @@
     <string name="cloud_type_sftp">SFTP</string>
     <string name="cloud_type_webdav">WebDAV</string>
     <string name="cloud_type_google_drive">Google Drive</string>
+    <string name="cloud_default_name">Cloud</string>
     <string name="cloud_default_server_name">My Server</string>
     <string name="cloud_error_host_required">Raccoon needs a hostname to connect to!</string>
     <string name="cloud_error_port_range">Port must be between 1 and 65535.</string>
@@ -781,14 +782,14 @@
     <!-- Clear All Data (P3 Security) -->
     <string name="settings_data_section">Data Management</string>
     <string name="settings_clear_data">Clear All Data</string>
-    <string name="settings_clear_data_desc">Remove scan cache, cloud connections, preferences, and scan history</string>
+    <string name="settings_clear_data_desc">Remove scan cache, saved cloud credentials, preferences, and scan history</string>
     <string name="settings_clear_data_confirm_title">Clear All Data?</string>
-    <string name="settings_clear_data_confirm_message">This will delete all scan data, cloud connection credentials, scan history, and reset preferences to defaults.\n\nThis cannot be undone.</string>
+    <string name="settings_clear_data_confirm_message">This will delete all scan data, saved cloud credentials, scan history, and reset preferences to defaults.\n\nThis cannot be undone.</string>
     <string name="settings_clear_data_done">Raccoon wiped the slate clean \u2014 all app data has been cleared!</string>
 
     <!-- Crash Reporting -->
     <string name="settings_crash_section">Crash Reporting</string>
-    <string name="settings_crash_description">Automatically create GitHub Issues when the app crashes. Crash logs are saved to disk and uploaded on the next launch. Requires a GitHub personal access token with repo scope.</string>
+    <string name="settings_crash_description">Automatically create GitHub Issues when the app crashes. Crash logs are saved locally and sent to your configured GitHub repo on next launch. Requires a GitHub personal access token with repo scope.</string>
     <string name="settings_crash_enable">Enable crash reporting</string>
     <string name="settings_crash_token_hint">GitHub Token (with repo scope)</string>
     <string name="settings_crash_repo_hint">GitHub Repository (owner/repo)</string>
@@ -796,7 +797,7 @@
 
     <!-- Privacy Notice (P3 Security: F-C6-01) -->
     <string name="privacy_notice_title">Privacy &amp; Data Usage</string>
-    <string name="privacy_notice_message">Raccoon File Manager processes your data locally on your device:\n\n\u2022 File scanning indexes file names, sizes, and paths to find duplicates, junk, and large files. This data is cached locally and auto-deleted after 30 days.\n\n\u2022 Security scanning checks installed apps and their permissions to detect threats. No app data leaves your device.\n\n\u2022 Cloud connections store your credentials securely using Android encrypted storage. Credentials are cleared from memory after connecting.\n\n\u2022 No data is ever sent to external servers, analytics services, or third parties.\n\nYou can clear all stored data at any time from Settings.</string>
+    <string name="privacy_notice_message">Raccoon File Manager processes your data locally on your device:\n\n\u2022 File scanning indexes file names, sizes, and paths to find duplicates, junk, and large files. This data is cached locally and auto-deleted after 30 days.\n\n\u2022 Security scanning checks installed apps and their permissions to detect threats. No app data leaves your device.\n\n\u2022 Cloud connections store your credentials securely using Android encrypted storage. Files are only transferred to remote servers when you explicitly use cloud features.\n\n\u2022 Crash reporting (if enabled) sends crash logs to your configured GitHub repo. No data is sent to analytics services or third parties.\n\nYou can clear all stored data at any time from Settings.</string>
     <string name="privacy_notice_accept">I Understand</string>
 
     <!-- SignatureScanner threat names (N1 audit) -->
