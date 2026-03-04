@@ -23,6 +23,380 @@ description: >
 
 ---
 
+## TABLE OF CONTENTS — What's in This File, How to Use It
+
+> **How to use this table**: Find the category you care about, then tell Claude:
+> - `"Run §A1"` or `"Audit §C2"` — to audit a specific section
+> - `"Fix §D5"` or `"Implement §E3 recommendations"` — to fix issues in a specific area
+> - `"Audit Category C"` or `"Run the security audit"` — to audit an entire category
+> - `"Run P3"` or `"Do Part 3"` — to run a full audit part
+> - Or use any **trigger phrase** listed below to jump directly to what you need.
+
+---
+
+### SETUP & ROUTING (read once, then jump to what you need)
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| — | **QUICK START** | How to invoke this skill (for you and Claude) | — |
+| — | **SKILL MAP** | Section index + common execution paths | "what sections are there", "show the skill map" |
+| §TRIAGE | **Audit Routing** | Asks which audit mode you want | "audit my app", "review my app", "analyze my app" |
+| §0 | **App Context Block** | Captures app identity, tech stack, constraints, design, domain rules | "fill the context", "set up the audit", "describe my app" |
+
+---
+
+### CALIBRATION & PHILOSOPHY (how the audit adapts to YOUR app)
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| §I.1 | **Domain Classification** | Maps your app type → severity multipliers | "what domain is my app", "classify my app" |
+| §I.2 | **Architecture Classification** | Maps your architecture → failure modes to hunt | "what failure modes", "architecture risks" |
+| §I.3 | **App Size → Scope** | Determines how many audit parts based on LOC | "how long will this audit be" |
+| §I.4 | **Five-Axis Aesthetic Profile** | Classifies aesthetic goals across 5 independent axes | "what aesthetic profile", "classify my design goals" |
+| §I.5 | **Domain Rule Extraction** | Extracts constants/formulas from code for verification | "extract domain rules", "find constants" |
+| §I.6 | **Knowledge & Source Integrity** | Rules for sourcing domain facts (web, code, user) | — |
+| §I.7 | **Adaptive Analysis Protocols** | Mid-audit reclassification triggers | — |
+| §II | **10 Iron Laws** | Governing rules for auditor behavior (never violated) | — |
+
+---
+
+### EXECUTION PLAN (how the audit is structured)
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| §III | **Pre-Flight Checklist** | Mandatory steps before any finding | "start the audit", "run pre-flight" |
+| P1 | **Part 1: Inventory & Architecture** | Feature ledger, constraint map, workflow map | "run part 1", "do the inventory" |
+| P2 | **Part 2: Domain Logic** | Rule-by-rule verification, formula test vectors | "run part 2", "check my business logic" |
+| P3 | **Part 3: Security** | Threat model, attack surface, compliance gaps | "run part 3", "security audit" |
+| P4 | **Part 4: State & Data** | State schema, validation gaps, corruption paths | "run part 4", "check state management" |
+| P5 | **Part 5: Performance** | Web vitals, resource budget, memory leaks | "run part 5", "performance audit" |
+| P6 | **Part 6: Visual Design** | Design tokens, visual rhythm, polish gaps | "run part 6", "design audit" |
+| P7 | **Part 7: UX & IA** | Flow analysis, information architecture, copy | "run part 7", "UX audit" |
+| P8 | **Part 8: Accessibility** | WCAG 2.1 AA, screen reader, keyboard nav | "run part 8", "accessibility audit" |
+| P9 | **Part 9: Compatibility** | Cross-browser, PWA, mobile, network | "run part 9", "compatibility check" |
+| P10 | **Part 10: Code Quality** | Dead code, duplication, naming, architecture | "run part 10", "code quality audit" |
+| P11 | **Part 11: AI/LLM** | Prompt injection, output sanitization, costs | "run part 11", "audit AI integration" |
+| P12 | **Part 12: i18n** | Hardcoded strings, locale formats, RTL | "run part 12", "i18n audit" |
+| P13 | **Part 13: Projections** | Scale cliffs, tech debt, dependency decay | "run part 13", "future-proof my app" |
+| Final | **Summary Dashboard** | Findings table, root cause, quick wins, roadmap | "show the summary", "give me the dashboard" |
+
+---
+
+### CATEGORY A — DOMAIN LOGIC & CORRECTNESS
+
+> **When to use**: Your app produces wrong numbers, calculations are off, formulas seem broken, or you want to verify business rules are implemented correctly.
+>
+> **Trigger phrases**: "check my formulas", "verify calculations", "audit business logic", "my numbers are wrong", "check domain rules", "verify correctness"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §A1 | Business Rule & Formula Correctness | Constants, formulas, operator precision, rounding, units, invariants |
+| §A2 | Probability & Statistical Correctness | RNG, distributions, pity systems, expected value, displayed odds |
+| §A3 | Temporal & Timezone Correctness | Timezone handling, DST, date boundaries, scheduling, format |
+| §A4 | State Machine Correctness | State transitions, unreachable states, deadlocks, illegal transitions |
+| §A5 | Embedded Data Accuracy | Lookup tables, reference data, version currency, fallback values |
+| §A6 | Async & Concurrency Bug Patterns | Race conditions, stale closures, debounce, cancellation, ordering |
+| §A7 | JS Type Coercion & Implicit Conversion | `==` vs `===`, falsy traps, parseInt pitfalls, NaN propagation |
+
+---
+
+### CATEGORY B — STATE MANAGEMENT & DATA INTEGRITY
+
+> **When to use**: Data gets lost, state behaves unexpectedly, imports/exports are broken, or persistence has issues.
+>
+> **Trigger phrases**: "fix state management", "data gets lost", "audit state", "persistence issues", "import/export broken", "data integrity"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §B1 | State Architecture | Single source of truth, derived state, initialization, schema |
+| §B2 | Persistence & Storage | localStorage/SharedPreferences, quota, migration, concurrent access |
+| §B3 | Input Validation & Sanitization | Boundary values, type coercion, injection through input |
+| §B4 | Import & Export Integrity | Round-trip fidelity, version compatibility, corruption detection |
+| §B5 | Data Flow Map | Data lifecycle from entry to display, transformation audit |
+| §B6 | Mutation & Reference Integrity | Immutability discipline, shared reference bugs, deep copy |
+
+---
+
+### CATEGORY C — SECURITY & TRUST
+
+> **When to use**: Security review before launch, handling sensitive data, API key management, compliance requirements.
+>
+> **Trigger phrases**: "security review", "security audit", "check for vulnerabilities", "is my app secure", "privacy audit", "GDPR check", "check permissions"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §C1 | Authentication & Authorization | Credential storage, session management, privilege escalation |
+| §C2 | Injection & XSS | innerHTML, DOM XSS, eval, URL injection, CSS injection |
+| §C3 | Prototype Pollution & Import Safety | JSON.parse safety, prototype pollution, property collision |
+| §C4 | Network & Dependencies | HTTPS, SRI, CORS, CSP, third-party tracking |
+| §C5 | Privacy & Data Minimization | PII inventory, URL leakage, fingerprinting, export sensitivity |
+| §C6 | Compliance & Legal | GDPR/CCPA, age restrictions, IP/copyright, financial/medical disclaimers |
+| §C7 | Mobile-Specific Security | Permission audit, exported components, WebView, ProGuard, deep links |
+
+---
+
+### CATEGORY D — PERFORMANCE & RESOURCES
+
+> **When to use**: App is slow, uses too much memory, loads slowly, or has performance issues on mobile.
+>
+> **Trigger phrases**: "make it faster", "performance issues", "too slow", "memory leak", "optimize performance", "reduce load time", "app freezes", "ANR"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §D1 | Runtime Performance | Main thread blocking, worker offloading, re-renders, throttling |
+| §D2 | Web Vitals & Loading | LCP, FID, CLS, critical rendering path, code splitting |
+| §D3 | Resource Budget | Bundle size, image optimization, font loading, CDN assets |
+| §D4 | Memory Management | Closure leaks, event listener leaks, timer leaks, blob URLs |
+| §D5 | Mobile-Specific Performance | Coroutine lifecycle, RecyclerView, image loading, process death, ANR |
+
+---
+
+### CATEGORY E — VISUAL DESIGN QUALITY & POLISH
+
+> **When to use**: App looks unprofessional, design feels inconsistent, colors/spacing are off, needs visual polish.
+>
+> **Trigger phrases**: "improve the design", "make it look professional", "design review", "polish the UI", "fix the colors", "design system", "make it premium", "visual consistency"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §E1 | Design Token System | CSS variables / theme attributes coverage, naming, gaps |
+| §E2 | Visual Rhythm & Spatial Composition | Spacing consistency, grid alignment, whitespace |
+| §E3 | Color Craft & Contrast | Contrast ratios, palette coherence, dark mode quality |
+| §E4 | Typography Craft | Font scale, weight hierarchy, tracking, line height, rendering |
+| §E5 | Component Visual Quality | Buttons, inputs, cards, modals — visual consistency |
+| §E6 | Interaction Design Quality | Hover/active/focus/disabled states, transitions, feedback |
+| §E7 | Overall Visual Professionalism | First-impression test, visual noise, alignment, polish gaps |
+| §E8 | Product Aesthetics (Axis-Driven) | Commercial credibility, cognitive load, emotional safety, fidelity |
+| §E9 | Visual Identity & Recognizability | Distinctiveness, brand signature, memorability |
+| §E10 | Data Storytelling & Visual Communication | How data is presented visually, chart quality |
+
+---
+
+### CATEGORY F — UX, INFORMATION ARCHITECTURE & COPY
+
+> **When to use**: Users get confused, flows feel broken, onboarding is bad, copy needs work, app doesn't feel intuitive.
+>
+> **Trigger phrases**: "UX review", "improve user experience", "fix the flow", "onboarding sucks", "improve copy", "make it intuitive", "information architecture"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §F1 | Information Architecture | Navigation clarity, grouping logic, discoverability, depth |
+| §F2 | User Flow Quality | Critical path efficiency, dead ends, error recovery, back navigation |
+| §F3 | Onboarding & First Use | First-run experience, progressive disclosure, value communication |
+| §F4 | Copy Quality | Clarity, consistency, tone, technical jargon, error messages |
+| §F5 | Micro-Interaction Quality | Feedback loops, state transitions, gesture responses |
+| §F6 | Engagement, Delight & Emotional Design | Personality moments, reward patterns, celebration states |
+
+---
+
+### CATEGORY G — ACCESSIBILITY
+
+> **When to use**: Making the app accessible, screen reader support, keyboard navigation, WCAG compliance.
+>
+> **Trigger phrases**: "accessibility audit", "a11y", "WCAG", "screen reader", "keyboard navigation", "make it accessible", "color blind support"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §G1 | WCAG 2.1 AA Compliance | Semantic HTML/views, ARIA/accessibility labels, focus management, contrast |
+| §G2 | Screen Reader Trace | Content order, live regions, meaningful labels, hidden decorative elements |
+| §G3 | Keyboard Navigation | Tab order, focus traps, skip links, custom component keyboard support |
+| §G4 | Reduced Motion | `prefers-reduced-motion` / `ANIMATOR_DURATION_SCALE` respect, alternatives |
+
+---
+
+### CATEGORY H — BROWSER / PLATFORM COMPATIBILITY
+
+> **When to use**: App breaks on certain browsers/devices, PWA issues, touch interactions don't work, offline problems.
+>
+> **Trigger phrases**: "browser compatibility", "doesn't work on Safari", "mobile broken", "PWA issues", "offline support", "touch not working"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §H1 | Cross-Browser Matrix | Feature detection, API availability, CSS compatibility, polyfills |
+| §H2 | PWA & Service Worker | Manifest, SW lifecycle, cache strategy, update flow, install prompt |
+| §H3 | Mobile & Touch | Touch targets, viewport, safe areas, gesture conflicts, orientation |
+| §H4 | Network Resilience | Offline behavior, retry logic, degraded connectivity, sync |
+
+---
+
+### CATEGORY I — CODE QUALITY & ARCHITECTURE
+
+> **When to use**: Codebase is messy, hard to maintain, has duplication, needs restructuring, poor naming.
+>
+> **Trigger phrases**: "clean up my code", "code review", "refactor", "reduce duplication", "improve architecture", "code quality", "naming review"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §I1 | Dead Code & Waste | Unreachable code, unused imports, disabled features, commented code |
+| §I2 | Naming Quality | Variable/function/file naming consistency, domain vocabulary alignment |
+| §I3 | Error Handling Coverage | Try/catch completeness, error propagation, user-facing error messages |
+| §I4 | Code Duplication | Copy-paste code, near-duplicates, abstraction opportunities |
+| §I5 | Component & Module Architecture | Separation of concerns, coupling, cohesion, dependency direction |
+| §I6 | Documentation & Maintainability | Comments quality, self-documenting code, onboarding ease |
+
+---
+
+### CATEGORY J — DATA PRESENTATION & PORTABILITY
+
+> **When to use**: Numbers display wrong, charts look bad, assets are poorly managed, real-time data is stale.
+>
+> **Trigger phrases**: "fix number formatting", "chart looks wrong", "data display issues", "asset management", "real-time data"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §J1 | Number & Data Formatting | Precision, locale formatting, currency, percentages, units |
+| §J2 | Data Visualization Quality | Chart accuracy, axis labeling, color accessibility, empty states |
+| §J3 | Asset Management | Image optimization, lazy loading, fallbacks, format selection |
+| §J4 | Real-Time Data Freshness | Polling intervals, stale data indicators, update propagation |
+
+---
+
+### CATEGORY K — SPECIALIZED DOMAIN DEPTHS
+
+> **When to use**: App handles money, health data, gambling mechanics, real-time collaboration, or AI integration.
+>
+> **Trigger phrases**: "audit financial logic", "medical safety check", "gambling compliance", "audit AI integration", "real-time sync issues"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §K1 | Financial Precision | Decimal arithmetic, currency rounding, tax calculation, audit trails |
+| §K2 | Medical / Health Precision | Dosage safety, unit conversions, contraindication checks, disclaimers |
+| §K3 | Probability & Gambling-Adjacent | RNG fairness, pity system correctness, disclosed rates, age gating |
+| §K4 | Real-Time & Collaborative | Conflict resolution, sync ordering, presence, latency handling |
+| §K5 | AI / LLM Integration | Prompt injection, output sanitization, streaming errors, token/cost risk, hallucination exposure |
+
+---
+
+### CATEGORY L — OPTIMIZATION, STANDARDIZATION & POLISH
+
+> **When to use**: App works but feels rough, needs consistent standards, polish pass, or optimization sweep.
+>
+> **Trigger phrases**: "standardize my code", "polish everything", "make it consistent", "optimization pass", "unify the design", "clean up standards"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §L1 | Code Optimization Opportunities | Algorithm improvements, caching, lazy evaluation, batching |
+| §L2 | Code Standardization | Coding conventions, formatting consistency, lint configuration |
+| §L3 | Design System Standardization | Token consistency, component variants, spacing unification |
+| §L4 | Copy & Content Standardization | Voice consistency, terminology, label conventions |
+| §L5 | Interaction & Experience Polish | Micro-animation refinement, transition consistency, gesture polish |
+| §L6 | Performance Polish | Perceived performance, skeleton screens, optimistic updates |
+| §L7 | Accessibility Polish | Beyond compliance — toward excellent accessibility |
+
+---
+
+### CATEGORY M — DEPLOYMENT & OPERATIONS
+
+> **When to use**: App needs versioning, monitoring, feature flags, or operational improvements.
+>
+> **Trigger phrases**: "deployment audit", "add monitoring", "feature flags", "version management", "operational readiness"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §M1 | Version & Update Management | Version strategy, changelog, migration paths, update notifications |
+| §M2 | Observability | Error tracking, analytics, performance monitoring, crash reporting |
+| §M3 | Feature Flags & Gradual Rollout | Flag architecture, rollback capability, A/B testing readiness |
+
+---
+
+### CATEGORY N — INTERNATIONALIZATION & LOCALIZATION
+
+> **When to use**: App needs multi-language support, locale-aware formatting, or RTL layout support.
+>
+> **Trigger phrases**: "i18n audit", "add translations", "locale formatting", "RTL support", "internationalization", "localization check"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §N1 | Hardcoded String Inventory | All user-facing strings not in a translation system |
+| §N2 | Locale-Sensitive Formatting | Dates, numbers, currency, pluralization, sort order |
+| §N3 | RTL Layout | Bidirectional text, mirrored layouts, directional icons |
+| §N4 | Locale Loading & Performance | Translation bundle size, lazy loading, fallback chains |
+
+---
+
+### CATEGORY O — DEVELOPMENT SCENARIO PROJECTION
+
+> **When to use**: Planning for growth, worried about scaling, tech debt accumulating, future-proofing the app.
+>
+> **Trigger phrases**: "future-proof my app", "scale analysis", "tech debt audit", "dependency check", "what breaks at scale", "maintenance risks"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §O1 | Scale Cliff Analysis | Points where current architecture breaks under growth |
+| §O2 | Feature Addition Risk Map | How hard it is to add the next likely features |
+| §O3 | Technical Debt Compounding Map | Which debts compound over time and their cost trajectory |
+| §O4 | Dependency Decay Forecast | Outdated dependencies, EOL risk, upgrade difficulty |
+| §O5 | Constraint Evolution Analysis | When current constraints should be relaxed/changed |
+| §O6 | Maintenance Trap Inventory | Patterns that are easy now but become costly to maintain |
+| §O7 | Bus Factor & Knowledge Concentration | Single points of failure in codebase knowledge |
+
+---
+
+### DELIVERABLES & FORMAT
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| §V | Finding Format | Standard template for all findings (severity, confidence, specifics) | — |
+| §VI | Required Deliverables | Tier 1/2/3 deliverables by audit depth | — |
+| §VII | Summary Dashboard | Final findings table, root cause, quick wins, roadmap | "show summary", "give me the roadmap" |
+| §VIII | Cross-Cutting Concern Map | Patterns spanning multiple categories | — |
+| §IX | Final Mandate | Binding audit contract | — |
+
+---
+
+### R&D & IMPROVEMENT MODE (§X)
+
+> **When to use**: You want to improve existing features, find what to build next, compare with competitors, or plan your roadmap.
+>
+> **Trigger phrases**: "what should I build next", "improve my features", "competitive analysis", "R&D roadmap", "feature prioritization", "what's missing", "help me improve my app"
+
+| Code | Section | What It Does |
+|------|---------|-------------|
+| §X.0 | Existing Feature Deep Evaluation | Health audit of every existing feature — what to elevate, evolve, consolidate, or reimagine |
+| §X.1 | Competitive & Landscape Research | Competitor inventory, feature gap matrix, user signal synthesis |
+| §X.2 | Improvement Prioritization | Ranks all improvements by impact × effort × strategic value |
+| §X.3 | R&D Roadmap Deliverable | Structured roadmap: immediate → short → medium → long term |
+
+---
+
+### POLISH & RESTRUCTURATION MODE (§XI)
+
+> **When to use**: App grew messy over time, codebase needs restructuring, design feels incoherent, needs systematic polish.
+>
+> **Trigger phrases**: "my app is messy", "restructure my app", "polish my app", "clean up my codebase", "my app feels incoherent", "unify my app", "my app grew messy"
+
+| Code | Section | What It Does |
+|------|---------|-------------|
+| §XI.0 | Deep Comprehension Phase | Reads and understands the app deeply before changing anything (MANDATORY) |
+| §XI.1 | Pre-Polish Inventory | Maps all coherence fractures, inconsistencies, rough edges |
+| §XI.2 | Systematic Polish Passes | 7 polish passes from structural to fine-grained |
+| §XI.3 | Codebase Restructuration | File structure, module boundaries, naming, architecture cleanup |
+| §XI.4 | Architecture Evolution | Incremental architecture improvements without rewrites |
+| §XI.5 | Quality Gates | Verification that polish and restructuring preserved behavior |
+| §XI.6 | Polish & Restructuration Deliverable | Structured delivery of all changes |
+
+---
+
+### QUICK REFERENCE — "I want to..." → Run this
+
+| I want to... | Run this |
+|--------------|----------|
+| **Full audit of everything** | `"full app audit"` → all parts P1–P14 |
+| **Just check security** | `"run Category C"` or `"security audit"` |
+| **Just check performance** | `"run Category D"` or `"performance audit"` |
+| **Just fix the design** | `"run Category E"` or `"design polish"` |
+| **Verify my business logic** | `"run §A1"` or `"check my formulas"` |
+| **Check one specific thing** | `"audit §C2"` (injection) or `"run §D5"` (mobile perf) |
+| **Fix issues in a section** | `"fix §E3"` (color craft) or `"implement §G1 fixes"` |
+| **Plan what to build next** | `"run §X"` or `"R&D mode"` |
+| **Clean up a messy codebase** | `"run §XI"` or `"polish mode"` |
+| **Compare with competitors** | `"run §X.1"` or `"competitive analysis"` |
+| **Future-proof my app** | `"run Category O"` or `"projection analysis"` |
+| **Check AI integration** | `"run §K5"` or `"audit AI integration"` |
+| **Check mobile-specific issues** | `"run §C7 and §D5"` or `"mobile audit"` |
+
+---
+
 ## QUICK START — How to Use This Skill
 
 > **For Claude**: When this skill activates, follow these steps:
