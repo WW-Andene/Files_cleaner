@@ -190,7 +190,6 @@ class ScanService : Service() {
             .setOngoing(true)
             .setContentIntent(pendingOpen)
             .addAction(R.drawable.ic_close, getString(R.string.cancel), pendingStop)
-            .setForegroundServiceType(0)
             .build()
     }
 
