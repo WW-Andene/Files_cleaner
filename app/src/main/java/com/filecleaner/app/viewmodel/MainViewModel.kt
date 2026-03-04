@@ -195,40 +195,49 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 // If all cached files were deleted on disk, don't show stale Done state
                 if (files.isEmpty()) return@launch
 
+                // D2: Run heavy analysis on background thread to avoid blocking cold start
+                val analysisResult = withContext(Dispatchers.Default) {
+                    val filesByDir = files.groupBy { File(it.path).parent ?: "" }
+                    val enrichedTree = enrichTreeWithFiles(tree, filesByDir)
+                    val byCategory = files.groupBy { it.category }
+                    val dupes = pruneOrphanDuplicates(files.filter { it.duplicateGroup >= 0 })
+                    val minLargeFileMb = try { UserPreferences.largeFileThresholdMb } catch (_: Exception) { 50 }
+                    val maxLargeFileCount = try { UserPreferences.maxLargeFiles } catch (_: Exception) { 200 }
+                    val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L, maxLargeFileCount)
+                    val junk = JunkFinder.findJunk(files)
+                    object {
+                        val enrichedTree = enrichedTree
+                        val byCategory = byCategory
+                        val dupes = dupes
+                        val large = large
+                        val junk = junk
+                    }
+                }
+
                 stateMutex.withLock {
                     // Skip cache load if a scan has already started (user tapped scan
                     // before cache finished loading — the scan's results take priority)
                     if (_scanState.value !is ScanState.Idle) return@withLock
 
                     latestFiles = files
-                    // Reconstruct per-directory file lists from the flat file list
-                    val filesByDir = files.groupBy { File(it.path).parent ?: "" }
-                    val enrichedTree = enrichTreeWithFiles(tree, filesByDir)
-                    latestTree = enrichedTree
-                    _directoryTree.postValue(enrichedTree)
-                    _filesByCategory.postValue(files.groupBy { it.category })
+                    latestTree = analysisResult.enrichedTree
+                    _directoryTree.postValue(analysisResult.enrichedTree)
+                    _filesByCategory.postValue(analysisResult.byCategory)
 
                     // D2: Use cached duplicate group IDs from the saved cache instead
                     // of re-running the full MD5 hash pipeline on cold start.  The cache
                     // preserves duplicateGroup assignments from the last scan, so we only
                     // need to filter and prune orphan groups (< 2 members).
-                    val dupes = pruneOrphanDuplicates(files.filter { it.duplicateGroup >= 0 })
-                    _duplicates.postValue(dupes)
-
-                    val minLargeFileMb = try { UserPreferences.largeFileThresholdMb } catch (_: Exception) { 50 }
-                    val maxLargeFileCount = try { UserPreferences.maxLargeFiles } catch (_: Exception) { 200 }
-                    val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L, maxLargeFileCount)
-                    _largeFiles.postValue(large)
-
-                    val junk = JunkFinder.findJunk(files)
-                    _junkFiles.postValue(junk)
+                    _duplicates.postValue(analysisResult.dupes)
+                    _largeFiles.postValue(analysisResult.large)
+                    _junkFiles.postValue(analysisResult.junk)
 
                     _storageStats.postValue(StorageStats(
                         totalFiles    = files.size,
                         totalSize     = files.sumOf { it.size },
-                        junkSize      = junk.sumOf { it.size },
-                        duplicateSize = dupes.sumOf { it.size },
-                        largeSize     = large.sumOf { it.size }
+                        junkSize      = analysisResult.junk.sumOf { it.size },
+                        duplicateSize = analysisResult.dupes.sumOf { it.size },
+                        largeSize     = analysisResult.large.sumOf { it.size }
                     ))
                     // P2-A4-02: Transition to Done inside mutex to prevent race with startScan()
                     _scanState.postValue(ScanState.Done)
@@ -301,11 +310,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     }
                 }.filter { it.path !in protectedPaths }
 
+                // D2: Batch ANALYZING+JUNK into a single phase update to reduce
+                // LiveData churn — both findLargeFiles and findJunk are fast in-memory
+                // operations, so separate progress updates only cause UI flicker.
                 _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.ANALYZING, progressPercent = ScanPhase.ANALYZING.baseProgress()))
                 val maxLargeFileCount = try { UserPreferences.maxLargeFiles } catch (_: Exception) { 200 }
                 val large = JunkFinder.findLargeFiles(files, minLargeFileMb * 1024L * 1024L, maxLargeFileCount)
-
-                _scanState.postValue(ScanState.Scanning(files.size, ScanPhase.JUNK, progressPercent = ScanPhase.JUNK.baseProgress()))
                 val junk = JunkFinder.findJunk(files)
                     .filter { it.path !in protectedPaths }
 
@@ -732,14 +742,36 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Reconstruct per-directory file lists in the tree from the flat file list. */
+    /** Reconstruct per-directory file lists in the tree from the flat file list.
+     *  D2: Iterative BFS to avoid stack overflow on deep directory trees. */
     private fun enrichTreeWithFiles(
-        node: DirectoryNode,
+        root: DirectoryNode,
         filesByDir: Map<String, List<FileItem>>
-    ): DirectoryNode = node.copy(
-        files = filesByDir[node.path] ?: emptyList(),
-        children = node.children.map { enrichTreeWithFiles(it, filesByDir) }
-    )
+    ): DirectoryNode {
+        // First pass: collect all nodes in BFS order
+        val enriched = mutableMapOf<String, DirectoryNode>()
+        val queue = ArrayDeque<DirectoryNode>()
+        val order = mutableListOf<DirectoryNode>()
+        queue.add(root)
+        while (queue.isNotEmpty()) {
+            val node = queue.removeFirst()
+            order.add(node)
+            for (child in node.children) {
+                queue.add(child)
+            }
+        }
+
+        // Second pass: build enriched nodes bottom-up so children are ready
+        // before their parent is constructed
+        for (node in order.asReversed()) {
+            val enrichedChildren = node.children.map { enriched[it.path] ?: it }
+            enriched[node.path] = node.copy(
+                files = filesByDir[node.path] ?: emptyList(),
+                children = enrichedChildren
+            )
+        }
+        return enriched[root.path] ?: root
+    }
 
     private fun recalcStats(
         remaining: List<FileItem>,
