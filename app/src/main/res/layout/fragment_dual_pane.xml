@@ -63,33 +63,23 @@
             android:background="@color/surfaceColor"
             android:layout_marginEnd="1dp">
 
-            <!-- Left pane content mode selector -->
-            <LinearLayout
+            <!-- Left pane content mode tabs -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_mode_left"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="@dimen/spacing_xs"
-                android:paddingVertical="2dp"
-                android:background="@color/surfaceDim">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_mode_left"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="28dp"
-                    android:text="@string/dual_pane_mode_browser"
-                    android:textAllCaps="false"
-                    android:textSize="@dimen/text_caption"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingHorizontal="@dimen/spacing_sm"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    app:icon="@drawable/ic_arrow_down"
-                    app:iconSize="14dp"
-                    app:iconGravity="end"
-                    app:iconTint="@color/textTertiary" />
-            </LinearLayout>
+                android:layout_height="32dp"
+                android:background="@color/surfaceDim"
+                app:tabMode="scrollable"
+                app:tabGravity="start"
+                app:tabMinWidth="48dp"
+                app:tabPaddingStart="8dp"
+                app:tabPaddingEnd="8dp"
+                app:tabTextColor="@color/textSecondary"
+                app:tabSelectedTextColor="@color/colorPrimary"
+                app:tabIndicatorColor="@color/colorPrimary"
+                app:tabIndicatorHeight="2dp"
+                app:tabInlineLabel="true"
+                app:tabTextAppearance="@style/TextAppearance.FileCleaner.Caption" />
 
             <!-- Left pane path bar -->
             <LinearLayout
@@ -185,33 +175,23 @@
             android:background="@color/surfaceColor"
             android:layout_marginStart="1dp">
 
-            <!-- Right pane content mode selector -->
-            <LinearLayout
+            <!-- Right pane content mode tabs -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_mode_right"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="@dimen/spacing_xs"
-                android:paddingVertical="2dp"
-                android:background="@color/surfaceDim">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_mode_right"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="28dp"
-                    android:text="@string/dual_pane_mode_browser"
-                    android:textAllCaps="false"
-                    android:textSize="@dimen/text_caption"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingHorizontal="@dimen/spacing_sm"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    app:icon="@drawable/ic_arrow_down"
-                    app:iconSize="14dp"
-                    app:iconGravity="end"
-                    app:iconTint="@color/textTertiary" />
-            </LinearLayout>
+                android:layout_height="32dp"
+                android:background="@color/surfaceDim"
+                app:tabMode="scrollable"
+                app:tabGravity="start"
+                app:tabMinWidth="48dp"
+                app:tabPaddingStart="8dp"
+                app:tabPaddingEnd="8dp"
+                app:tabTextColor="@color/textSecondary"
+                app:tabSelectedTextColor="@color/colorPrimary"
+                app:tabIndicatorColor="@color/colorPrimary"
+                app:tabIndicatorHeight="2dp"
+                app:tabInlineLabel="true"
+                app:tabTextAppearance="@style/TextAppearance.FileCleaner.Caption" />
 
             <!-- Right pane path bar -->
             <LinearLayout

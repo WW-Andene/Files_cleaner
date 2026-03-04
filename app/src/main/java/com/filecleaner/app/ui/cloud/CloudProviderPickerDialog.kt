@@ -26,6 +26,7 @@ object CloudProviderPickerDialog {
             .inflate(R.layout.dialog_cloud_provider_picker, null)
 
         val cardGDrive = view.findViewById<MaterialCardView>(R.id.card_google_drive)
+        val cardGitHub = view.findViewById<MaterialCardView>(R.id.card_github)
         val cardSftp = view.findViewById<MaterialCardView>(R.id.card_sftp)
         val cardWebDav = view.findViewById<MaterialCardView>(R.id.card_webdav)
 
@@ -34,7 +35,7 @@ object CloudProviderPickerDialog {
             .setNegativeButton(context.getString(R.string.cancel), null)
             .create()
 
-        // Google Drive card & button
+        // Google Drive card & button — "Sign in with Google" OAuth-style
         val btnGoogleSignIn = view.findViewById<com.google.android.material.button.MaterialButton>(
             R.id.btn_google_sign_in
         )
@@ -44,6 +45,17 @@ object CloudProviderPickerDialog {
         }
         cardGDrive.setOnClickListener { launchGDrive() }
         btnGoogleSignIn.setOnClickListener { launchGDrive() }
+
+        // GitHub card & button — "Connect with GitHub" OAuth-style
+        val btnGitHubConnect = view.findViewById<com.google.android.material.button.MaterialButton>(
+            R.id.btn_github_connect
+        )
+        val launchGitHub = {
+            dialog.dismiss()
+            CloudSetupDialog.showForProvider(context, ProviderType.GITHUB, onAdded)
+        }
+        cardGitHub.setOnClickListener { launchGitHub() }
+        btnGitHubConnect.setOnClickListener { launchGitHub() }
 
         // SFTP card & button
         val btnSftpConnect = view.findViewById<com.google.android.material.button.MaterialButton>(

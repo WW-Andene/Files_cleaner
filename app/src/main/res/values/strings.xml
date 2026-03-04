@@ -588,6 +588,23 @@
         <item quantity="other">%2$s %1$d files to %3$s?</item>
     </plurals>
 
+    <!-- Dual Pane Tabs -->
+    <string name="dual_pane_tab_files">Files</string>
+    <string name="dual_pane_tab_images">Images</string>
+    <string name="dual_pane_tab_videos">Videos</string>
+    <string name="dual_pane_tab_audio">Audio</string>
+    <string name="dual_pane_tab_docs">Docs</string>
+    <string name="dual_pane_tab_apks">APKs</string>
+    <string name="dual_pane_tab_archives">Archives</string>
+    <string name="dual_pane_tab_tree">Tree</string>
+
+    <!-- Dual Pane Drag & Drop -->
+    <string name="dual_pane_drag_copy_or_move">Copy or Move?</string>
+    <string name="dual_pane_drag_message">What would you like to do with %d item(s)?</string>
+
+    <!-- Antivirus progress -->
+    <string name="av_progress_pct">%d%%</string>
+
     <!-- Cloud / Network -->
     <string name="cloud_title">Cloud &amp; Network</string>
     <string name="cloud_desc">Browse and transfer files on Google Drive, SFTP, WebDAV</string>
@@ -866,4 +883,46 @@
     <string name="a11y_expand_folder">Expand folder %s</string>
     <string name="a11y_collapse_folder">Collapse folder %s</string>
     <string name="a11y_toggle_all_folders">Toggle all folders expanded or collapsed</string>
+
+    <!-- Browse selection mode -->
+    <string name="select_all_files">All Files</string>
+    <string name="select_all_folders">All Folders</string>
+    <string name="browse_selected">%d selected</string>
+
+    <!-- Display options -->
+    <string name="display_options">Display</string>
+    <string name="a11y_display_options">Display options</string>
+    <string name="display_mode_list">List</string>
+    <string name="display_mode_compact">Compact</string>
+    <string name="display_mode_thumbnails">Thumbnails</string>
+    <string name="display_mode_grid">Grid</string>
+
+    <!-- Dashboard enhancements -->
+    <string name="dashboard_back">Back</string>
+    <string name="dashboard_top_files">Top 10 Largest Files</string>
+    <string name="dashboard_quick_actions">Quick Actions</string>
+    <string name="dashboard_clean_junk">Clean Junk</string>
+    <string name="dashboard_view_duplicates">View Duplicates</string>
+    <string name="dashboard_view_large">View Large Files</string>
+    <string name="dashboard_potential_savings">Potential savings: %s</string>
+
+    <!-- Optimize enhancements -->
+    <string name="optimize_reanalyze">Re-analyze</string>
+    <string name="optimize_analyzing">Analyzing files\u2026</string>
+    <string name="optimize_no_scan_data">Scan your storage first to see optimization suggestions.\nGo to the Manager tab and tap Scan Storage.</string>
+    <string name="optimize_total_reorganize_size">%1$d files totaling %2$s can be reorganized</string>
+
+    <!-- Cloud OAuth -->
+    <string name="cloud_sign_in_google">Sign in with Google</string>
+    <string name="cloud_connect_github">Connect with GitHub</string>
+    <string name="cloud_oauth_note">Paste your access token after authorizing</string>
+    <string name="cloud_github_card_title">GitHub</string>
+    <string name="cloud_github_card_desc">Access your GitHub repositories and gists</string>
+    <string name="cloud_github_connect_btn">Connect with GitHub</string>
+    <string name="cloud_setup_title_github">Connect to GitHub</string>
+    <string name="cloud_github_token_hint">Personal Access Token</string>
+    <string name="cloud_github_default_name">My GitHub</string>
+    <string name="cloud_github_help">Create a personal access token at github.com/settings/tokens and paste it above.</string>
+    <string name="a11y_provider_github">GitHub repository access</string>
+    <string name="cloud_type_github">GitHub</string>
 </resources>

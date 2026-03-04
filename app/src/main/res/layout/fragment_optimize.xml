@@ -35,7 +35,30 @@
                 android:layout_marginStart="@dimen/spacing_sm"
                 android:text="@string/optimize_title"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Title" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_reanalyze"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/optimize_reanalyze"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
         </LinearLayout>
+
+        <!-- Loading indicator -->
+        <ProgressBar
+            android:id="@+id/progress_analyzing"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="gone" />
 
         <!-- Explanatory card -->
         <com.google.android.material.card.MaterialCardView

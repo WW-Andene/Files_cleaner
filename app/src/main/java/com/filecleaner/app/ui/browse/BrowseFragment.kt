@@ -7,6 +7,7 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -16,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import com.filecleaner.app.MainActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
@@ -28,6 +30,8 @@ import com.filecleaner.app.ui.common.FileContextMenu
 import com.filecleaner.app.ui.common.FileListDividerDecoration
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
+import com.filecleaner.app.ui.common.BatchRenameDialog
+import com.filecleaner.app.ui.common.CompressDialog
 import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.utils.SearchQueryParser
 import com.filecleaner.app.viewmodel.MainViewModel
@@ -100,6 +104,50 @@ class BrowseFragment : Fragment() {
             adapter.toggleFolder(folderPath)
             updateExpandCollapseButton()
         }
+        // Selection mode callbacks
+        adapter.onSelectionChanged = { selected ->
+            updateSelectionBar(selected)
+        }
+
+        // Selection bar buttons
+        binding.btnSelectAllFiles.setOnClickListener { adapter.selectAllFiles() }
+        binding.btnSelectAllFolders.setOnClickListener { adapter.selectAllFolders() }
+        binding.btnSelectAllBrowse.setOnClickListener { adapter.selectAll() }
+        binding.btnDeselectAllBrowse.setOnClickListener { adapter.deselectAll() }
+        binding.btnDeleteSelected.setOnClickListener {
+            val items = adapter.getSelectedItems()
+            if (items.isNotEmpty()) {
+                val totalSize = UndoHelper.totalSize(items)
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle(resources.getQuantityString(R.plurals.delete_n_files_title, items.size, items.size))
+                    .setMessage(getString(R.string.confirm_delete_message, 8))
+                    .setPositiveButton(R.string.delete) { _, _ ->
+                        vm.deleteFiles(items)
+                        adapter.deselectAll()
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            }
+        }
+        binding.btnCompressSelected.setOnClickListener {
+            val items = adapter.getSelectedItems()
+            if (items.isNotEmpty()) {
+                CompressDialog.show(requireContext(), items) { archiveName, paths ->
+                    vm.compressFiles(paths, archiveName)
+                    adapter.deselectAll()
+                }
+            }
+        }
+        binding.btnRenameSelected.setOnClickListener {
+            val items = adapter.getSelectedItems()
+            if (items.size >= 2) {
+                BatchRenameDialog.show(requireContext(), items) { renames ->
+                    vm.batchRename(renames)
+                    adapter.deselectAll()
+                }
+            }
+        }
+
         // Restore collapsed folders from config change
         if (restoredCollapsedFolders.isNotEmpty()) {
             adapter.collapsedFolders.addAll(restoredCollapsedFolders)
@@ -127,8 +175,16 @@ class BrowseFragment : Fragment() {
         binding.btnViewMode.setOnClickListener { cycleViewMode() }
         updateViewModeIcon()
 
-        // Grid columns chips
+        // Grid columns chips (inside filter panel)
         setupGridColumnChips()
+
+        // Display options panel
+        binding.btnToggleDisplay.setOnClickListener { toggleDisplayOptionsPanel() }
+        setupDisplayModeChips()
+        setupDisplayGridColumnChips()
+
+        // Swipe drag-to-select touch listener
+        setupDragToSelect()
 
         // Empty state "Scan Now" button
         binding.btnScanNow.setOnClickListener {
@@ -215,6 +271,17 @@ class BrowseFragment : Fragment() {
                     Snackbar.LENGTH_SHORT).show()
                 vm.clearBrowseNavigation()
             }
+        }
+    }
+
+    private fun updateSelectionBar(selected: List<FileItem>) {
+        val bar = binding.selectionActionBar
+        if (selected.isNotEmpty()) {
+            bar.visibility = View.VISIBLE
+            binding.tvBrowseSelectionCount.text = getString(R.string.browse_selected, selected.size)
+            binding.btnRenameSelected.visibility = if (selected.size >= 2) View.VISIBLE else View.GONE
+        } else {
+            bar.visibility = View.GONE
         }
     }
 
@@ -336,6 +403,205 @@ class BrowseFragment : Fragment() {
             }
             suppressGridChipListener = false
         }
+    }
+
+    // ── Display Options Panel ────────────────────────────────────────────
+
+    private var displayOptionsExpanded = false
+    private var suppressDisplayModeChipListener = false
+    private var suppressDisplayGridChipListener = false
+
+    private fun toggleDisplayOptionsPanel() {
+        displayOptionsExpanded = !displayOptionsExpanded
+        binding.displayOptionsPanel.visibility = if (displayOptionsExpanded) View.VISIBLE else View.GONE
+        binding.btnToggleDisplay.setIconResource(
+            if (displayOptionsExpanded) R.drawable.ic_chevron_up else R.drawable.ic_arrow_down
+        )
+        if (displayOptionsExpanded) {
+            updateDisplayGridColumnsVisibility()
+            syncDisplayModeChips()
+        }
+    }
+
+    private fun setupDisplayModeChips() {
+        val chipGroup = binding.chipGroupDisplayMode
+        val modes = listOf(
+            getString(R.string.display_mode_list) to ViewMode.LIST,
+            getString(R.string.display_mode_compact) to ViewMode.LIST_COMPACT,
+            getString(R.string.display_mode_thumbnails) to ViewMode.LIST_WITH_THUMBNAILS,
+            getString(R.string.display_mode_grid) to ViewMode.GRID_MEDIUM
+        )
+        for ((label, mode) in modes) {
+            val chip = Chip(requireContext()).apply {
+                text = label
+                isCheckable = true
+                isChecked = when (mode) {
+                    ViewMode.GRID_MEDIUM -> currentViewMode.spanCount > 1
+                    else -> currentViewMode == mode
+                }
+                tag = mode
+            }
+            chipGroup.addView(chip)
+        }
+        chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (suppressDisplayModeChipListener) return@setOnCheckedStateChangeListener
+            if (checkedIds.isNotEmpty()) {
+                val selectedChip = group.findViewById<Chip>(checkedIds.first())
+                val mode = selectedChip?.tag as? ViewMode ?: return@setOnCheckedStateChangeListener
+                if (mode != currentViewMode) {
+                    currentViewMode = mode
+                    adapter.viewMode = currentViewMode
+                    applyLayoutManager()
+                    updateViewModeIcon()
+                    updateDisplayGridColumnsVisibility()
+                }
+            }
+        }
+    }
+
+    private fun syncDisplayModeChips() {
+        suppressDisplayModeChipListener = true
+        val chipGroup = binding.chipGroupDisplayMode
+        for (i in 0 until chipGroup.childCount) {
+            val chip = chipGroup.getChildAt(i) as? Chip ?: continue
+            val chipMode = chip.tag as? ViewMode ?: continue
+            chip.isChecked = when (chipMode) {
+                ViewMode.GRID_MEDIUM -> currentViewMode.spanCount > 1
+                else -> currentViewMode == chipMode
+            }
+        }
+        suppressDisplayModeChipListener = false
+    }
+
+    private fun setupDisplayGridColumnChips() {
+        val chipGroup = binding.chipGroupDisplayGridColumns
+        val gridModes = listOf(
+            "2" to ViewMode.GRID_LARGE,
+            "3" to ViewMode.GRID_MEDIUM,
+            "4" to ViewMode.GRID_SMALL
+        )
+        for ((label, mode) in gridModes) {
+            val chip = Chip(requireContext()).apply {
+                text = label
+                isCheckable = true
+                isChecked = currentViewMode == mode
+                tag = mode
+            }
+            chipGroup.addView(chip)
+        }
+        chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (suppressDisplayGridChipListener) return@setOnCheckedStateChangeListener
+            if (checkedIds.isNotEmpty()) {
+                val selectedChip = group.findViewById<Chip>(checkedIds.first())
+                val mode = selectedChip?.tag as? ViewMode ?: return@setOnCheckedStateChangeListener
+                if (mode != currentViewMode) {
+                    currentViewMode = mode
+                    adapter.viewMode = currentViewMode
+                    applyLayoutManager()
+                    updateViewModeIcon()
+                    syncDisplayModeChips()
+                }
+            }
+        }
+        updateDisplayGridColumnsVisibility()
+    }
+
+    private fun updateDisplayGridColumnsVisibility() {
+        val isGrid = currentViewMode.spanCount > 1
+        binding.displayGridColumnsRow.visibility = if (isGrid) View.VISIBLE else View.GONE
+        if (isGrid) {
+            suppressDisplayGridChipListener = true
+            val chipGroup = binding.chipGroupDisplayGridColumns
+            for (i in 0 until chipGroup.childCount) {
+                val chip = chipGroup.getChildAt(i) as? Chip ?: continue
+                chip.isChecked = chip.tag == currentViewMode
+            }
+            suppressDisplayGridChipListener = false
+        }
+    }
+
+    // ── Drag-to-select (swipe finger multi-selection) ───────────────────
+
+    private fun setupDragToSelect() {
+        var isDragging = false
+        var lastSelectedPosition = RecyclerView.NO_POSITION
+
+        binding.recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                // Only intercept MOVE events when in selection mode and dragging
+                if (e.actionMasked == MotionEvent.ACTION_MOVE && adapter.selectionMode && isDragging) {
+                    return true
+                }
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                when (e.actionMasked) {
+                    MotionEvent.ACTION_MOVE -> {
+                        if (adapter.selectionMode && isDragging) {
+                            val child = rv.findChildViewUnder(e.x, e.y)
+                            if (child != null) {
+                                val position = rv.getChildAdapterPosition(child)
+                                if (position != RecyclerView.NO_POSITION && position != lastSelectedPosition) {
+                                    adapter.selectAtPosition(position)
+                                    lastSelectedPosition = position
+                                }
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        isDragging = false
+                        lastSelectedPosition = RecyclerView.NO_POSITION
+                    }
+                }
+            }
+
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+        })
+
+        // Use a secondary touch listener to detect when the user starts dragging
+        // while in selection mode (hold + move triggers multi-select)
+        binding.recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            private var startX = 0f
+            private var startY = 0f
+            private val touchSlop = android.view.ViewConfiguration.get(requireContext()).scaledTouchSlop
+
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                when (e.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        startX = e.x
+                        startY = e.y
+                        isDragging = false
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        if (adapter.selectionMode && !isDragging) {
+                            val dx = e.x - startX
+                            val dy = e.y - startY
+                            if (Math.abs(dy) > touchSlop || Math.abs(dx) > touchSlop) {
+                                isDragging = true
+                                // Select the item at the start position if not already selected
+                                val child = rv.findChildViewUnder(startX, startY)
+                                if (child != null) {
+                                    val pos = rv.getChildAdapterPosition(child)
+                                    if (pos != RecyclerView.NO_POSITION) {
+                                        adapter.selectAtPosition(pos)
+                                        lastSelectedPosition = pos
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        isDragging = false
+                        lastSelectedPosition = RecyclerView.NO_POSITION
+                    }
+                }
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+        })
     }
 
     private fun refresh() {

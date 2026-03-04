@@ -12,6 +12,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.cloud.CloudConnection
 import com.filecleaner.app.data.cloud.CloudConnectionStore
 import com.filecleaner.app.data.cloud.CloudProvider
+import com.filecleaner.app.data.cloud.GitHubProvider
 import com.filecleaner.app.data.cloud.GoogleDriveProvider
 import com.filecleaner.app.data.cloud.ProviderType
 import com.filecleaner.app.data.cloud.SftpProvider
@@ -116,6 +117,17 @@ object CloudSetupDialog {
                 tvHelp.text = context.getString(R.string.cloud_gdrive_help)
                 tvHelp.visibility = View.VISIBLE
             }
+            ProviderType.GITHUB -> {
+                title = context.getString(R.string.cloud_setup_title_github)
+                tilHost.visibility = View.GONE
+                tilPort.visibility = View.GONE
+                tilUsername.visibility = View.GONE
+                tilPassword.visibility = View.VISIBLE
+                tilPassword.hint = context.getString(R.string.cloud_github_token_hint)
+                etName.setText(context.getString(R.string.cloud_github_default_name))
+                tvHelp.text = context.getString(R.string.cloud_github_help)
+                tvHelp.visibility = View.VISIBLE
+            }
         }
 
         // Helper to build a CloudConnection from the current form state, or null if invalid
@@ -134,11 +146,12 @@ object CloudSetupDialog {
             tilUsername.error = null
 
             var valid = true
-            if (providerType != ProviderType.GOOGLE_DRIVE && host.isBlank()) {
+            val tokenOnlyTypes = setOf(ProviderType.GOOGLE_DRIVE, ProviderType.GITHUB)
+            if (providerType !in tokenOnlyTypes && host.isBlank()) {
                 tilHost.error = context.getString(R.string.cloud_error_host_required)
                 valid = false
             }
-            if (providerType != ProviderType.GOOGLE_DRIVE && port !in 1..65535) {
+            if (providerType !in tokenOnlyTypes && port !in 1..65535) {
                 tilPort.error = context.getString(R.string.cloud_error_port_range)
                 valid = false
             }
@@ -153,6 +166,7 @@ object CloudSetupDialog {
                     .copy(authToken = password)
                 ProviderType.WEBDAV -> CloudConnection.webdav(displayName, host, username, password)
                 ProviderType.GOOGLE_DRIVE -> CloudConnection.googleDrive(displayName, password)
+                ProviderType.GITHUB -> CloudConnection.github(displayName, password)
             }
         }
 
@@ -162,6 +176,7 @@ object CloudSetupDialog {
                 ProviderType.SFTP -> SftpProvider(connection, context)
                 ProviderType.WEBDAV -> WebDavProvider(connection)
                 ProviderType.GOOGLE_DRIVE -> GoogleDriveProvider(connection, context)
+                ProviderType.GITHUB -> GitHubProvider(connection, context)
             }
         }
 

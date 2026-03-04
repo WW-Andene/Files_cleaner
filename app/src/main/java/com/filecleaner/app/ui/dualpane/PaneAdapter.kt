@@ -44,6 +44,8 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
     var onItemClick: ((PaneItem) -> Unit)? = null
     var onItemLongClick: ((PaneItem, View) -> Unit)? = null
     var onSelectionChanged: (() -> Unit)? = null
+    /** Called when a drag should be initiated for the given item (long-press when not in selection mode). */
+    var onDragStartRequested: ((PaneItem, View) -> Unit)? = null
 
     /** Whether selection mode is active (at least one item is selected). */
     val isSelectionActive: Boolean get() = currentList.any { it.selected }
@@ -123,8 +125,8 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
 
         holder.itemView.setOnLongClickListener { v ->
             if (!isSelectionActive) {
-                // Enter selection mode with this item
-                toggleSelection(holder.bindingAdapterPosition)
+                // Not in selection mode — start a drag operation
+                onDragStartRequested?.invoke(item, v)
             } else {
                 // Already in selection mode — show context menu for files
                 onItemLongClick?.invoke(item, v)

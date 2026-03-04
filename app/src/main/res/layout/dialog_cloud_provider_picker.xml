@@ -100,13 +100,23 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- OAuth note -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/cloud_oauth_note"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textTertiary"
+                    android:textStyle="italic" />
+
                 <!-- Google Sign-In style button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_google_sign_in"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
-                    android:layout_marginTop="@dimen/spacing_md"
-                    android:text="@string/cloud_gdrive_sign_in"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/cloud_sign_in_google"
                     android:textAllCaps="false"
                     android:textColor="@color/googleButtonText"
                     android:textSize="@dimen/text_body"
@@ -124,6 +134,113 @@
                     app:strokeWidth="1dp"
                     app:backgroundTint="@color/googleButtonBg"
                     app:rippleColor="#1A4285F4" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ═══ GitHub Card ═══ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_github"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_provider_github"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/borderDefault"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:rippleColor="@color/selectedBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <!-- Icon + Title row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_rounded"
+                        android:backgroundTint="@color/githubAccentLight">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_archive"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/githubAccent" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cloud_github_card_title"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/cloud_github_card_desc"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- OAuth note -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/cloud_oauth_note"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textTertiary"
+                    android:textStyle="italic" />
+
+                <!-- Connect with GitHub button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_github_connect"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/cloud_connect_github"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.01"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.MaterialComponents.Button"
+                    app:icon="@drawable/ic_archive"
+                    app:iconGravity="textStart"
+                    app:iconSize="20dp"
+                    app:iconPadding="@dimen/spacing_md"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:backgroundTint="@color/githubAccent"
+                    app:iconTint="#FFFFFF"
+                    app:rippleColor="#4DFFFFFF" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

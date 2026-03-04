@@ -1,12 +1,14 @@
 package com.filecleaner.app.ui.dualpane
 
+import android.content.ClipData
+import android.content.ClipDescription
 import android.os.Bundle
 import android.os.Environment
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -26,6 +28,7 @@ import com.filecleaner.app.utils.FileScanner
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,6 +71,9 @@ class DualPaneFragment : Fragment() {
 
     private enum class Pane { LEFT, RIGHT }
 
+    /** MIME type used for drag-and-drop between panes. */
+    private val DRAG_MIME = "application/x-filecleaner-pane-drag"
+
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View {
         _binding = FragmentDualPaneBinding.inflate(i, c, false)
         return binding.root
@@ -106,7 +112,7 @@ class DualPaneFragment : Fragment() {
             countLabel = binding.tvCountLeft,
             upButton = binding.btnUpLeft,
             pickDirButton = binding.btnPickDirLeft,
-            modeButton = binding.btnModeLeft,
+            tabLayout = binding.tabModeLeft,
             pane = Pane.LEFT
         )
 
@@ -119,7 +125,7 @@ class DualPaneFragment : Fragment() {
             countLabel = binding.tvCountRight,
             upButton = binding.btnUpRight,
             pickDirButton = binding.btnPickDirRight,
-            modeButton = binding.btnModeRight,
+            tabLayout = binding.tabModeRight,
             pane = Pane.RIGHT
         )
 
@@ -173,6 +179,20 @@ class DualPaneFragment : Fragment() {
         }
     }
 
+    /** Tab labels for PaneContentMode entries (short form). */
+    private val tabLabels by lazy {
+        arrayOf(
+            R.string.dual_pane_tab_files,
+            R.string.dual_pane_tab_images,
+            R.string.dual_pane_tab_videos,
+            R.string.dual_pane_tab_audio,
+            R.string.dual_pane_tab_docs,
+            R.string.dual_pane_tab_apks,
+            R.string.dual_pane_tab_archives,
+            R.string.dual_pane_tab_tree
+        )
+    }
+
     private fun setupPane(
         adapter: PaneAdapter,
         treeAdapter: TreeNodeAdapter,
@@ -181,7 +201,7 @@ class DualPaneFragment : Fragment() {
         countLabel: TextView,
         upButton: ImageButton,
         pickDirButton: ImageButton,
-        modeButton: com.google.android.material.button.MaterialButton,
+        tabLayout: TabLayout,
         pane: Pane
     ) {
         recycler.layoutManager = LinearLayoutManager(requireContext())
@@ -210,6 +230,21 @@ class DualPaneFragment : Fragment() {
             updateSelectionBar()
         }
 
+        // --- Drag initiation callback from adapter ---
+        adapter.onDragStartRequested = { item, itemView ->
+            activePane = pane
+            val items = if (adapter.isSelectionActive) adapter.getSelectedItems() else listOf(item)
+            val paths = items.joinToString("\n") { it.file.absolutePath }
+            val clipData = ClipData.newPlainText("files", paths)
+            val shadow = View.DragShadowBuilder(itemView)
+            val localState = DragPayload(pane, items)
+            itemView.startDragAndDrop(clipData, shadow, localState, 0)
+        }
+
+        // --- Drag listener on the recycler (drop target) ---
+        val paneContainer = if (pane == Pane.LEFT) binding.paneLeft else binding.paneRight
+        recycler.setOnDragListener(createPaneDragListener(pane, paneContainer))
+
         // --- Tree adapter callbacks ---
         treeAdapter.onDirectorySelected = { path ->
             activePane = pane
@@ -217,13 +252,12 @@ class DualPaneFragment : Fragment() {
             // Switch to file browser mode and navigate to this directory
             if (pane == Pane.LEFT) leftMode = PaneContentMode.FILE_BROWSER
             else rightMode = PaneContentMode.FILE_BROWSER
-            updateModeButtonLabel(pane)
+            syncTabSelection(pane)
             applyContentMode(pane)
             loadDirectory(pane, path)
         }
 
         // Tap pane container to set active
-        val paneContainer = if (pane == Pane.LEFT) binding.paneLeft else binding.paneRight
         paneContainer.setOnClickListener {
             activePane = pane
             updatePaneHighlight()
@@ -253,38 +287,109 @@ class DualPaneFragment : Fragment() {
             showDirectoryPicker(pane)
         }
 
-        // Content mode selector button
-        modeButton.setOnClickListener { anchor ->
-            activePane = pane
-            showContentModeMenu(anchor, pane)
+        // --- Setup TabLayout for content mode ---
+        setupTabLayout(tabLayout, pane)
+    }
+
+    /** Payload carried by a drag operation between panes. */
+    private data class DragPayload(val sourcePane: Pane, val items: List<PaneAdapter.PaneItem>)
+
+    private fun createPaneDragListener(targetPane: Pane, paneContainer: View): View.OnDragListener {
+        return View.OnDragListener { _, event ->
+            when (event.action) {
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    // Accept drags that carry plain-text file paths
+                    event.clipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) == true
+                }
+                DragEvent.ACTION_DRAG_ENTERED -> {
+                    // Highlight the target pane
+                    paneContainer.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.colorPrimaryLight)
+                    )
+                    true
+                }
+                DragEvent.ACTION_DRAG_LOCATION -> true
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    // Remove highlight
+                    updatePaneHighlight()
+                    true
+                }
+                DragEvent.ACTION_DROP -> {
+                    updatePaneHighlight()
+                    val payload = event.localState as? DragPayload
+                    if (payload != null && payload.sourcePane != targetPane) {
+                        showDragCopyMoveDialog(payload.items, targetPane)
+                    }
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    updatePaneHighlight()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun showDragCopyMoveDialog(items: List<PaneAdapter.PaneItem>, targetPane: Pane) {
+        val targetPath = if (targetPane == Pane.LEFT) leftPath else rightPath
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.dual_pane_drag_copy_or_move))
+            .setMessage(getString(R.string.dual_pane_drag_message, items.size))
+            .setPositiveButton(getString(R.string.dual_pane_copy)) { _, _ ->
+                for (item in items) {
+                    vm.copyFile(item.file.absolutePath, targetPath)
+                }
+                clearActiveSelection()
+            }
+            .setNegativeButton(getString(R.string.dual_pane_move)) { _, _ ->
+                for (item in items) {
+                    vm.moveFile(item.file.absolutePath, targetPath)
+                }
+                clearActiveSelection()
+            }
+            .setNeutralButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun setupTabLayout(tabLayout: TabLayout, pane: Pane) {
+        // Add a tab for each PaneContentMode
+        PaneContentMode.entries.forEachIndexed { index, _ ->
+            val tab = tabLayout.newTab().setText(tabLabels[index])
+            tabLayout.addTab(tab)
         }
 
-        // Set initial mode label
-        updateModeButtonLabel(pane)
+        // Set initial selection to match current mode
+        val currentMode = if (pane == Pane.LEFT) leftMode else rightMode
+        val currentIndex = PaneContentMode.entries.indexOf(currentMode)
+        if (currentIndex >= 0) {
+            tabLayout.getTabAt(currentIndex)?.select()
+        }
+
+        // Listen for tab changes
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                val selectedMode = PaneContentMode.entries[tab.position]
+                if (pane == Pane.LEFT) leftMode = selectedMode else rightMode = selectedMode
+                activePane = pane
+                applyContentMode(pane)
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+    }
+
+    /** Sync the TabLayout selection with the current mode (e.g., after swap or tree navigation). */
+    private fun syncTabSelection(pane: Pane) {
+        val mode = if (pane == Pane.LEFT) leftMode else rightMode
+        val tabLayout = if (pane == Pane.LEFT) binding.tabModeLeft else binding.tabModeRight
+        val index = PaneContentMode.entries.indexOf(mode)
+        if (index >= 0 && tabLayout.selectedTabPosition != index) {
+            tabLayout.getTabAt(index)?.select()
+        }
     }
 
     // ── Content Mode Handling ──
-
-    private fun showContentModeMenu(anchor: View, pane: Pane) {
-        val popup = PopupMenu(requireContext(), anchor)
-        PaneContentMode.entries.forEachIndexed { index, mode ->
-            popup.menu.add(0, index, index, getString(mode.labelRes))
-        }
-        popup.setOnMenuItemClickListener { item ->
-            val selectedMode = PaneContentMode.entries[item.itemId]
-            if (pane == Pane.LEFT) leftMode = selectedMode else rightMode = selectedMode
-            updateModeButtonLabel(pane)
-            applyContentMode(pane)
-            true
-        }
-        popup.show()
-    }
-
-    private fun updateModeButtonLabel(pane: Pane) {
-        val mode = if (pane == Pane.LEFT) leftMode else rightMode
-        val button = if (pane == Pane.LEFT) binding.btnModeLeft else binding.btnModeRight
-        button.text = getString(mode.labelRes)
-    }
 
     private fun applyContentMode(pane: Pane) {
         val mode = if (pane == Pane.LEFT) leftMode else rightMode
@@ -398,7 +503,7 @@ class DualPaneFragment : Fragment() {
                     // Switch to file browser mode when a directory is picked
                     if (pane == Pane.LEFT) leftMode = PaneContentMode.FILE_BROWSER
                     else rightMode = PaneContentMode.FILE_BROWSER
-                    updateModeButtonLabel(pane)
+                    syncTabSelection(pane)
                     applyContentMode(pane)
                     loadDirectory(pane, selectedPath)
                 }
@@ -445,9 +550,9 @@ class DualPaneFragment : Fragment() {
         leftMode = rightMode
         rightMode = tempMode
 
-        // Update mode labels
-        updateModeButtonLabel(Pane.LEFT)
-        updateModeButtonLabel(Pane.RIGHT)
+        // Sync tab selections to new modes
+        syncTabSelection(Pane.LEFT)
+        syncTabSelection(Pane.RIGHT)
 
         // Re-apply content modes (which triggers reload)
         applyContentMode(Pane.LEFT)

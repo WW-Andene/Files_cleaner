@@ -102,6 +102,14 @@ class AntivirusFragment : Fragment() {
         }
     }
 
+    /** Update both the ProgressBar value and the percentage text. */
+    private fun updateProgress(pct: Int) {
+        _binding?.progress?.post {
+            _binding?.progress?.progress = pct
+            _binding?.tvProgressPct?.text = getString(R.string.av_progress_pct, pct)
+        }
+    }
+
     private fun startScan() {
         isScanning = true
         allThreats.clear()
@@ -114,6 +122,7 @@ class AntivirusFragment : Fragment() {
         b.progressContainer.visibility = View.VISIBLE
         b.progress.isIndeterminate = false
         b.progress.progress = 0
+        b.tvProgressPct.text = getString(R.string.av_progress_pct, 0)
         b.summaryRow.visibility = View.GONE
         b.recyclerResults.visibility = View.GONE
         b.filterScroll.visibility = View.GONE
@@ -129,7 +138,7 @@ class AntivirusFragment : Fragment() {
             // Phase 1: App Integrity (0-20%)
             updatePhase(R.string.av_phase_integrity, R.string.av_phase_integrity_desc)
             val integrityResults = AppIntegrityScanner.scan(ctx) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = pct / 5 }
+                updateProgress(pct / 5)
             }
             allThreats.addAll(integrityResults)
 
@@ -139,17 +148,17 @@ class AntivirusFragment : Fragment() {
             if (allFiles.isNotEmpty()) {
                 val signatureResults = SignatureScanner.scan(ctx, allFiles) { scanned, total ->
                     val pct = if (total > 0) (scanned * 20 / total) + 20 else 20
-                    _binding?.progress?.post { _binding?.progress?.progress = pct }
+                    updateProgress(pct)
                 }
                 allThreats.addAll(signatureResults)
             }
-            _binding?.progress?.post { _binding?.progress?.progress = 40 }
+            updateProgress(40)
 
             // Phase 3: Privacy Audit (40-60%)
             updatePhase(R.string.av_phase_privacy, R.string.av_phase_privacy_desc)
             val ctx2 = context ?: return@launch
             val privacyResults = PrivacyAuditor.audit(ctx2) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = 40 + (pct / 5) }
+                updateProgress(40 + (pct / 5))
             }
             allThreats.addAll(privacyResults)
 
@@ -157,7 +166,7 @@ class AntivirusFragment : Fragment() {
             updatePhase(R.string.av_phase_network, R.string.av_phase_network_desc)
             val ctx3 = context ?: return@launch
             val networkResults = NetworkSecurityScanner.scan(ctx3) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = 60 + (pct / 5) }
+                updateProgress(60 + (pct / 5))
             }
             allThreats.addAll(networkResults)
 
@@ -165,11 +174,11 @@ class AntivirusFragment : Fragment() {
             updatePhase(R.string.av_phase_verification, R.string.av_phase_verification_desc)
             val ctx4 = context ?: return@launch
             val verificationResults = AppVerificationScanner.scan(ctx4) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = 80 + (pct / 5) }
+                updateProgress(80 + (pct / 5))
             }
             allThreats.addAll(verificationResults)
 
-            _binding?.progress?.post { _binding?.progress?.progress = 100 }
+            updateProgress(100)
 
             // Save scan history
             val ctx5 = context ?: return@launch

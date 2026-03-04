@@ -157,7 +157,7 @@ class FileAdapter(
         // Accent stripe (color-coded indicator)
         bindAccentStripe(holder, item)
 
-        // Visual state: duplicate group colouring → selection highlight → default
+        // Visual state: duplicate group colouring → junk/size bg → selection highlight → default
         val c = colors!!
         val card = holder.itemView as? MaterialCardView
         val dupColors = resolvedDupColors
@@ -168,6 +168,14 @@ class FileAdapter(
         } else if (isSelected) {
             card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
             card?.strokeColor = c.selectedBorder
+        } else if (colorMode == ColorMode.JUNK_CATEGORY) {
+            val bgColor = FileItemUtils.junkBgColor(ctx, item)
+            card?.setCardBackgroundColor(bgColor) ?: holder.itemView.setBackgroundColor(bgColor)
+            card?.strokeColor = c.border
+        } else if (colorMode == ColorMode.SIZE_SEVERITY) {
+            val bgColor = FileItemUtils.sizeBgColor(ctx, item)
+            card?.setCardBackgroundColor(bgColor) ?: holder.itemView.setBackgroundColor(bgColor)
+            card?.strokeColor = c.border
         } else {
             card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
             card?.strokeColor = c.border

@@ -44,7 +44,8 @@ interface CloudProvider {
 enum class ProviderType {
     GOOGLE_DRIVE,
     SFTP,
-    WEBDAV
+    WEBDAV,
+    GITHUB
 }
 
 /**
@@ -95,6 +96,14 @@ data class CloudConnection(
             displayName = displayName,
             host = host,
             username = username,
+            authToken = authToken
+        )
+
+        fun github(displayName: String, authToken: String) = CloudConnection(
+            id = "github_${java.util.UUID.randomUUID()}",
+            type = ProviderType.GITHUB,
+            displayName = displayName,
+            host = "api.github.com",
             authToken = authToken
         )
     }

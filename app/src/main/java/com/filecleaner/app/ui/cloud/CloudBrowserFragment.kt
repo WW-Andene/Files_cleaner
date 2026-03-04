@@ -23,6 +23,7 @@ import com.filecleaner.app.data.cloud.CloudConnection
 import com.filecleaner.app.data.cloud.CloudConnectionStore
 import com.filecleaner.app.data.cloud.CloudFile
 import com.filecleaner.app.data.cloud.CloudProvider
+import com.filecleaner.app.data.cloud.GitHubProvider
 import com.filecleaner.app.data.cloud.GoogleDriveProvider
 import com.filecleaner.app.data.cloud.ProviderType
 import com.filecleaner.app.data.cloud.SftpProvider
@@ -164,6 +165,7 @@ class CloudBrowserFragment : Fragment() {
                     ProviderType.GOOGLE_DRIVE -> ctx.getString(R.string.cloud_type_google_drive)
                     ProviderType.SFTP -> ctx.getString(R.string.cloud_type_sftp)
                     ProviderType.WEBDAV -> ctx.getString(R.string.cloud_type_webdav)
+                    ProviderType.GITHUB -> ctx.getString(R.string.cloud_type_github)
                 }
                 "${conn.displayName} ($typeLabel)"
             }
@@ -324,6 +326,7 @@ class CloudBrowserFragment : Fragment() {
             ProviderType.SFTP -> SftpProvider(connection, ctx)
             ProviderType.WEBDAV -> WebDavProvider(connection)
             ProviderType.GOOGLE_DRIVE -> GoogleDriveProvider(connection, ctx)
+            ProviderType.GITHUB -> GitHubProvider(connection, ctx)
         }
     }
 

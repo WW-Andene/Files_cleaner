@@ -112,4 +112,20 @@
     <!-- Legend chip background -->
     <color name="legendChipBg">#F0EDE8</color>
     <color name="legendTextColor">#515854</color>
+
+    <!-- Junk category light backgrounds -->
+    <color name="junkCacheBg">#FFF3E0</color>
+    <color name="junkTempBg">#F3E5F5</color>
+    <color name="junkThumbnailBg">#E8EAF6</color>
+    <color name="junkOldDownloadBg">#ECEFF1</color>
+    <color name="junkLogBg">#EFEBE9</color>
+
+    <!-- Size severity light backgrounds -->
+    <color name="sizeHugeBg">#FFEBEE</color>
+    <color name="sizeLargeBg">#FFF3E0</color>
+    <color name="sizeMediumBg">#FFFDE7</color>
+
+    <!-- GitHub branding -->
+    <color name="githubAccent">#24292F</color>
+    <color name="githubAccentLight">#F6F8FA</color>
 </resources>

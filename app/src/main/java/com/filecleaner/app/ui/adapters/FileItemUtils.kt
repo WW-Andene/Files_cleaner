@@ -6,9 +6,13 @@ import android.text.format.DateFormat
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
+import java.io.File
 import java.util.Date
 
 /**
@@ -118,11 +122,31 @@ object FileItemUtils {
     // ── Thumbnail / icon loading ─────────────────────────────────────────
 
     /**
-     * Loads a category icon into [imageView].  Image/Video thumbnails are
-     * loaded via Glide when available; this fallback sets a tinted vector.
+     * Loads a thumbnail or category icon into [imageView].
+     * For images and videos: loads actual file thumbnail via Glide.
+     * For other types: sets a tinted vector icon.
      */
     fun loadThumbnail(imageView: ImageView, item: FileItem, isGrid: Boolean) {
         val ctx = imageView.context
+        val file = File(item.path)
+        val cornerRadius = (8 * ctx.resources.displayMetrics.density).toInt()
+
+        // Load real thumbnails for images and videos
+        if ((item.category == FileCategory.IMAGE || item.category == FileCategory.VIDEO) && file.exists()) {
+            imageView.clearColorFilter()
+            imageView.scaleType = if (isGrid) android.widget.ImageView.ScaleType.CENTER_CROP else android.widget.ImageView.ScaleType.CENTER_CROP
+            Glide.with(ctx)
+                .load(file)
+                .transform(CenterCrop(), RoundedCorners(cornerRadius))
+                .placeholder(if (item.category == FileCategory.IMAGE) R.drawable.ic_image else R.drawable.ic_video)
+                .error(if (item.category == FileCategory.IMAGE) R.drawable.ic_image else R.drawable.ic_video)
+                .into(imageView)
+            return
+        }
+
+        // Fallback: category icon for all other file types
+        Glide.with(ctx).clear(imageView)
+        imageView.scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
         val iconRes = when (item.category) {
             FileCategory.IMAGE    -> R.drawable.ic_image
             FileCategory.VIDEO    -> R.drawable.ic_video
@@ -137,6 +161,32 @@ object FileItemUtils {
         val tint = categoryColor(ctx, item.category)
         imageView.setColorFilter(tint)
     }
+
+    // ── Junk background colors ──────────────────────────────────────────
+
+    private val JUNK_BG_COLOR_RES = mapOf(
+        JunkType.CACHE to R.color.junkCacheBg,
+        JunkType.TEMP to R.color.junkTempBg,
+        JunkType.THUMBNAIL to R.color.junkThumbnailBg,
+        JunkType.OLD_DOWNLOAD to R.color.junkOldDownloadBg,
+        JunkType.LOG to R.color.junkLogBg
+    )
+
+    /** Background tint for junk items (light version of their category color). */
+    fun junkBgColor(ctx: Context, item: FileItem): Int =
+        ContextCompat.getColor(ctx, JUNK_BG_COLOR_RES[classifyJunk(item)] ?: R.color.junkOldDownloadBg)
+
+    // ── Size severity background colors ─────────────────────────────────
+
+    private val SIZE_BG_COLOR_RES = mapOf(
+        SizeSeverity.HUGE to R.color.sizeHugeBg,
+        SizeSeverity.LARGE to R.color.sizeLargeBg,
+        SizeSeverity.MEDIUM to R.color.sizeMediumBg
+    )
+
+    /** Background tint for large file items (light version of their severity color). */
+    fun sizeBgColor(ctx: Context, item: FileItem): Int =
+        ContextCompat.getColor(ctx, SIZE_BG_COLOR_RES[sizeSeverity(item)] ?: R.color.sizeMediumBg)
 
     // ── Meta text builder ────────────────────────────────────────────────
 

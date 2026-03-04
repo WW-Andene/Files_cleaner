@@ -63,30 +63,14 @@ class OptimizeFragment : Fragment() {
 
         binding.recyclerSuggestions.layoutManager = LinearLayoutManager(requireContext())
 
-        // D3-07: Run analysis off the main thread to prevent jank
-        val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
+        // Re-analyze button
+        binding.btnReanalyze.setOnClickListener { runAnalysis() }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            allSuggestions = withContext(Dispatchers.IO) {
-                StorageOptimizer.analyze(allFiles, storagePath)
-            }
+        // Run initial analysis
+        runAnalysis()
 
-            if (allSuggestions.isEmpty()) {
-                binding.tvEmpty.visibility = View.VISIBLE
-                binding.recyclerSuggestions.visibility = View.GONE
-                binding.btnApply.isEnabled = false
-                binding.selectionControls.visibility = View.GONE
-                binding.filterBar.visibility = View.GONE
-                binding.selectionSummaryBar.visibility = View.GONE
-            } else {
-                binding.tvEmpty.visibility = View.GONE
-                binding.recyclerSuggestions.visibility = View.VISIBLE
-                binding.selectionControls.visibility = View.VISIBLE
-                binding.filterBar.visibility = View.VISIBLE
-            }
-
-            applyFiltersAndRebuild()
-        }
+        // Re-run when scan data changes
+        vm.filesByCategory.observe(viewLifecycleOwner) { runAnalysis() }
 
         // Global select / deselect all — operates on ALL suggestions, not just filtered
         binding.btnSelectAll.setOnClickListener {
@@ -123,6 +107,55 @@ class OptimizeFragment : Fragment() {
 
         vm.operationResult.observe(viewLifecycleOwner) { result ->
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    // ─── Analysis ─────────────────────────────────────────────────────────────
+
+    private fun runAnalysis() {
+        val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
+
+        if (allFiles.isEmpty()) {
+            binding.tvEmpty.visibility = View.VISIBLE
+            binding.tvEmpty.text = getString(R.string.optimize_no_scan_data)
+            binding.recyclerSuggestions.visibility = View.GONE
+            binding.btnApply.isEnabled = false
+            binding.selectionControls.visibility = View.GONE
+            binding.filterBar.visibility = View.GONE
+            binding.selectionSummaryBar.visibility = View.GONE
+            binding.progressAnalyzing.visibility = View.GONE
+            return
+        }
+
+        // Show loading indicator
+        binding.progressAnalyzing.visibility = View.VISIBLE
+        binding.recyclerSuggestions.visibility = View.GONE
+        binding.tvEmpty.visibility = View.GONE
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            allSuggestions = withContext(Dispatchers.IO) {
+                StorageOptimizer.analyze(allFiles, storagePath)
+            }
+
+            if (_binding == null) return@launch
+
+            binding.progressAnalyzing.visibility = View.GONE
+
+            if (allSuggestions.isEmpty()) {
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.recyclerSuggestions.visibility = View.GONE
+                binding.btnApply.isEnabled = false
+                binding.selectionControls.visibility = View.GONE
+                binding.filterBar.visibility = View.GONE
+                binding.selectionSummaryBar.visibility = View.GONE
+            } else {
+                binding.tvEmpty.visibility = View.GONE
+                binding.recyclerSuggestions.visibility = View.VISIBLE
+                binding.selectionControls.visibility = View.VISIBLE
+                binding.filterBar.visibility = View.VISIBLE
+            }
+
+            applyFiltersAndRebuild()
         }
     }
 
@@ -184,11 +217,18 @@ class OptimizeFragment : Fragment() {
     private fun updateGlobalSummary() {
         val accepted = filteredSuggestions.filter { it.accepted }
         val totalSize = accepted.sumOf { it.file.size }
+        val allTotalSize = allSuggestions.sumOf { it.file.size }
 
-        binding.tvSummary.text = getString(
+        // Show total reorganizable size as well as selection counts
+        val summaryLine = getString(
             R.string.optimize_summary_detail,
             filteredSuggestions.size, accepted.size
         )
+        val totalLine = if (allSuggestions.isNotEmpty()) {
+            "\n" + getString(R.string.optimize_total_reorganize_size,
+                allSuggestions.size, UndoHelper.formatBytes(allTotalSize))
+        } else ""
+        binding.tvSummary.text = summaryLine + totalLine
         binding.btnApply.isEnabled = accepted.isNotEmpty()
 
         // Floating summary bar

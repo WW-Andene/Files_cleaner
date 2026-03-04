@@ -3,6 +3,7 @@ package com.filecleaner.app.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -48,9 +49,91 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     var onItemClick: ((FileItem) -> Unit)? = null
     var onItemLongClick: ((FileItem, View) -> Unit)? = null
     var onHeaderClick: ((String) -> Unit)? = null
+    var onSelectionChanged: ((List<FileItem>) -> Unit)? = null
 
     // I3: Use shared color resolution from FileItemUtils
     private var colors: FileItemUtils.AdapterColors? = null
+
+    // ── Selection state ─────────────────────────────────────────────────
+    val selectedPaths = mutableSetOf<String>()
+    var selectionMode = false
+        private set
+
+    fun enterSelectionMode(initialPath: String? = null) {
+        if (!selectionMode) {
+            selectionMode = true
+            selectedPaths.clear()
+        }
+        if (initialPath != null) {
+            selectedPaths.add(initialPath)
+        }
+        notifyDataSetChanged()
+        notifySelectionChanged()
+    }
+
+    fun exitSelectionMode() {
+        selectionMode = false
+        selectedPaths.clear()
+        notifyDataSetChanged()
+        onSelectionChanged?.invoke(emptyList())
+    }
+
+    fun toggleSelection(path: String) {
+        if (path in selectedPaths) selectedPaths.remove(path) else selectedPaths.add(path)
+        notifyDataSetChanged()
+        notifySelectionChanged()
+    }
+
+    /** Select item at a given adapter position (for drag-to-select). */
+    fun selectAtPosition(position: Int) {
+        val item = currentList.getOrNull(position) as? Item.File ?: return
+        val path = item.fileItem.path
+        if (path !in selectedPaths) {
+            selectedPaths.add(path)
+            notifyItemChanged(position)
+            notifySelectionChanged()
+        }
+    }
+
+    private fun notifySelectionChanged() {
+        val selected = currentList.filterIsInstance<Item.File>().filter { it.fileItem.path in selectedPaths }.map { it.fileItem }
+        onSelectionChanged?.invoke(selected)
+        if (selected.isEmpty() && selectionMode) exitSelectionMode()
+    }
+
+    fun selectAll() {
+        enterSelectionMode()
+        currentList.filterIsInstance<Item.File>().forEach { selectedPaths.add(it.fileItem.path) }
+        notifyDataSetChanged()
+        notifySelectionChanged()
+    }
+
+    fun selectAllFiles() {
+        enterSelectionMode()
+        currentList.filterIsInstance<Item.File>()
+            .filter { !java.io.File(it.fileItem.path).isDirectory }
+            .forEach { selectedPaths.add(it.fileItem.path) }
+        notifyDataSetChanged()
+        notifySelectionChanged()
+    }
+
+    fun selectAllFolders() {
+        enterSelectionMode()
+        currentList.filterIsInstance<Item.File>()
+            .filter { java.io.File(it.fileItem.path).isDirectory }
+            .forEach { selectedPaths.add(it.fileItem.path) }
+        notifyDataSetChanged()
+        notifySelectionChanged()
+    }
+
+    fun deselectAll() {
+        exitSelectionMode()
+    }
+
+    fun getSelectedItems(): List<FileItem> =
+        currentList.filterIsInstance<Item.File>().filter { it.fileItem.path in selectedPaths }.map { it.fileItem }
+
+    fun getSelectedCount(): Int = selectedPaths.size
 
     /** Set of folder paths that are currently collapsed. */
     val collapsedFolders: MutableSet<String> = mutableSetOf()
@@ -192,6 +275,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     private fun bindFile(holder: FileViewHolder, item: FileItem) {
         holder.name.text = item.name
         val c = colors ?: FileItemUtils.resolveColorsWithSelection(holder.itemView.context).also { colors = it }
+        val isSelected = item.path in selectedPaths
 
         // Reset icon size for recycled views; enlarge only for thumbnail mode
         val lp = holder.icon.layoutParams
@@ -210,37 +294,63 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         val isGrid = viewMode != ViewMode.LIST && viewMode != ViewMode.LIST_WITH_THUMBNAILS && viewMode != ViewMode.LIST_COMPACT
         FileItemUtils.loadThumbnail(holder.icon, item, isGrid)
 
-        // Default card colors (using shared resolved colors)
+        // Card colors: selection highlight or default
         val card = holder.itemView as? com.google.android.material.card.MaterialCardView
-        card?.setCardBackgroundColor(c.surface)
-        card?.strokeColor = c.border
+        if (isSelected) {
+            card?.setCardBackgroundColor(c.selectedBg)
+            card?.strokeColor = c.selectedBorder
+        } else {
+            card?.setCardBackgroundColor(c.surface)
+            card?.strokeColor = c.border
+        }
 
         // Meta line
         holder.meta?.let { FileItemUtils.buildMeta(it, item) }
 
-        // Hide checkbox
-        holder.check?.visibility = View.GONE
+        // Checkbox visibility based on selection mode
+        val cb = holder.check as? CheckBox
+        if (selectionMode && cb != null) {
+            cb.visibility = View.VISIBLE
+            cb.isChecked = isSelected
+            cb.isClickable = false // click handled by itemView
+        } else {
+            cb?.visibility = View.GONE
+        }
 
-        // Click handlers (use bindingAdapterPosition to avoid stale item capture)
+        // Click handlers
         holder.itemView.setOnClickListener {
             val pos = holder.bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
                 val current = getItem(pos)
-                if (current is Item.File) onItemClick?.invoke(current.fileItem)
+                if (current is Item.File) {
+                    if (selectionMode) {
+                        toggleSelection(current.fileItem.path)
+                        notifyItemChanged(pos)
+                    } else {
+                        onItemClick?.invoke(current.fileItem)
+                    }
+                }
             }
         }
         holder.itemView.setOnLongClickListener { v ->
             val pos = holder.bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
                 val current = getItem(pos)
-                if (current is Item.File) onItemLongClick?.invoke(current.fileItem, v)
+                if (current is Item.File) {
+                    if (!selectionMode) {
+                        enterSelectionMode(current.fileItem.path)
+                    } else {
+                        onItemLongClick?.invoke(current.fileItem, v)
+                    }
+                }
             }
             true
         }
 
         val ctx = holder.itemView.context
         holder.itemView.contentDescription = ctx.getString(
-            R.string.a11y_file_info, item.name, holder.meta?.text ?: item.sizeReadable)
+            if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_info,
+            item.name, holder.meta?.text ?: item.sizeReadable)
     }
 
     class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {

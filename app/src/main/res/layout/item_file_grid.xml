@@ -32,15 +32,30 @@
             app:strokeWidth="0dp"
             app:cardBackgroundColor="@color/surfaceDim">
 
-            <ImageView
-                android:id="@+id/iv_file_icon"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:minHeight="80dp"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true"
-                android:importantForAccessibility="no" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_file_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:minHeight="120dp"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:importantForAccessibility="no" />
+
+                <CheckBox
+                    android:id="@+id/cb_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="4dp"
+                    android:clickable="false"
+                    android:buttonTint="@color/colorPrimary"
+                    android:visibility="gone" />
+            </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
