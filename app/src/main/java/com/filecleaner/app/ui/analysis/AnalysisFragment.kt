@@ -50,10 +50,14 @@ class AnalysisFragment : Fragment() {
             findNavController().navigate(R.id.duplicatesFragment)
         }
 
+        // Set empty state text from the shared include layout
+        binding.emptyState.tvEmptyTitle.setText(R.string.analysis_empty_title)
+        binding.emptyState.tvEmptySubtitle.setText(R.string.analysis_empty_subtitle)
+
         // Observe scan state for empty/content toggle
         vm.scanState.observe(viewLifecycleOwner) { state ->
             val hasData = state is ScanState.Done
-            binding.emptyState.visibility = if (hasData) View.GONE else View.VISIBLE
+            binding.emptyState.root.visibility = if (hasData) View.GONE else View.VISIBLE
             binding.contentState.visibility = if (hasData) View.VISIBLE else View.GONE
         }
 

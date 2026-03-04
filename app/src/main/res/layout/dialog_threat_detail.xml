@@ -84,7 +84,7 @@
             android:textColor="@color/textSecondary"
             android:fontFamily="monospace"
             android:textIsSelectable="true"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="@dimen/spacing_micro" />
     </LinearLayout>
 
     <!-- Package name (if applicable) -->
@@ -111,7 +111,7 @@
             android:textColor="@color/textSecondary"
             android:fontFamily="monospace"
             android:textIsSelectable="true"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="@dimen/spacing_micro" />
     </LinearLayout>
 
     <!-- Category -->
@@ -135,7 +135,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textSecondary"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="@dimen/spacing_micro" />
     </LinearLayout>
 
     <!-- Action buttons -->

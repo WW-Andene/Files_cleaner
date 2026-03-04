@@ -96,8 +96,8 @@
 
                 <ImageButton
                     android:id="@+id/btn_up_left"
-                    android:layout_width="@dimen/spacing_3xl"
-                    android:layout_height="@dimen/spacing_3xl"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_arrow_up"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_go_up"
@@ -121,8 +121,8 @@
 
                 <ImageButton
                     android:id="@+id/btn_pick_dir_left"
-                    android:layout_width="@dimen/spacing_3xl"
-                    android:layout_height="@dimen/spacing_3xl"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_folder"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_pick_directory"
@@ -210,8 +210,8 @@
 
                 <ImageButton
                     android:id="@+id/btn_up_right"
-                    android:layout_width="@dimen/spacing_3xl"
-                    android:layout_height="@dimen/spacing_3xl"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_arrow_up"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_go_up"
@@ -235,8 +235,8 @@
 
                 <ImageButton
                     android:id="@+id/btn_pick_dir_right"
-                    android:layout_width="@dimen/spacing_3xl"
-                    android:layout_height="@dimen/spacing_3xl"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_folder"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_pick_directory"
@@ -296,8 +296,8 @@
 
             <ImageButton
                 android:id="@+id/btn_select_all"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/icon_button"
+                android:layout_height="@dimen/icon_button"
                 android:src="@drawable/ic_select_all"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/dual_pane_select_all"
@@ -307,8 +307,8 @@
 
             <ImageButton
                 android:id="@+id/btn_clear_selection"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/icon_button"
+                android:layout_height="@dimen/icon_button"
                 android:src="@drawable/ic_close"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/dual_pane_deselect_all"

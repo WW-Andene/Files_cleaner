@@ -47,8 +47,8 @@
     <!-- Chevron for directories -->
     <ImageView
         android:id="@+id/iv_chevron"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="@dimen/icon_small"
+        android:layout_height="@dimen/icon_small"
         android:src="@drawable/ic_chevron_right"
         android:scaleType="centerInside"
         android:visibility="gone"

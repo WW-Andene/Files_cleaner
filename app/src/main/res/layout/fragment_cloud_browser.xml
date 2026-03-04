@@ -64,8 +64,8 @@
         <!-- Connection status dot (green=connected, red=disconnected) -->
         <ImageView
             android:id="@+id/iv_connection_status"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
+            android:layout_width="@dimen/spacing_md"
+            android:layout_height="@dimen/spacing_md"
             android:layout_marginEnd="@dimen/spacing_sm"
             android:src="@drawable/ic_status_disconnected"
             android:contentDescription="@string/cloud_status_disconnected" />

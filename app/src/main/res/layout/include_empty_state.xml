@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/empty_state"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/spacing_4xl">
+
+    <ImageView
+        android:layout_width="@dimen/icon_empty_state"
+        android:layout_height="@dimen/icon_empty_state"
+        android:src="@drawable/ic_raccoon_logo"
+        android:alpha="0.55"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/tv_empty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+        android:textColor="@color/textSecondary"
+        android:gravity="center"
+        tools:text="Nothing here yet" />
+
+    <TextView
+        android:id="@+id/tv_empty_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+        android:textColor="@color/textTertiary"
+        android:gravity="center"
+        tools:text="Scan your storage to get started" />
+
+</LinearLayout>

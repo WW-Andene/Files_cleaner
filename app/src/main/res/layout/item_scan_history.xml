@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                 android:textColor="@color/textSecondary"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="@dimen/spacing_micro" />
         </LinearLayout>
 
         <TextView

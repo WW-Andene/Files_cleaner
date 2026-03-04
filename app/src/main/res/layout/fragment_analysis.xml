@@ -14,40 +14,7 @@
         android:orientation="vertical">
 
         <!-- ═══ Empty state (shown before scan) ═══ -->
-        <LinearLayout
-            android:id="@+id/empty_state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="@dimen/spacing_4xl"
-            android:visibility="visible">
-
-            <ImageView
-                android:layout_width="@dimen/icon_empty_state"
-                android:layout_height="@dimen/icon_empty_state"
-                android:src="@drawable/ic_raccoon_logo"
-                android:alpha="0.55"
-                android:importantForAccessibility="no" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_lg"
-                android:text="@string/analysis_empty_title"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                android:textColor="@color/textSecondary"
-                android:gravity="center" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_sm"
-                android:text="@string/analysis_empty_subtitle"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                android:textColor="@color/textTertiary"
-                android:gravity="center" />
-        </LinearLayout>
+        <include layout="@layout/include_empty_state" />
 
         <!-- ═══ Content (shown after scan) ═══ -->
         <LinearLayout
@@ -138,7 +105,7 @@
                             android:id="@+id/tv_savings"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:padding="10dp"
+                            android:padding="@dimen/spacing_sm"
                             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                             android:textColor="@color/analysisSavingsText"
                             android:fontFamily="sans-serif-medium"
@@ -191,7 +158,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="\uD83D\uDDD1\uFE0F"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_emoji" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -206,7 +173,7 @@
                             android:id="@+id/tv_junk_detail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
                             android:maxLines="2" />
@@ -239,7 +206,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="\uD83D\uDCC2"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_emoji" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -254,7 +221,7 @@
                             android:id="@+id/tv_large_detail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
                             android:maxLines="2" />
@@ -287,7 +254,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="\uD83D\uDD04"
-                            android:textSize="22sp" />
+                            android:textSize="@dimen/text_emoji" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -302,7 +269,7 @@
                             android:id="@+id/tv_duplicates_detail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="@dimen/spacing_micro"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                             android:textColor="@color/textTertiary"
                             android:maxLines="2" />

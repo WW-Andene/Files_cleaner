@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/spacing_xs"
-    android:layout_marginVertical="3dp"
+    android:layout_marginVertical="@dimen/spacing_xs"
     app:cardCornerRadius="@dimen/radius_card"
     app:cardElevation="@dimen/elevation_none"
     app:cardBackgroundColor="@color/surfaceColor"
@@ -48,7 +48,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:padding="8dp"
+                    android:padding="@dimen/spacing_sm"
                     android:importantForAccessibility="no" />
             </com.google.android.material.card.MaterialCardView>
 

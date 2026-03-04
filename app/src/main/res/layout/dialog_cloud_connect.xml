@@ -230,7 +230,7 @@
 
             <View
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="@dimen/stroke_default"
                 android:layout_weight="1"
                 android:background="@color/borderDefault" />
             <TextView
@@ -242,7 +242,7 @@
                 android:paddingHorizontal="@dimen/spacing_md" />
             <View
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="@dimen/stroke_default"
                 android:layout_weight="1"
                 android:background="@color/borderDefault" />
         </LinearLayout>

@@ -55,7 +55,7 @@
             android:id="@+id/progress_analyzing"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
+            android:layout_height="@dimen/spacing_xs"
             android:indeterminate="true"
             android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone" />

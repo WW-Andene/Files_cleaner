@@ -67,8 +67,8 @@
 
                 <ImageView
                     android:id="@+id/iv_shield"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
+                    android:layout_width="@dimen/icon_file_list_large"
+                    android:layout_height="@dimen/icon_file_list_large"
                     android:src="@drawable/ic_shield"
                     app:tint="@color/colorPrimary"
                     android:contentDescription="@string/av_title" />
@@ -117,7 +117,7 @@
                     android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                     android:textColor="@color/colorPrimary"
                     android:gravity="end"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="@dimen/spacing_micro"
                     android:text="0%" />
 
                 <TextView
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                     android:textColor="@color/textTertiary"
-                    android:layout_marginTop="2dp" />
+                    android:layout_marginTop="@dimen/spacing_micro" />
             </LinearLayout>
 
             <!-- Start scan / scan again button -->
