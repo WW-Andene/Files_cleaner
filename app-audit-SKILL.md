@@ -1233,19 +1233,42 @@ When a chain exists: document it, escalate the combined severity, and number the
 ```
 [ ] Read the entire source file(s) top-to-bottom without skipping
     → Claude Code: Use Agent(Explore) for large codebases, Glob + Read for small ones
+
 [ ] Classify: domain type, architecture pattern, app size → determine part count
+
 [ ] Extract all domain rules from code → verify against §0 → flag discrepancies
-    → Claude Code: Use Grep to search for constants, magic numbers, formulas
+    → Claude Code: Use Grep with these patterns:
+      Constants:      Grep(pattern: "(val|const|let|var|static|final)\\s+[A-Z_]{2,}\\s*=", type: "kotlin")
+      Magic numbers:  Grep(pattern: "[^0-9][0-9]{2,}[^0-9dpsp]", glob: "*.kt")  — then filter non-obvious
+      Hardcoded URLs: Grep(pattern: "https?://", glob: "*.{kt,java,xml}")
+      Formulas:       Grep(pattern: "(Math\\.|ceil|floor|round|sqrt|pow|abs|max|min)", type: "kotlin")
+
 [ ] Identify all architectural constraints → acknowledge them explicitly
-    → Claude Code: Read build config (package.json / build.gradle / Podfile) first
+    → Claude Code: Read build config files first:
+      Android: Glob(pattern: "**/build.gradle*") + Read AndroidManifest.xml
+      iOS:     Glob(pattern: "**/Podfile") or Glob(pattern: "**/Package.swift")
+      Web:     Read package.json, vite.config.*, webpack.config.*
+
 [ ] Extract Design Identity from code if not provided → confirm with user
-    → Claude Code: Read theme files, color resources, style definitions
+    → Claude Code: Read theme/style files:
+      Android: Glob(pattern: "**/res/values/colors.xml") + Glob(pattern: "**/res/values/themes.xml")
+              + Glob(pattern: "**/res/values/styles.xml") + Glob(pattern: "**/res/values-night/**")
+      Web:     Grep(pattern: "--[a-z]", glob: "*.css") for CSS variables
+      iOS:     Glob(pattern: "**/*.xcassets/**")
+
 [ ] Build Feature Preservation Ledger (every named feature: status + safety flags)
+    → Claude Code: Use Grep(pattern: "class.*Fragment|class.*Activity|class.*ViewModel", type: "kotlin")
+      to inventory all screens/features
+
 [ ] Map each critical workflow from §0 through the actual code
+
 [ ] Identify top 5 risk areas based on domain classification
+
 [ ] Announce: domain class, architecture class, planned part count, top-risk areas
+
 [ ] For apps > 3,000 lines: wait for user acknowledgment before Part 2
     → Claude Code: Use AskUserQuestion to confirm before proceeding
+
 [ ] Create progress tracker with TodoWrite listing all planned parts
 ```
 
@@ -1277,6 +1300,28 @@ When a chain exists: document it, escalate the combined severity, and number the
 
 > 120+ dimensions across 15 categories. Every dimension applies to every app.
 > Domain Classification (§I.1) determines depth and severity multipliers.
+
+> **Claude:** This is the largest section (~1,400 lines). Do NOT read it all at once. Use this mini-index to jump to the category you need:
+>
+> | Category | Line Anchor | Sections |
+> |----------|------------|----------|
+> | **A** Domain Logic | `### CATEGORY A` | §A1–§A7 |
+> | **B** State & Data | `### CATEGORY B` | §B1–§B6 |
+> | **C** Security | `### CATEGORY C` | §C1–§C7 |
+> | **D** Performance | `### CATEGORY D` | §D1–§D5 |
+> | **E** Visual Design | `### CATEGORY E` | §E1–§E11 |
+> | **F** UX & IA | `### CATEGORY F` | §F1–§F6 |
+> | **G** Accessibility | `### CATEGORY G` | §G1–§G5 |
+> | **H** Compatibility | `### CATEGORY H` | §H1–§H4 |
+> | **I** Code Quality | `### CATEGORY I` | §I1–§I6 |
+> | **J** Data Presentation | `### CATEGORY J` | §J1–§J4 |
+> | **K** Domain Depths | `### CATEGORY K` | §K1–§K5 |
+> | **L** Polish & Standard. | `### CATEGORY L` | §L1–§L7 |
+> | **M** Deployment | `### CATEGORY M` | §M1–§M3 |
+> | **N** i18n | `### CATEGORY N` | §N1–§N4 |
+> | **O** Projections | `### CATEGORY O` | §O1–§O7 |
+>
+> Use `Grep` with the category header (e.g., `### CATEGORY E`) to jump directly.
 
 ---
 
@@ -2163,6 +2208,13 @@ For every feature above the app's `minSdkVersion`: is there a version check (`if
 ### CATEGORY I — Code Quality & Architecture
 
 #### §I1. DEAD CODE & WASTE
+
+> **Claude Code** — grep patterns for dead code detection:
+> - Dev artifacts: `Grep(pattern: "console\\.log|debugger|TODO|FIXME|HACK|XXX|TEMP", glob: "*.{kt,java,js,ts,swift}")`
+> - Commented code: `Grep(pattern: "^\\s*//.*\\(|^\\s*//.*=|^\\s*//.*fun |^\\s*//.*class ", glob: "*.{kt,java}")`
+> - Unused imports (Android): `Grep(pattern: "^import ", type: "kotlin")` — then cross-reference usage
+> - Unused string resources: `Grep(pattern: "<string name=\"", glob: "**/strings.xml")` — cross-ref with layout XMLs and Kotlin
+
 - **Unused functions**: Defined but never called?
 - **Unused constants**: Defined but never referenced?
 - **Unreachable branches**: `if (CONSTANT === false)`, conditions that can never be true given state machine?
@@ -2919,6 +2971,36 @@ ARCHITECTURAL — 6+ months:
 
 **Execution:** Follow §III. Begin with Part 1. For apps > 3,000 lines, confirm with user after Part 1. Part 1 = read entire codebase → classify → extract domain rules → confirm design identity → build Feature Preservation Ledger → announce plan → wait.
 
+### Audit Completion Criteria
+
+> **Claude:** Use this checklist to determine when the audit is complete. An audit is "done" when all applicable criteria are met.
+
+```
+COMPLETION GATES — check each before delivering the Summary Dashboard (§VII):
+
+[ ] Every Part from §III Part Structure has been executed (or explicitly skipped with reason)
+[ ] §0 is fully populated — no placeholder values remain
+[ ] Every CRITICAL and HIGH finding includes a specific fix (not "improve X")
+[ ] Every finding has a confidence tag: [CODE], [§0-CONFIRMED], or [UNVERIFIED]
+[ ] Summary Dashboard (§VII) is populated: findings table, root cause analysis, quick wins
+[ ] Top 10 Quick Wins are ranked by (severity × impact) / effort
+[ ] Remediation Roadmap has at least IMMEDIATE and SHORT-TERM sections filled
+[ ] Cross-Cutting Concern Map (§VIII) checked — compound chains documented
+[ ] Feature Preservation Ledger confirms no existing feature was accidentally invalidated
+[ ] TodoWrite shows all parts as "completed"
+
+EARLY EXIT — acceptable to stop before full completion when:
+  - User says "that's enough" or "stop here" → deliver §VII with what you have
+  - Context window is running low → deliver §VII, note which parts were not completed
+  - User redirects to "fix mode" → switch from auditing to implementing fixes
+  - Only LOW/NIT findings remain in uncovered parts → note and stop
+
+NOT DONE — do not stop if:
+  - Any CRITICAL finding exists without a documented fix
+  - §VII Summary Dashboard has not been produced
+  - §0 Domain Rules have [UNVERIFIED] items that could affect CRITICAL findings
+```
+
 ---
 
 ## X. RESEARCH, DEVELOPMENT & IMPROVEMENT PROTOCOL
@@ -3279,6 +3361,20 @@ DEFERRED: {items not being pursued, with rationale}
 > **Prerequisite**: §0 + §I classification. Prior audit strongly recommended. If none, do Parts 1–3 first.
 >
 > **Execution order**: §XI.0 (understand) → §XI.1 (inventory) → §XI.2 (polish passes) → §XI.3 (code restructure) → §XI.4 (architecture) → §XI.5 (quality gates) → §XI.6 (deliverable).
+
+> **Claude:** This section is ~500 lines. Work through one subsection at a time. Here's the map:
+>
+> | Subsection | What It Does | Skip When |
+> |------------|-------------|-----------|
+> | **§XI.0** Comprehension | Reads and internalizes the app as a product | NEVER — mandatory |
+> | **§XI.1** Pre-Polish Inventory | Maps all coherence fractures and rough edges | Never |
+> | **§XI.2** Polish Passes (0–6) | 7 passes from structural to fine-grained | Passes 3–6 if time-limited |
+> | **§XI.3** Code Restructure | File structure, modules, naming, architecture | If user only wants visual polish |
+> | **§XI.4** Architecture Evolution | Incremental arch improvements without rewrites | If app is small (<500 lines) |
+> | **§XI.5** Quality Gates | Verifies polish preserved behavior | NEVER — mandatory after changes |
+> | **§XI.6** Deliverable | Structured output of all changes | Never |
+>
+> **Minimum viable path**: §XI.0 + §XI.1 + §XI.2 (Passes 0, 1, 1.5) + §XI.5
 
 ---
 

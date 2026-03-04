@@ -73,7 +73,7 @@ When the user says **"full deep"** for a design/aesthetic audit, expand to inclu
 
 ### Execution Order for "Full Deep Art Design Aesthetic"
 
-```
+```text
 PHASE 1 — Core aesthetic audit (this SKILL):
   §0 → §DS1–DS2 → §DP0–DP2 → §DBI1+DBI3 → §DC1–DC5 → §DT1–DT4
   → §DCO1–DCO6 → §DH1–DH4 → §DSA1–DSA5 → §DM1–DM5 → §DI1–DI4
@@ -127,7 +127,7 @@ PHASE 3 — Cross-reference:
 
 ### Common Execution Paths
 
-```
+```text
 "Audit my app's design" (general)
   → §TRIAGE → §0 → I (style) → XI.§DP0 (extract character)
   → XI.§DP1–DP2 (character brief) → IX (brand) → II (color)
@@ -160,6 +160,46 @@ Companion mode (alongside app-audit)
 - **Minimum companion execution**: I.§DS1 → XI.§DP0 → XI.§DP2 → II.§DC1 → IX.§DBI3 (5 sections, highest value).
 - **XII (Source Material) activates ONLY when a named source is referenced.** Do not run §SR0–SR6 without a named source.
 - **Always extract character (§DP0) before analyzing it (§DP1).** Never fill dimensions from imagination.
+- **Do NOT attempt all 21 steps in one response.** Work through 2–4 sections per response, then pause for user feedback.
+
+### Section Dependency Diagram
+
+> **Claude:** Sections have dependencies. Follow the arrows — never skip an upstream dependency.
+
+```text
+§0 (Axis Profile)
+  ↓
+§DS1 (Style Classification) ─────────────────────────────┐
+  ↓                                                       │
+§DP0 (Character Extraction) → §DP1 (Dimensions) → §DP2 (Character Brief)
+  ↑                                                  ↓         ↓
+§SR0-SR1 (if source named)                      §DBI1    §DP3 (Deepening)
+                                               (Archetype)
+                                                  ↓
+                                               §DBI3 (Anti-Genericness)
+
+After §DP2 is confirmed, remaining sections can run in any order:
+  §DC1-DC5 (Color)    §DT1-DT4 (Typography)    §DM1-DM5 (Motion)
+  §DH1-DH4 (Hierarchy) §DSA1-DSA5 (Surface)    §DI1-DI4 (Icons)
+  §DCO1-DCO6 (Components) §DST1-DST4 (States)  §DRC1-DRC3 (Responsive)
+  §DCVW1-DCVW3 (Copy)  §DDV1-DDV3 (Data Viz)   §DTA1-DTA2 (Tokens)
+  §DDT1-DDT2 (Trends)  §DCP1-DCP3 (Competitive)
+  §DIL1-DIL3 (Illustration)
+```
+
+### Chunking Guide — Large Sections
+
+> **Claude:** These sections are too large for a single response. Chunk them as shown:
+
+| Section | Lines | Chunk Strategy |
+|---------|-------|---------------|
+| **II. Color** (~130 lines) | §DC1-DC5 | §DC1+DC2 together → §DC3 if dark mode → §DC4+DC5 |
+| **III. Typography** (~120 lines) | §DT1-DT4 | §DT1+DT2 together → §DT3+DT4 |
+| **IV. Motion** (~220 lines) | §DM1-DM5 | §DM1+DM2 → §DM3+DM4 → §DM5 |
+| **IX. Brand Identity** (~180 lines) | §DBI1-DBI3 | §DBI1 → §DBI2 → §DBI3 (anti-genericness is one full response) |
+| **XI. Character System** (~350 lines) | §DP0-DP3 | §DP0 → §DP1+DP2 → §DP3 (3 responses minimum) |
+| **XII. Source Material** (~410 lines) | §SR0-SR6 | §SR0 → §SR1 → §SR2+SR3 → §SR4-SR6 |
+| **XV. Components** (~200 lines) | §DCO1-DCO6 | §DCO1+DCO2 → §DCO3+DCO4 → §DCO5+DCO6 |
 
 ### Claude Code Tool Integration Protocol
 
@@ -253,6 +293,26 @@ AskUserQuestion({
 - The user says "continue" or "next part" during an in-progress audit
 - This skill was invoked mid-audit from `app-audit` (companion mode trigger)
 
+### Path Decision Tree
+
+> **Claude:** After triage, determine which execution path to follow:
+
+```text
+User request
+  ├─ Contains a named source (game/brand/IP)?
+  │   YES → SOURCE MATERIAL PATH (§SR0 first, see §EXEC)
+  │   NO ↓
+  ├─ Contains "personality", "character", "distinctive", "generic"?
+  │   YES → CHARACTER-FOCUSED PATH (§DP0 first, see §EXEC)
+  │   NO ↓
+  ├─ Is this a companion audit (app-audit already running)?
+  │   YES → COMPANION PATH (skip §TRIAGE + §0, see §COMPANION)
+  │   NO ↓
+  └─ Default → GENERAL AUDIT PATH (§DS1 first, see §EXEC step 1–21)
+
+If "full deep" is in the request → add PHASE 2 (app-audit §E–§L sections)
+```
+
 ---
 
 ## ROLE OF THIS SKILL
@@ -261,6 +321,25 @@ This skill extends or replaces the design sections of app-audit (§E, §F6, §L3
 - **Identity Preservation** — polish the app's existing vision, never replace it with generic conventions
 - **Axis-Governed** — every recommendation is filtered through the Five-Axis profile (§I.4 of app-audit, or §0 below if used standalone)
 - **Specificity is non-negotiable** — "improve the colors" is not a finding. "The accent `#3b82f6` has 87% HSL saturation — perceptually oversaturated relative to the warm-dark surface it sits on; shifting to OKLCH `oklch(65% 0.15 255)` would retain the hue identity while reading as more calibrated" is a finding.
+
+### Conditional Sections — Skip Guide
+
+> **Claude:** Not every section applies to every app. Skip these sections when the condition is met:
+
+| Section | Skip When |
+|---------|-----------|
+| §DC3 (Dark Mode) | App is light-mode only — no `values-night/` or dark theme |
+| §DC5 (Color as Narrative) | User is pressed for time — lowest priority in Color |
+| §DT4 (Variable Fonts) | No variable font detected in the codebase |
+| §DM5 (Motion Signature) | App has no animations at all (flag the absence instead) |
+| §DSA4-DSA5 (Light Physics, Focal) | App uses flat design with no elevation/atmosphere |
+| §DBI2 (Design DNA) | Quick audit — §DBI3 (anti-genericness) is higher value |
+| §DIL1-DIL3 (Illustration) | App has no illustrations, custom graphics, or spot illustrations |
+| §DDV1-DDV3 (Data Visualization) | App has no charts, graphs, or data visualizations |
+| §DRC1-DRC3 (Responsive) | App is single fixed-width layout (not responsive) |
+| §DDT1-DDT2 (Trends) | Expert tools where trend relevance is zero |
+| §DCP1-DCP3 (Competitive) | User says they don't care about competitors |
+| §SR0-SR6 (Source Material) | No named source (game, show, brand, IP) referenced |
 
 ---
 
@@ -646,12 +725,19 @@ For each key state: assess whether the typography is doing expressive work or ju
 ## IV. MOTION ARCHITECTURE
 
 > **Claude execution note**: §DM1 (vocabulary card) is the core deliverable — always produce it. §DM4 (micro-interactions) produces the most actionable findings for developers. §DM5 (motion signature) is highest-value when the user wants personality deepening. If the app has no animations at all, note the absence and recommend a starter vocabulary instead of auditing nothing.
+>
+> **Claude Code** — extract motion values before filling §DM1:
+> - Android XML animations: `Grep(pattern: "android:duration|android:interpolator|android:fromAlpha|android:toAlpha", glob: "**/res/anim/**")`
+> - Android Kotlin animators: `Grep(pattern: "setDuration|ObjectAnimator|ValueAnimator|SpringAnimation|interpolator|MotionLayout", type: "kotlin")`
+> - Web CSS transitions: `Grep(pattern: "transition:|animation:|@keyframes|animation-duration", glob: "*.css")`
+> - Motion helpers: `Grep(pattern: "MotionUtil|AnimationHelper|Anim", glob: "*.{kt,java}")`
+> - Also: `Glob(pattern: "**/res/anim/*.xml")` to inventory all animation resource files
 
 ### §DM1. Motion Vocabulary Card
 
 A professional motion vocabulary consists of 4–6 canonical transition definitions applied consistently throughout the app. Audit the current state and produce the card:
 
-```
+```yaml
 Motion Vocabulary (Current Assessment)
 ────────────────────────────────────────
 Micro-feedback (button press, toggle):
