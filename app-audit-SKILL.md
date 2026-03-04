@@ -23,6 +23,19 @@ description: >
 
 ---
 
+## QUICK START — How to Use This Skill
+
+> **For Claude**: When this skill activates, follow these steps:
+> 1. **Use `AskUserQuestion`** to present the §TRIAGE options (unless the user already specified a mode)
+> 2. **Use `TodoWrite`** to create a progress tracker with one todo per audit part
+> 3. **Use `Agent` (subagent_type: Explore)** to read the entire codebase in parallel before writing any findings
+> 4. **Fill §0** by extracting from code first, then asking the user only for what can't be extracted
+> 5. **Work in parts** — output one part per response, update the todo list after each
+>
+> **For the User**: Just say one of the trigger phrases (e.g., "audit my app", "review before launch", "help me improve my features") and Claude will guide you through the options. You can also jump directly to a mode: "do a full audit", "run R&D mode", "polish my app".
+
+---
+
 ## SKILL MAP — Quick Reference
 
 > **Read this first.** This is a 2,800+ line skill. You never need all of it. Use this map.
@@ -71,14 +84,106 @@ description: >
 - **§X and §XI can be run independently.** They don't require a full audit. But they work better with one.
 - **§X.0 (existing feature eval) always runs before §X.1 (competitive research).** Look inward first.
 - **§XI.0 (comprehension) is non-negotiable.** Never skip it — it's what prevents "clean but soulless" restructuring.
-- **When in doubt about which section applies:** ask the user. Use the `ask_user_input` tool with the triage options.
+- **When in doubt about which section applies:** ask the user. Use the `AskUserQuestion` tool with the triage options.
 - **For apps > 3,000 lines:** always confirm with user after completing §0 + §I before continuing.
+
+### Claude Code Tool Integration Protocol
+
+> **These instructions are specific to Claude Code (CLI/web).** Use the right tool for each audit task.
+
+#### Tool Usage Map
+
+| Audit Task | Tool to Use | Why |
+|------------|-------------|-----|
+| **Read the codebase** | `Agent` (subagent_type: Explore) | Explores files in parallel without bloating the main context |
+| **Search for patterns** (e.g., hardcoded strings, security issues) | `Grep` or `Glob` | Fast, targeted codebase searches |
+| **Ask user which mode** | `AskUserQuestion` | Presents triage options with descriptions |
+| **Track audit progress** | `TodoWrite` | Creates visible progress tracker for multi-part audits |
+| **Research competitors/sources** | `WebSearch` / `WebFetch` | Live web research for §X.1 competitive analysis |
+| **Present findings** | Direct text output | Findings are displayed directly to the user |
+| **Implement fixes** | `Edit` / `Write` | Apply recommended changes to code |
+
+#### Multi-Part Audit Progress Protocol
+
+At the start of any multi-part audit, create a progress tracker:
+
+```
+TodoWrite([
+  { content: "Fill §0 App Context Block", status: "in_progress", activeForm: "Filling §0 context" },
+  { content: "§I Adaptive Calibration", status: "pending", activeForm: "Classifying domain and architecture" },
+  { content: "Part 1: Core Logic & Domain", status: "pending", activeForm: "Auditing core logic" },
+  { content: "Part 2: State & Data Integrity", status: "pending", activeForm: "Auditing state management" },
+  ...continue for each part
+])
+```
+
+Update status to `completed` as each part finishes. The user sees real-time progress.
+
+#### Parallel Research Strategy
+
+For large codebases (> 2,000 lines), launch parallel Explore agents to read different modules simultaneously:
+
+```
+Agent(subagent_type: Explore, prompt: "Read all UI/fragment files in app/src/main/java/.../ui/")
+Agent(subagent_type: Explore, prompt: "Read all utility/service files in app/src/main/java/.../utils/")
+Agent(subagent_type: Explore, prompt: "Read all data model files in app/src/main/java/.../data/")
+```
+
+This prevents context window bloat while ensuring thorough coverage.
+
+### Platform Awareness
+
+> This skill was originally written for web/frontend apps but applies to **any frontend platform**. When auditing non-web apps, adapt the terminology:
+
+| Web Concept | Android/Kotlin Equivalent | iOS/Swift Equivalent |
+|-------------|--------------------------|---------------------|
+| CSS variables / design tokens | `colors.xml`, `themes.xml`, `dimens.xml` | Asset catalogs, `UIColor` extensions |
+| `localStorage` | `SharedPreferences`, Room DB | `UserDefaults`, CoreData |
+| Components / React state | Fragments, ViewModels, LiveData | ViewControllers, SwiftUI State |
+| `innerHTML` / XSS | `WebView.loadData()` injection | `WKWebView` injection |
+| Bundle size | APK size, DEX method count | IPA size |
+| Service Workers | WorkManager, Foreground Services | Background Tasks |
+| CSS animations | `MotionLayout`, `ObjectAnimator`, `MotionUtil` | `UIView.animate`, SwiftUI `.animation` |
+| `border-radius` | `cornerRadius` in ShapeableImageView / MaterialCardView | `layer.cornerRadius` |
+| Tailwind/CSS classes | XML attributes, Material Design 3 theme | SwiftUI modifiers |
+| `prefers-reduced-motion` | `Settings.Global.ANIMATOR_DURATION_SCALE` | `UIAccessibility.isReduceMotionEnabled` |
+
+**When auditing Android apps specifically:**
+- Check `AndroidManifest.xml` for permission issues (§C)
+- Audit `proguard-rules.pro` for security implications
+- Review `build.gradle` for dependency versions (§O4)
+- Check `values/` and `values-night/` for theme completeness (§E)
+- Review navigation graph (`nav_graph.xml`) for flow coherence (§H)
+- Check for proper lifecycle handling in Fragments/ViewModels (§B)
+- Verify Material Design 3 component usage and theming (§E, §L)
+
+**When auditing iOS apps specifically:**
+- Check `Info.plist` for permission descriptions
+- Review asset catalogs for theme support
+- Audit `Podfile`/`Package.swift` for dependencies
+- Check for proper SwiftUI/UIKit lifecycle handling
 
 ---
 
 ## §TRIAGE — MANDATORY AUDIT ROUTING (execute BEFORE reading the rest of this skill)
 
-**Always ask first** using `ask_user_input`:
+**Always ask first** using `AskUserQuestion`. Example invocation:
+
+```
+AskUserQuestion({
+  questions: [{
+    question: "What kind of audit would you like?",
+    header: "Audit mode",
+    options: [
+      { label: "Full App Audit", description: "Code, security, performance, accessibility, UX, design, architecture, domain correctness, i18n, AI risks, future projections" },
+      { label: "Design & Aesthetic Audit", description: "Deep visual analysis — color science, typography, motion, brand identity, competitive positioning" },
+      { label: "R&D & Improvement", description: "Existing feature health evaluation, competitive analysis, improvement prioritization, R&D roadmap" },
+      { label: "Polish & Restructure", description: "Deep app comprehension, coherence fracture healing, systematic polish, codebase restructuring" }
+    ],
+    multiSelect: false
+  }]
+})
+```
 
 | Option | What You Get |
 |--------|-------------|
@@ -92,11 +197,11 @@ description: >
 
 | Selection | What Claude Does |
 |-----------|-----------------|
-| Full App Audit | Continue from §ORCHESTRATION. Do NOT load `design-aesthetic-audit`. |
-| Design & Aesthetic Audit | Stop this skill. Load `design-aesthetic-audit/SKILL.md`. |
+| Full App Audit | Continue from §ORCHESTRATION. Do NOT load `design-aesthetic-audit-SKILL.md`. |
+| Design & Aesthetic Audit | Stop this skill. Load `design-aesthetic-audit-SKILL.md`. |
 | R&D & Improvement | Fill §0 → lightweight §I classification → skip to §X. If prior audit exists, reference findings. |
 | Polishing & Restructuration | Fill §0 → skip to §XI. Prior audit strongly recommended. If none, do Parts 1–3 first. |
-| Companion Mode | Continue this skill + load `design-aesthetic-audit/SKILL.md`. Follow companion protocol. |
+| Companion Mode | Continue this skill + load `design-aesthetic-audit-SKILL.md`. Follow companion protocol. |
 
 **Skip triage when:** user explicitly names which mode, has already selected, or says "continue" / "next part" during an in-progress session.
 
@@ -159,6 +264,18 @@ Visualization: # e.g. "Recharts" / "D3.js" / "Chart.js" / "None"
 Build:         # e.g. "Zero build tools — CDN only" / "Vite 5" / "Webpack 5"
 External APIs: # e.g. "None" / "Stripe" / "OpenWeather" / "Anthropic Claude API"
 AI/LLM:        # e.g. "None" / "OpenAI GPT-4o via fetch" / "Claude claude-sonnet-4-6, streaming"
+
+# ─── MOBILE / NATIVE STACK (fill if applicable) ──────────────────────────────
+Platform:      # e.g. "Android" / "iOS" / "Flutter" / "React Native" / "Web only"
+Language:      # e.g. "Kotlin 1.9.0" / "Swift 5.9" / "Dart 3.2" / "TypeScript"
+Min SDK:       # e.g. "Android 29 (10)" / "iOS 15.0" / "N/A"
+Target SDK:    # e.g. "Android 35 (15)" / "iOS 17.0" / "N/A"
+Architecture:  # e.g. "MVVM (ViewModel + LiveData)" / "MVI (Compose)" / "VIPER" / "BLoC"
+UI Framework:  # e.g. "Material Design 3 (XML Views)" / "Jetpack Compose" / "SwiftUI" / "UIKit"
+Navigation:    # e.g. "Navigation Component 2.7.4" / "NavigationStack" / "go_router"
+DI:            # e.g. "Manual" / "Hilt/Dagger" / "Koin" / "Swinject"
+Testing:       # e.g. "JUnit 4 + Espresso" / "XCTest" / "flutter_test"
+CI/CD:         # e.g. "GitHub Actions" / "Fastlane" / "Bitrise" / "None"
 
 # ─── PLATFORM & LOCALE ────────────────────────────────────────────────────────
 Target Platforms: # e.g. "Desktop-first" / "Mobile-first PWA" / "Both (responsive)"
@@ -287,6 +404,11 @@ Before writing any finding, classify the app along three axes. These classificat
 | PWA (any) | SW versioning, cache poisoning, offline-first edge cases |
 | LocalStorage-only | Quota exhaustion, schema migration gaps, concurrent-tab conflicts |
 | Backend-connected | Race conditions, optimistic update failures, token leaks, CORS |
+| Android (MVVM/Kotlin) | Fragment lifecycle leaks, ViewModel scope misuse, coroutine cancellation gaps, permission model gaps, process death state loss, ProGuard stripping |
+| Android (Compose) | Recomposition storms, state hoisting confusion, side-effect lifecycle, LazyColumn performance |
+| iOS (UIKit) | Retain cycles, main-thread violations, lifecycle misuse, deep-link handling |
+| iOS (SwiftUI) | @State/@StateObject confusion, view identity issues, NavigationStack complexity |
+| Cross-platform (Flutter/RN) | Bridge bottleneck, platform-specific fallback gaps, native module versioning |
 
 ### §I.3. App Size → Audit Scope
 
@@ -625,17 +747,25 @@ When a chain exists: document it, escalate the combined severity, and number the
 
 ### Pre-Flight Checklist (Mandatory — Before Any Finding)
 
+> **Claude Code**: Use `Agent` (subagent_type: Explore) to read the entire codebase in parallel. For large apps, launch multiple agents targeting different directories. Use `TodoWrite` to create the audit progress tracker. Use `AskUserQuestion` for any §0 fields you can't extract from code.
+
 ```
 [ ] Read the entire source file(s) top-to-bottom without skipping
+    → Claude Code: Use Agent(Explore) for large codebases, Glob + Read for small ones
 [ ] Classify: domain type, architecture pattern, app size → determine part count
 [ ] Extract all domain rules from code → verify against §0 → flag discrepancies
+    → Claude Code: Use Grep to search for constants, magic numbers, formulas
 [ ] Identify all architectural constraints → acknowledge them explicitly
+    → Claude Code: Read build config (package.json / build.gradle / Podfile) first
 [ ] Extract Design Identity from code if not provided → confirm with user
+    → Claude Code: Read theme files, color resources, style definitions
 [ ] Build Feature Preservation Ledger (every named feature: status + safety flags)
 [ ] Map each critical workflow from §0 through the actual code
 [ ] Identify top 5 risk areas based on domain classification
 [ ] Announce: domain class, architecture class, planned part count, top-risk areas
 [ ] For apps > 3,000 lines: wait for user acknowledgment before Part 2
+    → Claude Code: Use AskUserQuestion to confirm before proceeding
+[ ] Create progress tracker with TodoWrite listing all planned parts
 ```
 
 ### Part Structure
@@ -842,6 +972,19 @@ Mutation bugs are among the hardest to find — the code looks correct but silen
 - **Medical regulations**: App gives health guidance? "Not medical advice" disclaimer prominent?
 - **Accessibility law**: ADA/EN 301 549 obligations relevant to this app?
 
+#### §C7. MOBILE-SPECIFIC SECURITY *(activated for Android/iOS apps)*
+- **Permission audit**: Are all declared permissions actually used? Over-requesting permissions signals privacy issues and can trigger store rejection.
+  - Android: Check `AndroidManifest.xml` `<uses-permission>` vs actual usage in code
+  - iOS: Check `Info.plist` usage descriptions vs actual API calls
+- **Exported components**: Android — are Activities/Services/BroadcastReceivers unnecessarily exported? (`android:exported="true"` without intent filters = attack surface)
+- **Data storage security**: Sensitive data in SharedPreferences/UserDefaults without encryption? Use EncryptedSharedPreferences / Keychain.
+- **WebView security**: `setJavaScriptEnabled(true)` + `addJavascriptInterface()` = injection surface. `setAllowFileAccess(true)` = local file read risk.
+- **Network security config**: Android — is `android:networkSecurityConfig` present? Does it allow cleartext traffic unnecessarily?
+- **ProGuard/R8 rules**: Are security-critical classes excluded from obfuscation appropriately? Are reflection-dependent classes kept?
+- **Content Provider exposure**: Android — `android:exported` on ContentProviders without proper permission checks = data leak.
+- **Deep link validation**: Are deep links/app links validated against expected patterns, or can arbitrary URIs trigger sensitive actions?
+- **Clipboard security**: Sensitive data (passwords, tokens) copied to clipboard without timeout/clearing?
+
 ---
 
 ### CATEGORY D — Performance & Resources
@@ -886,6 +1029,17 @@ Produce this table for the app:
 - **Computation array retention**: Heavy tables (DP, MC) released after use or held in closure?
 - **Canvas/WebGL cleanup**: Contexts and canvases disposed on unmount?
 
+#### §D5. MOBILE-SPECIFIC PERFORMANCE *(activated for Android/iOS apps)*
+- **Coroutine/async lifecycle**: Are coroutines properly scoped to ViewModel/Fragment lifecycle? Orphaned coroutines running after fragment destruction?
+- **RecyclerView / LazyColumn optimization**: ViewHolder pattern correct? DiffUtil used? No nested scrolling conflicts? ViewType reuse?
+- **Image loading**: Thumbnails appropriately sized? Image caching configured? Large bitmaps loaded on main thread?
+- **Database queries on main thread**: Room/CoreData queries dispatched to background? No `runBlocking` on main thread?
+- **Fragment transaction overhead**: Excessive fragment replacements causing layout thrashing? Proper use of `replace` vs `add`?
+- **APK/IPA size**: ProGuard/R8 shrinking enabled? Unused resources stripped? Large assets that could be on-demand?
+- **Process death recovery**: Is state saved via `onSaveInstanceState` / ViewModel SavedState for critical user data? Process death = complete state loss without this.
+- **ANR risk**: Any operation > 5s on main thread triggers ANR dialog (Android). Check file I/O, network calls, heavy computation.
+- **Battery impact**: Unnecessary background work? Wake locks held too long? Location updates too frequent?
+
 ---
 
 ### CATEGORY E — Visual Design Quality & Polish
@@ -894,7 +1048,7 @@ Produce this table for the app:
 > The goal is to make the app's existing design vision more **refined, consistent, and polished** — not to replace it with generic conventions.
 > §0 Design Identity is protected throughout. All findings improve toward the app's own aesthetic, not away from it.
 
-> **Deep visual work:** When this audit's §E findings reveal systemic visual design issues — or when the user specifically requests a design audit, asks to "make it feel like [X]", or references a named aesthetic — the `design-aesthetic-audit` skill should be invoked as a companion. It covers 95 sections of visual-design-specific analysis (component character, copy alignment, illustration, data viz, token architecture, state design, responsive character, source material intelligence) that go well beyond what §E covers here. Route to it via §COMPANION in that skill, which maps directly to §E/P6 in this audit.
+> **Deep visual work:** When this audit's §E findings reveal systemic visual design issues — or when the user specifically requests a design audit, asks to "make it feel like [X]", or references a named aesthetic — the `design-aesthetic-audit-SKILL.md` skill should be invoked as a companion. It covers 95 sections of visual-design-specific analysis (component character, copy alignment, illustration, data viz, token architecture, state design, responsive character, source material intelligence) that go well beyond what §E covers here. Route to it via §COMPANION in that skill, which maps directly to §E/P6 in this audit.
 
 #### §E1. DESIGN TOKEN SYSTEM
 - **Spacing scale**: Is every padding and margin value from a coherent mathematical scale (4/8/12/16/24/32/48/64)? List every one-off value like `p-[13px]` or `margin: 7px`. Each one is a token debt.
@@ -2146,7 +2300,9 @@ Feature Coherence:
 
 > Internal state understood — now look outward. Understand what exists, what users expect, and where the gaps are.
 >
-> **Claude execution note**: Use web search for competitor discovery. If web search is unavailable, ask the user to list 2–3 competitors and describe their strengths/weaknesses. Skip §X.1.1–X.1.3 if the developer explicitly says they don't care about competitors — go straight to §X.2 with only §X.0 findings as input.
+> **Claude execution note**: Use `WebSearch` for competitor discovery — launch parallel searches for different competitor aspects. Use `WebFetch` to analyze competitor websites/app store listings. If web search is unavailable, use `AskUserQuestion` to ask the user to list 2–3 competitors and describe their strengths/weaknesses. Skip §X.1.1–X.1.3 if the developer explicitly says they don't care about competitors — go straight to §X.2 with only §X.0 findings as input.
+>
+> **For mobile apps**: Search app stores (Google Play, App Store) for competitor analysis. Use `WebFetch` on store listing URLs to extract feature lists, ratings, and user reviews.
 
 #### X.1.1 — Direct Competitor Inventory
 

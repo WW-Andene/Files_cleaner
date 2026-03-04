@@ -22,6 +22,24 @@ description: >
 
 ---
 
+## QUICK START — How to Use This Skill
+
+> **For Claude**: When this skill activates, follow these steps:
+> 1. **Use `AskUserQuestion`** to present the §TRIAGE options (unless the user already specified design audit)
+> 2. **Use `Agent` (subagent_type: Explore)** to read all style/theme/color/layout files in parallel
+> 3. **Use `TodoWrite`** to create a progress tracker for the audit sections
+> 4. **Fill §0** by extracting design identity from code (theme files, color definitions, styles)
+> 5. **Work incrementally** — output findings per section, update progress after each
+>
+> **For the User**: Say any trigger phrase like "improve the design", "make it premium", "my dark mode sucks", "make it feel like [game/brand]", or "design audit" and Claude will guide you through. You can also jump directly: "run the brand identity audit", "audit my color palette", "deepen the design personality".
+>
+> **Platform-specific design resources to read first:**
+> - **Android**: `res/values/colors.xml`, `res/values/themes.xml`, `res/values/styles.xml`, `res/values/dimens.xml`, `res/values-night/`, `res/drawable/`, `res/anim/`
+> - **iOS**: Asset catalogs, `UIColor` extensions, SwiftUI theme files, `Appearance` proxies
+> - **Web**: CSS files, Tailwind config, design token files, theme providers
+
+---
+
 ## SKILL MAP — Quick Reference
 
 ### Section Index
@@ -89,6 +107,61 @@ Companion mode (alongside app-audit)
 - **XII (Source Material) activates ONLY when a named source is referenced.** Do not run §SR0–SR6 without a named source.
 - **Always extract character (§DP0) before analyzing it (§DP1).** Never fill dimensions from imagination.
 
+### Claude Code Tool Integration Protocol
+
+> **These instructions are specific to Claude Code (CLI/web).** Use the right tool for each design audit task.
+
+#### Tool Usage Map
+
+| Design Audit Task | Tool to Use | Why |
+|-------------------|-------------|-----|
+| **Read theme/style files** | `Agent` (subagent_type: Explore) | Reads all color, style, layout files in parallel |
+| **Search for color values** | `Grep` with pattern like `#[0-9a-fA-F]{6}` or `oklch` | Finds all color definitions across codebase |
+| **Search for spacing/sizing** | `Grep` for `dp`, `px`, `rem`, `padding`, `margin` | Maps spatial vocabulary |
+| **Search for font/typography** | `Grep` for `fontFamily`, `textSize`, `font-size`, `font-weight` | Maps type system |
+| **Search for animation/motion** | `Grep` for `duration`, `anim`, `transition`, `MotionLayout` | Maps motion vocabulary |
+| **Ask user for design intent** | `AskUserQuestion` | Captures desired aesthetic direction |
+| **Track audit progress** | `TodoWrite` | Visible progress for multi-section audit |
+| **Research sources/competitors** | `WebSearch` / `WebFetch` | Live research for §XII source material or §X competitors |
+| **Implement design changes** | `Edit` / `Write` | Apply color, theme, style fixes |
+
+#### Parallel Design Extraction Strategy
+
+At the start of a design audit, launch parallel research agents to extract design decisions:
+
+```
+Agent(Explore, "Read all color/theme files: colors.xml, themes.xml, styles.xml, values-night/")
+Agent(Explore, "Read all layout XML files and identify spacing, sizing, component patterns")
+Agent(Explore, "Read all drawable/animation resources for motion and visual elements")
+Agent(Explore, "Read all Kotlin/Swift files for programmatic style definitions")
+```
+
+This builds the §DP0 Character Extraction evidence base efficiently.
+
+#### Platform-Specific Design Mapping
+
+| CSS / Web Concept | Android XML/Kotlin | iOS / SwiftUI |
+|-------------------|-------------------|---------------|
+| `color: oklch(...)` / `#hex` | `<color name="...">` in `colors.xml` / `Color(0xFF...)` | `Color(.sRGB, ...)` / `UIColor` |
+| `border-radius` | `app:cornerRadius` / `ShapeAppearanceModel` | `.cornerRadius()` / `.clipShape()` |
+| `box-shadow` | `android:elevation` / `CardView.cardElevation` | `.shadow()` |
+| `font-family` / `@font-face` | `android:fontFamily` / `res/font/` | `.font()` / `UIFont` |
+| `transition` / `@keyframes` | `res/anim/`, `ObjectAnimator`, `MotionLayout` | `withAnimation()` / `UIView.animate` |
+| CSS custom properties | `?attr/colorPrimary`, theme attributes | `@Environment` / appearance proxy |
+| `gap` / `padding` / `margin` | `android:padding`, `android:layout_margin` | `.padding()` / `.spacing()` |
+| `background-color` | `android:background` / `app:backgroundTint` | `.background()` |
+| `opacity` | `android:alpha` | `.opacity()` |
+| Dark mode (`prefers-color-scheme`) | `values-night/` resource qualifiers | `@Environment(\.colorScheme)` |
+| Design tokens (CSS vars) | Theme overlay attributes, `MaterialTheme` | `Asset.xcassets` / theme extensions |
+
+**When auditing Android/Material Design 3 apps:**
+- Color system: Check `colorPrimary`, `colorSecondary`, `colorTertiary`, `colorSurface`, `colorSurfaceVariant` theme attributes
+- Dynamic color: Is `DynamicColors.applyToActivitiesIfAvailable()` used? If so, the palette is user-device-dependent
+- Shape system: Material 3 uses `ShapeAppearance` with `cornerFamily` and `cornerSize` — check for consistency
+- Typography: Material 3 defines `displayLarge` through `labelSmall` — check `TextAppearance` definitions
+- Elevation: Material 3 uses tonal elevation (surface color changes) not shadow elevation in dark mode
+- Motion: Check `MotionUtil.kt` for custom animation helpers; check `res/anim/` for XML animations
+
 ---
 
 ## §TRIAGE — MANDATORY AUDIT ROUTING (execute BEFORE reading the rest of this skill)
@@ -99,11 +172,26 @@ Before loading any audit framework — **stop and ask the user which audit they 
 
 | Option | Skill | What You Get | What Claude Does |
 |--------|-------|-------------|-----------------|
-| **Full App Audit** | `app-audit` | Code quality, security, performance, accessibility, UX, data integrity, architecture, domain correctness, i18n, AI/LLM risks, visual design (standard depth), forward-looking scenarios | Load `app-audit/SKILL.md`, stop reading this skill |
+| **Full App Audit** | `app-audit` | Code quality, security, performance, accessibility, UX, data integrity, architecture, domain correctness, i18n, AI/LLM risks, visual design (standard depth), forward-looking scenarios | Load `app-audit-SKILL.md`, stop reading this skill |
 | **Design & Aesthetic Audit** | `design-aesthetic-audit` | Deep visual analysis — style classification, color science, typography craft, motion vocabulary, surface & atmosphere, brand identity, competitive positioning, design character system, source material research | Continue reading this skill from §ROLE onward |
 | **Both (Companion Mode)** | `app-audit` + `design-aesthetic-audit` | Full app audit with expert-depth design analysis replacing standard §E/P6 visual sections. Longest and most thorough option | Load both skills, follow §COMPANION integration protocol |
 
-**Use the `ask_user_input` tool to present these three choices.** Do not proceed until the user selects one.
+**Use the `AskUserQuestion` tool to present these three choices.** Do not proceed until the user selects one.
+
+```
+AskUserQuestion({
+  questions: [{
+    question: "What kind of audit would you like?",
+    header: "Audit type",
+    options: [
+      { label: "Full App Audit", description: "Code, security, performance, accessibility, UX, design, architecture — uses app-audit-SKILL.md" },
+      { label: "Design & Aesthetic Audit", description: "Deep visual analysis — color science, typography, motion, brand identity, competitive positioning" },
+      { label: "Both (Companion Mode)", description: "Full app audit + expert-depth design analysis. Longest and most thorough." }
+    ],
+    multiSelect: false
+  }]
+})
+```
 
 **Skip this triage ONLY when:**
 - The user explicitly names which audit they want (e.g., "run the design audit", "do a visual critique")
@@ -1096,6 +1184,8 @@ DESIGN SIGNATURE SPECIFICATION
 
 **The twelve most common visual genericness signals.** For each found: document it, explain the specific impact on perceived quality, and apply the fix protocol.
 
+> **Platform note**: The twelve signals below use web/CSS examples. For Android, the equivalents are: Tailwind defaults → Material Design 3 default theme colors; CSS values → `colors.xml`/`themes.xml` values; `border-radius` → `cornerRadius` attributes; CSS transitions → `res/anim/` or `ObjectAnimator` durations. The *principles* are universal — a Material default `colorPrimary` used without customization is the same genericness signal as Tailwind blue-500. For iOS: default system blue (`#007AFF`), system fonts at default weights, default `cornerRadius: 10` everywhere.
+
 ---
 
 **Fix Protocol (apply to each finding):**
@@ -1269,7 +1359,15 @@ Competitive value: [who it differentiates from and why it matters]
 
 ### §DP0. Character Extraction
 
-**Before using any dimension framework, read the app's actual design decisions.** Extract the personality directly from the evidence:
+**Before using any dimension framework, read the app's actual design decisions.** Extract the personality directly from the evidence.
+
+> **Claude Code**: Use `Grep` to systematically extract design values:
+> - Colors: `Grep(pattern: "#[0-9a-fA-F]{3,8}|colorPrimary|colorSurface|oklch", glob: "*.xml")`
+> - Spacing: `Grep(pattern: "padding|margin|layout_margin|dimen", glob: "*.xml")`
+> - Typography: `Grep(pattern: "textSize|fontFamily|textAppearance|font-size", glob: "*.{xml,css,kt}")`
+> - Radius: `Grep(pattern: "cornerRadius|border-radius|corner", glob: "*.{xml,css,kt}")`
+> - Animation: `Grep(pattern: "duration|anim|transition|interpolator", glob: "*.{xml,kt,swift}")`
+> - For Android: also read `res/values/colors.xml`, `res/values/themes.xml`, `res/values/dimens.xml`
 
 ```
 CHARACTER EXTRACTION — read from code, not from intent
@@ -1612,6 +1710,8 @@ Character Risks (watch for these as the product scales):
 ---
 
 ### §SR0. Source Research Mandate
+
+> **Claude Code**: Execute each research pass using `WebSearch` for text searches and `WebFetch` for analyzing specific pages. Launch multiple `WebSearch` calls in parallel for efficiency. For image references, use `WebFetch` on image search result pages to extract descriptions and analysis. If the user provides screenshots directly, use the `Read` tool (which supports image files) to analyze them visually.
 
 **BEFORE writing any recommendation that references a named source, execute this full multi-pass research protocol:**
 
@@ -2889,6 +2989,16 @@ When used as a companion to app-audit, produce a **Design Aesthetic Supplement**
 ## §EXEC. EXECUTION ORDER
 
 > **Claude execution note**: Choose the path that matches the user's request. Do NOT attempt all 21 steps in one response — work through one path, presenting findings incrementally. For the general audit path, pause after step 3 (Character Brief) to confirm direction with the user. The mid-audit companion minimum (last line) is the fastest high-value path.
+>
+> **Claude Code**: At the start of any path, use `TodoWrite` to create a progress tracker listing each step. Mark each step `completed` as you finish it. Use `AskUserQuestion` to confirm the Character Brief (step 3) before deepening. Example:
+> ```
+> TodoWrite([
+>   { content: "§DP0: Extract character from code", status: "in_progress", activeForm: "Extracting design character" },
+>   { content: "§DP1-DP2: Analyze dimensions + Character Brief", status: "pending", activeForm: "Analyzing character dimensions" },
+>   { content: "§DBI3: Anti-genericness audit (12 signals)", status: "pending", activeForm: "Auditing genericness signals" },
+>   ...
+> ])
+> ```
 
 ### If a named source is referenced (game, show, brand, IP) — SOURCE MATERIAL PATH:
 
