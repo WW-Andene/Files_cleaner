@@ -19,6 +19,7 @@ import com.filecleaner.app.R
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import com.filecleaner.app.databinding.FragmentAnalysisBinding
+import com.filecleaner.app.utils.MotionUtil
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
@@ -39,14 +40,15 @@ class AnalysisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Quick action card clicks -> navigate to respective tabs
+        val navAnimOptions = MotionUtil.navOptions()
         binding.cardJunk.setOnClickListener {
-            findNavController().navigate(R.id.junkFragment)
+            findNavController().navigate(R.id.junkFragment, null, navAnimOptions)
         }
         binding.cardLarge.setOnClickListener {
-            findNavController().navigate(R.id.largeFilesFragment)
+            findNavController().navigate(R.id.largeFilesFragment, null, navAnimOptions)
         }
         binding.cardDuplicates.setOnClickListener {
-            findNavController().navigate(R.id.duplicatesFragment)
+            findNavController().navigate(R.id.duplicatesFragment, null, navAnimOptions)
         }
 
         // Set empty state text from the shared include layout
