@@ -43,7 +43,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/raccoon_manager_title"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
-                    android:textColor="@color/textPrimary" />
+                    android:textColor="@color/textPrimary"
+                    android:accessibilityHeading="true" />
 
                 <TextView
                     android:id="@+id/tv_subtitle"
@@ -80,6 +81,8 @@
             android:foreground="@drawable/ripple_hero_card"
             android:clickable="true"
             android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusDown="@id/card_analysis"
             android:stateListAnimator="@animator/hero_card_state_list_anim"
             android:contentDescription="@string/raccoon_action_scan"
             app:cardCornerRadius="@dimen/radius_header"
@@ -116,7 +119,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_scan"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                        android:textColor="@color/textOnPrimary" />
+                        android:textColor="@color/textOnPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -149,6 +153,9 @@
             android:foreground="@drawable/ripple_card"
             android:clickable="true"
             android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_scan"
+            android:nextFocusDown="@id/card_quick_clean"
             android:stateListAnimator="@animator/card_state_list_anim"
             android:contentDescription="@string/raccoon_action_analysis">
 
@@ -173,7 +180,7 @@
                         android:src="@drawable/ic_dashboard"
                         android:scaleType="centerInside"
                         android:importantForAccessibility="no"
-                        app:tint="@color/colorAccent" />
+                        app:tint="@color/accentOnTintAnalysis" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -189,7 +196,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_analysis"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_analysis_desc"
@@ -222,6 +230,9 @@
             android:foreground="@drawable/ripple_card"
             android:clickable="true"
             android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_analysis"
+            android:nextFocusDown="@id/card_janitor"
             android:stateListAnimator="@animator/card_state_list_anim"
             android:contentDescription="@string/raccoon_action_quick_clean">
 
@@ -262,7 +273,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_quick_clean"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_quick_clean_desc"
@@ -295,6 +307,9 @@
             android:foreground="@drawable/ripple_card"
             android:clickable="true"
             android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_quick_clean"
+            android:nextFocusDown="@id/card_optimize"
             android:stateListAnimator="@animator/card_state_list_anim"
             android:contentDescription="@string/raccoon_action_janitor">
 
@@ -335,7 +350,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_janitor"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_janitor_desc"
@@ -368,6 +384,9 @@
             android:foreground="@drawable/ripple_card"
             android:clickable="true"
             android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_janitor"
+            android:nextFocusDown="@id/card_arborescence"
             android:stateListAnimator="@animator/card_state_list_anim"
             android:contentDescription="@string/optimize_title">
 
@@ -392,7 +411,7 @@
                         android:src="@drawable/ic_storage"
                         android:scaleType="centerInside"
                         android:importantForAccessibility="no"
-                        app:tint="@color/colorAccent" />
+                        app:tint="@color/accentOnTintAnalysis" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -408,7 +427,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/optimize_title"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_optimize_desc"
@@ -437,7 +457,9 @@
             android:text="@string/raccoon_section_advanced"
             android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:background="@drawable/bg_section_header"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:accessibilityHeading="true"
+            android:importantForAccessibility="yes" />
 
         <!-- 2-column grid for advanced tools -->
         <LinearLayout
@@ -458,6 +480,10 @@
                 android:foreground="@drawable/ripple_card"
                 android:clickable="true"
                 android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_optimize"
+                android:nextFocusRight="@id/card_dual_pane"
+                android:nextFocusDown="@id/card_cloud"
                 android:stateListAnimator="@animator/card_state_list_anim"
                 android:contentDescription="@string/raccoon_action_arborescence">
 
@@ -490,7 +516,8 @@
                         android:layout_marginTop="@dimen/spacing_md"
                         android:text="@string/raccoon_action_arborescence"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -514,6 +541,10 @@
                 android:foreground="@drawable/ripple_card"
                 android:clickable="true"
                 android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_optimize"
+                android:nextFocusLeft="@id/card_arborescence"
+                android:nextFocusDown="@id/card_antivirus"
                 android:stateListAnimator="@animator/card_state_list_anim"
                 android:contentDescription="@string/dual_pane_title">
 
@@ -546,7 +577,8 @@
                         android:layout_marginTop="@dimen/spacing_md"
                         android:text="@string/dual_pane_title"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -579,6 +611,9 @@
                 android:foreground="@drawable/ripple_card"
                 android:clickable="true"
                 android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_arborescence"
+                android:nextFocusRight="@id/card_antivirus"
                 android:stateListAnimator="@animator/card_state_list_anim"
                 android:contentDescription="@string/cloud_title">
 
@@ -602,7 +637,7 @@
                             android:src="@drawable/ic_cloud"
                             android:scaleType="centerInside"
                             android:importantForAccessibility="no"
-                            app:tint="@color/catImage" />
+                            app:tint="@color/catImageOnTintCloud" />
                     </FrameLayout>
 
                     <TextView
@@ -611,7 +646,8 @@
                         android:layout_marginTop="@dimen/spacing_md"
                         android:text="@string/cloud_title"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -635,6 +671,9 @@
                 android:foreground="@drawable/ripple_card"
                 android:clickable="true"
                 android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_dual_pane"
+                android:nextFocusLeft="@id/card_cloud"
                 android:stateListAnimator="@animator/card_state_list_anim"
                 android:contentDescription="@string/av_title">
 
@@ -667,7 +706,8 @@
                         android:layout_marginTop="@dimen/spacing_md"
                         android:text="@string/av_title"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:layout_width="wrap_content"

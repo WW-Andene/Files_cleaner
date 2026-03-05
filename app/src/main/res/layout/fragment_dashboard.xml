@@ -41,7 +41,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/spacing_sm"
                 android:text="@string/dashboard_title"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Title" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:accessibilityHeading="true" />
         </LinearLayout>
 
         <!-- Empty state — shown when no scan data is available -->
@@ -116,7 +117,9 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Title"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:accessibilityLiveRegion="polite"
+                    android:accessibilityHeading="true" />
 
                 <!-- Storage bar — rounded, matching analysis screen style -->
                 <FrameLayout
@@ -154,7 +157,9 @@
                     android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorOnPrimaryContainer"
                     android:alpha="0.85"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:accessibilityLiveRegion="polite"
+                    android:importantForAccessibility="yes" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -208,7 +213,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_scan_stats"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                    android:accessibilityHeading="true" />
 
                 <TextView
                     android:id="@+id/tv_stats_detail"
@@ -240,7 +246,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_category_title"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
-                    android:layout_marginBottom="@dimen/spacing_sm" />
+                    android:layout_marginBottom="@dimen/spacing_sm"
+                    android:accessibilityHeading="true" />
 
                 <!-- Fallback text when no scan data -->
                 <TextView
@@ -281,7 +288,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_top_files"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
-                    android:layout_marginBottom="@dimen/spacing_sm" />
+                    android:layout_marginBottom="@dimen/spacing_sm"
+                    android:accessibilityHeading="true" />
 
                 <LinearLayout
                     android:id="@+id/top_files_container"
@@ -312,7 +320,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_quick_actions"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
-                    android:layout_marginBottom="@dimen/spacing_md" />
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    android:accessibilityHeading="true" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_clean_junk"

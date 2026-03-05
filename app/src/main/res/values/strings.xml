@@ -645,6 +645,11 @@
     <string name="cloud_error_host_required">Raccoon needs a hostname to connect to!</string>
     <string name="cloud_error_port_range">Port must be between 1 and 65535.</string>
     <string name="cloud_error_username_required">Raccoon needs a username to log in!</string>
+    <string name="cloud_error_password_required">Password is required for this connection.</string>
+    <string name="cloud_error_token_required">Raccoon needs an access token to connect!</string>
+    <string name="cloud_error_name_required">Give this connection a display name.</string>
+    <string name="cloud_error_field_empty">Field cannot be empty</string>
+    <string name="cloud_error_invalid_hostname">Invalid hostname</string>
     <string name="cloud_sftp_host_hint">Hostname or IP (e.g. 192.168.1.10)</string>
     <string name="cloud_webdav_host_hint">Server URL (e.g. https://cloud.example.com/remote.php/webdav)</string>
     <string name="cloud_gdrive_token_hint">OAuth2 Access Token</string>
@@ -674,6 +679,9 @@
     <string name="cloud_testing_connection">Raccoon is testing the connection\u2026</string>
     <string name="cloud_test_success">Raccoon connected successfully!</string>
     <string name="cloud_test_failed">Raccoon couldn\u0027t connect: %s</string>
+    <string name="cloud_setup_connecting">Raccoon is connecting\u2026</string>
+    <string name="cloud_setup_connect_failed">Connection failed: %s\nFix the issue and try again.</string>
+    <string name="cloud_setup_connect_failed_generic">Raccoon couldn\u0027t reach the server. Check your settings and try again.</string>
     <string name="cloud_status_connected">Connected</string>
     <string name="cloud_status_disconnected">Not connected</string>
     <string name="a11y_connection_status">Connection status: %s</string>
@@ -1032,4 +1040,28 @@
 
     <!-- Accessibility: utility fragment audit additions -->
     <string name="a11y_toggle_token_visibility">Toggle token visibility</string>
+
+    <!-- Default / placeholder values for UI elements -->
+    <string name="media_time_default">0:00</string>
+    <string name="av_default_percent">0%</string>
+    <string name="av_default_count">0</string>
+    <string name="cloud_default_port">22</string>
+
+    <!-- Accessibility: media player controls -->
+    <string name="a11y_video_current_time">Current video position</string>
+    <string name="a11y_video_duration">Video duration</string>
+    <string name="a11y_audio_current_time">Current audio position</string>
+    <string name="a11y_audio_duration">Audio duration</string>
+
+    <!-- Accessibility: antivirus summary cards -->
+    <string name="a11y_critical_threat_count">Critical threat count</string>
+    <string name="a11y_high_threat_count">High threat count</string>
+    <string name="a11y_medium_threat_count">Medium threat count</string>
+    <string name="a11y_clean_file_count">Clean file count</string>
+    <string name="a11y_av_progress_percent">Scan progress percentage</string>
+
+    <!-- Accessibility: cloud form -->
+    <string name="a11y_cloud_port_field">Connection port number</string>
+    <string name="a11y_cloud_provider_selector">Cloud provider type selector</string>
+    <string name="a11y_cloud_test_result">Connection test result</string>
 </resources>

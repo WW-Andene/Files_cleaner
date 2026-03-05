@@ -218,7 +218,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/spacing_xs"
-                        android:text="0:00"
+                        android:text="@string/media_time_default"
+                        android:contentDescription="@string/a11y_video_current_time"
                         android:textColor="@color/textOnPrimary"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric" />
 
@@ -232,7 +233,8 @@
                         android:id="@+id/tv_video_duration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0:00"
+                        android:text="@string/media_time_default"
+                        android:contentDescription="@string/a11y_video_duration"
                         android:textColor="@color/textOnPrimary"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric" />
                 </LinearLayout>
@@ -292,7 +294,8 @@
                     android:id="@+id/tv_audio_current"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0:00"
+                    android:text="@string/media_time_default"
+                    android:contentDescription="@string/a11y_audio_current_time"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/textSecondary" />
 
@@ -306,7 +309,8 @@
                     android:id="@+id/tv_audio_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0:00"
+                    android:text="@string/media_time_default"
+                    android:contentDescription="@string/a11y_audio_duration"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/textSecondary" />
             </LinearLayout>

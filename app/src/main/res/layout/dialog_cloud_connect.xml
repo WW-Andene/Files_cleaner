@@ -47,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_host_hint"
+            app:errorEnabled="true"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -64,6 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_port_hint"
+            app:errorEnabled="true"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -82,6 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:hint="@string/cloud_username_hint"
+            app:errorEnabled="true"
             style="@style/Widget.FileCleaner.TextInput">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -98,6 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/cloud_password_hint"
+            app:errorEnabled="true"
             app:endIconMode="password_toggle"
             style="@style/Widget.FileCleaner.TextInput">
 

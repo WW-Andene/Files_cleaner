@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import androidx.core.widget.doOnTextChanged
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -178,6 +179,12 @@ object CloudSetupDialog {
             }
         }
 
+        // Clear inline errors as the user types
+        etHost.doOnTextChanged { _, _, _, _ -> tilHost.error = null }
+        etPort.doOnTextChanged { _, _, _, _ -> tilPort.error = null }
+        etUsername.doOnTextChanged { _, _, _, _ -> tilUsername.error = null }
+        etPassword.doOnTextChanged { _, _, _, _ -> tilPassword.error = null }
+
         // Helper to build a CloudConnection from the current form state, or null if invalid
         fun buildConnection(): CloudConnection? {
             val displayName = etName.text.toString().trim().ifEmpty {
@@ -192,6 +199,7 @@ object CloudSetupDialog {
             tilHost.error = null
             tilPort.error = null
             tilUsername.error = null
+            tilPassword.error = null
 
             var valid = true
             val tokenOnlyTypes = setOf(ProviderType.GOOGLE_DRIVE, ProviderType.GITHUB)
@@ -205,6 +213,10 @@ object CloudSetupDialog {
             }
             if (providerType in listOf(ProviderType.SFTP, ProviderType.WEBDAV) && username.isBlank()) {
                 tilUsername.error = context.getString(R.string.cloud_error_username_required)
+                valid = false
+            }
+            if (providerType in tokenOnlyTypes && password.isBlank()) {
+                tilPassword.error = context.getString(R.string.cloud_error_token_required)
                 valid = false
             }
             if (!valid) return null
@@ -363,12 +375,66 @@ object CloudSetupDialog {
             .setOnDismissListener { dialogScope.cancel() }
             .show()
 
-        // Override positive button to prevent dismiss on validation failure
+        // Override positive button to prevent dismiss on validation/connection failure
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val connection = buildConnection() ?: return@setOnClickListener
-            CloudConnectionStore.saveConnection(connection)
-            onAdded(connection)
-            dialog.dismiss()
+
+            // Disable buttons and show progress while testing connection
+            val positiveBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeBtn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            positiveBtn.isEnabled = false
+            negativeBtn.isEnabled = false
+            btnTest.isEnabled = false
+            progressTest.visibility = View.VISIBLE
+            testResultContainer.visibility = View.GONE
+
+            testJob?.cancel()
+            testJob = dialogScope.launch {
+                try {
+                    val provider = createProvider(connection)
+                    val success = provider.connect()
+                    // Always disconnect after connection test
+                    try { provider.disconnect() } catch (_: Exception) {}
+
+                    progressTest.visibility = View.GONE
+                    positiveBtn.isEnabled = true
+                    negativeBtn.isEnabled = true
+                    btnTest.isEnabled = true
+
+                    if (success) {
+                        // Connection verified — save and dismiss
+                        CloudConnectionStore.saveConnection(connection)
+                        onAdded(connection)
+                        dialog.dismiss()
+                    } else {
+                        // Connection failed — show error, keep dialog open
+                        testResultContainer.visibility = View.VISIBLE
+                        ivTestIcon.setImageResource(R.drawable.ic_status_disconnected)
+                        tvTestResult.text = context.getString(
+                            R.string.cloud_setup_connect_failed_generic
+                        )
+                        tvTestResult.setTextColor(
+                            context.getColor(R.color.colorError)
+                        )
+                    }
+                } catch (e: Exception) {
+                    progressTest.visibility = View.GONE
+                    positiveBtn.isEnabled = true
+                    negativeBtn.isEnabled = true
+                    btnTest.isEnabled = true
+
+                    // Connection threw an exception — show error, keep dialog open
+                    testResultContainer.visibility = View.VISIBLE
+                    ivTestIcon.setImageResource(R.drawable.ic_status_disconnected)
+                    tvTestResult.text = context.getString(
+                        R.string.cloud_setup_connect_failed,
+                        e.localizedMessage ?: e.javaClass.simpleName
+                    )
+                    tvTestResult.setTextColor(
+                        context.getColor(R.color.colorError)
+                    )
+                }
+            }
         }
     }
 }

@@ -33,6 +33,16 @@
     <color name="colorWarningLight">#3D331A</color>
     <color name="colorOnWarning">#1C1608</color>
 
+    <!-- ── Threat severity scale (antivirus cards, §DC1) ── -->
+    <color name="severityCritical">#FF6B6B</color>
+    <color name="severityCriticalLight">#2D1616</color>
+    <color name="severityHigh">#FF9E52</color>
+    <color name="severityHighLight">#2D1E10</color>
+    <color name="severityMedium">#E8C84A</color>
+    <color name="severityMediumLight">#2B2510</color>
+    <color name="severityLow">#6BCB8B</color>
+    <color name="severityLowLight">#102D18</color>
+
     <!-- ── Surface elevation ladder (chromatic near-blacks, §DC3) ──
          ~3-4% OKLCH lightness steps, green-tinted:
          surfaceDim(L5) → surfaceBase(L8) → surfaceColor(L12) → surfaceElevated(L16) -->
@@ -84,6 +94,10 @@
     <!-- ── Hero card gradient-like tints ── -->
     <color name="heroCardStart">#1E6B4C</color>
     <color name="heroCardEnd">#165740</color>
+
+    <!-- ── Accent on tint text (lifted for dark tint backgrounds) ── -->
+    <color name="accentOnTintAnalysis">#F0B060</color>  <!-- accent lifted to L75 for tintAnalysis dark bg (#3D2E1A) — 5.2:1 -->
+    <color name="catImageOnTintCloud">#C4A0FF</color>   <!-- catImage lifted to L72 for tintCloud dark bg (#251A3D) — 5.0:1 -->
 
     <!-- ── Card icon tint backgrounds (unique per feature, §DC2) ──
          Each has a distinct hue at consistent dark-mode lightness -->
@@ -168,6 +182,9 @@
     <!-- ── Overlay ── -->
     <color name="overlayDark">#80000000</color>
     <color name="statsOverlay">#CC0F3D2A</color>
+
+    <!-- ── Ripple on primary surfaces (white-tinted for contrast on brand green) ── -->
+    <color name="rippleOnPrimary">#33FFFFFF</color>
 
     <!-- ── Brand / Provider ripple colors ── -->
     <color name="rippleGoogle">#1A4285F4</color>

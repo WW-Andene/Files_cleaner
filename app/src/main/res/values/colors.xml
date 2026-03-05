@@ -95,6 +95,10 @@
     <color name="heroCardStart">#247A58</color>
     <color name="heroCardEnd">#1B6B4D</color>
 
+    <!-- ── WCAG-safe icon tints on colored backgrounds (§DC2 — ≥ 4.5:1) ── -->
+    <color name="accentOnTintAnalysis">#A25D15</color>   <!-- colorAccent darkened for tintAnalysis bg — 4.55:1 -->
+    <color name="catImageOnTintCloud">#6941D8</color>    <!-- catImage darkened for tintCloud bg — 4.94:1 -->
+
     <!-- ── Card icon tint backgrounds (unique per feature, §DC2 — each distinct) ── -->
     <color name="tintAnalysis">#FFF0DA</color>
     <color name="tintQuickClean">#FFE0E0</color>
