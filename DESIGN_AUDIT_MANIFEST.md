@@ -646,4 +646,373 @@
 
 ---
 
-**Phase 1 manifest complete. 8 issues fixed, 20 RE-AUDIT items verified (17 confirmed PASS, 3 escalated to REVIEW/LOW). Final: 275 PASS, 9 LOW, 4 REVIEW. Awaiting approval before proceeding to Phase 2.**
+**Phase 1 manifest complete. 8 issues fixed, 20 RE-AUDIT items verified (17 confirmed PASS, 3 escalated to REVIEW/LOW). Final: 275 PASS, 9 LOW, 4 REVIEW.**
+
+---
+---
+
+# Phase 2 — Expanded UI Audit Manifest
+
+**Scope**: §E1–E10 (Visual Design Quality), §F1–F6 (UX & IA), §G1–G4 (Accessibility), §H3 (Mobile & Touch), §L3–L5 (Standardization & Polish), §D5 (Mobile Performance)
+**Source**: `app-audit-SKILL.md` sections cross-referenced with `design-aesthetic-audit-SKILL.md` Phase 2 expansion map
+**Constraint**: Manifest-only. No code changes until approved.
+
+---
+
+## §E1 — Design Token System
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 301 | dimens.xml | Spacing scale | PASS — 4dp-base progression: 2/4/8/12/16/20/24/32/48/64dp; complete named semantic tokens | §E1 | — |
+| 302 | dimens.xml | spacing_10 (10dp) | Known §DTA2 — Off-scale token (10dp not in 4dp progression); used in 1 Kotlin file (ColorLegendHelper) | §E1 | LOW |
+| 303 | dimens.xml | spacing_chip (6dp) | Off-scale token (6dp not in 4dp progression); used across 14 layout references for chipSpacingHorizontal and small internal padding | §E1 | LOW |
+| 304 | colors.xml / colors-night.xml | Color palette architecture | PASS — Fully semantic naming: colorPrimary, colorAccent, surfaceBase, textPrimary, etc. No presentational names (no "green500", "gray200"). All colors have night variants | §E1 | — |
+| 305 | layouts (all) | Hardcoded hex colors | PASS — Zero hardcoded `#RRGGBB` literals found in any layout file; 100% use `@color/` or `?attr/` references | §E1 | — |
+| 306 | layouts (all) | Hardcoded text sizes | PASS — Zero hardcoded `NNsp` literals in any layout file; 100% use `@dimen/` via TextAppearance styles | §E1 | — |
+| 307 | layouts (all) | Hardcoded text strings | PASS — Zero hardcoded strings in any layout file; 100% use `@string/` references | §E1 | — |
+| 308 | layouts (all) | Hardcoded padding/margin | PASS — Zero inline `NNdp` padding or margin literals in layout files; all spacing via `@dimen/` tokens | §E1 | — |
+| 309 | dimens.xml | Typography scale | PASS — Complete intentional scale: 10/11/12/13/14/16/20/26/32sp — compressed lower range for mobile, Major Third 1.25× upper range | §E1 | — |
+| 310 | dimens.xml | Corner radius system | PASS — Purposeful radius scale: bar_sm(4)/bar(6)/thumbnail(8)/sm(10)/btn/input/icon_container(12)/md(14)/card(16)/lg(18)/header(20)/modal/pill(24) | §E1 | — |
+| 311 | dimens.xml | Elevation scale | PASS — Geometric 0/1/2/4/8/16dp scale with semantic names (none/border/subtle/raised/floating/modal) | §E1 | — |
+| 312 | dimens.xml | Animation token set | PASS — Named motion vocabulary: micro(120ms)/enter(220ms)/exit(160ms)/page(280ms)/emphasis(400ms)/stagger_step(40ms) | §E1 | — |
+| 313 | themes.xml | Style inheritance chain | PASS — Clean hierarchy: Theme.FileCleaner → Widget.FileCleaner.Button/Card/etc. → specific variants. 5 button, 5 card, chip, snackbar, progress styles | §E1 | — |
+| 314 | colors.xml / colors-night.xml | Night mode token completeness | PASS — Every color resource has a night variant; verified exhaustively in Phase 1 | §E1 | — |
+| 315 | themes.xml | Theme attribute coverage | PASS — Colors referenced via theme attributes and `@color/` semantic tokens; no hardcoded hex in theme definitions | §E1 | — |
+| 316 | dimens.xml | Dimension resource consistency | PASS — All dp/sp values defined as named resources; layouts reference tokens exclusively | §E1 | — |
+| 317 | values-sw600dp/dimens.xml | Tablet dimension overrides | PASS — Tablet-specific overrides exist: spacing_lg/xl/3xl scaled ~1.5×; text_body/body_small/caption/overline/label +1sp for reading distance | §E1 | — |
+
+## §E2 — Visual Rhythm & Spatial Composition
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 318 | include_empty_state.xml | Vertical rhythm | PASS — Consistent empty state spacing: paddingHorizontal=spacing_3xl, paddingTop=spacing_5xl, paddingBottom=spacing_4xl, element gap=spacing_xxl/spacing_md | §E2 | — |
+| 319 | include_loading_state.xml | Density consistency | PASS — Loading state uses identical spacing tokens as empty state — visual density consistent across states | §E2 | — |
+| 320 | include_success_state.xml | maxWidth hardcoded | `maxWidth="280dp"` and `maxWidth="300dp"` hardcoded instead of using `@dimen/empty_state_title_max_width` (280dp) and `@dimen/empty_state_subtitle_max_width` (300dp) — inconsistent with include_empty_state.xml and include_loading_state.xml which use the tokens | §E2 | LOW |
+| 321 | fragment_dashboard.xml:79,91 | maxWidth hardcoded | `maxWidth="280dp"` and `maxWidth="300dp"` hardcoded instead of `@dimen/empty_state_title_max_width` / `@dimen/empty_state_subtitle_max_width` | §E2 | LOW |
+| 322 | fragment_browse.xml:302 | maxWidth hardcoded | `maxWidth="280dp"` hardcoded instead of `@dimen/empty_state_title_max_width` | §E2 | LOW |
+| 323 | fragment_cloud_browser.xml:187 | maxWidth hardcoded | `maxWidth="280dp"` hardcoded instead of `@dimen/empty_state_title_max_width` | §E2 | LOW |
+| 324 | fragment_dual_pane.xml:187,199,362,374 | maxWidth hardcoded | `maxWidth="280dp"` and `maxWidth="200dp"` hardcoded — the 200dp value has no dimen token at all | §E2 | LOW |
+| 325 | fragment_list_action.xml:314 | maxWidth hardcoded | `maxWidth="280dp"` hardcoded instead of `@dimen/empty_state_title_max_width` | §E2 | LOW |
+| 326 | layouts (all) | Alignment grid | PASS — All layouts use ConstraintLayout or LinearLayout with consistent @dimen/ token spacing; no "floating" elements observed | §E2 | — |
+| 327 | layouts (all) | Landscape layout | No landscape layout variants exist (`layout-land/` absent) — app is portrait-dependent. Acceptable for a phone-primary file manager but limits tablet usability | §E2 | LOW |
+| 328 | values-sw600dp/dimens.xml | Responsive grid breakpoints | PASS — Tablet dimension overrides exist for spacing and text; app adapts spacing/text for wider screens | §E2 | — |
+
+## §E3 — Color Craft & Contrast
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 329 | colors.xml | Color harmony | PASS — Forest green (#247A58) + warm amber (#E8861F) complementary pair; chromatic surfaces with green undertone; internally consistent warm palette | §E3 | — |
+| 330 | colors.xml (night) | Dark mode craft | PASS — Near-black with green hue (#0C1A14 surfaceDim, #141A17 surfaceColor) — not pure black; intentional chromatic character maintained in dark mode | §E3 | — |
+| 331 | colors.xml | WCAG contrast compliance | PASS — All primary text/background pairs verified computationally in Phase 1 (findings #30–39); all meet AA or better | §E3 | — |
+| 332 | colors.xml | Color saturation calibration | PASS — No oversaturated pure primaries; all accent and brand colors are calibrated hues (green #247A58, amber #E8861F) not raw wheel picks | §E3 | — |
+| 333 | colors.xml | Material 3 color system | Known §DDT2 — App uses MaterialComponents (M2) not Material3; tonal palette manually constructed rather than M3-generated. Functional but not leveraging M3 dynamic color system | §E3 | LOW |
+
+## §E4 — Typography Craft
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 334 | themes.xml | Heading hierarchy | PASS — Clear visual hierarchy: Display(32sp) → Headline(26sp) → Title(20sp) → Subtitle(16sp) → Body(14sp) → BodySmall(12sp) → Caption/Label(10-11sp) | §E4 | — |
+| 335 | themes.xml | Font weight semantics | PASS — Consistent weight usage: Display/Headline/Title=Bold, Subtitle=Medium, Body=Normal, Overline/Label=Medium (tracked caps) | §E4 | — |
+| 336 | themes.xml | Letter spacing | PASS — Overline and Label use letterSpacing=0.06/0.04 for tracked caps; appropriate for small label text | §E4 | — |
+| 337 | dimens.xml | text_overline / text_caption | Known Phase 1 review — Both are in the 10-11sp range; Phase 1 found text_overline was 10sp (same as caption); now fixed to 11sp | §E4 | — |
+
+## §E5 — Component Visual Quality
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 338 | themes.xml | Button states completeness | PASS — 5 button variants (Filled/Outlined/Text/Ghost/Icon) all with ripple, Material states, proper style inheritance | §E5 | — |
+| 339 | color/chip_*.xml | Chip state selectors | PASS — chip_bg_color, chip_text_color, chip_stroke_color all cover disabled/checked/focused/pressed/default states with compound state ordering | §E5 | — |
+| 340 | color/switch_*.xml | Switch/toggle states | PASS — switch_thumb_color and switch_track_color cover disabled+checked, disabled, checked, default states | §E5 | — |
+| 341 | item_skeleton_card.xml | Skeleton loading quality | PASS — Shimmer shapes match actual item_file layout structure (icon circle + title bar + subtitle bar + size field); uses @dimen/ tokens | §E5 | — |
+| 342 | item_skeleton_hub_card.xml:30-31,39 | Skeleton hub card hardcoded sizes | `layout_width="100dp"`, `layout_height="14dp"`, `layout_height="10dp"` hardcoded instead of using `@dimen/skeleton_title_width` (160dp), `@dimen/skeleton_title_height` (14dp), `@dimen/skeleton_subtitle_height` (10dp) — the height values match but width diverges intentionally (100dp vs 160dp for narrower card); however the heights should still use tokens | §E5 | LOW |
+| 343 | layouts (all) | Card design quality | PASS — All cards use MaterialCardView with consistent `@dimen/radius_card` (16dp), `@dimen/stroke_default` / `@color/borderSubtle`, proper style variants (Card/Card.Elevated/Card.Flat/Card.Outlined/Card.Selected) | §E5 | — |
+| 344 | layouts (all) | Toolbar elevation | PASS — All toolbars use `android:elevation="0dp"` for flat modern look — consistent across all 6 toolbar instances | §E5 | — |
+| 345 | include_empty_state.xml | Empty state design quality | PASS — Branded raccoon mascot icon, warm personality copy ("Raccoon is waiting to dig in!"), maxWidth-constrained text, proper spacing tokens | §E5 | — |
+| 346 | include_success_state.xml | Success state design | PASS — Animated check circle with `@color/colorSuccess` tint, branded success copy, proper accessibility labeling | §E5 | — |
+| 347 | include_loading_state.xml | Loading state design | PASS — Branded CircularProgressIndicator with custom style, contextual loading copy, `accessibilityLiveRegion="assertive"` | §E5 | — |
+
+## §E6 — Interaction Design Quality
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 348 | layouts (all) | Touch feedback (ripple) | PASS — 38 instances of `?attr/selectableItemBackground` / `selectableItemBackgroundBorderless` across 14 layout files; all interactive elements have Material ripple | §E6 | — |
+| 349 | anim/ (14 files) | Transition quality | PASS — Full custom animation suite: nav_enter/exit/pop_enter/pop_exit, dialog_enter/exit, sheet_enter/exit, fab_enter/exit, item_enter/exit, success_check_enter, layout_item_stagger | §E6 | — |
+| 350 | anim/nav_enter.xml | Enter/exit asymmetry | PASS — Enter (motion_page=280ms, decelerate) vs exit (motion_exit=160ms, accelerate); exit is 57% of enter — near the recommended 60% ratio | §E6 | — |
+| 351 | anim/layout_item_stagger.xml | Stagger sequencing | PASS — 15% delay multiplier on item_enter (motion_enter=220ms); creates ~33ms per-item stagger, capped by natural list rendering | §E6 | — |
+| 352 | anim/dialog_enter.xml | Dialog entrance | PASS — Scale from 90%→100% + fade, with fast_out_slow_in_custom curve; fade completes at motion_micro (120ms) while scale completes at motion_enter (220ms) — content readable before scale settles | §E6 | — |
+| 353 | MotionUtil.kt | Reduced motion respect | PASS — Checks `Settings.Global.ANIMATOR_DURATION_SCALE`; scales all custom ObjectAnimator durations; used by RaccoonBubble and other programmatic animations | §E6 | — |
+
+## §E7 — Overall Visual Professionalism
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 354 | All layouts | Design coherence | PASS — Consistent spacing tokens, color palette, typography scale, and component styling across all 37 layout files; feels designed as a whole | §E7 | — |
+| 355 | All layouts | Attention to detail | PASS — No inconsistent margins between similar components; all spacing via named tokens; consistent radius system; consistent elevation scale | §E7 | — |
+| 356 | strings.xml | Brand consistency | PASS — Raccoon personality copy throughout ("rummaging", "sniffing out", "digging in"); warm tone consistent | §E7 | — |
+
+## §E8 — Product Aesthetics (Axis-Driven)
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 357 | Overall | Five-axis profile application | PASS — Profile (Warmth=High, Density=Medium, Motion=Moderate-Brisk, Ornamentation=Low-Medium, Contrast=Medium-High) consistently applied: chromatic warm surfaces, branded motion vocabulary, raccoon personality without excess ornamentation | §E8 | — |
+| 358 | Overall | "Made with intent" test | PASS — Multiple anti-generic signals: custom motion vocabulary, chromatic (not gray) surfaces, raccoon mascot personality copy, color-coded category system, branded snackbar styling | §E8 | — |
+
+## §E9 — Visual Identity & Recognizability
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 359 | Overall | Visual signature | PASS — Forest green + warm amber dual brand, raccoon mascot, chromatic warm surfaces, color-coded hub cards — recognizable in partial screenshot | §E9 | — |
+| 360 | Overall | Color system as memory | PASS — Distinctive green + amber warm palette; not generic Material blue/purple; memorable after brief use | §E9 | — |
+| 361 | Overall | Motion identity | PASS — "Considerate utility" character: 120–400ms range with custom interpolator; enter/exit asymmetry; not default Material 300ms ease-in-out | §E9 | — |
+
+## §E10 — Data Storytelling & Visual Communication
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 362 | fragment_analysis.xml | Analysis data display | PASS — Storage analysis with category breakdown, bar charts, savings estimate — visual hierarchy from summary to detail | §E10 | — |
+| 363 | fragment_dashboard.xml | Dashboard data display | PASS — Scan stats, category breakdown, top files, quick actions — progressive complexity with accessibilityLiveRegion on data values | §E10 | — |
+| 364 | fragment_antivirus.xml | Scan results display | PASS — Threat count, severity indicators, detailed per-threat results — information hierarchy from summary to detail | §E10 | — |
+
+## §E11 — Mobile-Specific Visual Quality
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 365 | build.gradle | No Splash Screen API | App targets SDK 35 but does not use `core-splashscreen` library — Android 12+ splash screen is system default (white flash or theme windowBackground). Missing branded splash screen is a first-impression craft gap | §E11 | MEDIUM |
+| 366 | build.gradle / Kotlin code | No Dynamic Color support | App targets SDK 35 (Android 12+ available) but does not use `DynamicColors.applyIfAvailable()` — Material You dynamic color not leveraged. Static palette is high quality but dynamic color is a free polish upgrade on Android 12+ | §E11 | LOW |
+| 367 | AndroidManifest.xml | No predictive back gesture support | `android:enableOnBackInvokedCallback` not declared in manifest; no `OnBackPressedCallback` usage found in code. Predictive back gesture (API 33+) not supported — required for Android 14+ targeting | §E11 | MEDIUM |
+
+---
+
+## §F1 — Information Architecture
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 368 | nav_graph.xml | Navigation model | PASS — Bottom navigation with 4 tabs (Hub/Browse/Cloud/Settings) + deep navigation to analysis/antivirus/optimize/viewer/arborescence/dual-pane; appropriate depth for file manager | §F1 | — |
+| 369 | activity_main.xml | Location awareness | PASS — Toolbar title updates per fragment; bottom nav item highlighted correctly; all 14 nav actions have consistent anim attributes | §F1 | — |
+| 370 | fragment_raccoon_manager.xml | Hub screen IA | PASS — Feature hub with 10 categorized cards (core tools + advanced tools); progressive disclosure — primary actions above fold | §F1 | — |
+
+## §F2 — User Flow Quality
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 371 | MainViewModel.kt | Action feedback | PASS — All file operations (move/copy/rename/delete/extract) dispatch to Dispatchers.IO via viewModelScope.launch + withContext; results communicated via LiveData | §F2 | — |
+| 372 | MainViewModel.kt | Undo support | PASS — Soft-delete with undo: trash files are pending until undo timeout expires, then committed via NonCancellable scope — proper reversibility | §F2 | — |
+| 373 | Multiple fragments | onSaveInstanceState | PASS — 7 fragments implement onSaveInstanceState: CloudBrowser, BaseFileList, Arborescence, Browse, DualPane, FileViewer — process death recovery for critical state | §F2 | — |
+
+## §F3 — Onboarding & First Use
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 374 | include_empty_state.xml | Empty state → filled transition | PASS — Branded raccoon empty states with personality copy and action-oriented messaging; contextual per-screen | §F3 | — |
+| 375 | dimens.xml | onboarding_icon_size | PASS — Onboarding icon token exists (64dp); onboarding flow is implemented | §F3 | — |
+
+## §F4 — Copy Quality
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 376 | strings.xml | Tone consistency | PASS — Raccoon personality voice consistent: "rummaging", "sniffing out duplicates", "digging in" — warm, playful, consistent animal metaphor throughout | §F4 | — |
+| 377 | strings.xml | All string resources | PASS — 100% externalized to strings.xml; no hardcoded UI text in layouts or Kotlin | §F4 | — |
+
+## §F5 — Micro-Interaction Quality
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 378 | ArborescenceView.kt | Haptic feedback | PASS — HapticFeedbackConstants.LONG_PRESS on tree node interactions (selection mode entry) — appropriate haptic moments | §F5 | — |
+| 379 | ArborescenceView.kt | Haptic coverage | Only arborescence tree view uses haptic feedback (2 instances). Other interactions (file selection, toggle, delete confirmation, pull-to-refresh) lack haptic feedback. Limited haptic coverage across the app | §F5 | LOW |
+| 380 | layouts (all) | Focus indicator quality | PASS — `@color/borderFocus` defined for keyboard focus; used in chip_stroke_color.xml and card_stroke_color.xml state selectors | §F5 | — |
+
+## §F6 — Engagement, Delight & Emotional Design
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 381 | include_success_state.xml | Success confirmation | PASS — Animated check circle entrance (`success_check_enter.xml`) with colorSuccess tint — visual reward moment for completed operations | §F6 | — |
+| 382 | RaccoonBubble.kt | Mascot personality | PASS — Animated raccoon bubble with ANIMATOR_DURATION_SCALE respect — personality delight moment | §F6 | — |
+| 383 | strings.xml | Personality moments | PASS — Raccoon-themed copy in empty states, loading states, and scan messages — consistent engagement personality | §F6 | — |
+
+---
+
+## §G1 — Accessibility Compliance
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 384 | layouts (all) | contentDescription coverage | PASS — 167 contentDescription instances across 31 layout files; ImageViews on interactive elements have descriptions; decorative images marked `importantForAccessibility="no"` | §G1 | — |
+| 385 | layouts (all) | importantForAccessibility | PASS — 30+ explicit `importantForAccessibility` declarations: "no" on decorative elements (shimmer placeholders, background images), "yes" on data-bearing elements | §G1 | — |
+| 386 | layouts (all) | accessibilityHeading | PASS — 45 `accessibilityHeading="true"` declarations across 17 layout files; all section headers marked — TalkBack users can navigate by heading | §G1 | — |
+| 387 | layouts (all) | accessibilityLiveRegion | PASS — 79 `accessibilityLiveRegion` declarations (75 "polite", 4 "assertive"); live data (counters, scan progress, status) properly announced to TalkBack | §G1 | — |
+| 388 | fragment_settings.xml | labelFor | PASS — 6 `labelFor` associations on SeekBar/Switch labels — settings inputs properly labeled for accessibility | §G1 | — |
+| 389 | dialog_cloud_connect.xml | TextInputLayout labelFor | Known Phase 1 RE-AUDIT #270 — 7 TextInputLayout/EditText pairs use `android:hint` for labeling (Material TIL contract); no explicit `labelFor` needed — PASS per Material Components specification | §G1 | — |
+| 390 | layouts (all) | focusable grouping | PASS — 20 `focusable="true"` grouping declarations on container views (hub cards, settings rows, etc.) — TalkBack reads grouped content as single items | §G1 | — |
+| 391 | MainActivity.kt | announceForAccessibility | PASS — Tab changes announced via `announceForAccessibility(tabLabel)` — navigation context changes communicated to TalkBack | §G1 | — |
+
+## §G2 — Screen Reader Trace
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 392 | layouts (all) | screenReaderFocusable | Not used — `android:screenReaderFocusable` (API 28+) not present in any layout. While `focusable="true"` provides basic grouping, `screenReaderFocusable` would allow finer-grained TalkBack navigation vs keyboard focus distinction. Given minSdk 29, this API is available | §G2 | LOW |
+| 393 | ArborescenceView.kt | Custom view a11y | PASS — Custom tree view uses `announceForAccessibility()` for node selection/expansion — screen reader users informed of state changes | §G2 | — |
+
+## §G3 — Keyboard & Switch Access
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 394 | Kotlin code | OnBackPressedCallback | Not found — no `OnBackPressedCallback` registered in any fragment. Back navigation relies entirely on system default NavController behavior. Custom back handling (exit selection mode, close panels) may not be implemented | §G3 | LOW |
+| 395 | layouts (all) | Focus traversal ordering | No explicit `nextFocusDown`/`nextFocusRight` ordering found; relies on default layout order — acceptable when layout XML order matches visual order | §G3 | — |
+
+## §G4 — Reduced Motion & Sensory Accommodations
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 396 | MotionUtil.kt | ANIMATOR_DURATION_SCALE respect | PASS — `MotionUtil` reads `Settings.Global.ANIMATOR_DURATION_SCALE` and applies it to custom ObjectAnimator durations; disabled animations result in zero duration | §G4 | — |
+| 397 | RaccoonBubble.kt | Custom animation a11y | PASS — Uses `MotionUtil.effectiveDuration()` so ANIMATOR_DURATION_SCALE is respected for raccoon bubble animations | §G4 | — |
+
+## §G5 — Android-Specific Accessibility
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 398 | layouts (all) | ContentDescription audit | PASS — All ImageButton elements have contentDescription; decorative ImageViews have `importantForAccessibility="no"` or `contentDescription="@null"` | §G5 | — |
+| 399 | layouts (all) | TalkBack navigation grouping | PASS — Hub cards and settings rows use `focusable="true"` on parent containers; related elements grouped for single-swipe TalkBack navigation | §G5 | — |
+| 400 | layouts (all) | Live region announcements | PASS — Scan progress, file counts, analysis results all use `accessibilityLiveRegion="polite"` / `"assertive"` — dynamic content properly announced | §G5 | — |
+| 401 | layouts (all) | Heading structure | PASS — Comprehensive `accessibilityHeading="true"` usage on section titles across all primary screens; TalkBack heading navigation functional | §G5 | — |
+
+---
+
+## §H3 — Mobile & Touch
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 402 | dimens.xml | touch_target_min (48dp) | PASS — Named `touch_target_min` token at 48dp; used across layouts for interactive elements | §H3 | — |
+| 403 | dimens.xml | button_height_sm (36dp) | Known §DCO1 #97 — 36dp below 48dp minimum; used in 12 interactive contexts (chips, small buttons, dual-pane action buttons). Research completed; awaiting user decision on fix approach | §H3 | MEDIUM |
+| 404 | dimens.xml | icon_button_size_sm (36dp) | Same 36dp below 48dp minimum; used for small icon buttons. Related to #97 | §H3 | MEDIUM |
+| 405 | dimens.xml | dual_pane_tab_height (32dp) | 32dp — below 48dp touch minimum; used for dual-pane tab selection buttons | §H3 | MEDIUM |
+| 406 | layouts (all) | Touch feedback (ripple) | PASS — 38 ripple background instances across 14 files; all tappable elements provide visual touch feedback | §H3 | — |
+| 407 | AndroidManifest.xml | windowSoftInputMode | PASS — `adjustResize` set on MainActivity — content resizes when keyboard appears; inputs stay visible | §H3 | — |
+| 408 | AndroidManifest.xml | No screenOrientation lock | No `android:screenOrientation` declared — app supports rotation. However, no landscape layouts exist (§E2 #327), so landscape mode may produce stretched single-column layout | §H3 | LOW |
+| 409 | layouts (all) | Thumb zone ergonomics | PASS — Primary actions (FAB, bottom navigation, action buttons) positioned in bottom half of screen; toolbar actions limited to back/more buttons | §H3 | — |
+
+---
+
+## §L3 — Design System Standardization
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 410 | Multiple layout files | maxWidth token consolidation | 11 hardcoded `maxWidth` values across 6 files using raw `280dp`/`300dp`/`200dp` instead of existing `@dimen/empty_state_title_max_width` (280dp) and `@dimen/empty_state_subtitle_max_width` (300dp) tokens. The 200dp value in fragment_dual_pane.xml has no corresponding dimen token | §L3 | LOW |
+| 411 | dimens.xml | Off-scale spacing tokens | Two off-scale tokens: `spacing_10` (10dp) and `spacing_chip` (6dp) break the 4dp-base progression. spacing_10 is used 1×; spacing_chip is used 14×. Both are functional but add token debt | §L3 | LOW |
+| 412 | item_skeleton_hub_card.xml | Skeleton placeholder token consistency | Hardcoded `100dp`/`14dp`/`10dp` sizes; the 14dp and 10dp match existing tokens `skeleton_title_height` and `skeleton_subtitle_height` but aren't referenced. The 100dp diverges intentionally from `skeleton_title_width` (160dp) for narrower card — needs its own token | §L3 | LOW |
+| 413 | themes.xml | Theme architecture | PASS — Clean hierarchy: `Theme.FileCleaner` base → component styles via `Widget.FileCleaner.*` prefix → variant styles; proper Material Components extension | §L3 | — |
+| 414 | colors.xml | Semantic naming | PASS — All color names are semantic (colorPrimary, textSecondary, surfaceBase, borderSubtle, statePressed) — no presentational naming | §L3 | — |
+| 415 | Overall | Design system documentation | Implicit only — token system is well-organized in comments within `dimens.xml` and `colors.xml` but no standalone design system documentation exists. System relies on code organization for discoverability | §L3 | LOW |
+
+## §L4 — Copy & Content Standardization
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 416 | strings.xml | Brand voice | PASS — Voice: "Warm / Playful / Practical" — raccoon animal metaphors throughout; consistent personality without forcing it | §L4 | — |
+| 417 | strings.xml | Terminology | PASS — Consistent vocabulary: "scan" (not "analyze" or "check"), "clean" (not "delete" or "remove"), "storage" (not "memory" or "disk") throughout | §L4 | — |
+
+## §L5 — Interaction & Experience Polish
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 418 | anim/ (14 files) | Transition coherence | PASS — Complete custom animation vocabulary: nav transitions use slide+fade; dialogs use scale+fade; items use translate+fade+stagger; all with appropriate interpolators | §L5 | — |
+| 419 | anim/nav_*.xml | Fragment transition quality | PASS — All 14 global nav_graph actions use custom enter/exit/popEnter/popExit animations; not default Material transitions | §L5 | — |
+| 420 | ArborescenceView.kt | Haptic feedback polish | Limited — Only arborescence tree has haptic feedback (LONG_PRESS on node interaction). Missing from: file list long-press selection, delete confirmation, toggle switches, pull-to-refresh threshold. App has 2 haptic moments out of recommended 5-8 | §L5 | LOW |
+| 421 | Overall | Motion budget | PASS — No views with >2 simultaneous animations observed; animations are sequential/staggered rather than concurrent; motion budget well-managed | §L5 | — |
+
+---
+
+## §D5 — Mobile Performance
+
+| # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
+|---|---|---|---|---|---|
+| 422 | Multiple adapters | RecyclerView optimization | PASS — All 5 adapters (FileAdapter, BrowseAdapter, PaneAdapter, TreeNodeAdapter, CloudFileAdapter) use `ListAdapter` + `DiffUtil.ItemCallback` — efficient differential updates | §D5 | — |
+| 423 | Multiple fragments | setHasFixedSize | PASS — 5 RecyclerView instances call `setHasFixedSize(true)` (CloudBrowser, Browse, DualPane, BaseFileList, Optimize) — avoids unnecessary layout passes | §D5 | — |
+| 424 | MainViewModel.kt | Coroutine lifecycle | PASS — All I/O operations use `viewModelScope.launch` + `withContext(Dispatchers.IO)` — properly scoped to ViewModel lifecycle; no orphaned coroutines | §D5 | — |
+| 425 | MainViewModel.kt | runBlocking | PASS — No `runBlocking` usage on main thread; comment at line 268 explicitly notes avoiding `Thread + runBlocking` pattern | §D5 | — |
+| 426 | MainViewModel.kt | NonCancellable usage | PASS — `NonCancellable` used only for critical cleanup (trash commit, cloud state save) — appropriate for work that must complete even after scope cancellation | §D5 | — |
+| 427 | CloudBrowserFragment.kt:551 | NonCancellable standalone scope | `CoroutineScope(Dispatchers.IO + NonCancellable).launch` creates an unscoped coroutine for cloud state saving. While intentional (saving state during onDestroyView), this scope is never cancelled and could leak if the save operation hangs | §D5 | LOW |
+| 428 | Multiple fragments | Process death recovery | PASS — 7 fragments implement `onSaveInstanceState`: CloudBrowser, BaseFileList, Arborescence, Browse, DualPane, FileViewer — critical user state preserved across process death | §D5 | — |
+| 429 | build.gradle | R8 shrinking | PASS — `minifyEnabled true` + `shrinkResources true` in release build — dead code and unused resources removed from APK | §D5 | — |
+| 430 | build.gradle | No Baseline Profiles | App does not use Baseline Profiles for startup optimization. Not a bug but a missed performance opportunity for cold start time on Android 7+ | §D5 | LOW |
+| 431 | build.gradle | Glide for image loading | PASS — Glide 4.16.0 for image thumbnails — proper image caching and memory management; avoids main-thread bitmap loading | §D5 | — |
+
+---
+
+## Phase 2 Summary
+
+### Finding counts by section
+
+| Section | PASS | LOW | MEDIUM | REVIEW | Total |
+|---------|------|-----|--------|--------|-------|
+| §E1 Design Tokens | 15 | 2 | 0 | 0 | 17 |
+| §E2 Spatial Composition | 3 | 8 | 0 | 0 | 11 |
+| §E3 Color Craft | 4 | 1 | 0 | 0 | 5 |
+| §E4 Typography | 3 | 0 | 0 | 0 | 3 |
+| §E5 Component Quality | 6 | 1 | 0 | 0 | 7 |
+| §E6 Interaction Design | 5 | 0 | 0 | 0 | 5 |
+| §E7 Visual Professionalism | 3 | 0 | 0 | 0 | 3 |
+| §E8 Product Aesthetics | 2 | 0 | 0 | 0 | 2 |
+| §E9 Visual Identity | 3 | 0 | 0 | 0 | 3 |
+| §E10 Data Storytelling | 3 | 0 | 0 | 0 | 3 |
+| §E11 Mobile Visual | 0 | 1 | 2 | 0 | 3 |
+| §F1 Information Architecture | 3 | 0 | 0 | 0 | 3 |
+| §F2 User Flow Quality | 3 | 0 | 0 | 0 | 3 |
+| §F3 Onboarding | 2 | 0 | 0 | 0 | 2 |
+| §F4 Copy Quality | 2 | 0 | 0 | 0 | 2 |
+| §F5 Micro-Interactions | 1 | 1 | 0 | 0 | 2 |
+| §F6 Engagement & Delight | 3 | 0 | 0 | 0 | 3 |
+| §G1 Accessibility Compliance | 8 | 0 | 0 | 0 | 8 |
+| §G2 Screen Reader Trace | 1 | 1 | 0 | 0 | 2 |
+| §G3 Keyboard & Switch Access | 1 | 1 | 0 | 0 | 2 |
+| §G4 Reduced Motion | 2 | 0 | 0 | 0 | 2 |
+| §G5 Android A11y | 4 | 0 | 0 | 0 | 4 |
+| §H3 Mobile & Touch | 3 | 1 | 3 | 0 | 7 |
+| §L3 Design System Standard. | 2 | 4 | 0 | 0 | 6 |
+| §L4 Copy & Content Standard. | 2 | 0 | 0 | 0 | 2 |
+| §L5 Interaction & Experience Polish | 2 | 1 | 0 | 0 | 3 |
+| §D5 Mobile Performance | 7 | 2 | 0 | 0 | 9 |
+| **TOTALS** | **93** | **24** | **5** | **0** | **122** |
+
+### All open issues (24 LOW + 5 MEDIUM)
+
+| # | Section | Severity | Details |
+|---|---|---|---|
+| 302 | §E1 | LOW | spacing_10 (10dp) off-scale token |
+| 303 | §E1 | LOW | spacing_chip (6dp) off-scale token |
+| 320 | §E2 | LOW | include_success_state.xml hardcoded maxWidth |
+| 321 | §E2 | LOW | fragment_dashboard.xml hardcoded maxWidth |
+| 322 | §E2 | LOW | fragment_browse.xml hardcoded maxWidth |
+| 323 | §E2 | LOW | fragment_cloud_browser.xml hardcoded maxWidth |
+| 324 | §E2 | LOW | fragment_dual_pane.xml hardcoded maxWidth (4 instances) |
+| 325 | §E2 | LOW | fragment_list_action.xml hardcoded maxWidth |
+| 327 | §E2 | LOW | No landscape layouts |
+| 333 | §E3 | LOW | MaterialComponents (M2) not Material3 |
+| 342 | §E5 | LOW | item_skeleton_hub_card.xml hardcoded sizes |
+| 365 | §E11 | **MEDIUM** | No Splash Screen API |
+| 366 | §E11 | LOW | No Dynamic Color support |
+| 367 | §E11 | **MEDIUM** | No predictive back gesture support |
+| 379 | §F5 | LOW | Limited haptic feedback coverage (2 of 5-8 recommended moments) |
+| 392 | §G2 | LOW | No screenReaderFocusable usage |
+| 394 | §G3 | LOW | No OnBackPressedCallback for custom back handling |
+| 403 | §H3 | **MEDIUM** | button_height_sm 36dp below 48dp (known #97) |
+| 404 | §H3 | **MEDIUM** | icon_button_size_sm 36dp below 48dp |
+| 405 | §H3 | **MEDIUM** | dual_pane_tab_height 32dp below 48dp |
+| 408 | §H3 | LOW | No landscape layouts but rotation supported |
+| 410 | §L3 | LOW | 11 hardcoded maxWidth values across 6 files |
+| 411 | §L3 | LOW | 2 off-scale spacing tokens |
+| 412 | §L3 | LOW | Skeleton hub card token inconsistency |
+| 415 | §L3 | LOW | No standalone design system documentation |
+| 420 | §L5 | LOW | Limited haptic feedback (2 of 5-8 moments) |
+| 427 | §D5 | LOW | Unscoped NonCancellable coroutine in CloudBrowserFragment |
+| 430 | §D5 | LOW | No Baseline Profiles for startup optimization |
+
+### Cross-reference with Phase 1 known issues
+
+| Phase 2 # | Phase 1 # | Status |
+|---|---|---|
+| 302 | 221 | Same issue (spacing_10 off-scale) |
+| 333 | 232 | Same issue (M2 not M3) |
+| 403 | 97 | Same issue (button_height_sm 36dp) |
+
+---
+
+**Phase 2 manifest complete. 122 findings: 93 PASS, 24 LOW, 5 MEDIUM, 0 REVIEW. No code changes made. Awaiting approval before any fixes.**
