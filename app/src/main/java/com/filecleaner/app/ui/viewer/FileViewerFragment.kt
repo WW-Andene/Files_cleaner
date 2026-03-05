@@ -29,6 +29,7 @@ import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.databinding.FragmentFileViewerBinding
 import com.filecleaner.app.utils.FileOpener
 import com.filecleaner.app.utils.UndoHelper
+import com.filecleaner.app.utils.applyBottomInset
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -178,6 +179,9 @@ class FileViewerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Apply bottom inset to scrollable content area
+        binding.contentFrame.applyBottomInset()
 
         val filePath = arguments?.getString(ARG_FILE_PATH) ?: run {
             findNavController().popBackStack()
