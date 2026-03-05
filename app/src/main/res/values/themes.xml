@@ -384,9 +384,11 @@
     <style name="Theme.FileCleaner.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.FileCleaner.Dialog</item>
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorSurface">@color/surfaceColor</item>
+        <item name="colorSurface">@color/surfaceElevated</item>
         <item name="colorOnSurface">@color/textPrimary</item>
-        <item name="android:colorBackground">@color/surfaceColor</item>
+        <item name="android:colorBackground">@color/surfaceElevated</item>
+        <!-- Disable Material elevation overlay to prevent neutral grey wash in dark mode -->
+        <item name="elevationOverlayEnabled">false</item>
         <!-- Enter/exit animations using the app's motion vocabulary -->
         <item name="android:windowAnimationStyle">@style/Animation.FileCleaner.Dialog</item>
     </style>
