@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="@dimen/spacing_sm"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+            android:textAppearance="@style/TextAppearance.FileCleaner.FileViewer.Filename"
             android:maxLines="1"
             android:ellipsize="middle" />
 

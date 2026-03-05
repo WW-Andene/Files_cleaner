@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/spacing_sm"
-    android:layout_marginBottom="@dimen/spacing_sm"
+    android:layout_marginVertical="@dimen/spacing_xs"
     app:cardCornerRadius="@dimen/radius_card"
     app:cardElevation="@dimen/elevation_subtle"
     app:cardBackgroundColor="@color/surfaceColor"
@@ -20,7 +20,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_10">
+        android:paddingVertical="@dimen/spacing_md">
 
         <!-- Icon placeholder -->
         <View
@@ -38,8 +38,7 @@
 
             <!-- Title placeholder -->
             <View
-                android:layout_width="0dp"
-                android:layout_weight="0.6"
+                android:layout_width="160dp"
                 android:layout_height="14dp"
                 android:background="@drawable/bg_shimmer_placeholder"
                 android:importantForAccessibility="no" />

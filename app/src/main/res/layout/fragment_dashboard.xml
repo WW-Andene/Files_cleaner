@@ -52,7 +52,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="@dimen/spacing_4xl"
+            android:paddingHorizontal="@dimen/spacing_3xl"
+            android:paddingTop="@dimen/spacing_5xl"
+            android:paddingBottom="@dimen/spacing_4xl"
             android:accessibilityLiveRegion="polite"
             android:contentDescription="@string/a11y_empty_state"
             android:visibility="gone">
@@ -213,7 +215,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_scan_stats"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                     android:accessibilityHeading="true" />
 
                 <TextView
@@ -245,7 +247,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_category_title"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                     android:layout_marginBottom="@dimen/spacing_sm"
                     android:accessibilityHeading="true" />
 
@@ -287,7 +289,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_top_files"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                     android:layout_marginBottom="@dimen/spacing_sm"
                     android:accessibilityHeading="true" />
 
@@ -319,7 +321,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_quick_actions"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                     android:layout_marginBottom="@dimen/spacing_md"
                     android:accessibilityHeading="true" />
 

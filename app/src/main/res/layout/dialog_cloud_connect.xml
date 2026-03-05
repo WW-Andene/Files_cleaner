@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/spacing_xxl"
-        android:paddingTop="@dimen/spacing_lg"
+        android:paddingTop="@dimen/spacing_xxl"
         android:paddingBottom="@dimen/spacing_lg">
 
         <!-- Provider-specific help text (top of form) -->

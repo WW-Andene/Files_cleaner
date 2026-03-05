@@ -9,6 +9,121 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/raccoonManagerFragment">
 
+    <!-- §DM2: Global navigation actions — ensures every navigation gets
+         consistent page-transition animations from the motion vocabulary,
+         even when triggered without explicit NavOptions. -->
+    <action
+        android:id="@+id/action_global_analysisFragment"
+        app:destination="@id/analysisFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_browseFragment"
+        app:destination="@id/browseFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_duplicatesFragment"
+        app:destination="@id/duplicatesFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_largeFilesFragment"
+        app:destination="@id/largeFilesFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_junkFragment"
+        app:destination="@id/junkFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_raccoonManagerFragment"
+        app:destination="@id/raccoonManagerFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_arborescenceFragment"
+        app:destination="@id/arborescenceFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_dashboardFragment"
+        app:destination="@id/dashboardFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_optimizeFragment"
+        app:destination="@id/optimizeFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_dualPaneFragment"
+        app:destination="@id/dualPaneFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_cloudBrowserFragment"
+        app:destination="@id/cloudBrowserFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_antivirusFragment"
+        app:destination="@id/antivirusFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
+    <action
+        android:id="@+id/action_global_fileViewerFragment"
+        app:destination="@id/fileViewerFragment"
+        app:enterAnim="@anim/nav_enter"
+        app:exitAnim="@anim/nav_exit"
+        app:popEnterAnim="@anim/nav_pop_enter"
+        app:popExitAnim="@anim/nav_pop_exit" />
+
     <fragment
         android:id="@+id/analysisFragment"
         android:name="com.filecleaner.app.ui.analysis.AnalysisFragment"

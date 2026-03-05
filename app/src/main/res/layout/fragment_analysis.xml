@@ -138,7 +138,7 @@
                 android:layout_marginStart="@dimen/spacing_xl"
                 android:layout_marginTop="@dimen/spacing_xl"
                 android:text="@string/analysis_quick_actions"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
                 android:accessibilityHeading="true" />
 
             <LinearLayout
@@ -299,7 +299,7 @@
                 android:layout_marginStart="@dimen/spacing_xl"
                 android:layout_marginTop="@dimen/spacing_xl"
                 android:text="@string/analysis_category_breakdown"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
                 android:accessibilityHeading="true" />
 
             <LinearLayout
@@ -326,7 +326,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/analysis_top_files"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
                     android:accessibilityHeading="true" />
 
                 <TextView

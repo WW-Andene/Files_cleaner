@@ -33,7 +33,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/av_title"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
             android:textColor="@color/textPrimary"
             android:layout_marginStart="@dimen/spacing_sm"
             android:accessibilityHeading="true" />

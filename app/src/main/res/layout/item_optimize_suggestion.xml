@@ -41,7 +41,7 @@
                 android:id="@+id/tv_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                 android:textColor="@color/textPrimary"
                 android:maxLines="1"
                 android:ellipsize="middle" />

@@ -4,8 +4,10 @@ import android.content.Context
 import android.provider.Settings
 import android.view.View
 import android.view.ViewPropertyAnimator
+import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import androidx.navigation.NavOptions
 import com.filecleaner.app.R
@@ -21,6 +23,16 @@ import com.filecleaner.app.R
  * ANIMATOR_DURATION_SCALE accessibility setting.
  */
 object MotionUtil {
+
+    // ── Custom interpolators (match XML declarations) ──────────────────
+
+    /** Loads the custom fast-out-slow-in interpolator used by enter/page animations. */
+    fun enterInterpolator(context: Context): Interpolator =
+        AnimationUtils.loadInterpolator(context, R.interpolator.fast_out_slow_in_custom)
+
+    /** Loads the custom gentle-overshoot interpolator used by FAB/success animations. */
+    fun overshootInterpolator(context: Context): Interpolator =
+        AnimationUtils.loadInterpolator(context, R.interpolator.overshoot_gentle)
 
     // ── Reduced-motion check (§DM4) ─────────────────────────────────────
 
@@ -82,7 +94,7 @@ object MotionUtil {
             .translationY(0f)
             .setDuration(duration)
             .setStartDelay(startDelay)
-            .setInterpolator(DecelerateInterpolator())
+            .setInterpolator(enterInterpolator(view.context))
     }
 
     /**
@@ -131,7 +143,7 @@ object MotionUtil {
             .scaleY(1f)
             .alpha(1f)
             .setDuration(duration)
-            .setInterpolator(OvershootInterpolator(1.2f))
+            .setInterpolator(overshootInterpolator(view.context))
     }
 
     /**
@@ -184,7 +196,7 @@ object MotionUtil {
             .scaleY(1f)
             .alpha(1f)
             .setDuration(duration)
-            .setInterpolator(OvershootInterpolator(1.5f))
+            .setInterpolator(overshootInterpolator(view.context))
     }
 
     // ── Crossfade helper ─────────────────────────────────────────────────
@@ -214,7 +226,7 @@ object MotionUtil {
                 inView.animate()
                     .alpha(1f)
                     .setDuration(enterDur)
-                    .setInterpolator(DecelerateInterpolator())
+                    .setInterpolator(enterInterpolator(inView.context))
                     .start()
             }
             .start()
