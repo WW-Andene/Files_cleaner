@@ -155,6 +155,10 @@
     <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
     <string name="dashboard_scanning">Scanning\u2026 Results will appear when complete.</string>
     <string name="dashboard_scan_stats_empty">Scan your storage to see a summary here.</string>
+    <plurals name="n_files_with_size">
+        <item quantity="one">%1$d file (%2$s)</item>
+        <item quantity="other">%1$d files (%2$s)</item>
+    </plurals>
     <string name="dashboard_back">Back</string>
     <string name="dashboard_top_files">Top 10 Largest Files</string>
     <string name="dashboard_quick_actions">Quick Actions</string>
