@@ -16,9 +16,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingHorizontal="@dimen/spacing_lg"
             android:paddingVertical="@dimen/spacing_sm"
-            android:minHeight="@dimen/touch_target_min">
+            android:background="@color/surfaceColor"
+            android:elevation="0dp"
+            android:minHeight="?attr/actionBarSize">
 
             <ImageButton
                 android:id="@+id/btn_back"
@@ -68,6 +70,7 @@
         <!-- Explanatory card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_info"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/spacing_lg"
@@ -196,8 +199,8 @@
             android:layout_weight="1"
             android:clipToPadding="false"
             android:layoutAnimation="@anim/layout_item_stagger"
-            android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingBottom="@dimen/spacing_bottom_inset" />
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingBottom="@dimen/spacing_fab_clearance" />
 
         <!-- Empty state -->
         <LinearLayout
@@ -253,12 +256,12 @@
     <!-- Floating selection summary bar -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/selection_summary_bar"
+        style="@style/Widget.FileCleaner.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginHorizontal="@dimen/spacing_lg"
         android:layout_marginBottom="@dimen/spacing_bottom_inset"
-        app:cardCornerRadius="@dimen/radius_card"
         app:cardElevation="@dimen/elevation_raised"
         app:cardBackgroundColor="@color/colorPrimary"
         app:strokeWidth="@dimen/stroke_none"

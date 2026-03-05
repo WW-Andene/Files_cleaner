@@ -33,6 +33,16 @@
     <color name="colorWarningLight">#FFF8E6</color>
     <color name="colorOnWarning">#FFFFFF</color>
 
+    <!-- ── Threat severity scale (antivirus cards, §DC1) ── -->
+    <color name="severityCritical">#BF3026</color>
+    <color name="severityCriticalLight">#FDEAE7</color>
+    <color name="severityHigh">#C05E0A</color>
+    <color name="severityHighLight">#FDF0E2</color>
+    <color name="severityMedium">#996D12</color>
+    <color name="severityMediumLight">#FFF8E6</color>
+    <color name="severityLow">#2E7D42</color>
+    <color name="severityLowLight">#E6F5EA</color>
+
     <!-- ── Surface elevation ladder (chromatic warm-whites, §DC3) ──
          Consistent ~3% OKLCH lightness steps:
          surfaceDim(L89) → surfaceBase(L93) → surfaceColor(L97) → surfaceElevated(L99) -->

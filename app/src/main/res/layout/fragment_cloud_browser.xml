@@ -13,9 +13,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_sm"
-        android:minHeight="@dimen/touch_target_min">
+        android:background="@color/surfaceColor"
+        android:elevation="0dp"
+        android:minHeight="?attr/actionBarSize">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -200,8 +202,8 @@
         android:layout_weight="1"
         android:clipToPadding="false"
         android:layoutAnimation="@anim/layout_item_stagger"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingBottom="@dimen/spacing_above_nav"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_fab_clearance"
         android:visibility="gone" />
 
     <!-- Bottom bar for download -->

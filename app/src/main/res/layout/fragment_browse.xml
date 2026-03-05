@@ -310,8 +310,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingBottom="@dimen/spacing_above_nav"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_fab_clearance"
         android:layoutAnimation="@anim/layout_item_stagger" />
 
     <!-- Floating selection bar (shown in selection mode) -->

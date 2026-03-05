@@ -12,9 +12,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_sm"
-        android:minHeight="@dimen/touch_target_min">
+        android:background="@color/surfaceColor"
+        android:elevation="0dp"
+        android:minHeight="?attr/actionBarSize">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -193,15 +195,14 @@
 
                 <!-- Critical card -->
                 <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
                     app:cardElevation="@dimen/elevation_none"
-                    app:cardBackgroundColor="@color/colorErrorLight"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/colorError"
+                    app:cardBackgroundColor="@color/severityCriticalLight"
+                    app:strokeColor="@color/severityCritical"
                     android:focusable="true"
                     android:contentDescription="@string/a11y_scan_threat_count">
 
@@ -219,28 +220,27 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
-                            android:textColor="@color/colorError" />
+                            android:textColor="@color/severityCritical" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/av_critical"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/colorError" />
+                            android:textColor="@color/severityCritical" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- High card -->
                 <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
                     app:cardElevation="@dimen/elevation_none"
-                    app:cardBackgroundColor="@color/surfaceColor"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/borderSubtle"
+                    app:cardBackgroundColor="@color/severityHighLight"
+                    app:strokeColor="@color/severityHigh"
                     android:focusable="true">
 
                     <LinearLayout
@@ -257,28 +257,27 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
-                            android:textColor="@color/colorAccent" />
+                            android:textColor="@color/severityHigh" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/av_high"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/textTertiary" />
+                            android:textColor="@color/severityHigh" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Medium card -->
                 <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
                     app:cardElevation="@dimen/elevation_none"
-                    app:cardBackgroundColor="@color/surfaceColor"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/borderSubtle"
+                    app:cardBackgroundColor="@color/severityMediumLight"
+                    app:strokeColor="@color/severityMedium"
                     android:focusable="true">
 
                     <LinearLayout
@@ -295,28 +294,27 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
-                            android:textColor="@color/colorWarning" />
+                            android:textColor="@color/severityMedium" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/av_medium"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/textTertiary" />
+                            android:textColor="@color/severityMedium" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Clean card -->
                 <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.FileCleaner.Card"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/spacing_xs"
-                    app:cardCornerRadius="@dimen/radius_card"
                     app:cardElevation="@dimen/elevation_none"
-                    app:cardBackgroundColor="@color/surfaceColor"
-                    app:strokeWidth="@dimen/stroke_default"
-                    app:strokeColor="@color/borderSubtle"
+                    app:cardBackgroundColor="@color/severityLowLight"
+                    app:strokeColor="@color/severityLow"
                     android:focusable="true">
 
                     <LinearLayout
@@ -333,14 +331,14 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
-                            android:textColor="@color/colorPrimary" />
+                            android:textColor="@color/severityLow" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/av_clean"
                             android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                            android:textColor="@color/textTertiary" />
+                            android:textColor="@color/severityLow" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -428,9 +426,9 @@
                 android:nestedScrollingEnabled="false"
                 android:clipToPadding="false"
                 android:layoutAnimation="@anim/layout_item_stagger"
-                android:paddingHorizontal="@dimen/spacing_md"
+                android:paddingHorizontal="@dimen/spacing_lg"
                 android:paddingTop="@dimen/spacing_sm"
-                android:paddingBottom="@dimen/spacing_above_nav"
+                android:paddingBottom="@dimen/spacing_fab_clearance"
                 android:visibility="gone" />
 
         </LinearLayout>

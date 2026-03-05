@@ -381,6 +381,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorSurface">@color/surfaceColor</item>
         <item name="colorOnSurface">@color/textPrimary</item>
+        <!-- Enter/exit animations using the app's motion vocabulary -->
+        <item name="android:windowAnimationStyle">@style/Animation.FileCleaner.Dialog</item>
     </style>
 
     <style name="ShapeAppearance.FileCleaner.Dialog" parent="">

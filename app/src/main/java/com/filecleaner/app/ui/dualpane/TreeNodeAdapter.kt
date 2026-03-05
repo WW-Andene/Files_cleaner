@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
@@ -14,50 +16,61 @@ import com.filecleaner.app.utils.UndoHelper
  * Adapter that renders a directory tree (arborescence) as a flat list
  * with indentation based on depth. Nodes can be expanded/collapsed.
  */
-class TreeNodeAdapter : RecyclerView.Adapter<TreeNodeAdapter.ViewHolder>() {
+class TreeNodeAdapter : ListAdapter<TreeNodeAdapter.FlatNode, TreeNodeAdapter.ViewHolder>(DIFF) {
 
     data class FlatNode(
         val node: DirectoryNode,
         val depth: Int,
-        var expanded: Boolean = false
+        val expanded: Boolean = false
     )
 
-    private val flatList = mutableListOf<FlatNode>()
+    companion object {
+        private const val PAYLOAD_EXPAND = "expand"
+
+        private val DIFF = object : DiffUtil.ItemCallback<FlatNode>() {
+            override fun areItemsTheSame(a: FlatNode, b: FlatNode) =
+                a.node.path == b.node.path
+
+            override fun areContentsTheSame(a: FlatNode, b: FlatNode) =
+                a == b
+
+            override fun getChangePayload(a: FlatNode, b: FlatNode): Any? {
+                if (a.copy(expanded = b.expanded) == b) return PAYLOAD_EXPAND
+                return null
+            }
+        }
+    }
+
     private val expandedPaths = mutableSetOf<String>()
+    private var rootNode: DirectoryNode? = null
 
     /** Called when user taps a directory node — navigate the pane to that path. */
     var onDirectorySelected: ((String) -> Unit)? = null
 
     fun setRootNode(root: DirectoryNode) {
-        flatList.clear()
+        rootNode = root
         expandedPaths.clear()
         // Auto-expand root
         expandedPaths.add(root.path)
-        rebuildFlatList(root, 0)
-        notifyDataSetChanged()
+        submitList(buildFlatList(root, 0))
     }
 
-    private fun rebuildFlatList(node: DirectoryNode, depth: Int) {
+    private fun buildFlatList(node: DirectoryNode, depth: Int): List<FlatNode> {
+        val result = mutableListOf<FlatNode>()
         val isExpanded = node.path in expandedPaths
-        flatList.add(FlatNode(node, depth, isExpanded))
+        result.add(FlatNode(node, depth, isExpanded))
         if (isExpanded) {
             for (child in node.children.sortedBy { it.name.lowercase() }) {
-                rebuildFlatList(child, depth + 1)
+                result.addAll(buildFlatList(child, depth + 1))
             }
         }
+        return result
     }
 
-    private fun refreshList(root: DirectoryNode) {
-        flatList.clear()
-        rebuildFlatList(root, 0)
-        notifyDataSetChanged()
+    private fun refreshList() {
+        val root = rootNode ?: return
+        submitList(buildFlatList(root, 0))
     }
-
-    private fun findRoot(): DirectoryNode? {
-        return flatList.find { it.depth == 0 }?.node
-    }
-
-    override fun getItemCount(): Int = flatList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -65,8 +78,20 @@ class TreeNodeAdapter : RecyclerView.Adapter<TreeNodeAdapter.ViewHolder>() {
         return ViewHolder(view)
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: List<Any>) {
+        if (payloads.contains(PAYLOAD_EXPAND)) {
+            val item = getItem(position)
+            // Partial rebind: only update expand/collapse arrow rotation
+            if (item.node.children.isNotEmpty()) {
+                holder.expandIcon.rotation = if (item.expanded) 90f else 0f
+            }
+            return
+        }
+        super.onBindViewHolder(holder, position, payloads)
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = flatList[position]
+        val item = getItem(position)
         val node = item.node
         val ctx = holder.itemView.context
 
@@ -91,7 +116,7 @@ class TreeNodeAdapter : RecyclerView.Adapter<TreeNodeAdapter.ViewHolder>() {
             holder.expandIcon.visibility = View.VISIBLE
             holder.expandIcon.rotation = if (item.expanded) 90f else 0f
             holder.expandIcon.setOnClickListener {
-                toggleExpand(position)
+                toggleExpand(holder.bindingAdapterPosition)
             }
         } else {
             holder.expandIcon.visibility = View.INVISIBLE
@@ -105,21 +130,21 @@ class TreeNodeAdapter : RecyclerView.Adapter<TreeNodeAdapter.ViewHolder>() {
         // Long-press to expand/collapse
         holder.itemView.setOnLongClickListener {
             if (node.children.isNotEmpty()) {
-                toggleExpand(position)
+                toggleExpand(holder.bindingAdapterPosition)
             }
             true
         }
     }
 
     private fun toggleExpand(position: Int) {
-        val item = flatList[position]
+        if (position == RecyclerView.NO_POSITION) return
+        val item = getItem(position)
         if (item.expanded) {
             expandedPaths.remove(item.node.path)
         } else {
             expandedPaths.add(item.node.path)
         }
-        val root = findRoot() ?: return
-        refreshList(root)
+        refreshList()
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

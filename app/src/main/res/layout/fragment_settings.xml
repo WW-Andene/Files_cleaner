@@ -35,13 +35,9 @@
             android:contentDescription="@string/a11y_settings_section" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <LinearLayout
@@ -102,13 +98,9 @@
             android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <LinearLayout
@@ -203,13 +195,9 @@
             android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <LinearLayout
@@ -267,13 +255,9 @@
             android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <!-- Show hidden files -->
@@ -317,13 +301,9 @@
             android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_lg">
 
             <LinearLayout
@@ -439,13 +419,9 @@
             android:accessibilityHeading="true" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle"
             android:layout_marginBottom="@dimen/spacing_xl">
 
             <LinearLayout

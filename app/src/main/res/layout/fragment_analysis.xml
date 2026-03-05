@@ -28,6 +28,7 @@
 
             <!-- ──── Storage Overview Card ──── -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.FileCleaner.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_lg"
@@ -103,6 +104,7 @@
                     <!-- Potential savings banner -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/card_savings"
+                        style="@style/Widget.FileCleaner.Card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_md"

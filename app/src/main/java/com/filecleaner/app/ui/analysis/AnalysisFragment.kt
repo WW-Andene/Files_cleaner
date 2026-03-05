@@ -4,7 +4,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.os.StatFs
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -161,6 +160,8 @@ class AnalysisFragment : Fragment() {
         val totalSize = categories.values.flatten().sumOf { it.size }
         if (totalSize <= 0) return
 
+        val segmentGap = resources.getDimensionPixelSize(R.dimen.segment_gap)
+        val barSmRadius = resources.getDimension(R.dimen.radius_bar_sm)
         val orderedCategories = FileCategory.entries.filter { categories.containsKey(it) }
 
         for (cat in orderedCategories) {
@@ -172,12 +173,12 @@ class AnalysisFragment : Fragment() {
 
             val segment = View(requireContext())
             val lp = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, fraction)
-            lp.marginEnd = if (cat != orderedCategories.last()) dpToPx(1) else 0
+            lp.marginEnd = if (cat != orderedCategories.last()) segmentGap else 0
             segment.layoutParams = lp
 
             val bg = GradientDrawable()
             bg.setColor(getCategoryColor(cat))
-            bg.cornerRadius = dpToPx(4).toFloat()
+            bg.cornerRadius = barSmRadius
             segment.background = bg
 
             container.addView(segment)
@@ -214,6 +215,14 @@ class AnalysisFragment : Fragment() {
 
     private fun buildCategoryRow(cat: FileCategory, count: Int, sizeBytes: Long, barFraction: Float): View {
         val ctx = requireContext()
+        val catCardMargin = resources.getDimensionPixelSize(R.dimen.category_card_margin)
+        val cardRadius = resources.getDimension(R.dimen.radius_sm)
+        val strokeW = resources.getDimensionPixelSize(R.dimen.stroke_default)
+        val catBarHeight = resources.getDimensionPixelSize(R.dimen.category_bar_height)
+        val catBarRadius = resources.getDimension(R.dimen.category_bar_radius)
+        val emojiMargin = resources.getDimensionPixelSize(R.dimen.emoji_margin_end)
+        val barTopMargin = resources.getDimensionPixelSize(R.dimen.spacing_sm)
+        val barMinWidth = resources.getDimensionPixelSize(R.dimen.bar_min_width)
 
         // Outer card
         val card = MaterialCardView(ctx).apply {
@@ -221,12 +230,12 @@ class AnalysisFragment : Fragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = dpToPx(6)
+                bottomMargin = catCardMargin
             }
-            radius = dpToPx(10).toFloat()
+            radius = cardRadius
             cardElevation = 0f
             setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surfaceColor))
-            strokeWidth = dpToPx(1)
+            strokeWidth = strokeW
             strokeColor = ContextCompat.getColor(ctx, R.color.borderSubtle)
         }
 
@@ -249,7 +258,7 @@ class AnalysisFragment : Fragment() {
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply { marginEnd = dpToPx(10) }
+            ).apply { marginEnd = emojiMargin }
         }
 
         val nameView = TextView(ctx).apply {
@@ -270,18 +279,18 @@ class AnalysisFragment : Fragment() {
         // Progress bar (custom FrameLayout)
         val barTrack = FrameLayout(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(6)
-            ).apply { topMargin = dpToPx(8) }
+                ViewGroup.LayoutParams.MATCH_PARENT, catBarHeight
+            ).apply { topMargin = barTopMargin }
             val trackBg = GradientDrawable()
             trackBg.setColor(getCategoryBgColor(cat))
-            trackBg.cornerRadius = dpToPx(3).toFloat()
+            trackBg.cornerRadius = catBarRadius
             background = trackBg
         }
 
         val barFill = View(ctx).apply {
             val fillBg = GradientDrawable()
             fillBg.setColor(getCategoryColor(cat))
-            fillBg.cornerRadius = dpToPx(3).toFloat()
+            fillBg.cornerRadius = catBarRadius
             background = fillBg
         }
 
@@ -290,7 +299,7 @@ class AnalysisFragment : Fragment() {
         // Set bar fill width after layout (guard against detached fragment)
         barTrack.post {
             if (!isAdded) return@post
-            val targetWidth = (barTrack.width * barFraction).toInt().coerceAtLeast(dpToPx(4))
+            val targetWidth = (barTrack.width * barFraction).toInt().coerceAtLeast(barMinWidth)
             barFill.layoutParams = FrameLayout.LayoutParams(targetWidth, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
@@ -322,18 +331,27 @@ class AnalysisFragment : Fragment() {
     private fun buildTopFileRow(rank: Int, file: FileItem, maxSize: Long): View {
         val ctx = requireContext()
         val barFraction = if (maxSize > 0) file.size.toFloat() / maxSize else 0f
+        val topFileCardMargin = resources.getDimensionPixelSize(R.dimen.top_file_card_margin)
+        val cardRadius = resources.getDimension(R.dimen.radius_sm)
+        val strokeW = resources.getDimensionPixelSize(R.dimen.stroke_default)
+        val spacingSm = resources.getDimensionPixelSize(R.dimen.spacing_sm)
+        val rankWidth = resources.getDimensionPixelSize(R.dimen.rank_width)
+        val topFileBarHeight = resources.getDimensionPixelSize(R.dimen.top_file_bar_height)
+        val topFileBarRadius = resources.getDimension(R.dimen.top_file_bar_radius)
+        val catCardMargin = resources.getDimensionPixelSize(R.dimen.category_card_margin)
+        val barMinWidthSm = resources.getDimensionPixelSize(R.dimen.bar_min_width_sm)
 
         val card = MaterialCardView(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = dpToPx(4)
+                bottomMargin = topFileCardMargin
             }
-            radius = dpToPx(10).toFloat()
+            radius = cardRadius
             cardElevation = 0f
             setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.surfaceColor))
-            strokeWidth = dpToPx(1)
+            strokeWidth = strokeW
             strokeColor = ContextCompat.getColor(ctx, R.color.borderSubtle)
         }
 
@@ -354,7 +372,7 @@ class AnalysisFragment : Fragment() {
             text = "$rank"
             setTextAppearance(R.style.TextAppearance_FileCleaner_Numeric)
             layoutParams = LinearLayout.LayoutParams(
-                dpToPx(20), ViewGroup.LayoutParams.WRAP_CONTENT
+                rankWidth, ViewGroup.LayoutParams.WRAP_CONTENT
             )
             gravity = Gravity.CENTER
         }
@@ -365,7 +383,7 @@ class AnalysisFragment : Fragment() {
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply { marginEnd = dpToPx(8) }
+            ).apply { marginEnd = spacingSm }
         }
 
         val nameView = TextView(ctx).apply {
@@ -383,7 +401,7 @@ class AnalysisFragment : Fragment() {
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply { marginStart = dpToPx(8) }
+            ).apply { marginStart = spacingSm }
         }
 
         topRow.addView(rankView)
@@ -394,28 +412,28 @@ class AnalysisFragment : Fragment() {
         // Thin progress bar
         val barTrack = FrameLayout(ctx).apply {
             layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(3)
+                ViewGroup.LayoutParams.MATCH_PARENT, topFileBarHeight
             ).apply {
-                topMargin = dpToPx(6)
-                marginStart = dpToPx(20)
+                topMargin = catCardMargin
+                marginStart = rankWidth
             }
             val trackBg = GradientDrawable()
             trackBg.setColor(getCategoryBgColor(file.category))
-            trackBg.cornerRadius = dpToPx(2).toFloat()
+            trackBg.cornerRadius = topFileBarRadius
             background = trackBg
         }
 
         val barFill = View(ctx).apply {
             val fillBg = GradientDrawable()
             fillBg.setColor(getCategoryColor(file.category))
-            fillBg.cornerRadius = dpToPx(2).toFloat()
+            fillBg.cornerRadius = topFileBarRadius
             background = fillBg
         }
 
         barTrack.addView(barFill)
         barTrack.post {
             if (!isAdded) return@post
-            val targetWidth = (barTrack.width * barFraction).toInt().coerceAtLeast(dpToPx(2))
+            val targetWidth = (barTrack.width * barFraction).toInt().coerceAtLeast(barMinWidthSm)
             barFill.layoutParams = FrameLayout.LayoutParams(targetWidth, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
@@ -455,13 +473,6 @@ class AnalysisFragment : Fragment() {
             FileCategory.OTHER -> R.color.catOtherBg
         }
         return ContextCompat.getColor(requireContext(), colorRes)
-    }
-
-    private fun dpToPx(dp: Int): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(),
-            resources.displayMetrics
-        ).toInt()
     }
 
     override fun onDestroyView() {

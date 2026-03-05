@@ -304,7 +304,6 @@ class StorageDashboardFragment : Fragment() {
 
         binding.cardTopFiles.visibility = View.VISIBLE
         val ctx = requireContext()
-        val density = resources.displayMetrics.density
         val spacingXs = ctx.resources.getDimensionPixelSize(R.dimen.spacing_xs)
         val spacingSm = ctx.resources.getDimensionPixelSize(R.dimen.spacing_sm)
         val spacingChip = ctx.resources.getDimensionPixelSize(R.dimen.spacing_chip)
@@ -406,13 +405,14 @@ class StorageDashboardFragment : Fragment() {
 
                 // Add divider between items (not after last)
                 if (index < topFiles.size - 1) {
+                    val spacingMicro = ctx.resources.getDimensionPixelSize(R.dimen.spacing_micro)
                     val divider = View(ctx).apply {
                         layoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             strokeDefault
                         ).apply {
-                            topMargin = (2 * density).toInt()
-                            bottomMargin = (2 * density).toInt()
+                            topMargin = spacingMicro
+                            bottomMargin = spacingMicro
                         }
                         setBackgroundColor(ContextCompat.getColor(ctx, R.color.borderSubtle))
                     }

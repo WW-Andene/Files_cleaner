@@ -48,6 +48,7 @@
         android:paddingVertical="@dimen/spacing_sm">
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="@dimen/icon_button"
             android:layout_height="@dimen/icon_button"
             app:cardCornerRadius="@dimen/radius_btn"

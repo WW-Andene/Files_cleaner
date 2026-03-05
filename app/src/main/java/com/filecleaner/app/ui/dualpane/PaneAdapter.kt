@@ -32,12 +32,19 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
     )
 
     companion object {
+        private const val PAYLOAD_SELECTION = "selection"
+
         private val DIFF = object : DiffUtil.ItemCallback<PaneItem>() {
             override fun areItemsTheSame(a: PaneItem, b: PaneItem) =
                 a.file.absolutePath == b.file.absolutePath
 
             override fun areContentsTheSame(a: PaneItem, b: PaneItem) =
                 a == b
+
+            override fun getChangePayload(a: PaneItem, b: PaneItem): Any? {
+                if (a.copy(selected = b.selected) == b) return PAYLOAD_SELECTION
+                return null
+            }
         }
     }
 
@@ -75,6 +82,30 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_dual_pane_file, parent, false)
         return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: List<Any>) {
+        if (payloads.contains(PAYLOAD_SELECTION)) {
+            val item = getItem(position)
+            val ctx = holder.itemView.context
+            // Partial rebind: only update selection visual state
+            if (item.selected) {
+                holder.itemView.setBackgroundResource(R.drawable.bg_item_selected)
+                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.colorPrimary))
+            } else {
+                holder.itemView.setBackgroundResource(
+                    android.R.attr.selectableItemBackground.let {
+                        val ta = ctx.obtainStyledAttributes(intArrayOf(it))
+                        val resId = ta.getResourceId(0, 0)
+                        ta.recycle()
+                        resId
+                    }
+                )
+                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.textPrimary))
+            }
+            return
+        }
+        super.onBindViewHolder(holder, position, payloads)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

@@ -20,6 +20,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:background="@color/surfaceColor"
+            android:elevation="0dp"
+            android:minHeight="?attr/actionBarSize"
             android:layout_marginBottom="@dimen/spacing_md">
 
             <ImageButton
@@ -40,8 +44,54 @@
                 android:textAppearance="@style/TextAppearance.FileCleaner.Title" />
         </LinearLayout>
 
+        <!-- Empty state — shown when no scan data is available -->
+        <LinearLayout
+            android:id="@+id/empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/spacing_4xl"
+            android:accessibilityLiveRegion="polite"
+            android:contentDescription="@string/a11y_empty_state"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/icon_empty_state"
+                android:layout_height="@dimen/icon_empty_state"
+                android:src="@drawable/ic_raccoon_logo"
+                android:alpha="0.85"
+                android:importantForAccessibility="no"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/tv_empty_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xxl"
+                android:text="@string/dashboard_empty_title"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:textColor="@color/textPrimary"
+                android:gravity="center"
+                android:maxWidth="280dp"
+                android:lineSpacingExtra="@dimen/spacing_xs" />
+
+            <TextView
+                android:id="@+id/tv_empty_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="@string/dashboard_empty_subtitle"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                android:textColor="@color/textSecondary"
+                android:gravity="center"
+                android:maxWidth="300dp"
+                android:lineSpacingExtra="@dimen/spacing_xs" />
+        </LinearLayout>
+
         <!-- Storage usage card — prominent hero card -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/radius_header"
@@ -111,10 +161,9 @@
         <!-- Potential savings card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_savings"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_subtle"
             app:cardBackgroundColor="@color/analysisSavingsBackground"
             app:strokeWidth="@dimen/stroke_none"
             android:layout_marginBottom="@dimen/spacing_md"

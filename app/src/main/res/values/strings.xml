@@ -526,6 +526,12 @@
     <string name="raccoon_greeting_pre_scan">Raccoon is ready to tidy up! Tap Scan to get started.</string>
     <string name="raccoon_greeting_post_scan">Looking good! %s free \u2014 Raccoon approves.</string>
     <string name="dashboard_scan_stats_empty">Let Raccoon scan your storage to see a summary here.</string>
+    <string name="dashboard_empty_title">No scan data yet</string>
+    <string name="dashboard_empty_subtitle">Run a scan from the Manager tab and Raccoon will build your dashboard.</string>
+
+    <!-- Context-aware empty states (Dual Pane) -->
+    <string name="dual_pane_empty_title">No files here</string>
+    <string name="dual_pane_empty_subtitle">This folder is empty \u2014 navigate somewhere else or pick a directory.</string>
 
     <!-- Storage Optimizer -->
     <string name="optimize_title">Optimize Storage</string>

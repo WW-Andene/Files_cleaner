@@ -176,7 +176,7 @@
                             android:layout_width="@dimen/icon_nav"
                             android:layout_height="@dimen/icon_nav"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_archive"
+                            android:src="@drawable/ic_github"
                             android:importantForAccessibility="no"
                             app:tint="@color/githubAccent" />
                     </FrameLayout>
@@ -230,7 +230,7 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     style="@style/Widget.FileCleaner.Button"
-                    app:icon="@drawable/ic_archive"
+                    app:icon="@drawable/ic_github"
                     app:iconGravity="textStart"
                     app:iconSize="@dimen/icon_inline"
                     app:iconPadding="@dimen/spacing_md"
