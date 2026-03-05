@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -62,6 +64,11 @@ class OptimizeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
+
+        // Pad RecyclerView so the floating selection summary bar never obscures the last items
+        binding.selectionSummaryBar.doOnLayout { bar ->
+            binding.recyclerSuggestions.updatePadding(bottom = bar.height)
+        }
 
         binding.recyclerSuggestions.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerSuggestions.setHasFixedSize(true)

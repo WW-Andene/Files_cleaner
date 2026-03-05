@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter
 import android.widget.AdapterView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -116,6 +118,12 @@ class CloudBrowserFragment : Fragment() {
         binding.recyclerFiles.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerFiles.setHasFixedSize(true)
         binding.recyclerFiles.adapter = fileAdapter
+
+        // Pad RecyclerView so the bottom action bar never obscures the last items
+        binding.actionBar.doOnLayout { bar ->
+            binding.recyclerFiles.updatePadding(bottom = bar.height)
+        }
+
         // §DM4: Disable stagger animation when user prefers reduced motion
         if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
             binding.recyclerFiles.layoutAnimation = null

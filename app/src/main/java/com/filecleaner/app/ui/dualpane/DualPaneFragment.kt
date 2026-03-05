@@ -16,6 +16,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -101,6 +103,12 @@ class DualPaneFragment : Fragment() {
         binding.recyclerLeft.applyBottomInset()
         binding.recyclerRight.applyBottomInset()
         binding.selectionActionBar.applyBottomInset()
+
+        // Pad both recyclers so the floating selection bar never obscures the last items
+        binding.selectionActionBar.doOnLayout { bar ->
+            binding.recyclerLeft.updatePadding(bottom = bar.height)
+            binding.recyclerRight.updatePadding(bottom = bar.height)
+        }
 
         // -- Swap panes button --
         binding.btnSwapPanes.setOnClickListener { swapPanes() }

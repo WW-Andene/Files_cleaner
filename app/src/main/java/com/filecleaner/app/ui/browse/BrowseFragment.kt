@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.filecleaner.app.MainActivity
@@ -87,6 +89,11 @@ class BrowseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Pad RecyclerView so the floating selection bar never obscures the last items
+        binding.selectionActionBar.doOnLayout { bar ->
+            binding.recyclerView.updatePadding(bottom = bar.height)
+        }
 
         // B5: Restore all UI state from config change
         savedInstanceState?.let { state ->

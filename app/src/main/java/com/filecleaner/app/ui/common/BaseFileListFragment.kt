@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -125,6 +127,11 @@ abstract class BaseFileListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.tvTitle.text = screenTitle
+
+        // Pad RecyclerView so the bottom action button never obscures the last items
+        binding.btnAction.doOnLayout { bar ->
+            binding.recyclerView.updatePadding(bottom = bar.height)
+        }
 
         // Restore view mode & sort from config change
         savedInstanceState?.let { state ->
