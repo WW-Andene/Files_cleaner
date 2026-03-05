@@ -181,7 +181,7 @@
         </com.google.android.material.card.MaterialCardView>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Fragment container — bottom padding clears the bottom nav bar -->
+    <!-- Fragment container — bottom padding managed dynamically based on bottom nav visibility -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

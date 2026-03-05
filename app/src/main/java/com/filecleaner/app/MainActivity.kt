@@ -148,15 +148,37 @@ class MainActivity : AppCompatActivity() {
             binding.bottomNav.selectedItemId = R.id.raccoonManagerFragment
         }
 
-        // Keep bottom nav selection in sync with current destination
+        // Keep bottom nav selection in sync with current destination and toggle visibility
+        val bottomNavWrapper = binding.bottomNav.parent as View
         navController.addOnDestinationChangedListener { _, dest, _ ->
-            if (dest.id in bottomNavIds) {
+            val isTabDest = dest.id in bottomNavIds
+            if (isTabDest) {
                 binding.bottomNav.menu.findItem(dest.id)?.isChecked = true
                 // §G1: Announce tab change to TalkBack
                 val tabLabel = dest.label
                 if (tabLabel != null) {
                     binding.root.announceForAccessibility(tabLabel)
                 }
+            }
+
+            // Show/hide bottom nav with slide animation
+            val navHostFragment = binding.navHostFragment
+            if (isTabDest && bottomNavWrapper.visibility != View.VISIBLE) {
+                bottomNavWrapper.visibility = View.VISIBLE
+                bottomNavWrapper.translationY = bottomNavWrapper.height.toFloat()
+                bottomNavWrapper.animate()
+                    .translationY(0f)
+                    .setDuration(150)
+                    .start()
+                navHostFragment.setPadding(0, 0, 0,
+                    resources.getDimensionPixelSize(R.dimen.bottom_nav_height))
+            } else if (!isTabDest && bottomNavWrapper.visibility == View.VISIBLE) {
+                bottomNavWrapper.animate()
+                    .translationY(bottomNavWrapper.height.toFloat())
+                    .setDuration(150)
+                    .withEndAction { bottomNavWrapper.visibility = View.GONE }
+                    .start()
+                navHostFragment.setPadding(0, 0, 0, 0)
             }
         }
 
