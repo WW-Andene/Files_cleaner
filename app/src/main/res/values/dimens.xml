@@ -5,6 +5,7 @@
     <dimen name="spacing_micro">2dp</dimen>
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
+    <!-- Off 4dp grid: intentional — chip dot and legend spacing -->
     <dimen name="spacing_10">10dp</dimen>
     <dimen name="spacing_md">12dp</dimen>
     <dimen name="spacing_lg">16dp</dimen>
