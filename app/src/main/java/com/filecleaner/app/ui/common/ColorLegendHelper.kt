@@ -130,7 +130,7 @@ object ColorLegendHelper {
         val textLabelPx = res.getDimension(R.dimen.text_label)
 
         val vPad = res.getDimensionPixelSize(R.dimen.spacing_micro)
-        val dotSize = res.getDimensionPixelSize(R.dimen.dot_legend)
+        val dotSize = res.getDimensionPixelSize(R.dimen.spacing_10)
 
         val chipLayout = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
