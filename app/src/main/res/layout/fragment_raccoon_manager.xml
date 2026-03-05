@@ -128,7 +128,7 @@
                         android:text="@string/raccoon_action_scan_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textOnPrimary"
-                        android:alpha="0.85"
+                        android:alpha="@dimen/alpha_raccoon_logo"
                         android:layout_marginTop="@dimen/spacing_xs" />
                 </LinearLayout>
 

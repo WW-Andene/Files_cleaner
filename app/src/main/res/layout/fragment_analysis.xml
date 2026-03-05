@@ -100,7 +100,7 @@
                         android:layout_marginTop="@dimen/spacing_sm"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                         android:textColor="@color/colorOnPrimaryContainer"
-                        android:alpha="0.85"
+                        android:alpha="@dimen/alpha_raccoon_logo"
                         android:accessibilityLiveRegion="polite"
                         android:importantForAccessibility="yes" />
 

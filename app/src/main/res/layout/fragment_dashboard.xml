@@ -63,7 +63,7 @@
                 android:layout_width="@dimen/icon_empty_state"
                 android:layout_height="@dimen/icon_empty_state"
                 android:src="@drawable/ic_raccoon_logo"
-                android:alpha="0.85"
+                android:alpha="@dimen/alpha_raccoon_logo"
                 android:importantForAccessibility="no"
                 android:contentDescription="@null" />
 
@@ -158,7 +158,7 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:alpha="0.85"
+                    android:alpha="@dimen/alpha_raccoon_logo"
                     android:textAlignment="center"
                     android:accessibilityLiveRegion="polite"
                     android:importantForAccessibility="yes" />

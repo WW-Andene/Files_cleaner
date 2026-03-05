@@ -102,7 +102,7 @@
                     android:text="@string/optimize_info_body"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:alpha="0.85" />
+                    android:alpha="@dimen/alpha_raccoon_logo" />
 
                 <!-- Select All / Deselect All -->
                 <LinearLayout
@@ -221,7 +221,7 @@
                 android:layout_width="@dimen/icon_empty_state"
                 android:layout_height="@dimen/icon_empty_state"
                 android:src="@drawable/ic_raccoon_logo"
-                android:alpha="0.85"
+                android:alpha="@dimen/alpha_raccoon_logo"
                 android:importantForAccessibility="no" />
 
             <TextView

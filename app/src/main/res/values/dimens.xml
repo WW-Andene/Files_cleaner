@@ -133,6 +133,9 @@
     <dimen name="tree_zoom_padding">40dp</dimen>
     <dimen name="tree_zoom_file_padding">200dp</dimen>
 
+    <!-- Alpha tokens -->
+    <item name="alpha_raccoon_logo" format="float" type="dimen">0.85</item>
+
     <!-- Animation translation distances -->
     <dimen name="anim_slide_in_y">24dp</dimen>
     <dimen name="anim_slide_out_y">16dp</dimen>
