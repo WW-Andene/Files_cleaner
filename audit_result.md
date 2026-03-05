@@ -929,3 +929,361 @@ KEY_SORT_ORDER, KEY_SEARCH_QUERY (line 137-141, 253-263).
 **Next: Phase 3 — Security, Privacy & Trust (Category C)**
 
 Awaiting confirmation to proceed with Phase 3, or to fix findings from Phase 1/2.
+
+---
+
+## PHASE 3 — SECURITY, PRIVACY & TRUST (Category C)
+
+> **Calibration reminder:** §C was elevated to HIGH stakes during Phase 0 due to
+> MANAGE_EXTERNAL_STORAGE permission, OAuth token storage, antivirus claims, and
+> encrypted credential storage. All findings in this phase are assessed at elevated severity.
+
+### Step 3.1 — §C1: Authentication & Authorization
+
+```
+[HIGH] — F-027: CrashReporter GitHub token stored in plaintext SharedPreferences
+Section: §C1 — Authentication & Authorization
+Finding: UserPreferences.kt:113-115 — The crash report GitHub token is stored in
+  regular SharedPreferences (`raccoon_prefs`), not EncryptedSharedPreferences. This
+  token has the `repo` scope (can create issues) and is readable by any app on a
+  rooted device, or extractable from an unencrypted backup.
+  The app already uses EncryptedSharedPreferences for cloud connection credentials
+  (CloudConnectionStore.kt) but does not apply the same protection to the crash
+  reporter token.
+Why it matters: A leaked GitHub token with `repo` scope can be used to read private
+  repository code, create issues, and potentially push code. This is a real credential
+  exposure risk — not theoretical.
+Recommendation: Store the crash report token in EncryptedSharedPreferences alongside
+  cloud credentials, or use a separate EncryptedSharedPreferences instance. At minimum,
+  document the risk to users in the settings UI.
+Effort: LOW
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[MEDIUM] — F-028: OAuth callback does not validate state parameter for GitHub flow
+Section: §C1 — Authentication & Authorization
+Finding: OAuthHelper.kt:241-246 — parseCallbackCode() extracts the `code` parameter
+  from the callback URI but does NOT validate the `state` parameter. For the GitHub
+  OAuth flow, the `state` parameter is stored as `pendingCodeVerifier` (line 114) and
+  sent in the authorization URL (line 120), but when the callback arrives, the state
+  is never compared against the stored value.
+  This omission allows a CSRF attack: a malicious app could craft a deep link
+  `filecleaner://oauth/callback?code=ATTACKER_CODE` and trick the app into exchanging
+  an attacker-controlled authorization code, potentially linking the user's account
+  to the attacker's GitHub account.
+Why it matters: CSRF protection is a core security requirement of the OAuth 2.0
+  specification (RFC 6749 §10.12). Without state validation, the OAuth flow is
+  vulnerable to authorization code injection.
+Recommendation: In parseCallbackCode() or exchangeCodeForToken(), validate that
+  uri.getQueryParameter("state") matches pendingCodeVerifier before proceeding
+  with the code exchange.
+Effort: LOW
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[LOW] — F-029: GoogleDriveProvider retains access token in connection object indefinitely
+Section: §C1 — Authentication & Authorization
+Finding: GoogleDriveProvider.kt:35 — `private val accessToken: String get() = connection.authToken`
+  The access token is retained in the CloudConnection object for the lifetime of the
+  provider instance. Unlike SftpProvider (which clears credentials after connect at
+  line 82) and WebDavProvider (which caches auth header and clears raw credentials at
+  line 76), GoogleDriveProvider keeps the raw token accessible indefinitely.
+  If the provider instance is retained in memory (e.g., in a ViewModel or fragment),
+  the token remains exposed to memory dumps.
+Why it matters: Inconsistent credential hygiene across providers. OAuth access tokens
+  typically expire after 1 hour (Google) so the exposure window is limited.
+Recommendation: Apply the same credential-clearing pattern used by SftpProvider and
+  WebDavProvider: cache the auth header on connect, then clear connection.authToken.
+Effort: LOW
+Confidence: MEDIUM — Source: [CODE]
+```
+
+### Step 3.2 — §C2: Injection & XSS
+
+```
+[MEDIUM] — F-030: GitHub API URL constructed with unsanitized remotePath — path injection
+Section: §C2 — Injection
+Finding: GitHubProvider.kt:57-65 — The remotePath is split and directly interpolated
+  into GitHub API URLs without URL-encoding:
+  `"https://api.github.com/repos/$owner/$repo/contents/$path"`
+  If a malicious server returns a file listing with a crafted `path` containing URL
+  special characters (e.g., `../` or `?inject=true`), the constructed URL could be
+  manipulated to target unintended API endpoints.
+  Similarly, GoogleDriveProvider.kt:73 interpolates folderId into a query string:
+  `val query = URLEncoder.encode("'$folderId' in parents and trashed=false", "UTF-8")`
+  — this IS properly encoded but the folderId could contain single quotes that break
+  the Google Drive query syntax, causing unexpected API behavior.
+Why it matters: Path injection in API calls could leak data from other repos or
+  cause unexpected API responses. The attack surface requires a compromised or
+  malicious cloud provider, which is an elevated risk for user-configured servers.
+Recommendation: URL-encode path components in GitHubProvider using
+  URLEncoder.encode(segment, "UTF-8") for each path segment. For GoogleDriveProvider,
+  escape single quotes in folderId before embedding in the query.
+Effort: LOW
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[MEDIUM] — F-031: WebDavProvider remotePath directly concatenated into URLs
+Section: §C2 — Injection
+Finding: WebDavProvider.kt:131 — `URL("$baseUrl$remotePath")` directly concatenates
+  the remotePath (which comes from server responses) into URLs. A malicious WebDAV
+  server could return hrefs containing `/../../../` sequences or authority-rewriting
+  characters (e.g., `@evil.com/`) that could redirect requests to a different host.
+  The PROPFIND response parsing at line 269-270 URL-decodes the href but does not
+  validate that it stays within the expected base URL.
+Why it matters: A malicious WebDAV server could redirect the client to make requests
+  to arbitrary URLs, potentially leaking the cached Basic Auth credentials (which are
+  sent with every request at line 99, 134, 159, 184, 205) to an attacker-controlled
+  server.
+Recommendation: Validate that constructed URLs resolve to the same host as baseUrl
+  before making requests. Use `URL(baseUrl).host == URL(constructed).host` check.
+  Consider using URI resolution instead of string concatenation.
+Effort: MEDIUM
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[POSITIVE VERIFICATION] — FileOperationService path traversal protection
+FileOperationService.kt — extractArchive() validates canonical paths to prevent ZIP
+slip attacks. moveFile() and copyFile() use File.canonicalPath for validation.
+```
+
+### Step 3.3 — §C3: Prototype Pollution & Import Safety
+
+Not applicable to Android/Kotlin (no prototype chain, no dynamic imports).
+
+**Result: N/A**
+
+### Step 3.4 — §C4: Network & Dependencies
+
+```
+[POSITIVE VERIFICATION] — Network security config enforces HTTPS
+network_security_config.xml — `cleartextTrafficPermitted="false"` enforces HTTPS for
+all network connections. Only system trust anchors are used (no custom CA pinning that
+could be bypassed). This is correct for a general-purpose app.
+```
+
+```
+[POSITIVE VERIFICATION] — WebDavProvider enforces HTTPS upgrade
+WebDavProvider.kt:38-44 — The baseUrl getter automatically upgrades `http://` URLs
+to `https://`, preventing cleartext Basic Auth credential transmission.
+```
+
+```
+[LOW] — F-032: JSch TOFU host key verification accepts all new hosts without user confirmation
+Section: §C4 — Network & Dependencies
+Finding: SftpProvider.kt:65-67 — The UserInfo.promptYesNo() implementation auto-accepts
+  all new host keys (`return message?.contains("has changed") == false`). While it
+  correctly rejects changed keys (potential MITM), the initial connection to any new
+  server is automatically trusted without showing the user a fingerprint confirmation
+  dialog.
+  True TOFU should present the fingerprint on first connection and let the user verify.
+  The current implementation is "TOFU without the verification" — it stores the key but
+  never gives the user a chance to reject it on first use.
+Why it matters: An attacker who intercepts the very first connection to a new server
+  can perform MITM without detection. After the first connection, changed keys are
+  correctly rejected.
+Recommendation: Show a dialog with the server fingerprint on first connection and
+  let the user accept or reject. Only auto-accept if the user has explicitly opted
+  into "trust all new servers."
+Effort: MEDIUM
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[LOW] — F-033: CrashReporter uploads crash reports to user-configured GitHub repo without TLS pinning
+Section: §C4 — Network & Dependencies
+Finding: CrashReporter.kt:161 — Crash reports (which include stack traces with file
+  paths and device info) are uploaded to a user-configured GitHub repo via the GitHub
+  REST API. The URL is constructed from `UserPreferences.crashReportRepo` (default:
+  "WW-Andene/File-Cleaner-app"). If the user changes this to a malicious repo, crash
+  reports with device info go to an attacker.
+  However, this is user-configured and requires explicit opt-in (`crashReportingEnabled`
+  defaults to false at line 110). The real concern is that crash reports contain device
+  model, Android version, and stack traces which could reveal internal app paths.
+Why it matters: Low risk given opt-in requirement. The information disclosed (device
+  model, Android version, stack trace) is standard crash reporting data.
+Recommendation: Accept as-is. The opt-in requirement and user-configured repo provide
+  sufficient user agency.
+Effort: N/A
+Confidence: HIGH — Source: [CODE]
+```
+
+### Step 3.5 — §C5: Privacy & Data Minimization
+
+```
+[MEDIUM] — F-034: Crash reports include full stack traces with file paths — PII leakage
+Section: §C5 — Privacy & Data Minimization
+Finding: CrashReporter.kt:115-133 — Crash reports include device manufacturer, model,
+  Android version, and full stack traces. Stack traces can contain file paths from the
+  user's storage (e.g., if a crash occurs while processing a file with a personal name
+  in the path like "/storage/emulated/0/Documents/John_Medical_Records/report.pdf").
+  These reports are uploaded as public GitHub Issues (line 160-183), making them
+  visible to anyone who can view the repository.
+Why it matters: Public GitHub Issues containing device info and file paths constitute
+  inadvertent PII disclosure. The user may not realize their crash report will be
+  publicly visible when they enable crash reporting.
+Recommendation: (a) Warn users in the settings UI that crash reports are posted as
+  public GitHub Issues. (b) Strip file paths from stack traces (replace with
+  `<path-redacted>`) before uploading. (c) Consider making issues private via the
+  GitHub API if the repo supports it, or use a private reporting channel.
+Effort: MEDIUM
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[LOW] — F-035: ScanCache stores full file paths on disk without encryption
+Section: §C5 — Privacy & Data Minimization
+Finding: ScanCache.kt — The disk cache stores the complete path, size, extension,
+  category, and duplicate group for every scanned file in a JSON file in app-private
+  storage. While this is internal storage (not world-readable on non-rooted devices),
+  it persists for up to 30 days and could be extracted from device backups.
+  The app sets `android:allowBackup="false"` (AndroidManifest.xml:37), which correctly
+  prevents Google Drive auto-backup extraction.
+Why it matters: Minimal — allowBackup=false mitigates the primary backup extraction
+  vector. The 30-day expiry provides temporal mitigation.
+Recommendation: Accept as-is. The allowBackup=false and 30-day expiry provide
+  adequate protection for the sensitivity level of file paths.
+Effort: N/A
+Confidence: HIGH — Source: [CODE]
+```
+
+### Step 3.6 — §C6: Compliance & Legal
+
+```
+[LOW] — F-036: MANAGE_EXTERNAL_STORAGE usage is properly justified but privacy notice is dismissable
+Section: §C6 — Compliance & Legal
+Finding: AndroidManifest.xml:23 — MANAGE_EXTERNAL_STORAGE is correctly documented with
+  a justification comment (F-C6-02). The app shows a privacy notice dialog
+  (hasSeenPrivacyNotice at UserPreferences.kt:103-105) which the user must dismiss.
+  However, the privacy notice is shown once and never again — if the user dismisses it
+  quickly without reading, they can't revisit it from Settings.
+Why it matters: Minor UX/compliance gap — users should be able to review the privacy
+  notice at any time from Settings.
+Recommendation: Add a "Privacy Notice" option in Settings that re-shows the dialog.
+Effort: LOW
+Confidence: MEDIUM — Source: [CODE]
+```
+
+### Step 3.7 — §C7: Mobile-Specific Security
+
+```
+[HIGH] — F-037: OAuth deep link scheme "filecleaner://" can be hijacked by malicious apps
+Section: §C7 — Mobile-Specific Security
+Finding: AndroidManifest.xml:64-72 — The OAuth callback uses a custom URI scheme
+  `filecleaner://oauth/callback`. On Android, custom URI schemes are NOT exclusive —
+  any app can register an intent filter for the same scheme and potentially intercept
+  the OAuth callback, stealing the authorization code.
+  Additionally, the legacy scheme `com.filecleaner.app://oauth2callback` (line 60-62)
+  is also registered. Two competing intent filters increase the attack surface.
+  Android App Links (HTTPS-based verified deep links) are the secure alternative, as
+  they require domain ownership verification and are exclusive to the verified app.
+Why it matters: Authorization code theft via deep link hijacking is a known Android
+  attack vector (OWASP MSTG-AUTH-009). A malicious app installed on the same device
+  could intercept the OAuth callback and use the stolen code to obtain the user's
+  access token. PKCE mitigates this partially (the attacker would also need the code
+  verifier), but the code verifier is in the same process and PKCE was designed for
+  public clients, not as a defense against app impersonation.
+Recommendation: Migrate to Android App Links (https://yourdomain.com/.well-known/
+  assetlinks.json) for the OAuth redirect URI. This requires a web domain but
+  provides cryptographic verification of the redirect target. As a shorter-term fix,
+  validate the calling package in the intent if possible.
+Effort: HIGH
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[MEDIUM] — F-038: ScanService exported=false but static state accessible across processes
+Section: §C7 — Mobile-Specific Security
+Finding: ScanService.kt:31-40 — While the service is correctly declared as
+  `android:exported="false"` (AndroidManifest.xml:77), its scan results are communicated
+  via static `@Volatile` fields on the companion object. These fields are process-local
+  and thread-safe for single-process apps. However, if the service ever runs in a
+  separate process (via `android:process`), the static fields would be in a different
+  JVM and inaccessible from the fragment.
+  The immediate concern is the lack of atomicity across multiple volatile fields (already
+  reported as F-009 in Phase 1). The security concern is that scan results (which
+  include file paths and threat assessments) are held in static fields indefinitely
+  after scan completion — they're cleared only when a new scan starts or the service
+  is destroyed.
+Why it matters: Minor — the service is single-process and not exported. The static
+  field retention is a code quality issue more than a security issue.
+Recommendation: Clear scanResults when the fragment reads them (consume-on-read
+  pattern) to minimize the window of static data retention.
+Effort: LOW
+Confidence: MEDIUM — Source: [CODE]
+```
+
+```
+[POSITIVE VERIFICATION] — PendingIntent uses FLAG_IMMUTABLE
+ScanService.kt:184,192 — All PendingIntents use FLAG_IMMUTABLE, preventing intent
+modification by other apps. This is correct for Android 12+ (API 31) compatibility.
+```
+
+```
+[POSITIVE VERIFICATION] — FileProvider configured correctly
+AndroidManifest.xml:80-88 — FileProvider is not exported (`exported="false"`) and uses
+`grantUriPermissions="true"` for controlled access. This follows security best practices.
+```
+
+```
+[POSITIVE VERIFICATION] — allowBackup="false"
+AndroidManifest.xml:37 — Backup is disabled, preventing extraction of cached data,
+preferences, and credentials from Google Drive backup or ADB.
+```
+
+```
+[POSITIVE VERIFICATION] — Credential clearing after authentication
+SftpProvider.kt:82 — Clears authToken from connection after connect.
+WebDavProvider.kt:76 — Caches auth header and clears username+authToken after connect.
+Both providers minimize the window of raw credential exposure in memory.
+```
+
+---
+
+### Phase 3 Summary
+
+| Step | Findings | CRIT | HIGH | MED | LOW |
+|------|----------|------|------|-----|-----|
+| §C1 — Auth & Authorization | 3 | 0 | 1 | 1 | 1 |
+| §C2 — Injection | 2 | 0 | 0 | 2 | 0 |
+| §C3 — Import Safety | 0 (N/A) | 0 | 0 | 0 | 0 |
+| §C4 — Network & Dependencies | 2 | 0 | 0 | 0 | 2 |
+| §C5 — Privacy & Data Minimization | 2 | 0 | 0 | 1 | 1 |
+| §C6 — Compliance & Legal | 1 | 0 | 0 | 0 | 1 |
+| §C7 — Mobile-Specific Security | 2 | 0 | 1 | 1 | 0 |
+| **TOTAL** | **12** | **0** | **2** | **5** | **5** |
+
+### Positive Verifications (Phase 3)
+
+1. **FileOperationService path traversal protection** — canonical path validation for ZIP extraction [CODE]
+2. **Network security config enforces HTTPS** — cleartextTrafficPermitted="false" [CODE]
+3. **WebDavProvider HTTPS upgrade** — auto-upgrades http:// to https:// [CODE]
+4. **PendingIntent FLAG_IMMUTABLE** — prevents intent modification on Android 12+ [CODE]
+5. **FileProvider not exported** — controlled access via grantUriPermissions [CODE]
+6. **allowBackup="false"** — prevents credential/data extraction from backups [CODE]
+7. **Credential clearing after auth** — SftpProvider and WebDavProvider clear raw credentials [CODE]
+8. **ScanService not exported** — foreground service not accessible to other apps [CODE]
+9. **EncryptedSharedPreferences for cloud credentials** — AES256_GCM encryption [CODE]
+10. **OAuth PKCE implementation** — proper S256 code challenge with SecureRandom [CODE]
+
+---
+
+**Phase 3 is complete.**
+
+**Cumulative findings: Phase 1 + Phase 2 + Phase 3**
+
+| Severity | Phase 1 | Phase 2 | Phase 3 | Total |
+|----------|---------|---------|---------|-------|
+| CRITICAL | 0 | 0 | 0 | 0 |
+| HIGH | 1 | 0 | 2 | 3 |
+| MEDIUM | 6 | 2 | 5 | 13 |
+| LOW | 11 | 6 | 5 | 22 |
+| **Total** | **18** | **8** | **12** | **38** |
+
+**Next: Phase 4 — Performance & Efficiency (Category D)**
+
+Awaiting confirmation to proceed with Phase 4, or to fix findings from Phase 1/2/3.
