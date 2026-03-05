@@ -136,12 +136,12 @@
         <item name="hintTextColor">@color/colorPrimary</item>
     </style>
 
-    <!-- Card style — subtle elevation for depth -->
+    <!-- Card style — subtle elevation for depth, focus-aware stroke for keyboard nav -->
     <style name="Widget.FileCleaner.Card" parent="Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">@dimen/radius_card</item>
         <item name="cardElevation">@dimen/elevation_subtle</item>
         <item name="strokeWidth">@dimen/stroke_default</item>
-        <item name="strokeColor">@color/borderSubtle</item>
+        <item name="strokeColor">@color/card_stroke_color</item>
         <item name="cardBackgroundColor">@color/surfaceColor</item>
     </style>
 

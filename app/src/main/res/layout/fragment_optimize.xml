@@ -189,7 +189,8 @@
             android:paddingVertical="@dimen/spacing_sm"
             android:textAppearance="@style/TextAppearance.FileCleaner.Body"
             android:textColor="@color/textSecondary"
-            android:accessibilityLiveRegion="polite" />
+            android:accessibilityLiveRegion="polite"
+            android:importantForAccessibility="yes" />
 
         <!-- Suggestions list -->
         <androidx.recyclerview.widget.RecyclerView
@@ -286,7 +287,8 @@
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                 android:textColor="@color/textOnPrimary"
-                android:accessibilityLiveRegion="polite" />
+                android:accessibilityLiveRegion="polite"
+                android:importantForAccessibility="yes" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_clear_selection"
