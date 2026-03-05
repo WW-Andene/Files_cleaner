@@ -77,26 +77,26 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="no_files_found">Ricky hasn\'t sniffed out any files yet.\nHead to the Manager tab to start a scan!</string>
+    <string name="no_files_found">Ricky hasn\'t sniffed out any files yet.</string>
     <string name="nothing_found">Nothing in the den yet!\nLet Ricky scan your storage first.</string>
     <string name="scan_to_see_results">Let Ricky rummage through your storage to see what\'s here</string>
 
     <!-- Context-aware empty states (Browse) -->
-    <string name="empty_browse_pre_scan">Ricky needs to scout your storage first!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_browse_pre_scan">Ricky needs to scout your storage first!</string>
     <string name="empty_browse_post_scan">Ricky peeked everywhere but found nothing.\nTry a different category or clear the search.</string>
     <string name="empty_search_results">Ricky searched high and low \u2014 no results for \"%s\"</string>
 
     <!-- Context-aware empty states (Tree) -->
-    <string name="empty_tree_pre_scan">Ricky needs scan data to build the tree!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_tree_pre_scan">Ricky needs scan data to build the tree!</string>
     <string name="empty_tree_post_scan">The tree is bare \u2014 no files to display here.</string>
     <string name="browsing_folder">Browsing %s</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
-    <string name="empty_junk_pre_scan">Ricky is ready to sniff out junk!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_junk_pre_scan">Ricky is ready to sniff out junk!</string>
     <string name="empty_junk_post_scan">Squeaky clean! Ricky found zero junk. Your storage is spotless.</string>
-    <string name="empty_large_pre_scan">Ricky wants to hunt for space hogs!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_large_pre_scan">Ricky wants to hunt for space hogs!</string>
     <string name="empty_large_post_scan">No big files lurking around \u2014 Ricky approves of your tidy storage!</string>
-    <string name="empty_duplicates_pre_scan">Ricky is eager to catch copycats!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_duplicates_pre_scan">Ricky is eager to catch copycats!</string>
     <string name="empty_duplicates_post_scan">No duplicates spotted! Every file is one-of-a-kind.</string>
 
     <!-- Sort options -->
@@ -933,7 +933,7 @@
     <!-- Optimize enhancements -->
     <string name="optimize_reanalyze">Re-analyze</string>
     <string name="optimize_analyzing">Ricky is analyzing your files\u2026</string>
-    <string name="optimize_no_scan_data">Ricky needs scan data to suggest optimizations.\nHead to the Manager tab and tap Scan Storage.</string>
+    <string name="optimize_no_scan_data">Ricky needs scan data to suggest optimizations.</string>
     <string name="optimize_total_reorganize_size">%1$d files totaling %2$s can be reorganized</string>
 
     <!-- Cloud OAuth -->
