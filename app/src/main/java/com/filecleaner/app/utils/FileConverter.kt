@@ -17,13 +17,15 @@ import java.io.InputStreamReader
  * Format conversion utilities using only Android SDK APIs (no external dependencies).
  *
  * Supported conversions:
- * - Image -> Image (PNG, JPG, WEBP, BMP)
+ * - Image -> Image (PNG, JPG, WEBP lossy, WEBP lossless, BMP)
+ * - Image resize (fit within max dimensions, preserving aspect ratio)
  * - Image(s) -> PDF
  * - PDF -> Images (PNG or JPG per page)
  * - Text/Code/CSV/Markdown -> PDF
- * - Video -> Thumbnail image (PNG/JPG)
- * - Video -> Frame series extraction
- * - Audio -> Extract album art image
+ * - Video -> Thumbnail image at a chosen timestamp
+ * - Video -> Key-frame series (evenly spaced across duration)
+ * - Audio -> Extract embedded album art
+ * - CSV -> Formatted text table
  */
 object FileConverter {
 
@@ -86,14 +88,18 @@ object FileConverter {
     private fun writeBmp(bitmap: Bitmap, outputFile: File) {
         val w = bitmap.width
         val h = bitmap.height
-        val rowSize = ((24 * w + 31) / 32) * 4
+        val rowSize = ((24L * w + 31) / 32) * 4
         val imageSize = rowSize * h
         val fileSize = 54 + imageSize
+
+        if (fileSize > Int.MAX_VALUE) {
+            throw IllegalArgumentException("Image too large for BMP format (${w}x${h})")
+        }
 
         outputFile.outputStream().buffered().use { out ->
             // BMP header
             out.write(byteArrayOf('B'.code.toByte(), 'M'.code.toByte()))
-            out.write(intToBytes(fileSize))
+            out.write(intToBytes(fileSize.toInt()))
             out.write(intToBytes(0)) // reserved
             out.write(intToBytes(54)) // offset
 
@@ -104,14 +110,14 @@ object FileConverter {
             out.write(shortToBytes(1)) // planes
             out.write(shortToBytes(24)) // bits per pixel
             out.write(intToBytes(0)) // compression
-            out.write(intToBytes(imageSize))
+            out.write(intToBytes(imageSize.toInt()))
             out.write(intToBytes(2835)) // h resolution
             out.write(intToBytes(2835)) // v resolution
             out.write(intToBytes(0)) // colors
             out.write(intToBytes(0)) // important colors
 
             // Pixel data (bottom-up)
-            val row = ByteArray(rowSize)
+            val row = ByteArray(rowSize.toInt())
             for (y in h - 1 downTo 0) {
                 row.fill(0)
                 for (x in 0 until w) {
@@ -137,7 +143,7 @@ object FileConverter {
         ((value shr 8) and 0xFF).toByte()
     )
 
-    /** Resize an image to specified dimensions. */
+    /** Resize an image to fit within maxWidth x maxHeight, preserving aspect ratio. */
     fun resizeImage(inputPath: String, maxWidth: Int, maxHeight: Int, outputFormat: ImageFormat, quality: Int = 90): ConvertResult {
         return try {
             val src = File(inputPath)
@@ -151,8 +157,8 @@ object FileConverter {
                 val ratioW = maxWidth.toFloat() / original.width
                 val ratioH = maxHeight.toFloat() / original.height
                 val ratio = minOf(ratioW, ratioH, 1f)
-                val newW = (original.width * ratio).toInt()
-                val newH = (original.height * ratio).toInt()
+                val newW = (original.width * ratio).toInt().coerceAtLeast(1)
+                val newH = (original.height * ratio).toInt().coerceAtLeast(1)
 
                 resized = Bitmap.createScaledBitmap(original, newW, newH, true)
 
@@ -164,7 +170,6 @@ object FileConverter {
 
                 ConvertResult(true, outputFile.absolutePath, "Resized to ${newW}x${newH}")
             } finally {
-                // Only recycle resized if it's a different object than original
                 if (resized != null && resized !== original) resized.recycle()
                 original.recycle()
             }
@@ -255,16 +260,23 @@ object FileConverter {
     // TEXT / DOCUMENT -> PDF
     // =========================================================================
 
-    /** Convert a text file to PDF (monospace rendering). */
+    /** Convert a text file to PDF (monospace rendering, A4 pages). */
+    private const val MAX_TEXT_TO_PDF_BYTES = 10L * 1024 * 1024 // 10 MB
+
     fun textToPdf(inputPath: String, outputPath: String, fontSize: Float = 10f): ConvertResult {
         val src = File(inputPath)
         if (!src.exists()) return ConvertResult(false, "", "Source file not found")
+        if (src.length() > MAX_TEXT_TO_PDF_BYTES) {
+            return ConvertResult(false, "", "File too large (max ${MAX_TEXT_TO_PDF_BYTES / 1024 / 1024} MB)")
+        }
 
         val doc = PdfDocument()
         return try {
             val lines = BufferedReader(InputStreamReader(src.inputStream(), Charsets.UTF_8)).use {
                 it.readLines()
             }
+
+            if (lines.isEmpty()) return ConvertResult(false, "", "Source file is empty")
 
             val paint = Paint().apply {
                 typeface = Typeface.MONOSPACE
@@ -303,7 +315,7 @@ object FileConverter {
 
             File(outputPath).outputStream().buffered().use { doc.writeTo(it) }
 
-            ConvertResult(true, outputPath, "Created ${File(outputPath).name} ($pageNum pages)")
+            ConvertResult(true, outputPath, "Created ${File(outputPath).name} (${pageNum - 1} pages)")
         } catch (e: Exception) {
             ConvertResult(false, "", "Text to PDF failed: ${e.localizedMessage}")
         } finally {
@@ -318,14 +330,11 @@ object FileConverter {
             if (!src.exists()) return ConvertResult(false, "", "Source file not found")
 
             val rows = src.bufferedReader(Charsets.UTF_8).use { reader ->
-                reader.readLines().map { line ->
-                    parseCsvLine(line, delimiter)
-                }
+                reader.readLines().map { line -> parseCsvLine(line, delimiter) }
             }
 
             if (rows.isEmpty()) return ConvertResult(false, "", "CSV file is empty")
 
-            // Calculate column widths
             val colCount = rows.maxOf { it.size }
             val colWidths = IntArray(colCount)
             for (row in rows) {
@@ -341,10 +350,9 @@ object FileConverter {
                     sb.append(cell.padEnd(colWidths[i] + 2))
                 }
                 sb.appendLine()
-                // Separator after header
                 if (rowIndex == 0) {
                     for (i in 0 until colCount) {
-                        sb.append("─".repeat(colWidths[i] + 2))
+                        sb.append("\u2500".repeat(colWidths[i] + 2))
                     }
                     sb.appendLine()
                 }
@@ -361,15 +369,26 @@ object FileConverter {
         val cells = mutableListOf<String>()
         var current = StringBuilder()
         var inQuotes = false
-        for (ch in line) {
+        var i = 0
+        while (i < line.length) {
+            val ch = line[i]
             when {
-                ch == '"' -> inQuotes = !inQuotes
+                ch == '"' -> {
+                    if (inQuotes && i + 1 < line.length && line[i + 1] == '"') {
+                        // RFC 4180: escaped quote ("") -> literal quote
+                        current.append('"')
+                        i++ // skip the second quote
+                    } else {
+                        inQuotes = !inQuotes
+                    }
+                }
                 ch == delimiter && !inQuotes -> {
                     cells.add(current.toString().trim())
                     current = StringBuilder()
                 }
                 else -> current.append(ch)
             }
+            i++
         }
         cells.add(current.toString().trim())
         return cells
@@ -379,37 +398,81 @@ object FileConverter {
     // VIDEO CONVERSIONS
     // =========================================================================
 
-    /** Extract a thumbnail frame from a video file. */
-    fun videoToThumbnail(inputPath: String, outputFormat: ImageFormat = ImageFormat.PNG, quality: Int = 90, timeUs: Long = 0): ConvertResult {
+    /**
+     * Get the duration of a video file in milliseconds.
+     * Returns -1 if the duration cannot be determined.
+     */
+    fun getVideoDurationMs(inputPath: String): Long {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(inputPath)
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: -1L
+        } catch (_: Exception) {
+            -1L
+        } finally {
+            try { retriever.release() } catch (_: Exception) {}
+        }
+    }
+
+    /**
+     * Extract a single frame from a video at a specific timestamp.
+     *
+     * @param inputPath  path to the video file
+     * @param timeMs     timestamp in milliseconds (0 = first frame)
+     * @param outputFormat image format for the extracted frame
+     * @param quality    compression quality (1-100, only affects JPG/WEBP)
+     */
+    fun extractFrameAtTime(
+        inputPath: String,
+        timeMs: Long = 0,
+        outputFormat: ImageFormat = ImageFormat.PNG,
+        quality: Int = 90
+    ): ConvertResult {
         val src = File(inputPath)
         if (!src.exists()) return ConvertResult(false, "", "Source file not found")
 
         val retriever = MediaMetadataRetriever()
         return try {
             retriever.setDataSource(inputPath)
+            val timeUs = timeMs * 1000
             val bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                 ?: retriever.getFrameAtTime(0)
                 ?: return ConvertResult(false, "", "Cannot extract frame from video")
 
             try {
                 val ext = if (outputFormat == ImageFormat.WEBP_LOSSLESS) "webp" else outputFormat.extension
-                val outputFile = File(src.parent, "${src.nameWithoutExtension}_thumb.$ext")
+                val timeSuffix = formatTimeSuffix(timeMs)
+                val outputFile = File(src.parent, "${src.nameWithoutExtension}_frame_${timeSuffix}.$ext")
                 outputFile.outputStream().buffered().use { out ->
                     bitmap.compress(outputFormat.compressFormat, quality, out)
                 }
-                ConvertResult(true, outputFile.absolutePath, "Thumbnail: ${outputFile.name}")
+                ConvertResult(true, outputFile.absolutePath, "Frame at ${formatTimeDisplay(timeMs)}: ${outputFile.name}")
             } finally {
                 bitmap.recycle()
             }
         } catch (e: Exception) {
-            ConvertResult(false, "", "Thumbnail extraction failed: ${e.localizedMessage}")
+            ConvertResult(false, "", "Frame extraction failed: ${e.localizedMessage}")
         } finally {
             try { retriever.release() } catch (_: Exception) {}
         }
     }
 
-    /** Extract multiple frames from video as a series of images. */
-    fun videoToFrames(inputPath: String, outputDir: String, frameCount: Int = 10, outputFormat: ImageFormat = ImageFormat.JPG, quality: Int = 85): ConvertResult {
+    /**
+     * Extract evenly-spaced key frames from a video.
+     *
+     * @param inputPath    path to the video file
+     * @param outputDir    directory to store extracted frames
+     * @param frameCount   number of frames to extract (evenly spaced across duration)
+     * @param outputFormat image format for the extracted frames
+     * @param quality      compression quality
+     */
+    fun extractKeyFrames(
+        inputPath: String,
+        outputDir: String,
+        frameCount: Int = 10,
+        outputFormat: ImageFormat = ImageFormat.JPG,
+        quality: Int = 85
+    ): ConvertResult {
         val src = File(inputPath)
         if (!src.exists()) return ConvertResult(false, "", "Source file not found")
 
@@ -422,11 +485,12 @@ object FileConverter {
             val durationMs = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
                 ?: return ConvertResult(false, "", "Cannot determine video duration")
             val durationUs = durationMs * 1000
-            val interval = durationUs / frameCount.coerceAtLeast(1)
+            val count = frameCount.coerceAtLeast(1)
+            val interval = if (count == 1) durationUs / 2 else durationUs / count
 
             var extracted = 0
-            for (i in 0 until frameCount) {
-                val timeUs = interval * i
+            for (i in 0 until count) {
+                val timeUs = if (count == 1) interval else interval * i
                 val bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                     ?: continue
                 try {
@@ -441,12 +505,28 @@ object FileConverter {
                 }
             }
 
-            ConvertResult(true, outDir.absolutePath, "Extracted $extracted frames to ${outDir.name}/")
+            ConvertResult(true, outDir.absolutePath, "Extracted $extracted key frames to ${outDir.name}/")
         } catch (e: Exception) {
             ConvertResult(false, "", "Frame extraction failed: ${e.localizedMessage}")
         } finally {
             try { retriever.release() } catch (_: Exception) {}
         }
+    }
+
+    /** Format milliseconds as a filename-safe suffix, e.g. "1m30s". */
+    private fun formatTimeSuffix(ms: Long): String {
+        val totalSec = ms / 1000
+        val min = totalSec / 60
+        val sec = totalSec % 60
+        return if (min > 0) "${min}m${sec}s" else "${sec}s"
+    }
+
+    /** Format milliseconds for display, e.g. "1:30". */
+    fun formatTimeDisplay(ms: Long): String {
+        val totalSec = ms / 1000
+        val min = totalSec / 60
+        val sec = totalSec % 60
+        return "%d:%02d".format(min, sec)
     }
 
     // =========================================================================
@@ -473,7 +553,7 @@ object FileConverter {
                 outputFile.outputStream().buffered().use { out ->
                     bitmap.compress(outputFormat.compressFormat, quality, out)
                 }
-                ConvertResult(true, outputFile.absolutePath, "Album art: ${outputFile.name}")
+                ConvertResult(true, outputFile.absolutePath, "Album art saved: ${outputFile.name}")
             } finally {
                 bitmap.recycle()
             }

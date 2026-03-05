@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- §DC4: Bottom navigation ripple — unbounded circular ripple with brand-tinted color.
+     Unbounded so the ripple naturally expands from the tap point without clipping. -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/statePressed" />

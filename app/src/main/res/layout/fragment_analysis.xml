@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surfaceBase"
+    android:clipToPadding="false"
+    android:paddingBottom="@dimen/spacing_above_nav"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ═══ Empty state (shown before scan) ═══ -->
+        <include
+            android:id="@+id/empty_state"
+            layout="@layout/include_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- ═══ Content (shown after scan) ═══ -->
+        <LinearLayout
+            android:id="@+id/content_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- ──── Storage Overview Card ──── -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.FileCleaner.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:contentDescription="@string/a11y_storage_overview_card"
+                app:cardCornerRadius="@dimen/radius_header"
+                app:cardElevation="@dimen/elevation_raised"
+                app:cardBackgroundColor="@color/colorPrimaryContainer"
+                app:strokeWidth="@dimen/stroke_none">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_xl">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/analysis_storage_overview"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/colorOnPrimaryContainer"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:id="@+id/tv_storage_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
+                        android:textColor="@color/colorOnPrimaryContainer"
+                        android:accessibilityLiveRegion="polite" />
+
+                    <TextView
+                        android:id="@+id/tv_storage_free"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                        android:textColor="@color/textSecondary" />
+
+                    <!-- Storage bar -->
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/spacing_md"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:background="@drawable/bg_storage_bar_track"
+                        android:contentDescription="@string/a11y_storage_bar"
+                        android:importantForAccessibility="yes"
+                        android:accessibilityLiveRegion="polite">
+
+                        <View
+                            android:id="@+id/view_storage_bar_fill"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_storage_bar_fill"
+                            android:importantForAccessibility="no" />
+                    </FrameLayout>
+
+                    <!-- Segmented color bar showing per-category usage -->
+                    <LinearLayout
+                        android:id="@+id/layout_segmented_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/spacing_sm"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:orientation="horizontal"
+                        android:background="@drawable/bg_storage_bar_track"
+                        android:clipChildren="true"
+                        android:clipToOutline="true"
+                        android:contentDescription="@string/a11y_segmented_bar"
+                        android:importantForAccessibility="yes" />
+
+                    <TextView
+                        android:id="@+id/tv_total_files"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+                        android:textColor="@color/colorOnPrimaryContainer"
+                        android:alpha="@dimen/alpha_raccoon_logo"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
+
+                    <!-- Potential savings banner -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_savings"
+                        style="@style/Widget.FileCleaner.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        app:cardCornerRadius="@dimen/radius_sm"
+                        app:cardElevation="@dimen/elevation_none"
+                        app:cardBackgroundColor="@color/analysisSavingsBackground"
+                        app:strokeWidth="@dimen/stroke_none"
+                        android:contentDescription="@string/a11y_potential_savings"
+                        android:accessibilityLiveRegion="polite"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/tv_savings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/spacing_sm"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
+                            android:textColor="@color/analysisSavingsText"
+                            android:drawablePadding="@dimen/spacing_sm" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ──── Quick Actions Row ──── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_xl"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="@string/analysis_quick_actions"
+                android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+                android:accessibilityHeading="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="@dimen/spacing_md"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:baselineAligned="false">
+
+                <!-- Junk card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_junk"
+                    style="@style/Widget.FileCleaner.Card"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    android:foreground="@drawable/ripple_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false"
+                    android:nextFocusRight="@id/card_large"
+                    android:contentDescription="@string/a11y_quick_action_junk">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/emoji_trash"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_chip"
+                            android:text="@string/analysis_quick_junk"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium" />
+
+                        <TextView
+                            android:id="@+id/tv_junk_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_micro"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:accessibilityLiveRegion="polite" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Large files card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_large"
+                    style="@style/Widget.FileCleaner.Card"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    android:foreground="@drawable/ripple_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false"
+                    android:nextFocusLeft="@id/card_junk"
+                    android:nextFocusRight="@id/card_duplicates"
+                    android:contentDescription="@string/a11y_quick_action_large">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/emoji_folder"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_chip"
+                            android:text="@string/analysis_quick_large"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium" />
+
+                        <TextView
+                            android:id="@+id/tv_large_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_micro"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:accessibilityLiveRegion="polite" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Duplicates card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_duplicates"
+                    style="@style/Widget.FileCleaner.Card"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    android:foreground="@drawable/ripple_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false"
+                    android:nextFocusLeft="@id/card_large"
+                    android:contentDescription="@string/a11y_quick_action_duplicates">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/emoji_refresh"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Emoji"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_chip"
+                            android:text="@string/analysis_quick_duplicates"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium" />
+
+                        <TextView
+                            android:id="@+id/tv_duplicates_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_micro"
+                            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                            android:textColor="@color/textTertiary"
+                            android:maxLines="2"
+                            android:accessibilityLiveRegion="polite" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ──── Category Breakdown ──── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_xl"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="@string/analysis_category_breakdown"
+                android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+                android:accessibilityHeading="true" />
+
+            <LinearLayout
+                android:id="@+id/layout_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:accessibilityLiveRegion="polite" />
+
+            <!-- ──── Top 10 Largest Files ──── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="@dimen/spacing_xl"
+                android:layout_marginEnd="@dimen/spacing_xl"
+                android:layout_marginTop="@dimen/spacing_xl">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/analysis_top_files"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+                    android:accessibilityHeading="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/analysis_top_files_subtitle"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:textColor="@color/textTertiary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_top_files"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:accessibilityLiveRegion="polite" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

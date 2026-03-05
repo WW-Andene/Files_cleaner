@@ -3,14 +3,10 @@ package com.filecleaner.app.utils.antivirus
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import com.filecleaner.app.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.File
-import java.io.StringReader
-import java.net.ServerSocket
-import java.util.zip.ZipFile
 
 /**
  * Network security scanner.
@@ -70,34 +66,34 @@ object NetworkSecurityScanner {
             onProgress(0)
 
             // 1. Check for apps with cleartext traffic enabled
-            results.addAll(checkCleartextTraffic(pm))
+            results.addAll(checkCleartextTraffic(pm, context))
             onProgress(20)
 
             // 2. Check for INTERNET + sensitive data exfiltration risk
-            results.addAll(checkDataExfiltrationRisk(pm))
+            results.addAll(checkDataExfiltrationRisk(pm, context))
             onProgress(40)
 
             // 3. Check for traffic interception tools
-            results.addAll(checkInterceptTools(pm))
+            results.addAll(checkInterceptTools(pm, context))
             onProgress(60)
 
             // 4. Check for network attack tools
-            results.addAll(checkNetworkAttackTools(pm))
+            results.addAll(checkNetworkAttackTools(pm, context))
             onProgress(75)
 
             // 5. Check for suspicious listening ports
-            results.addAll(checkListeningPorts())
+            results.addAll(checkListeningPorts(context))
             onProgress(90)
 
             // 6. Check ADB over network (port 5555)
-            results.addAll(checkAdbNetwork())
+            results.addAll(checkAdbNetwork(context))
             onProgress(100)
 
             results
         }
 
     @Suppress("DEPRECATION")
-    private fun checkCleartextTraffic(pm: PackageManager): List<ThreatResult> {
+    private fun checkCleartextTraffic(pm: PackageManager, context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
         val packages = pm.getInstalledPackages(0)
 
@@ -111,8 +107,8 @@ object NetworkSecurityScanner {
                 val appName = pm.getApplicationLabel(appInfo).toString()
                 results.add(
                     ThreatResult(
-                        name = "Cleartext Traffic Allowed",
-                        description = "\"$appName\" targets Android ${appInfo.targetSdkVersion} and may allow unencrypted HTTP traffic, exposing data to interception.",
+                        name = context.getString(R.string.threat_net_cleartext_traffic),
+                        description = context.getString(R.string.threat_net_cleartext_traffic_desc, appName, appInfo.targetSdkVersion),
                         severity = ThreatResult.Severity.LOW,
                         source = ThreatResult.ScannerSource.NETWORK_SECURITY,
                         packageName = pkg.packageName,
@@ -121,15 +117,15 @@ object NetworkSecurityScanner {
                 )
             }
 
-            // Check for explicit usesCleartextTraffic in the manifest via networkSecurityConfig
+            // Check for explicit usesCleartextTraffic in the manifest via PackageManager
+            // Only for API >= 28 where the flag being set indicates explicit opt-in (avoids double-report)
             try {
-                val sourceDir = appInfo.sourceDir ?: continue
-                if (hasCleartextInManifest(sourceDir)) {
+                if (appInfo.targetSdkVersion >= 28 && hasCleartextInManifest(pkg.packageName, context)) {
                     val appName = pm.getApplicationLabel(appInfo).toString()
                     results.add(
                         ThreatResult(
-                            name = "Explicit Cleartext Traffic",
-                            description = "\"$appName\" explicitly enables cleartext HTTP traffic in its manifest.",
+                            name = context.getString(R.string.threat_net_explicit_cleartext),
+                            description = context.getString(R.string.threat_net_explicit_cleartext_desc, appName),
                             severity = ThreatResult.Severity.MEDIUM,
                             source = ThreatResult.ScannerSource.NETWORK_SECURITY,
                             packageName = pkg.packageName,
@@ -145,16 +141,15 @@ object NetworkSecurityScanner {
         return results
     }
 
-    private fun hasCleartextInManifest(apkPath: String): Boolean {
+    private fun hasCleartextInManifest(packageName: String, context: Context): Boolean {
+        // I3-05: Use PackageManager instead of parsing binary XML as text
         return try {
-            ZipFile(File(apkPath)).use { zip ->
-                val entry = zip.getEntry("AndroidManifest.xml") ?: return false
-                // Binary XML - we check the attribute in compiled form
-                // usesCleartextTraffic is attribute 0x01010506
-                val bytes = zip.getInputStream(entry).use { it.readBytes() }
-                // Simple heuristic: search for the string "usesCleartextTraffic" in string pool
-                val manifest = String(bytes, Charsets.UTF_8)
-                manifest.contains("usesCleartextTraffic", ignoreCase = true)
+            val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+            // FLAG_USES_CLEARTEXT_TRAFFIC is set when android:usesCleartextTraffic="true"
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                appInfo.flags and ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC != 0
+            } else {
+                false // Pre-M defaults to allowing cleartext
             }
         } catch (_: Exception) {
             false
@@ -162,13 +157,15 @@ object NetworkSecurityScanner {
     }
 
     @Suppress("DEPRECATION")
-    private fun checkDataExfiltrationRisk(pm: PackageManager): List<ThreatResult> {
+    private fun checkDataExfiltrationRisk(pm: PackageManager, context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
         val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
 
         for (pkg in packages) {
             val appInfo = pkg.applicationInfo ?: continue
             if (appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0) continue
+            // Don't flag this app itself
+            if (pkg.packageName == context.packageName) continue
 
             val requested = pkg.requestedPermissions ?: continue
             val hasInternet = "android.permission.INTERNET" in requested
@@ -181,8 +178,8 @@ object NetworkSecurityScanner {
                 val permNames = sensitiveMatches.map { it.substringAfterLast('.') }
                 results.add(
                     ThreatResult(
-                        name = "Data Exfiltration Risk",
-                        description = "\"$appName\" has internet access combined with ${sensitiveMatches.size} sensitive permissions (${permNames.joinToString(", ")}). This combination could enable data exfiltration.",
+                        name = context.getString(R.string.threat_net_data_exfiltration),
+                        description = context.getString(R.string.threat_net_data_exfiltration_desc, appName, sensitiveMatches.size, permNames.joinToString(", ")),
                         severity = ThreatResult.Severity.MEDIUM,
                         source = ThreatResult.ScannerSource.NETWORK_SECURITY,
                         packageName = pkg.packageName,
@@ -196,7 +193,7 @@ object NetworkSecurityScanner {
         return results
     }
 
-    private fun checkInterceptTools(pm: PackageManager): List<ThreatResult> {
+    private fun checkInterceptTools(pm: PackageManager, context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
 
         for (pkg in KNOWN_INTERCEPT_PACKAGES) {
@@ -205,8 +202,8 @@ object NetworkSecurityScanner {
                 val appName = pm.getApplicationLabel(info).toString()
                 results.add(
                     ThreatResult(
-                        name = "Traffic Interception Tool",
-                        description = "\"$appName\" ($pkg) can intercept and inspect network traffic. This could be used to capture passwords, tokens, and private data.",
+                        name = context.getString(R.string.threat_net_traffic_interception),
+                        description = context.getString(R.string.threat_net_traffic_interception_desc, appName, pkg),
                         severity = ThreatResult.Severity.HIGH,
                         source = ThreatResult.ScannerSource.NETWORK_SECURITY,
                         packageName = pkg,
@@ -222,7 +219,7 @@ object NetworkSecurityScanner {
         return results
     }
 
-    private fun checkNetworkAttackTools(pm: PackageManager): List<ThreatResult> {
+    private fun checkNetworkAttackTools(pm: PackageManager, context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
 
         for (pkg in NETWORK_ATTACK_TOOLS) {
@@ -231,8 +228,8 @@ object NetworkSecurityScanner {
                 val appName = pm.getApplicationLabel(info).toString()
                 results.add(
                     ThreatResult(
-                        name = "Network Attack Tool",
-                        description = "\"$appName\" ($pkg) is a network penetration/scanning tool. Its presence may indicate unauthorized network activity.",
+                        name = context.getString(R.string.threat_net_network_attack),
+                        description = context.getString(R.string.threat_net_network_attack_desc, appName, pkg),
                         severity = ThreatResult.Severity.MEDIUM,
                         source = ThreatResult.ScannerSource.NETWORK_SECURITY,
                         packageName = pkg,
@@ -247,7 +244,7 @@ object NetworkSecurityScanner {
         return results
     }
 
-    private fun checkListeningPorts(): List<ThreatResult> {
+    private fun checkListeningPorts(context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
 
         // Read /proc/net/tcp and /proc/net/tcp6 to find listening sockets
@@ -272,8 +269,8 @@ object NetworkSecurityScanner {
             val service = portToService(port)
             results.add(
                 ThreatResult(
-                    name = "Suspicious Listening Port",
-                    description = "Port $port ($service) is listening on this device. This is unusual for a mobile device and may indicate a backdoor or misconfigured service.",
+                    name = context.getString(R.string.threat_net_suspicious_port),
+                    description = context.getString(R.string.threat_net_suspicious_port_desc, port, service),
                     severity = if (port in listOf(4444, 5555, 1080)) ThreatResult.Severity.HIGH
                     else ThreatResult.Severity.MEDIUM,
                     source = ThreatResult.ScannerSource.NETWORK_SECURITY,
@@ -285,19 +282,19 @@ object NetworkSecurityScanner {
         return results
     }
 
-    private fun checkAdbNetwork(): List<ThreatResult> {
+    private fun checkAdbNetwork(context: Context): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
 
         // Check if ADB over TCP is active (port 5555)
         try {
-            val prop = Runtime.getRuntime().exec(arrayOf("getprop", "service.adb.tcp.port"))
+            val prop = ProcessBuilder("getprop", "service.adb.tcp.port").redirectErrorStream(true).start()
             val output = prop.inputStream.bufferedReader().readText().trim()
-            prop.waitFor()
+            if (!prop.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)) prop.destroyForcibly()
             if (output.isNotEmpty() && output != "-1" && output != "0") {
                 results.add(
                     ThreatResult(
-                        name = "ADB Over Network Enabled",
-                        description = "Android Debug Bridge is accessible over the network on port $output. Anyone on the same network can gain full device control.",
+                        name = context.getString(R.string.threat_net_adb_network),
+                        description = context.getString(R.string.threat_net_adb_network_desc, output),
                         severity = ThreatResult.Severity.CRITICAL,
                         source = ThreatResult.ScannerSource.NETWORK_SECURITY,
                         category = ThreatResult.ThreatCategory.DEBUG_RISK,

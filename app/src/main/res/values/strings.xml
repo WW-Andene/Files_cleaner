@@ -2,45 +2,59 @@
 <resources>
     <string name="app_name">Raccoon File Manager</string>
 
+    <!-- Analysis quick action emojis -->
+    <string name="emoji_trash">\uD83D\uDDD1\uFE0F</string>
+    <string name="emoji_folder">\uD83D\uDCC2</string>
+    <string name="emoji_refresh">\uD83D\uDD04</string>
+
     <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
-    <string name="scan_prompt">Tap here to scan your storage</string>
-    <string name="scanning_progress">Scanning\u2026 %d files found</string>
+    <string name="scan_prompt">Tap here to let Raccoon scan your storage</string>
+    <!-- scanning_progress removed: duplicate of scanning_phase_indexing -->
     <plurals name="scan_complete">
-        <item quantity="one">Scan complete \u2014 %1$d file found (%2$s)</item>
-        <item quantity="other">Scan complete \u2014 %1$d files found (%2$s)</item>
+        <item quantity="one">Ricky is done! %1$d file found (%2$s)</item>
+        <item quantity="other">Ricky is done! %1$d files found (%2$s)</item>
     </plurals>
-    <string name="scan_complete_simple">Scan complete</string>
-    <string name="scanning_in_progress">Scanning in progress</string>
+    <string name="scan_complete_simple">Raccoon finished scanning!</string>
+    <string name="scanning_in_progress">Ricky is rummaging through your files\u2026</string>
     <string name="scan_cancel">Cancel scan</string>
-    <string name="scan_cancelled">Scan cancelled</string>
-    <string name="scanning_phase_indexing">Scanning\u2026 %d files found</string>
-    <string name="scanning_phase_duplicates">Finding duplicates\u2026 %d files</string>
-    <string name="scanning_phase_analyzing">Analyzing sizes\u2026 %d files</string>
-    <string name="scanning_phase_junk">Detecting junk\u2026 %d files</string>
-    <string name="error_prefix">Something went wrong: %s</string>
-    <string name="error_scan_failed">Scan failed. Check storage permissions and try again.</string>
+    <string name="scan_cancelled">Scan cancelled \u2014 Raccoon stopped mid-rummage.</string>
+    <string name="scanning_phase_indexing">Ricky is indexing\u2026 %d files found</string>
+    <string name="scanning_phase_duplicates">Ricky is sniffing out duplicates\u2026 %d files</string>
+    <string name="scanning_phase_analyzing">Ricky is weighing file sizes\u2026 %d files</string>
+    <string name="scanning_phase_junk">Ricky is hunting for junk\u2026 %d files</string>
+    <string name="error_prefix">Oops! %s \u2014 check permissions and give it another go.</string>
+    <string name="error_scan_failed">Raccoon hit a snag! Check storage permissions and try scanning again.</string>
+
+    <!-- Scan progress indicators -->
+    <string name="scan_percent">%d%%</string>
+    <string name="phase_label_indexing">Ricky is scanning files\u2026</string>
+    <string name="phase_label_duplicates">Ricky is finding duplicates\u2026</string>
+    <string name="phase_label_analyzing">Ricky is analyzing sizes\u2026</string>
+    <string name="phase_label_junk">Ricky is classifying junk\u2026</string>
+    <string name="phase_step">Step %1$d of %2$d</string>
+    <string name="browse_scan_file_count">%d files</string>
 
     <!-- Actions -->
-    <string name="delete_selected">Delete selected</string>
+    <string name="delete_selected">Move selected to Trash</string>
     <string name="clean_selected">Clean selected</string>
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
     <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
+    <string name="delete">Move to Trash</string>
     <string name="clean">Clean</string>
     <string name="undo">Undo</string>
 
     <!-- Confirm dialog -->
-    <string name="confirm_delete_title">Confirm Delete</string>
-    <string name="confirm_delete_message">Files will be moved to trash. You can undo within %d seconds.</string>
+    <string name="confirm_delete_title">Confirm Move to Trash</string>
+    <string name="confirm_delete_message">Files will be moved to trash. You can undo within %1$d seconds.</string>
     <plurals name="confirm_delete_detail">
         <item quantity="one">%1$d file (%2$s) will be moved to trash.\nYou can undo within %3$d seconds.</item>
         <item quantity="other">%1$d files (%2$s) will be moved to trash.\nYou can undo within %3$d seconds.</item>
     </plurals>
     <plurals name="delete_n_files_title">
-        <item quantity="one">Delete %d file?</item>
-        <item quantity="other">Delete %d files?</item>
+        <item quantity="one">Move %d file to trash?</item>
+        <item quantity="other">Move %d files to trash?</item>
     </plurals>
     <plurals name="clean_n_files_title">
         <item quantity="one">Clean %d file?</item>
@@ -49,10 +63,10 @@
 
     <!-- Permission dialogs -->
     <string name="storage_access_needed">Storage access needed</string>
-    <string name="storage_access_message">Raccoon needs permission to scan your files. Your data stays on-device \u2014 nothing is uploaded.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
+    <string name="storage_access_message">Ricky needs permission to scan your files. Scan data stays on-device. Cloud features (SFTP, WebDAV, Google Drive) only transfer files when you choose to.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
     <string name="open_settings">Open Settings</string>
     <string name="permission_required">Permission required</string>
-    <string name="permission_required_message">Storage permission is needed to scan files. Please grant it in Settings so Raccoon can help manage your storage.</string>
+    <string name="permission_required_message">Storage permission is needed to scan files. Please grant it in Settings so Ricky can help manage your storage.</string>
     <string name="settings">Settings</string>
 
     <!-- Browse -->
@@ -63,35 +77,35 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="no_files_found">No files found yet.\nGo to the Manager tab to scan.</string>
-    <string name="nothing_found">Nothing found yet.\nGo to the Manager tab to scan.</string>
-    <string name="scan_to_see_results">Scan your storage to see your files</string>
+    <string name="no_files_found">Ricky hasn\'t sniffed out any files yet.</string>
+    <string name="nothing_found">Nothing in the den yet!\nLet Ricky scan your storage first.</string>
+    <string name="scan_to_see_results">Let Ricky rummage through your storage to see what\'s here</string>
 
     <!-- Context-aware empty states (Browse) -->
-    <string name="empty_browse_pre_scan">Go to the Manager tab and tap Scan Storage to browse your files.</string>
-    <string name="empty_browse_post_scan">No files match your filters.\nTry a different category or clear the search.</string>
-    <string name="empty_search_results">No results for \"%s\"</string>
+    <string name="empty_browse_pre_scan">Ricky needs to scout your storage first!</string>
+    <string name="empty_browse_post_scan">Ricky peeked everywhere but found nothing.\nTry a different category or clear the search.</string>
+    <string name="empty_search_results">Ricky searched high and low \u2014 no results for \"%s\"</string>
 
     <!-- Context-aware empty states (Tree) -->
-    <string name="empty_tree_pre_scan">Go to the Manager tab and tap Scan Storage to see your file tree.</string>
-    <string name="empty_tree_post_scan">No files to display in the tree view.</string>
+    <string name="empty_tree_pre_scan">Ricky needs scan data to build the tree!</string>
+    <string name="empty_tree_post_scan">The tree is bare \u2014 no files to display here.</string>
     <string name="browsing_folder">Browsing %s</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
-    <string name="empty_junk_pre_scan">Go to the Manager tab and tap Scan Storage to find junk files.</string>
-    <string name="empty_junk_post_scan">Your storage is clean! No junk files detected.</string>
-    <string name="empty_large_pre_scan">Go to the Manager tab and tap Scan Storage to find large files.</string>
-    <string name="empty_large_post_scan">No large files found. Your storage looks well-managed!</string>
-    <string name="empty_duplicates_pre_scan">Go to the Manager tab and tap Scan Storage to find duplicates.</string>
-    <string name="empty_duplicates_post_scan">No duplicate files found. Everything is unique!</string>
+    <string name="empty_junk_pre_scan">Ricky is ready to sniff out junk!</string>
+    <string name="empty_junk_post_scan">Squeaky clean! Ricky found zero junk. Your storage is spotless.</string>
+    <string name="empty_large_pre_scan">Ricky wants to hunt for space hogs!</string>
+    <string name="empty_large_post_scan">No big files lurking around \u2014 Ricky approves of your tidy storage!</string>
+    <string name="empty_duplicates_pre_scan">Ricky is eager to catch copycats!</string>
+    <string name="empty_duplicates_post_scan">No duplicates spotted! Every file is one-of-a-kind.</string>
 
     <!-- Sort options -->
-    <string name="sort_name_asc">Name \u2191</string>
-    <string name="sort_name_desc">Name \u2193</string>
-    <string name="sort_size_asc">Size \u2191</string>
-    <string name="sort_size_desc">Size \u2193</string>
-    <string name="sort_date_asc">Date \u2191</string>
-    <string name="sort_date_desc">Date \u2193</string>
+    <string name="sort_name_asc">Name (A\u2013Z)</string>
+    <string name="sort_name_desc">Name (Z\u2013A)</string>
+    <string name="sort_size_asc">Size (smallest)</string>
+    <string name="sort_size_desc">Size (largest)</string>
+    <string name="sort_date_asc">Date (oldest)</string>
+    <string name="sort_date_desc">Date (newest)</string>
 
     <!-- Screen titles -->
     <string name="title_junk">Junk Files</string>
@@ -111,12 +125,12 @@
         <item quantity="one">%1$d duplicate file \u2014 %2$s in duplicates</item>
         <item quantity="other">%1$d duplicate files \u2014 %2$s in duplicates</item>
     </plurals>
-    <string name="no_junk_found">No junk files found</string>
-    <string name="no_large_found">No large files found</string>
-    <string name="no_duplicates_found">No duplicates found</string>
+    <string name="no_junk_found">No junk in sight \u2014 Ricky is impressed!</string>
+    <string name="no_large_found">No space hogs here \u2014 your storage is lean!</string>
+    <string name="no_duplicates_found">Zero copycats found \u2014 every file is unique!</string>
     <plurals name="action_delete_n">
-        <item quantity="one">Delete %1$d selected (%2$s)</item>
-        <item quantity="other">Delete %1$d selected (%2$s)</item>
+        <item quantity="one">Move %1$d selected to trash (%2$s)</item>
+        <item quantity="other">Move %1$d selected to trash (%2$s)</item>
     </plurals>
     <plurals name="action_clean_n">
         <item quantity="one">Clean %1$d file (%2$s)</item>
@@ -124,10 +138,54 @@
     </plurals>
 
     <!-- Bottom nav -->
+    <string name="nav_analysis">Analysis</string>
     <string name="nav_browse">Browse</string>
     <string name="nav_duplicates">Duplicates</string>
     <string name="nav_large">Large Files</string>
     <string name="nav_junk">Junk Files</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Storage Dashboard</string>
+    <string name="dashboard_storage_title">Device Storage</string>
+    <string name="dashboard_storage_used">%1$s of %2$s used (%3$d%%)</string>
+    <string name="dashboard_storage_free">%s free</string>
+    <string name="dashboard_scan_stats">Scan Summary</string>
+    <string name="dashboard_stats_detail">%1$d files scanned\nDuplicates: %2$s\nJunk: %3$s\nLarge files: %4$s</string>
+    <string name="dashboard_category_title">By Category</string>
+    <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
+    <string name="dashboard_scanning">Scanning\u2026 Results will appear when complete.</string>
+    <string name="dashboard_scan_stats_empty">Scan your storage to see a summary here.</string>
+    <plurals name="n_files_with_size">
+        <item quantity="one">%1$d file (%2$s)</item>
+        <item quantity="other">%1$d files (%2$s)</item>
+    </plurals>
+    <string name="dashboard_back">Back</string>
+    <string name="dashboard_top_files">Top 10 Largest Files</string>
+    <string name="dashboard_quick_actions">Quick Actions</string>
+    <string name="dashboard_clean_junk">Clean Junk</string>
+    <string name="dashboard_view_duplicates">View Duplicates</string>
+    <string name="dashboard_view_large">View Large Files</string>
+    <string name="dashboard_potential_savings">Potential savings: %s</string>
+
+    <!-- Analysis tab -->
+    <string name="analysis_storage_overview">Storage Overview</string>
+    <string name="analysis_storage_used">%1$s used of %2$s</string>
+    <string name="analysis_storage_free">%s free</string>
+    <string name="analysis_total_files">%d files scanned</string>
+    <string name="analysis_category_breakdown">Category Breakdown</string>
+    <string name="analysis_category_count">%1$d files \u2022 %2$s</string>
+    <string name="analysis_top_files">Largest Files</string>
+    <string name="analysis_top_files_subtitle">Top 10 space consumers</string>
+    <string name="analysis_quick_actions">Quick Actions</string>
+    <string name="analysis_quick_junk">Junk Files</string>
+    <string name="analysis_quick_large">Large Files</string>
+    <string name="analysis_quick_duplicates">Duplicates</string>
+    <string name="analysis_quick_junk_detail">%1$d files \u2022 %2$s reclaimable</string>
+    <string name="analysis_quick_large_detail">%1$d files \u2022 %2$s total</string>
+    <string name="analysis_quick_duplicates_detail">%1$d files \u2022 %2$s wasted</string>
+    <string name="analysis_empty_title">Ricky is waiting to dig in!</string>
+    <string name="analysis_empty_subtitle">Scan your storage and Ricky will crunch the numbers for you.</string>
+    <string name="analysis_potential_savings">Ricky found %s you could reclaim!</string>
 
     <!-- Accessibility -->
     <string name="a11y_select_file">Select %s</string>
@@ -138,9 +196,15 @@
     <string name="a11y_sort_order">Sort order</string>
     <string name="a11y_tree_view">File tree view, %1$d files, %2$s total</string>
     <string name="a11y_tree_view_default">File tree visualization</string>
-    <string name="a11y_raccoon_bubble">Open Tree View \u2014 tap to visualize your file structure</string>
+
     <string name="a11y_node_expanded">%1$s expanded, %2$d sub-folders</string>
     <string name="a11y_node_collapsed">%s collapsed</string>
+    <string name="a11y_pdf_prev_page">Previous page</string>
+    <string name="a11y_pdf_next_page">Next page</string>
+    <string name="a11y_image_preview">Image preview of %s</string>
+    <string name="a11y_album_art">Album art</string>
+    <string name="a11y_connection_selector">Select connection</string>
+    <string name="a11y_webview_content">Document content for %s</string>
 
     <!-- Arborescence -->
     <string name="open_arborescence">Open Tree View</string>
@@ -169,15 +233,15 @@
     <!-- Search -->
     <string name="search_files_hint">Search\u2026 (try &gt;50mb or ext:pdf)</string>
     <string name="search_tree_hint">Search in tree\u2026</string>
-    <string name="search_not_found">No matching files found</string>
+    <string name="search_not_found">Ricky rummaged everywhere \u2014 no matching files found.</string>
 
     <!-- File opening -->
     <string name="open_with">Open With</string>
-    <string name="no_app_found">No app found to open this file</string>
+    <string name="no_app_found">Ricky can\u0027t find an app to open this file. Try installing a compatible viewer.</string>
 
     <!-- Context menu -->
     <string name="ctx_open">Open</string>
-    <string name="ctx_delete">Delete</string>
+    <string name="ctx_delete">Move to Trash</string>
     <string name="ctx_rename">Rename</string>
     <string name="ctx_share">Share</string>
     <string name="ctx_copy">Copy</string>
@@ -191,68 +255,128 @@
     <string name="no_subdirectories">No sub-folders</string>
     <string name="ctx_compress">Compress</string>
     <string name="ctx_extract">Extract</string>
+    <string name="ctx_select">Select</string>
     <string name="ctx_open_in_tree">Show in Tree</string>
     <string name="ctx_browse_folder">Browse folder</string>
     <string name="ctx_convert">Convert to\u2026</string>
     <string name="convert_title">Convert to</string>
-    <string name="convert_unsupported">No conversions available for this file type</string>
-    <string name="convert_failed">Conversion failed: %s</string>
-    <string name="convert_progress">Converting\u2026</string>
+    <string name="convert_unsupported">Ricky doesn\u0027t know how to convert this file type yet.</string>
+    <string name="convert_failed">Ricky couldn\u0027t convert that file: %s</string>
+    <string name="convert_progress">Ricky is converting\u2026</string>
+    <!-- Conversion action labels -->
+    <string name="convert_action">Convert</string>
+    <string name="convert_format_with_ext">%1$s (.%2$s)</string>
+    <string name="convert_pdf">PDF (.pdf)</string>
+    <string name="convert_format_per_page">%1$s (one per page)</string>
+    <string name="convert_png_thumbnail">PNG thumbnail</string>
+    <string name="convert_jpg_thumbnail">JPG thumbnail</string>
+    <string name="convert_formatted_table_txt">Formatted table (.txt)</string>
+
+    <!-- Image conversions -->
+    <string name="convert_to_format">Convert to %s</string>
+    <string name="convert_image_desc">Re-encode this image as a %1$s file (.%2$s). The original file is kept.</string>
+    <string name="convert_to_pdf">Convert to PDF</string>
+    <string name="convert_image_to_pdf_desc">Embed this image into a single-page PDF document.</string>
+    <string name="convert_resize">Resize image</string>
+    <string name="convert_resize_desc">Scale this image down to fit within a maximum width and height, keeping the aspect ratio.</string>
+    <string name="convert_resize_instruction">Enter the maximum dimensions. The image will be scaled down proportionally to fit, preserving its aspect ratio. Images smaller than the specified size will not be enlarged.</string>
+    <string name="convert_max_width">Max width (px)</string>
+    <string name="convert_max_height">Max height (px)</string>
+    <string name="convert_resize_format_note">The output format will match the original file.</string>
+
+    <!-- PDF conversions -->
+    <string name="convert_pdf_to_images">Extract pages as %s</string>
+    <string name="convert_pdf_to_images_desc">Render each page of this PDF as a separate %s image file at 2x resolution.</string>
+
+    <!-- Video conversions -->
+    <string name="convert_video_section_single_frame">Extract frame at timestamp</string>
+    <string name="convert_video_single_frame_desc">Use the slider to pick a point in the video, then save that frame as an image.</string>
+    <string name="convert_video_timestamp">%1$s / %2$s</string>
+    <string name="convert_extract_as_png">Save as PNG</string>
+    <string name="convert_extract_as_jpg">Save as JPG</string>
+    <string name="convert_video_section_key_frames">Extract key frames</string>
+    <string name="convert_video_key_frames_desc">Capture evenly-spaced frames across the entire video and save them as individual image files in a new folder.</string>
+    <string name="convert_video_frame_count">Number of frames:</string>
+    <string name="convert_extract_key_png">As PNG</string>
+    <string name="convert_extract_key_jpg">As JPG</string>
+
+    <!-- Audio conversions -->
+    <string name="convert_extract_album_art_png">Extract album art as PNG</string>
+    <string name="convert_extract_album_art_jpg">Extract album art as JPG</string>
+    <string name="convert_extract_album_art_desc">Save the embedded cover image from this audio file.</string>
+
+    <!-- Text/document conversions -->
+    <string name="convert_text_to_pdf_desc">Render this text file as a monospace PDF document (A4 pages).</string>
+    <string name="convert_html_to_pdf_desc">Render this HTML file as a PDF document.</string>
+    <string name="convert_markdown_to_pdf_desc">Render this Markdown file as a plain-text PDF document.</string>
+    <string name="convert_csv_to_table">Convert to formatted table</string>
+    <string name="convert_csv_to_table_desc">Convert CSV data into a neatly aligned text table with column headers.</string>
     <string name="ctx_properties">Properties</string>
     <string name="ctx_preview">Preview</string>
-    <string name="preview_error">Cannot preview: %s</string>
+    <string name="preview_error">Ricky can\u0027t preview this one: %s</string>
     <string name="viewer_title">File Viewer</string>
     <string name="viewer_file_info">%1$s  \u2022  %2$s</string>
     <string name="viewer_pdf_page">Page %1$d of %2$d</string>
-    <string name="viewer_unsupported">No built-in viewer for .%s files</string>
+    <string name="viewer_unsupported">Ricky doesn\u0027t have a built-in viewer for .%s files \u2014 try opening with another app.</string>
     <string name="viewer_open_fullscreen">View fullscreen</string>
     <string name="viewer_audio_play">Play / Pause</string>
-    <string name="viewer_audio_error">Cannot play this audio file</string>
-    <string name="viewer_archive_error">Cannot read archive: %s</string>
-    <string name="ctx_star">Star</string>
-    <string name="ctx_unstar">Unstar</string>
+    <string name="viewer_audio_error">Ricky can\u0027t play this audio file \u2014 it may be corrupted or in an unsupported format.</string>
+    <string name="viewer_video_play">Play video</string>
+    <string name="viewer_video_error">Ricky can\u0027t play this video \u2014 it may be corrupted or in an unsupported format.</string>
+    <string name="viewer_archive_error">Ricky can\u0027t read this archive: %s</string>
+
+    <string name="ctx_star">Add to Favorites</string>
+    <string name="ctx_unstar">Remove from Favorites</string>
     <string name="ctx_protect">Exclude from cleanup</string>
     <string name="ctx_unprotect">Allow cleanup</string>
-    <string name="favorite_added">%s starred</string>
-    <string name="favorite_removed">%s unstarred</string>
+    <string name="favorite_added">%s added to Favorites</string>
+    <string name="favorite_removed">%s removed from Favorites</string>
     <string name="protected_added">%s protected from cleanup</string>
     <string name="protected_removed">%s cleanup protection removed</string>
     <!-- File operation feedback (used by ViewModel → Snackbar) -->
-    <string name="op_source_not_found">Source file not found</string>
-    <string name="op_file_not_found">File not found</string>
-    <string name="op_file_exists_in_target">File already exists in target</string>
-    <string name="op_no_parent_dir">Cannot determine parent folder</string>
-    <string name="op_invalid_name">File names can\u0027t contain / : * ? \" &lt; &gt; or |</string>
-    <string name="op_name_exists">A file with that name already exists</string>
-    <string name="op_moved">Moved %s</string>
-    <string name="op_move_failed">Failed to move file</string>
-    <string name="op_copied">Copied %s</string>
-    <string name="op_copy_failed">Copy failed: %s</string>
-    <string name="op_renamed">Renamed to %s</string>
-    <string name="op_rename_failed">Rename failed</string>
-    <string name="op_compressed">Compressed to %s</string>
+    <string name="op_source_not_found">Ricky can\u0027t find the original file \u2014 it may have been moved or deleted.</string>
+    <string name="op_file_not_found">Ricky can\u0027t find that file \u2014 it may have been moved or deleted.</string>
+    <string name="op_file_exists_in_target">A file with that name already exists in the destination folder.</string>
+    <string name="op_no_parent_dir">Ricky can\u0027t figure out where this file lives \u2014 try a different location.</string>
+    <string name="op_invalid_name">Oops! File names can\u0027t contain / : * ? \" &lt; &gt; or | \u2014 try a different name.</string>
+    <string name="op_name_exists">That name is already taken \u2014 pick a different one!</string>
+    <string name="op_moved">Ricky moved %s to its new home!</string>
+    <string name="op_move_failed">Ricky couldn\'t move that file \u2014 check if the destination is accessible.</string>
+    <string name="op_copied">Ricky copied %s!</string>
+    <string name="op_copy_failed">Ricky couldn\'t copy that: %s</string>
+    <string name="op_renamed">Renamed to %s \u2014 fresh new name!</string>
+    <string name="op_rename_failed">Ricky couldn\'t rename that file. Try a different name.</string>
+    <string name="op_compressed">Packed into %s \u2014 nice and compact!</string>
     <string name="compress_title">Create ZIP archive</string>
     <string name="compress_name_hint">Archive name</string>
     <plurals name="compress_summary">
         <item quantity="one">%d file to compress</item>
         <item quantity="other">%d files to compress</item>
     </plurals>
-    <string name="op_compress_failed">Compression failed: %s</string>
-    <string name="op_extracted">Extracted to %s</string>
-    <string name="op_extract_failed">Extraction failed: %s</string>
-    <string name="op_zip_only">Only ZIP archives can be extracted</string>
-    <string name="op_too_many_entries">This archive has too many files to extract safely (limit: %d).</string>
-    <string name="op_archive_too_large">Archive too large (exceeds 2 GB extracted)</string>
-    <string name="op_invalid_path">Path is outside accessible storage</string>
-    <string name="op_scan_failed">Scan failed</string>
+    <string name="op_compress_failed">Compression failed: %s. Ricky will try harder next time.</string>
+    <string name="op_extracted">Unpacked to %s \u2014 all files ready!</string>
+    <string name="op_extract_failed">Ricky couldn\'t unpack that: %s</string>
+    <string name="op_zip_only">Ricky can only unpack ZIP archives for now.</string>
+    <string name="op_too_many_entries">Whoa, that archive has too many files! Ricky\u0027s limit is %d to keep things safe.</string>
+    <string name="op_archive_too_large">That archive is too large to unpack safely (over 2 GB). Try a smaller one!</string>
+    <string name="op_invalid_path">Ricky can\u0027t reach that location \u2014 it\u0027s outside accessible storage.</string>
+    <string name="error_no_files_to_compress">Ricky needs some files to pack \u2014 select a few first!</string>
+    <string name="op_scan_failed">Ricky hit a snag while scanning. Give it another try!</string>
 
-    <!-- Undo / Delete feedback -->
-    <string name="undo_deleted_single">Deleted %1$s (%2$s). Undo?</string>
-    <string name="undo_deleted_multiple">Deleted %1$d files (%2$s). Undo?</string>
-    <string name="delete_partial_failure">%1$d deleted, %2$d failed \u2014 some files may be in use</string>
+    <!-- Undo / Trash feedback -->
+    <string name="undo_deleted_single">Moved %1$s to trash (%2$s). Undo?</string>
+    <string name="undo_deleted_multiple">Moved %1$d files to trash (%2$s). Undo?</string>
+    <string name="delete_partial_failure">Ricky trashed %1$d but %2$d wouldn\u0027t budge \u2014 they may be in use by another app.</string>
 
     <!-- Post-scan summary -->
-    <string name="scan_summary">Found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
+    <string name="scan_duration_suffix"> in %1$.1fs</string>
+    <string name="scan_summary">Ricky found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
+
+    <!-- Relative time -->
+    <string name="time_just_now">Just now</string>
+    <string name="time_minutes_ago">%dm ago</string>
+    <string name="time_hours_ago">%dh ago</string>
+    <string name="time_yesterday">Yesterday</string>
 
     <!-- Date format -->
     <string name="unknown_date">Unknown date</string>
@@ -284,6 +408,25 @@
     <string name="cat_downloads">Downloads</string>
     <string name="cat_other">Other</string>
 
+    <!-- Junk sub-categories -->
+    <string name="junk_cache">Cache</string>
+    <string name="junk_temp">Temp files</string>
+    <string name="junk_thumbnails">Thumbnails</string>
+    <string name="junk_old_downloads">Old downloads</string>
+    <string name="junk_logs">Logs/backups</string>
+
+    <!-- Size severity labels -->
+    <string name="size_huge">500 MB+</string>
+    <string name="size_large">100\u2013500 MB</string>
+    <string name="size_medium">50\u2013100 MB</string>
+
+    <!-- Legend headers -->
+    <string name="legend_junk_title">Color by junk type</string>
+    <string name="legend_large_title">Color by file size</string>
+    <string name="legend_category_title">Color by category</string>
+    <string name="legend_duplicates_title">Color by duplicate group</string>
+    <string name="legend_group_n">Group %d</string>
+
     <!-- File properties dialog -->
     <string name="prop_name">Name</string>
     <string name="prop_path">Path</string>
@@ -311,11 +454,15 @@
     <string name="batch_case_upper">UPPERCASE</string>
     <string name="batch_case_title">Title Case</string>
     <string name="batch_rename_start_hint">Start number</string>
-    <string name="batch_rename_result">Renamed %1$d files (%2$d failed)</string>
+    <string name="batch_rename_result">Ricky renamed %1$d files \u2014 %2$d couldn\u0027t be changed.</string>
     <string name="batch_rename">Batch Rename</string>
 
     <!-- Accessibility -->
     <string name="a11y_view_mode">Toggle view mode</string>
+    <string name="filter_options">Filters</string>
+    <string name="sort_by_label">Sort by</string>
+    <string name="browse_category_label">Category</string>
+    <string name="grid_columns_label">Grid columns</string>
 
     <!-- Settings (P14) -->
     <string name="settings_scan_section">Scan Settings</string>
@@ -323,7 +470,7 @@
     <string name="settings_large_file_value">%d MB</string>
     <string name="settings_stale_age_label">Flag downloads older than</string>
     <string name="settings_stale_age_value">%d days</string>
-    <string name="settings_undo_label">Undo window after delete</string>
+    <string name="settings_undo_label">Undo window after trash</string>
     <string name="settings_undo_value">%d sec</string>
     <string name="settings_hidden_files">Show hidden files</string>
     <string name="settings_rescan_note">Changes apply on next scan.</string>
@@ -340,39 +487,28 @@
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_back">Back</string>
-    <string name="onboarding_done">Scan My Storage</string>
-    <string name="onboarding_title_1">Welcome to Raccoon</string>
-    <string name="onboarding_body_1">Raccoon helps you manage your device storage by finding duplicates, large files, and junk.\n\nYour data stays on-device \u2014 nothing is uploaded.</string>
+    <string name="onboarding_done">Let Ricky Scan!</string>
+    <string name="onboarding_title_1">Hey there! Meet Ricky</string>
+    <string name="onboarding_body_1">Ricky is your friendly storage sidekick! It sniffs out duplicates, hunts down large files, and sweeps away junk.\n\nEverything stays on your device \u2014 your data never leaves.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
-    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 scan, clean, and manage\n\u2022 Large Files \u2014 files over 50 MB\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
-    <!-- Dashboard (P2) -->
-    <string name="dashboard_title">Storage Dashboard</string>
-    <string name="dashboard_storage_title">Device Storage</string>
-    <string name="dashboard_storage_used">%1$s of %2$s used (%3$d%%)</string>
-    <string name="dashboard_storage_free">%s free</string>
-    <string name="dashboard_scan_stats">Scan Summary</string>
-    <string name="dashboard_stats_detail">%1$d files scanned\nDuplicates: %2$s\nJunk: %3$s\nLarge files: %4$s</string>
-    <string name="dashboard_category_title">By Category</string>
-    <string name="dashboard_no_scan">Run a scan to see category breakdown.</string>
-    <string name="dashboard_scanning">Scanning\u2026 Results will appear when complete.</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 Ricky\'s control center\n\u2022 Large Files \u2014 the biggest space hogs\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_title_3">Ricky Manager</string>
+    <string name="onboarding_body_3">Tap the Manager tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nRicky\'s den \u2014 your one-stop control center for tidy storage.</string>
 
-    <string name="onboarding_title_3">Raccoon Manager</string>
-    <string name="onboarding_body_3">Tap the Manager tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nYour one-stop control center for file management.</string>
-
-    <!-- Raccoon Manager Hub -->
+    <!-- Ricky Manager Hub -->
     <string name="nav_raccoon">Manager</string>
     <string name="raccoon_manager_title">Raccoon Manager</string>
-    <string name="raccoon_manager_subtitle">Your file management control center</string>
+    <string name="raccoon_manager_subtitle">Ricky\'s den \u2014 your tidy-up command center</string>
     <string name="raccoon_action_scan">Scan Storage</string>
-    <string name="raccoon_action_scan_desc">Scan your storage for duplicates, junk, and large files</string>
+    <string name="raccoon_action_scan_desc">Let Ricky sniff out duplicates, junk, and large files</string>
     <string name="raccoon_action_analysis">Analysis</string>
-    <string name="raccoon_action_analysis_desc">View storage dashboard and category breakdown</string>
+    <string name="raccoon_action_analysis_desc">See where your space goes with a full breakdown</string>
     <string name="raccoon_action_quick_clean">Quick Clean</string>
-    <string name="raccoon_action_quick_clean_desc">One-tap removal of junk files and caches</string>
+    <string name="raccoon_action_quick_clean_desc">One-tap sweep of junk files and caches</string>
     <string name="raccoon_action_arborescence">Tree View</string>
-    <string name="raccoon_action_arborescence_desc">Interactive file tree visualization</string>
+    <string name="raccoon_action_arborescence_desc">Explore your files in an interactive tree map</string>
     <string name="raccoon_action_janitor">Janitor</string>
-    <string name="raccoon_action_janitor_desc">Deep clean and file restructuring</string>
+    <string name="raccoon_action_janitor_desc">Deep clean \u2014 Ricky goes through everything</string>
     <string name="raccoon_quick_clean_title">Quick Clean</string>
     <plurals name="raccoon_quick_clean_confirm">
         <item quantity="one">Clean %1$d junk file (%2$s)?</item>
@@ -383,7 +519,7 @@
     <string name="raccoon_janitor_desc">Deep clean finds duplicate files, oversized downloads, and old caches across your entire storage. Review and select what to remove.</string>
     <string name="raccoon_janitor_start">Start Deep Clean</string>
     <string name="raccoon_janitor_started">Starting deep clean\u2026 Review results in the Duplicates, Large, and Junk tabs.</string>
-    <string name="raccoon_scan_needed">Run a scan first to enable this feature.</string>
+    <string name="raccoon_scan_needed">Ricky needs a scan first \u2014 tap Scan Storage to get started!</string>
 
     <!-- F1: Section labels -->
     <string name="raccoon_section_advanced">Advanced</string>
@@ -395,16 +531,19 @@
     <string name="a11y_settings_toggle_hidden">Toggle show hidden files</string>
 
     <!-- F6: Engagement & reward moments -->
-    <string name="scan_complete_celebration">All done! Found %1$d files using %2$s.</string>
-    <string name="clean_success">Cleaned up %s. Nice work!</string>
-    <string name="raccoon_greeting_pre_scan">Ready to tidy up? Tap Scan to get started.</string>
-    <string name="raccoon_greeting_post_scan">Looking good! %s free on your device.</string>
-    <string name="dashboard_scan_stats_empty">Scan your storage to see a summary here.</string>
+    <string name="scan_complete_celebration">Ricky is done rummaging! Found %1$d files using %2$s.</string>
+    <string name="clean_success">Raccoon swept away %s \u2014 nice and tidy!</string>
+    <string name="raccoon_greeting_pre_scan">Ricky is ready to tidy up! Tap Scan to get started.</string>
+    <string name="raccoon_greeting_post_scan">Looking good! %s free \u2014 Raccoon approves.</string>
+
+    <!-- Context-aware empty states (Dual Pane) -->
+    <string name="dual_pane_empty_title">No files here</string>
+    <string name="dual_pane_empty_subtitle">This folder is empty \u2014 navigate somewhere else or pick a directory.</string>
 
     <!-- Storage Optimizer -->
     <string name="optimize_title">Optimize Storage</string>
     <string name="optimize_desc">Reorganize files into tidy folders by type and date</string>
-    <string name="optimize_empty">Everything looks well-organized already!</string>
+    <string name="optimize_empty">Ricky checked every corner \u2014 your files are already perfectly organized!</string>
     <string name="optimize_apply">Apply Changes</string>
     <plurals name="optimize_summary">
         <item quantity="one">%d suggestion</item>
@@ -416,20 +555,39 @@
         <item quantity="other">Move %d files to their suggested locations?</item>
     </plurals>
     <plurals name="optimize_applied">
-        <item quantity="one">Moved %d file successfully</item>
-        <item quantity="other">Moved %d files successfully</item>
+        <item quantity="one">Ricky tidied up %d file \u2014 looking organized!</item>
+        <item quantity="other">Ricky tidied up %d files \u2014 looking organized!</item>
     </plurals>
-    <string name="optimize_none_selected">No suggestions selected</string>
+    <string name="optimize_none_selected">Pick some suggestions first \u2014 Ricky needs something to work on!</string>
+    <string name="optimize_info_title">How it works</string>
+    <string name="optimize_info_body">This tool analyzes your files and suggests moving them into organized folders by type and date. Photos go to Pictures/YYYY-MM, videos to Videos/YYYY-MM, audio to Music, documents to Documents, and old downloads to OldDownloads. Uncheck any files you want to keep in place.</string>
+    <string name="optimize_summary_detail">%1$d suggestions \u2022 %2$d selected</string>
+    <string name="optimize_selection_summary">Selected: %1$d files (%2$s)</string>
+    <string name="optimize_category_size_info">%1$s, %2$d files</string>
+    <string name="optimize_category_selection">%1$d/%2$d selected</string>
+    <string name="filter_old_files">Old files (&gt;90 days)</string>
+    <string name="filter_large_files">Large files (&gt;50 MB)</string>
+    <string name="clear_selection">Clear</string>
 
     <!-- Dual Pane -->
     <string name="dual_pane_title">Dual Pane</string>
     <string name="dual_pane_desc">Side-by-side file manager for easy copy and move</string>
     <string name="dual_pane_go_up">Go up one level</string>
-    <string name="dual_pane_copy">Copy →</string>
-    <string name="dual_pane_move">Move →</string>
-    <string name="dual_pane_no_selection">Select files first</string>
-    <string name="dual_pane_no_files_to_delete">No files selected (directories cannot be deleted here)</string>
+    <string name="dual_pane_copy">Copy</string>
+    <string name="dual_pane_move">Move</string>
+    <string name="dual_pane_no_selection">Ricky needs you to select some files first!</string>
+    <string name="dual_pane_no_files_to_delete">No files selected \u2014 folders can only be removed from the Browse tab.</string>
+    <string name="dual_pane_invalid_dir">Ricky can\u0027t open that folder \u2014 it may have been moved or deleted.</string>
     <string name="dual_pane_count">%1$d folders, %2$d files</string>
+    <string name="dual_pane_swap">Swap panes</string>
+    <string name="dual_pane_pick_directory">Choose folder</string>
+    <string name="dual_pane_content_mode">Content mode</string>
+    <string name="dual_pane_mode_browser">File Browser</string>
+    <string name="dual_pane_selected">%d selected</string>
+    <!-- dual_pane_select_all / dual_pane_deselect_all removed: use select_all / deselect_all -->
+    <string name="dual_pane_divider_handle">Resize panes</string>
+    <string name="dual_pane_category_count">%1$d files \u2022 %2$s</string>
+    <string name="dual_pane_long_press_hint">Long-press to select files</string>
     <string name="back">Back</string>
     <plurals name="n_items">
         <item quantity="one">%d item</item>
@@ -440,6 +598,21 @@
         <item quantity="other">%2$s %1$d files to %3$s?</item>
     </plurals>
 
+    <!-- Dual Pane Tabs -->
+    <string name="dual_pane_tab_browse">Browse</string>
+    <string name="dual_pane_tab_duplicates">Duplicates</string>
+    <string name="dual_pane_tab_large">Large</string>
+    <string name="dual_pane_tab_junk">Junk</string>
+    <string name="dual_pane_tab_manager">Manager</string>
+    <string name="dual_pane_choose_mode">Choose mode</string>
+
+    <!-- Dual Pane Drag & Drop -->
+    <string name="dual_pane_drag_copy_or_move">Copy or Move?</string>
+    <string name="dual_pane_drag_message">What should Ricky do with these files?</string>
+
+    <!-- Antivirus progress -->
+    <string name="av_progress_pct">%d%%</string>
+
     <!-- Cloud / Network -->
     <string name="cloud_title">Cloud &amp; Network</string>
     <string name="cloud_desc">Browse and transfer files on Google Drive, SFTP, WebDAV</string>
@@ -447,19 +620,24 @@
     <string name="cloud_add_connection">Add Connection</string>
     <string name="cloud_connect">Connect</string>
     <string name="cloud_disconnect">Disconnect</string>
-    <string name="cloud_disconnected">Disconnected</string>
+    <string name="cloud_disconnected">Ricky disconnected from the cloud.</string>
     <string name="cloud_remove">Remove Connection</string>
     <string name="cloud_remove_confirm">Remove connection \"%s\"? This cannot be undone.</string>
-    <string name="cloud_empty">No cloud connections yet.\nAdd one to browse remote files.</string>
-    <string name="cloud_empty_dir">This folder is empty</string>
-    <string name="cloud_connected">Connected to %s</string>
-    <string name="cloud_connection_failed">Failed to connect to %s</string>
-    <string name="cloud_added">Added %s</string>
+    <string name="cloud_empty">Ricky hasn\'t ventured to the cloud yet.\nAdd a connection to explore remote files!</string>
+    <string name="cloud_empty_dir">This folder is empty \u2014 nothing for Ricky to find here.</string>
+    <string name="cloud_connected">Ricky connected to %s!</string>
+    <string name="cloud_connection_failed">Ricky couldn\'t reach %s. Check your settings and try again.</string>
+    <string name="cloud_no_network">No internet connection \u2014 Ricky can\'t reach the cloud right now.</string>
+    <string name="cloud_auth_failed">Authentication failed \u2014 double-check your credentials and try again.</string>
+    <string name="cloud_timeout">Connection timed out \u2014 the server may be busy. Try again in a moment.</string>
+    <string name="cloud_host_not_found">Server not found \u2014 double-check the hostname and try again.</string>
+    <string name="cloud_added">Ricky added %s to your connections!</string>
     <string name="cloud_download">Download</string>
     <string name="cloud_upload">Upload</string>
-    <string name="cloud_download_result">Downloaded %1$d files, %2$d failed</string>
-    <string name="cloud_upload_success">Uploaded %s</string>
-    <string name="cloud_upload_failed">Upload failed: %s</string>
+    <string name="cloud_download_result">Ricky grabbed %1$d files (%2$d failed)</string>
+    <string name="cloud_upload_success">Ricky uploaded %s to the cloud!</string>
+    <string name="cloud_upload_failed">Ricky couldn\u0027t upload: %s. Check your connection and try again.</string>
+    <string name="cloud_list_failed">Ricky couldn\'t load this folder: %s</string>
     <string name="cloud_directory">Directory</string>
     <string name="cloud_provider_type">Provider type</string>
     <string name="cloud_display_name">Connection name</string>
@@ -467,21 +645,72 @@
     <string name="cloud_port_hint">Port (default: 22)</string>
     <string name="cloud_username_hint">Username</string>
     <string name="cloud_password_hint">Password / Access Token</string>
+    <string name="cloud_type_sftp">SFTP</string>
+    <string name="cloud_type_webdav">WebDAV</string>
+    <string name="cloud_type_google_drive">Google Drive</string>
+    <string name="cloud_default_name">Cloud</string>
+    <string name="cloud_default_server_name">My Server</string>
+    <string name="cloud_error_host_required">Ricky needs a hostname to connect to!</string>
+    <string name="cloud_error_port_range">Port must be between 1 and 65535.</string>
+    <string name="cloud_error_username_required">Ricky needs a username to log in!</string>
+    <string name="cloud_error_password_required">Password is required for this connection.</string>
+    <string name="cloud_error_token_required">Ricky needs an access token to connect!</string>
+    <string name="cloud_error_name_required">Give this connection a display name.</string>
+    <string name="cloud_error_field_empty">Field cannot be empty</string>
+    <string name="cloud_error_invalid_hostname">Invalid hostname</string>
+    <string name="cloud_sftp_host_hint">Hostname or IP (e.g. 192.168.1.10)</string>
+    <string name="cloud_webdav_host_hint">Server URL (e.g. https://cloud.example.com/remote.php/webdav)</string>
+    <string name="cloud_gdrive_token_hint">OAuth2 Access Token</string>
+    <string name="cloud_sftp_help">Connect to any SSH/SFTP server. Use your server\'s IP address or hostname.</string>
+    <string name="cloud_webdav_help">Works with Nextcloud, ownCloud, and other WebDAV servers. Enter the full WebDAV URL.</string>
+    <string name="cloud_gdrive_help">Paste your Google Drive OAuth2 token. You can generate one from the Google API Console.</string>
+
+    <!-- Cloud provider picker -->
+    <string name="cloud_choose_service">Choose a service</string>
+    <string name="cloud_choose_service_subtitle">Select where you want to connect</string>
+    <string name="cloud_gdrive_card_title">Google Drive</string>
+    <string name="cloud_gdrive_card_desc">Access your Google Drive files, photos, and shared folders</string>
+    <string name="cloud_gdrive_sign_in">Sign in with Google</string>
+    <string name="cloud_gdrive_default_name">My Google Drive</string>
+    <string name="cloud_sftp_card_title">SFTP Server</string>
+    <string name="cloud_sftp_card_desc">Connect to any SSH/SFTP server on your network or the internet</string>
+    <string name="cloud_sftp_connect_btn">Connect to SSH Server</string>
+    <string name="cloud_sftp_default_name">My SFTP Server</string>
+    <string name="cloud_webdav_card_title">WebDAV</string>
+    <string name="cloud_webdav_card_desc">Compatible with Nextcloud, ownCloud, and other WebDAV services</string>
+    <string name="cloud_webdav_connect_btn">Connect to WebDAV</string>
+    <string name="cloud_webdav_default_name">My WebDAV Server</string>
+    <string name="cloud_setup_title_gdrive">Connect Google Drive</string>
+    <string name="cloud_setup_title_sftp">Connect SFTP Server</string>
+    <string name="cloud_setup_title_webdav">Connect WebDAV Server</string>
+    <string name="cloud_test_connection">Test Connection</string>
+    <string name="cloud_testing_connection">Ricky is testing the connection\u2026</string>
+    <string name="cloud_test_success">Ricky connected successfully!</string>
+    <string name="cloud_test_failed">Ricky couldn\u0027t connect: %s</string>
+    <string name="cloud_setup_connecting">Ricky is connecting\u2026</string>
+    <string name="cloud_setup_connect_failed">Connection failed: %s\nFix the issue and try again.</string>
+    <string name="cloud_setup_connect_failed_generic">Ricky couldn\u0027t reach the server. Check your settings and try again.</string>
+    <string name="cloud_status_connected">Connected</string>
+    <string name="cloud_status_disconnected">Not connected</string>
+    <string name="a11y_connection_status">Connection status: %s</string>
+    <string name="a11y_provider_google_drive">Google Drive provider</string>
+    <string name="a11y_provider_sftp">SFTP server provider</string>
+    <string name="a11y_provider_webdav">WebDAV provider</string>
 
     <!-- Antivirus / Security Scanner -->
     <string name="av_title">Security Scanner</string>
     <string name="av_desc">Scan for malware, root, privacy, and network risks</string>
-    <string name="av_ready">Ready to scan your device for threats.</string>
+    <string name="av_ready">Ricky is standing guard. Tap below to check for threats.</string>
     <string name="av_start_scan">Start Security Scan</string>
-    <string name="av_scanning">Scanning\u2026</string>
+    <string name="av_scanning">Ricky is investigating\u2026</string>
     <string name="av_scan_again">Scan Again</string>
-    <string name="av_all_clear">All clear! No threats detected.</string>
+    <string name="av_all_clear">All clear! Ricky gave your device a clean bill of health.</string>
     <string name="av_threats">Threats</string>
     <string name="av_clean">Clean</string>
     <string name="av_last_scan">Last scan: %s</string>
     <plurals name="av_found_threats">
-        <item quantity="one">Found %d issue</item>
-        <item quantity="other">Found %d issues</item>
+        <item quantity="one">Ricky spotted %d issue \u2014 review below.</item>
+        <item quantity="other">Ricky spotted %d issues \u2014 review below.</item>
     </plurals>
 
     <!-- Scan phases (5-phase) -->
@@ -519,7 +748,7 @@
     <string name="av_quarantined">Quarantined</string>
     <string name="av_quarantined_msg">Quarantined %s</string>
     <string name="av_uninstall">Uninstall</string>
-    <string name="av_uninstall_failed">Could not open uninstall dialog</string>
+    <string name="av_uninstall_failed">Ricky couldn\u0027t open the uninstall screen \u2014 try removing the app from Settings.</string>
     <string name="av_confirm_delete">Permanently delete %s?</string>
     <string name="av_deleted">Deleted %s</string>
     <string name="av_open_settings">Open Settings</string>
@@ -528,7 +757,7 @@
     <string name="av_fix_all_count">Fix All (%d)</string>
     <string name="av_fix_all_confirm">This will attempt to resolve all actionable threats:\n\n%s\n\nProceed?</string>
     <string name="av_proceed">Proceed</string>
-    <string name="av_fixed_count">Resolved %d threats</string>
+    <string name="av_fixed_count">Ricky dealt with %d threats \u2014 your device is safer now!</string>
     <string name="av_dismiss">Dismiss</string>
 
     <!-- Threat detail dialog -->
@@ -536,8 +765,307 @@
     <string name="av_detail_package">Package Name</string>
     <string name="av_detail_category">Category</string>
 
+    <!-- Threat category labels -->
+    <string name="threat_category_general">General</string>
+    <string name="threat_category_malware">Malware</string>
+    <string name="threat_category_root_tampering">Root / Tampering</string>
+    <string name="threat_category_privacy">Privacy</string>
+    <string name="threat_category_network">Network Security</string>
+    <string name="threat_category_sideload">Sideloaded App</string>
+    <string name="threat_category_accessibility_abuse">Accessibility Abuse</string>
+    <string name="threat_category_device_admin">Device Admin</string>
+    <string name="threat_category_suspicious_file">Suspicious File</string>
+    <string name="threat_category_debug_risk">Debug / Dev Risk</string>
+
+    <!-- Background scan -->
+    <string name="av_scan_background">Scan continues in background</string>
+    <string name="av_scan_background_desc">You can leave this screen. The scan will continue and notify you when complete.</string>
+
     <!-- Scan history -->
     <string name="av_history">Scan History</string>
-    <string name="av_no_history">No scan history yet.</string>
+    <string name="av_no_history">No scan history yet \u2014 Ricky is ready for its first patrol!</string>
     <string name="av_clear_history">Clear History</string>
+    <string name="av_scan_history_summary">%1$d findings \u2014 %2$d critical, %3$d high, %4$d medium</string>
+
+    <!-- Fix all plurals -->
+    <plurals name="av_fix_quarantine">
+        <item quantity="one">%d file to quarantine</item>
+        <item quantity="other">%d files to quarantine</item>
+    </plurals>
+    <plurals name="av_fix_delete">
+        <item quantity="one">%d file to delete</item>
+        <item quantity="other">%d files to delete</item>
+    </plurals>
+    <plurals name="av_fix_uninstall">
+        <item quantity="one">%d app to uninstall</item>
+        <item quantity="other">%d apps to uninstall</item>
+    </plurals>
+
+    <!-- Clear All Data (P3 Security) -->
+    <string name="settings_data_section">Data Management</string>
+    <string name="settings_clear_data">Clear All Data</string>
+    <string name="settings_clear_data_desc">Remove scan cache, saved cloud credentials, preferences, and scan history</string>
+    <string name="settings_clear_data_confirm_title">Clear All Data?</string>
+    <string name="settings_clear_data_confirm_message">This will delete all scan data, saved cloud credentials, scan history, and reset preferences to defaults.\n\nThis cannot be undone.</string>
+    <string name="settings_clear_data_done">Ricky wiped the slate clean \u2014 all app data has been cleared!</string>
+
+    <!-- Crash Reporting -->
+    <string name="settings_crash_section">Crash Reporting</string>
+    <string name="settings_crash_description">Automatically create GitHub Issues when the app crashes. Crash logs are saved locally and sent to your configured GitHub repo on next launch. Requires a GitHub personal access token with repo scope.</string>
+    <string name="settings_crash_enable">Enable crash reporting</string>
+    <string name="settings_crash_token_hint">GitHub Token (with repo scope)</string>
+    <string name="settings_crash_repo_hint">GitHub Repository (owner/repo)</string>
+    <string name="settings_crash_pending">%d pending crash reports will be sent on next launch</string>
+
+    <!-- Privacy Notice (P3 Security: F-C6-01) -->
+    <string name="privacy_notice_title">Privacy &amp; Data Usage</string>
+    <string name="privacy_notice_message">Raccoon File Manager processes your data locally on your device:\n\n\u2022 File scanning indexes file names, sizes, and paths to find duplicates, junk, and large files. This data is cached locally and auto-deleted after 30 days.\n\n\u2022 Security scanning checks installed apps and their permissions to detect threats. No app data leaves your device.\n\n\u2022 Cloud connections store your credentials securely using Android encrypted storage. Files are only transferred to remote servers when you explicitly use cloud features.\n\n\u2022 Crash reporting (if enabled) sends crash logs to your configured GitHub repo. No data is sent to analytics services or third parties.\n\nYou can clear all stored data at any time from Settings.</string>
+    <string name="privacy_notice_accept">I Understand</string>
+
+    <!-- SignatureScanner threat names (N1 audit) -->
+    <string name="threat_suspicious_filename">Suspicious Filename</string>
+    <string name="threat_apk_unusual_location">APK in Unusual Location</string>
+    <string name="threat_known_malware">Known Malware Detected</string>
+    <string name="threat_elf_binary">ELF Binary in Storage</string>
+    <string name="threat_loose_dex">Loose DEX File</string>
+    <string name="threat_dangerous_script">Dangerous Script</string>
+    <string name="threat_hidden_executable">Hidden Executable</string>
+    <string name="threat_large_apk">Unusually Large APK</string>
+    <string name="threat_suspicious_archive">Suspicious Archive</string>
+
+    <!-- SignatureScanner threat descriptions (N1 audit) -->
+    <string name="threat_desc_suspicious_extension">File \"%1$s\" has a suspicious extension (.%2$s).</string>
+    <string name="threat_desc_suspicious_filename">File \"%1$s\" matches a known malware filename pattern.</string>
+    <string name="threat_desc_apk_unusual_location">APK file found in %1$s. APKs outside standard install locations may be side-loaded malware.</string>
+    <string name="threat_desc_known_malware_md5">File \"%1$s\" matches known malware signature (MD5: %2$s).</string>
+    <string name="threat_desc_known_malware_sha256">File \"%1$s\" matches known malware signature (SHA-256).</string>
+    <string name="threat_desc_elf_binary">Linux executable binary \"%1$s\" found in user storage. This could be a hacking tool, exploit, or backdoor.</string>
+    <string name="threat_desc_loose_dex">Android bytecode file \"%1$s\" found outside app directories. This may be a dynamically loaded malware payload.</string>
+    <string name="threat_desc_dangerous_script">Script \"%1$s\" contains suspicious commands that could compromise device security (pattern: %2$s).</string>
+    <string name="threat_desc_hidden_executable">Hidden file \"%1$s\" (.%2$s) found at %3$s. Malware often uses hidden files to evade detection.</string>
+    <string name="threat_desc_large_apk">APK \"%1$s\" is %2$dMB. Unusually large APKs may contain packed malware or stolen data.</string>
+    <string name="threat_desc_suspicious_archive">Archive \"%1$s\" is only %2$d bytes, below the minimum valid size for .%3$s format. This file is likely corrupt.</string>
+
+    <!-- NetworkSecurityScanner threat names (N1 audit) -->
+    <string name="threat_net_cleartext_traffic">Cleartext Traffic Allowed</string>
+    <string name="threat_net_cleartext_traffic_desc">\"%1$s\" targets Android %2$d and may allow unencrypted HTTP traffic, exposing data to interception.</string>
+    <string name="threat_net_explicit_cleartext">Explicit Cleartext Traffic</string>
+    <string name="threat_net_explicit_cleartext_desc">\"%1$s\" explicitly enables cleartext HTTP traffic in its manifest.</string>
+    <string name="threat_net_data_exfiltration">Data Exfiltration Risk</string>
+    <string name="threat_net_data_exfiltration_desc">\"%1$s\" has internet access combined with %2$d sensitive permissions (%3$s). This combination could enable data exfiltration.</string>
+    <string name="threat_net_traffic_interception">Traffic Interception Tool</string>
+    <string name="threat_net_traffic_interception_desc">\"%1$s\" (%2$s) can intercept and inspect network traffic. This could be used to capture passwords, tokens, and private data.</string>
+    <string name="threat_net_network_attack">Network Attack Tool</string>
+    <string name="threat_net_network_attack_desc">\"%1$s\" (%2$s) is a network penetration/scanning tool. Its presence may indicate unauthorized network activity.</string>
+    <string name="threat_net_suspicious_port">Suspicious Listening Port</string>
+    <string name="threat_net_suspicious_port_desc">Port %1$d (%2$s) is listening on this device. This is unusual for a mobile device and may indicate a backdoor or misconfigured service.</string>
+    <string name="threat_net_adb_network">ADB Over Network Enabled</string>
+    <string name="threat_net_adb_network_desc">Android Debug Bridge is accessible over the network on port %1$s. Anyone on the same network can gain full device control.</string>
+
+    <!-- PrivacyAuditor permission category names (N1 audit) -->
+    <string name="threat_privacy_cat_sms_access">SMS Access</string>
+    <string name="threat_privacy_cat_call_log_access">Call Log Access</string>
+    <string name="threat_privacy_cat_contacts_access">Contacts Access</string>
+    <string name="threat_privacy_cat_camera_access">Camera Access</string>
+    <string name="threat_privacy_cat_microphone_access">Microphone Access</string>
+    <string name="threat_privacy_cat_location_access">Location Access</string>
+    <string name="threat_privacy_cat_phone_access">Phone Access</string>
+    <string name="threat_privacy_cat_storage_access">Storage Access</string>
+    <string name="threat_privacy_cat_body_sensors">Body Sensors</string>
+    <string name="threat_privacy_cat_calendar_access">Calendar Access</string>
+    <string name="threat_privacy_cat_nearby_devices">Nearby Devices</string>
+
+    <!-- PrivacyAuditor threat names and descriptions (N1 audit) -->
+    <string name="threat_privacy_excessive_permissions">Excessive Permissions</string>
+    <string name="threat_privacy_excessive_permissions_desc">\"%1$s\" requests %2$d dangerous permission categories: %3$s.</string>
+    <string name="threat_privacy_sms_access">SMS Access</string>
+    <string name="threat_privacy_sms_access_desc">\"%1$s\" can read/send SMS. This is a common malware capability used for premium SMS fraud and 2FA interception.</string>
+    <string name="threat_privacy_background_location">Background Location Tracking</string>
+    <string name="threat_privacy_background_location_desc">\"%1$s\" can track your location continuously, even when the app is not in use.</string>
+    <string name="threat_privacy_call_log_access">Call Log Access</string>
+    <string name="threat_privacy_call_log_access_desc">\"%1$s\" can read your call history, including who you called, when, and for how long.</string>
+    <string name="threat_privacy_camera_mic">Camera + Microphone Access</string>
+    <string name="threat_privacy_camera_mic_desc">\"%1$s\" has access to both camera and microphone. This combination enables secret audio/video recording.</string>
+    <string name="threat_privacy_can_install_apps">Can Install Apps</string>
+    <string name="threat_privacy_can_install_apps_desc">\"%1$s\" can install other applications. Malware uses this capability to download and install additional malicious apps (\"dropper\" behavior).</string>
+    <string name="threat_privacy_health_data">Health Data Network Access</string>
+    <string name="threat_privacy_health_data_desc">\"%1$s\" can read body sensors and send data over the network. Sensitive health data could be exfiltrated.</string>
+    <string name="threat_privacy_full_storage">Full Storage Access</string>
+    <string name="threat_privacy_full_storage_desc">\"%1$s\" has permission to read and modify all files on the device, including photos, documents, and app data.</string>
+    <string name="threat_privacy_notification_listener">Notification Listener</string>
+    <string name="threat_privacy_notification_listener_desc">\"%1$s\" can read ALL your notifications, including messages, emails, 2FA codes, and banking alerts.</string>
+    <string name="threat_privacy_usage_tracking">App Usage Tracking</string>
+    <string name="threat_privacy_usage_tracking_desc">\"%1$s\" can monitor which apps you use, when, and for how long. This is a significant privacy concern.</string>
+    <string name="threat_privacy_app_enumeration">App Enumeration</string>
+    <string name="threat_privacy_app_enumeration_desc">\"%1$s\" can see all installed apps on your device. This data can be used for fingerprinting and targeted advertising.</string>
+
+    <!-- Browse folder collapse/expand -->
+    <string name="expand_all">Expand All</string>
+    <string name="collapse_all">Collapse All</string>
+    <string name="collapse_expand">Toggle expand or collapse</string>
+    <string name="a11y_expand_folder">Expand folder %s</string>
+    <string name="a11y_collapse_folder">Collapse folder %s</string>
+    <string name="a11y_toggle_all_folders">Toggle all folders expanded or collapsed</string>
+
+    <!-- Browse selection mode -->
+    <string name="select_all_files">All Files</string>
+    <string name="select_all_folders">All Folders</string>
+    <string name="browse_selected">%d selected</string>
+
+    <!-- Display options -->
+    <string name="display_options">Display</string>
+    <string name="a11y_display_options">Display options</string>
+    <string name="display_mode_list">List</string>
+    <string name="display_mode_compact">Compact</string>
+    <string name="display_mode_thumbnails">Thumbnail</string>
+    <string name="display_mode_grid">Grid</string>
+    <string name="display_mode_gallery">Gallery</string>
+
+    <!-- Size labels -->
+    <string name="size_label">Size</string>
+    <string name="size_xxs">XXS</string>
+    <string name="size_xs">XS</string>
+    <string name="size_sm">S</string>
+    <string name="size_md">M</string>
+    <string name="size_lg">L</string>
+    <string name="size_xl">XL</string>
+
+    <!-- Optimize enhancements -->
+    <string name="optimize_reanalyze">Re-analyze</string>
+    <string name="optimize_analyzing">Ricky is analyzing your files\u2026</string>
+    <string name="optimize_no_scan_data">Ricky needs scan data to suggest optimizations.</string>
+    <string name="optimize_total_reorganize_size">%1$d files totaling %2$s can be reorganized</string>
+
+    <!-- Cloud OAuth -->
+    <string name="cloud_oauth_sign_in">Sign in with OAuth</string>
+    <!-- cloud_oauth_google removed: use cloud_gdrive_sign_in -->
+    <string name="cloud_oauth_github">Sign in with GitHub</string>
+    <string name="cloud_oauth_or_manual">or enter token manually</string>
+    <string name="cloud_oauth_success">Ricky is authenticated \u2014 you\u0027re all set!</string>
+    <string name="cloud_oauth_failed">Ricky couldn\u0027t sign in: %s</string>
+    <!-- cloud_sign_in_google removed: use cloud_gdrive_sign_in -->
+    <string name="cloud_connect_github">Connect with GitHub</string>
+    <string name="cloud_oauth_note">Uses secure OAuth 2.0 authentication</string>
+    <!-- cloud_oauth_sign_in_google and cloud_oauth_connect_github removed: use cloud_gdrive_sign_in / cloud_connect_github -->
+    <string name="cloud_oauth_authenticating">Ricky is authenticating\u2026</string>
+    <string name="cloud_oauth_config_title">OAuth Configuration</string>
+    <string name="cloud_oauth_client_id_hint">OAuth Client ID</string>
+    <string name="cloud_oauth_client_secret_hint">OAuth Client Secret (optional for PKCE)</string>
+    <string name="cloud_oauth_note_secure">Uses secure OAuth 2.0 \u2014 you\'ll be redirected to sign in</string>
+    <string name="cloud_or_manual_token">Or enter access token manually</string>
+    <string name="cloud_github_card_title">GitHub</string>
+    <string name="cloud_github_card_desc">Access your GitHub repositories and gists</string>
+    <string name="cloud_github_connect_btn">Connect with GitHub</string>
+    <string name="cloud_setup_title_github">Connect to GitHub</string>
+    <string name="cloud_github_token_hint">Personal Access Token</string>
+    <string name="cloud_github_default_name">My GitHub</string>
+    <string name="cloud_github_help">Create a personal access token at github.com/settings/tokens and paste it above.</string>
+    <string name="a11y_provider_github">GitHub repository access</string>
+    <string name="cloud_type_github">GitHub</string>
+
+    <!-- Accessibility: content descriptions added in audit -->
+    <string name="a11y_switch_hidden_files">Show hidden files</string>
+    <string name="a11y_switch_crash_reporting">Enable crash reporting</string>
+    <string name="a11y_seek_large_file_threshold">Large file size threshold</string>
+    <string name="a11y_seek_stale_download_age">Stale download age threshold</string>
+    <string name="a11y_seek_undo_timeout">Undo timeout duration</string>
+    <string name="a11y_video_seek">Video progress</string>
+    <string name="a11y_audio_seek">Audio progress</string>
+    <string name="a11y_pdf_page_content">PDF page content</string>
+    <string name="a11y_image_content">Image file content</string>
+    <string name="a11y_play_video">Play video</string>
+    <string name="a11y_optimize_accept_suggestion">Accept optimization suggestion</string>
+    <string name="a11y_optimize_select_category">Select all items in this category</string>
+    <string name="a11y_severity_indicator">Severity indicator</string>
+    <string name="a11y_drag_handle">Drag handle</string>
+    <string name="a11y_select_checkbox">Select item</string>
+    <string name="a11y_loading">Loading content</string>
+    <string name="a11y_success">Operation completed successfully</string>
+    <string name="a11y_scan_threat_count">Threats found</string>
+    <string name="a11y_file_type_icon">File type icon</string>
+    <string name="a11y_expand_collapse_node">Expand or collapse folder</string>
+    <string name="a11y_quick_action_junk">View junk files</string>
+    <string name="a11y_quick_action_large">View large files</string>
+    <string name="a11y_quick_action_duplicates">View duplicate files</string>
+    <string name="a11y_reanalyze">Re-analyze storage</string>
+    <string name="a11y_clear_selection">Clear selection</string>
+    <string name="a11y_filter_options">Toggle filter options panel</string>
+    <string name="a11y_scan_progress">Scan in progress</string>
+    <string name="a11y_unsupported_file">File type not supported for preview</string>
+    <string name="a11y_open_with_external">Open with external application</string>
+    <string name="a11y_share_file">Share file</string>
+    <string name="a11y_search_files">Search files</string>
+    <string name="a11y_search_tree">Search file tree</string>
+    <string name="a11y_file_count">File count</string>
+    <string name="a11y_selection_actions">Selection action bar</string>
+    <string name="a11y_empty_state">No results</string>
+    <string name="a11y_video_controls">Video playback controls</string>
+    <string name="a11y_audio_controls">Audio playback controls</string>
+    <string name="a11y_shield_status">Protection status</string>
+    <string name="a11y_scan_results_summary">Scan results summary</string>
+    <string name="a11y_analyzing_progress">Analyzing storage progress</string>
+    <string name="a11y_cloud_loading">Loading cloud files</string>
+    <string name="a11y_divider_resize">Resize panes divider</string>
+    <string name="a11y_pane_left">Left file pane</string>
+    <string name="a11y_pane_right">Right file pane</string>
+    <string name="a11y_theme_selection">Theme selection</string>
+    <string name="a11y_scan_phase_progress">Scan phase progress</string>
+    <string name="a11y_filter_threats">Filter scan results</string>
+    <string name="a11y_fix_all_threats">Fix all detected threats</string>
+    <string name="a11y_fix_threat">Fix this threat</string>
+    <string name="a11y_settings_section">Settings section</string>
+    <string name="a11y_connection_bar">Cloud connection controls</string>
+    <string name="a11y_cloud_path">Current cloud path</string>
+    <string name="a11y_swap_panes">Swap left and right panes</string>
+
+    <!-- Accessibility: design audit additions -->
+    <string name="a11y_raccoon_bubble">Ricky assistant. Double tap to open.</string>
+    <string name="a11y_tab_selected">%s tab selected</string>
+    <string name="a11y_file_icon">%1$s file icon</string>
+    <string name="a11y_folder_icon">Folder icon</string>
+    <string name="a11y_onboarding_step">Onboarding step %1$d of %2$d</string>
+    <string name="a11y_onboarding_icon_welcome">Welcome raccoon logo</string>
+    <string name="a11y_onboarding_icon_browse">Browse files illustration</string>
+    <string name="a11y_onboarding_icon_scan">Scan storage illustration</string>
+    <string name="a11y_legend_color">%1$s, color indicator</string>
+    <string name="a11y_preview_image">Preview image of %s</string>
+    <string name="a11y_preview_text">Text preview of %s</string>
+    <string name="a11y_scan_status_update">Scan status updated</string>
+    <string name="a11y_selection_changed">%1$d items selected</string>
+    <string name="a11y_folder_header">%1$s folder, %2$d files, %3$s</string>
+
+    <!-- Analysis accessibility -->
+    <string name="a11y_storage_overview_card">Storage overview</string>
+    <string name="a11y_storage_bar">Storage usage bar</string>
+    <string name="a11y_segmented_bar">Category usage breakdown bar</string>
+    <string name="a11y_potential_savings">Potential storage savings</string>
+    <string name="a11y_bottom_nav_divider">Navigation divider</string>
+    <string name="a11y_scan_icon">Scan status icon</string>
+
+    <!-- Accessibility: utility fragment audit additions -->
+    <string name="a11y_toggle_token_visibility">Toggle token visibility</string>
+
+    <!-- Default / placeholder values for UI elements -->
+    <string name="media_time_default">0:00</string>
+    <string name="av_default_percent">0%</string>
+    <string name="av_default_count">0</string>
+    <string name="cloud_default_port">22</string>
+
+    <!-- Accessibility: media player controls -->
+    <string name="a11y_video_current_time">Current video position</string>
+    <string name="a11y_video_duration">Video duration</string>
+    <string name="a11y_audio_current_time">Current audio position</string>
+    <string name="a11y_audio_duration">Audio duration</string>
+
+    <!-- Accessibility: antivirus summary cards -->
+    <string name="a11y_critical_threat_count">Critical threat count</string>
+    <string name="a11y_high_threat_count">High threat count</string>
+    <string name="a11y_medium_threat_count">Medium threat count</string>
+    <string name="a11y_clean_file_count">Clean file count</string>
+    <string name="a11y_av_progress_percent">Scan progress percentage</string>
+
+    <!-- Accessibility: cloud form -->
+    <string name="a11y_cloud_port_field">Connection port number</string>
+    <string name="a11y_cloud_provider_selector">Cloud provider type selector</string>
+    <string name="a11y_cloud_test_result">Connection test result</string>
 </resources>

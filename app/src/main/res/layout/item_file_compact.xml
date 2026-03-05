@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_sm"
+    android:layout_marginVertical="@dimen/spacing_xs"
+    app:cardCornerRadius="@dimen/radius_card"
+    app:cardElevation="@dimen/elevation_subtle"
+    app:cardBackgroundColor="@color/surfaceColor"
+    app:strokeWidth="@dimen/stroke_default"
+    app:strokeColor="@color/borderSubtle"
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="@dimen/touch_target_min">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm">
+
+        <!-- Small icon -->
+        <ImageView
+            android:id="@+id/iv_file_icon"
+            android:layout_width="@dimen/icon_compact"
+            android:layout_height="@dimen/icon_compact"
+            android:scaleType="centerCrop"
+            android:importantForAccessibility="no"
+            android:contentDescription="@string/a11y_file_type_icon" />
+
+        <!-- Text block -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginEnd="@dimen/spacing_sm">
+
+            <TextView
+                android:id="@+id/tv_file_name"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
+                android:textColor="@color/textPrimary"
+                android:maxLines="1"
+                android:ellipsize="middle"
+                android:textAlignment="viewStart" />
+
+            <TextView
+                android:id="@+id/tv_file_meta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textSecondary"
+                android:maxLines="1"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:textAlignment="viewEnd" />
+
+        </LinearLayout>
+
+        <!-- Checkbox -->
+        <CheckBox
+            android:id="@+id/cb_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:minWidth="@dimen/touch_target_min"
+            android:minHeight="@dimen/touch_target_min"
+            android:buttonTint="@color/colorPrimary"
+            android:contentDescription="@string/a11y_select_checkbox" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

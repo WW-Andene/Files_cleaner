@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Focusable foreground for cards: shows a focus ring on keyboard focus,
+     with a subtle tinted fill to reinforce the focused state. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Tinted fill visible only when the view is focused -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimaryContainer" />
+            <corners android:radius="@dimen/radius_card" />
+        </shape>
+    </item>
+    <!-- Focus ring border -->
+    <item android:drawable="@drawable/bg_focus_ring" />
+</layer-list>

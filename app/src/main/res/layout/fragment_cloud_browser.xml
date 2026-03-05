@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,8 +13,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_sm">
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_sm"
+        android:background="@color/surfaceColor"
+        android:elevation="0dp"
+        android:minHeight="?attr/actionBarSize">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -31,25 +35,26 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/cloud_title"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
             android:textColor="@color/textPrimary"
-            android:layout_marginStart="@dimen/spacing_sm" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_height_sm"
+            android:layout_height="@dimen/button_height"
             android:text="@string/cloud_add"
             android:textAllCaps="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.FileCleaner.Button.Outlined"
             app:cornerRadius="@dimen/radius_pill"
-            app:icon="@drawable/ic_folder"
-            app:iconSize="16dp" />
+            app:icon="@drawable/ic_cloud"
+            app:iconSize="@dimen/icon_small" />
     </LinearLayout>
 
-    <!-- Connection selector -->
+    <!-- Connection selector with status indicator -->
     <LinearLayout
         android:id="@+id/connection_bar"
         android:layout_width="match_parent"
@@ -59,16 +64,43 @@
         android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_xs"
         android:background="@color/surfaceDim"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_connection_bar"
+        android:focusable="true"
+        android:minHeight="@dimen/touch_target_min">
+
+        <!-- Connection status dot (green=connected, red=disconnected) -->
+        <ImageView
+            android:id="@+id/iv_connection_status"
+            android:layout_width="@dimen/spacing_md"
+            android:layout_height="@dimen/spacing_md"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:src="@drawable/ic_status_disconnected"
+            android:contentDescription="@string/cloud_status_disconnected"
+            android:importantForAccessibility="yes" />
 
         <Spinner
             android:id="@+id/spinner_connection"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="@dimen/button_height_sm"
+            android:layout_height="@dimen/button_height"
             android:background="@drawable/bg_spinner"
             android:popupBackground="@drawable/bg_spinner_dropdown"
-            android:paddingHorizontal="@dimen/spacing_md" />
+            android:contentDescription="@string/a11y_connection_selector"
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:minHeight="@dimen/touch_target_min" />
+
+        <!-- Test connection button -->
+        <ImageButton
+            android:id="@+id/btn_test_connection"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_cloud"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cloud_test_connection"
+            android:scaleType="centerInside"
+            android:padding="@dimen/spacing_md"
+            app:tint="@color/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btn_disconnect"
@@ -98,14 +130,17 @@
         android:id="@+id/tv_path"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="/"
+        tools:text="/"
         android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
         android:textColor="@color/textSecondary"
-        android:singleLine="true"
+        android:maxLines="1"
         android:ellipsize="start"
         android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_xs"
-        android:visibility="gone" />
+        android:minHeight="@dimen/spacing_xxl"
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_cloud_path"
+        android:accessibilityLiveRegion="polite" />
 
     <!-- Loading indicator -->
     <ProgressBar
@@ -114,7 +149,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:visibility="gone" />
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_cloud_loading"
+        android:accessibilityLiveRegion="assertive" />
 
     <!-- Empty state: no connections -->
     <LinearLayout
@@ -123,29 +161,37 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="@dimen/spacing_4xl">
+        android:paddingHorizontal="@dimen/spacing_3xl"
+        android:paddingTop="@dimen/spacing_5xl"
+        android:paddingBottom="@dimen/spacing_4xl"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/a11y_empty_state"
+        android:focusable="true">
 
         <ImageView
             android:layout_width="@dimen/icon_empty_state"
             android:layout_height="@dimen/icon_empty_state"
-            android:src="@drawable/ic_folder"
-            android:alpha="0.4"
+            android:src="@drawable/ic_raccoon_logo"
+            android:alpha="@dimen/alpha_raccoon_logo"
             android:importantForAccessibility="no"
-            app:tint="@color/textTertiary" />
+            android:contentDescription="@null" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_lg"
+            android:layout_marginTop="@dimen/spacing_xxl"
             android:text="@string/cloud_empty"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textColor="@color/textSecondary"
-            android:gravity="center" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+            android:textColor="@color/textPrimary"
+            android:gravity="center"
+            android:maxWidth="@dimen/content_max_width_narrow"
+            android:lineSpacingExtra="@dimen/spacing_xs" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add_first"
+            style="@style/Widget.FileCleaner.Button"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_height_sm"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="@dimen/spacing_lg"
             android:text="@string/cloud_add_connection"
             android:textAllCaps="false"
@@ -161,46 +207,58 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingBottom="@dimen/spacing_above_nav"
+        android:layoutAnimation="@anim/layout_item_stagger"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_fab_clearance"
         android:visibility="gone" />
 
     <!-- Bottom bar for download -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/action_bar"
+        style="@style/Widget.FileCleaner.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_sm"
-        android:background="@color/surfaceDim"
-        android:visibility="gone">
+        android:layout_marginBottom="@dimen/spacing_md"
+        android:visibility="gone"
+        app:cardElevation="@dimen/elevation_floating"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:strokeWidth="@dimen/stroke_none">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_download"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height_sm"
-            android:text="@string/cloud_download"
-            android:textAllCaps="false"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            app:cornerRadius="@dimen/radius_pill" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:minHeight="@dimen/touch_target_min">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_upload"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height_sm"
-            android:text="@string/cloud_upload"
-            android:textAllCaps="false"
-            android:layout_marginStart="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:cornerRadius="@dimen/radius_pill"
-            app:strokeColor="@color/borderDefault" />
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_download"
+                style="@style/Widget.FileCleaner.Button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/cloud_download"
+                android:textAllCaps="false"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_upload"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/cloud_upload"
+                android:textAllCaps="false"
+                android:layout_marginStart="@dimen/spacing_xs"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                app:cornerRadius="@dimen/radius_pill"
+                app:strokeColor="@color/borderDefault" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

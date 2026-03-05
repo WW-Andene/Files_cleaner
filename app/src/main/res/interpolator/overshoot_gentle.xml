@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gentle overshoot — for success checkmarks and completion badges -->
+<pathInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:pathData="M 0,0 C 0.3,0 0.2,1.15 0.65,1.05 L 1,1" />

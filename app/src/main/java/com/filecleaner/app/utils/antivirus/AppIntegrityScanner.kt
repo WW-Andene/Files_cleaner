@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.util.concurrent.TimeUnit
 
 /**
  * App integrity scanner.
@@ -212,11 +213,13 @@ object AppIntegrityScanner {
 
         // Check for rw mount on /system
         try {
-            val process = Runtime.getRuntime().exec(arrayOf("mount"))
+            val process = ProcessBuilder("mount").redirectErrorStream(true).start()
             val reader = BufferedReader(InputStreamReader(process.inputStream))
+            var foundRwSystem = false
             reader.useLines { lines ->
-                lines.forEach { line ->
-                    if (line.contains("/system") && line.contains("rw")) {
+                for (line in lines) {
+                    if (!foundRwSystem && line.contains("/system") && Regex("""\brw\b""").containsMatchIn(line)) {
+                        foundRwSystem = true
                         results.add(
                             ThreatResult(
                                 name = "System Partition Writable",
@@ -229,16 +232,16 @@ object AppIntegrityScanner {
                     }
                 }
             }
-            process.waitFor()
+            if (!process.waitFor(5, TimeUnit.SECONDS)) process.destroyForcibly()
         } catch (_: Exception) {
             // Can't execute mount
         }
 
         // Check for Magisk hide props
         try {
-            val process = Runtime.getRuntime().exec(arrayOf("getprop", "ro.boot.vbmeta.device_state"))
+            val process = ProcessBuilder("getprop", "ro.boot.vbmeta.device_state").redirectErrorStream(true).start()
             val output = process.inputStream.bufferedReader().readText().trim()
-            process.waitFor()
+            if (!process.waitFor(5, TimeUnit.SECONDS)) process.destroyForcibly()
             if (output == "unlocked") {
                 results.add(
                     ThreatResult(
@@ -324,11 +327,13 @@ object AppIntegrityScanner {
             }
         }
 
-        // Check for frida in loaded libs
+        // Check for frida in loaded libs (use specific patterns to avoid false positives)
         try {
             val maps = File("/proc/self/maps").readText()
-            if (maps.contains("frida", ignoreCase = true) ||
-                maps.contains("gadget", ignoreCase = true)
+            if (maps.contains("frida-gadget", ignoreCase = true) ||
+                maps.contains("libfrida", ignoreCase = true) ||
+                maps.contains("frida-agent", ignoreCase = true) ||
+                maps.contains("/frida/", ignoreCase = true)
             ) {
                 results.add(
                     ThreatResult(
@@ -415,9 +420,9 @@ object AppIntegrityScanner {
                 "ro.product.device" to "generic"
             )
             for ((prop, indicator) in props) {
-                val process = Runtime.getRuntime().exec(arrayOf("getprop", prop))
+                val process = ProcessBuilder("getprop", prop).redirectErrorStream(true).start()
                 val value = process.inputStream.bufferedReader().readText().trim()
-                process.waitFor()
+                if (!process.waitFor(5, TimeUnit.SECONDS)) { process.destroyForcibly(); continue }
                 if (value.contains(indicator, ignoreCase = true) && !isEmulator) {
                     results.add(
                         ThreatResult(
@@ -443,7 +448,7 @@ object AppIntegrityScanner {
 
         // Check developer options enabled
         try {
-            val devEnabled = Settings.Secure.getInt(
+            val devEnabled = Settings.Global.getInt(
                 context.contentResolver,
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
             )
@@ -465,7 +470,7 @@ object AppIntegrityScanner {
 
         // Check USB debugging
         try {
-            val adbEnabled = Settings.Secure.getInt(
+            val adbEnabled = Settings.Global.getInt(
                 context.contentResolver,
                 Settings.Global.ADB_ENABLED, 0
             )
@@ -636,10 +641,13 @@ object AppIntegrityScanner {
                 val severity = if (capabilities.size >= 2) ThreatResult.Severity.HIGH
                 else ThreatResult.Severity.MEDIUM
 
+                val capDesc = if (capabilities.isEmpty()) "access your device"
+                else capabilities.joinToString(", ")
+
                 results.add(
                     ThreatResult(
                         name = "Accessibility Service Active",
-                        description = "\"$appName\" ($pkg) has an active accessibility service that can ${capabilities.joinToString(", ")}. Malicious accessibility services can steal passwords, read messages, and control your device.",
+                        description = "\"$appName\" ($pkg) has an active accessibility service that can $capDesc. Malicious accessibility services can steal passwords, read messages, and control your device.",
                         severity = severity,
                         source = ThreatResult.ScannerSource.APP_INTEGRITY,
                         packageName = pkg,

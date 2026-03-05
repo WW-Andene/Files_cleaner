@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Circular focus ring for round icon buttons — branded green ring for accessibility.
+     §DC4: Complements bg_focus_ring (rectangle) and bg_focus_ring_pill (pill-shaped). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <stroke
+        android:width="@dimen/stroke_selected"
+        android:color="@color/borderFocus" />
+    <solid android:color="@android:color/transparent" />
+</shape>

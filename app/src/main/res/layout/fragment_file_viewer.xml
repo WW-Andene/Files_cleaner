@@ -12,9 +12,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingVertical="@dimen/spacing_sm"
-        android:background="@color/surfaceElevated">
+        android:background="@color/surfaceColor"
+        android:elevation="0dp"
+        android:minHeight="?attr/actionBarSize">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -22,7 +24,8 @@
             android:layout_height="@dimen/icon_button"
             android:src="@drawable/ic_arrow_back"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/onboarding_back"
+            android:focusable="true"
+            android:contentDescription="@string/back"
             app:tint="@color/textPrimary" />
 
         <TextView
@@ -31,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="@dimen/spacing_sm"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+            android:textAppearance="@style/TextAppearance.FileCleaner.FileViewer.Filename"
             android:maxLines="1"
             android:ellipsize="middle" />
 
@@ -39,9 +42,11 @@
             android:id="@+id/btn_open_external"
             android:layout_width="@dimen/icon_button"
             android:layout_height="@dimen/icon_button"
+            android:layout_marginStart="@dimen/spacing_sm"
             android:src="@drawable/ic_open"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/ctx_open"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_open_with_external"
             app:tint="@color/textPrimary" />
 
         <ImageButton
@@ -50,7 +55,8 @@
             android:layout_height="@dimen/icon_button"
             android:src="@drawable/ic_share"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/ctx_share"
+            android:focusable="true"
+            android:contentDescription="@string/a11y_share_file"
             app:tint="@color/textPrimary" />
     </LinearLayout>
 
@@ -67,6 +73,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
+            android:importantForAccessibility="yes"
+            android:contentDescription="@string/a11y_image_content"
             android:visibility="gone" />
 
         <!-- PDF page viewer (hidden by default) -->
@@ -83,7 +91,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:background="@android:color/white" />
+                android:background="@color/surfaceColor"
+                android:contentDescription="@string/a11y_pdf_page_content" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -99,7 +108,8 @@
                     android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_arrow_back"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/onboarding_back"
+                    android:focusable="true"
+                    android:contentDescription="@string/a11y_pdf_prev_page"
                     app:tint="@color/textPrimary" />
 
                 <TextView
@@ -107,7 +117,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_lg"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                    android:accessibilityLiveRegion="polite" />
 
                 <ImageButton
                     android:id="@+id/btn_pdf_next"
@@ -115,7 +126,8 @@
                     android:layout_height="@dimen/icon_button"
                     android:src="@drawable/ic_arrow_forward"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/onboarding_next"
+                    android:focusable="true"
+                    android:contentDescription="@string/a11y_pdf_next_page"
                     app:tint="@color/textPrimary" />
             </LinearLayout>
         </LinearLayout>
@@ -125,6 +137,7 @@
             android:id="@+id/scroll_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
             android:visibility="gone">
 
             <TextView
@@ -132,10 +145,102 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/spacing_lg"
-                android:fontFamily="monospace"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Mono"
                 android:textIsSelectable="true" />
         </ScrollView>
+
+        <!-- Video player (hidden by default) -->
+        <FrameLayout
+            android:id="@+id/video_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <VideoView
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+            <!-- Play overlay shown before video starts -->
+            <ImageView
+                android:id="@+id/iv_video_play_overlay"
+                android:layout_width="@dimen/icon_file_list_large"
+                android:layout_height="@dimen/icon_file_list_large"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play_circle"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/a11y_play_video"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="@color/textOnPrimary"
+                android:alpha="0.9" />
+
+            <!-- Video controls bar -->
+            <LinearLayout
+                android:id="@+id/video_controls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_sm"
+                android:background="@color/overlayDark"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/a11y_video_controls"
+                android:visibility="gone">
+
+                <SeekBar
+                    android:id="@+id/seek_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:contentDescription="@string/a11y_video_seek" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="@dimen/spacing_xs">
+
+                    <ImageButton
+                        android:id="@+id/btn_video_play"
+                        android:layout_width="@dimen/icon_button"
+                        android:layout_height="@dimen/icon_button"
+                        android:src="@android:drawable/ic_media_pause"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:focusable="true"
+                        android:contentDescription="@string/viewer_video_play"
+                        app:tint="@color/textOnPrimary" />
+
+                    <TextView
+                        android:id="@+id/tv_video_current"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:text="@string/media_time_default"
+                        android:contentDescription="@string/a11y_video_current_time"
+                        android:textColor="@color/textOnPrimary"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:importantForAccessibility="no" />
+
+                    <TextView
+                        android:id="@+id/tv_video_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/media_time_default"
+                        android:contentDescription="@string/a11y_video_duration"
+                        android:textColor="@color/textOnPrimary"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
 
         <!-- Audio player (hidden by default) -->
         <LinearLayout
@@ -145,14 +250,17 @@
             android:orientation="vertical"
             android:gravity="center"
             android:padding="@dimen/spacing_lg"
+            android:accessibilityLiveRegion="polite"
+            android:contentDescription="@string/a11y_audio_controls"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/iv_audio_art"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="@dimen/icon_audio_art"
+                android:layout_height="@dimen/icon_audio_art"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_audio"
+                android:importantForAccessibility="no"
                 app:tint="@color/textTertiary" />
 
             <TextView
@@ -163,40 +271,48 @@
                 android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                 android:textColor="@color/textPrimary"
                 android:maxLines="2"
-                android:ellipsize="end" />
+                android:ellipsize="end"
+                android:gravity="center" />
 
             <SeekBar
                 android:id="@+id/seek_audio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="@dimen/touch_target_min"
                 android:layout_marginTop="@dimen/spacing_lg"
-                android:layout_marginHorizontal="@dimen/spacing_lg" />
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:focusable="true"
+                android:contentDescription="@string/a11y_audio_seek" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginHorizontal="@dimen/spacing_lg">
+                android:layout_marginHorizontal="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_xs">
 
                 <TextView
                     android:id="@+id/tv_audio_current"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0:00"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:text="@string/media_time_default"
+                    android:contentDescription="@string/a11y_audio_current_time"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/textSecondary" />
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:id="@+id/tv_audio_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0:00"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                    android:text="@string/media_time_default"
+                    android:contentDescription="@string/a11y_audio_duration"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/textSecondary" />
             </LinearLayout>
 
@@ -205,14 +321,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="@dimen/spacing_sm">
+                android:layout_marginTop="@dimen/spacing_md">
 
                 <ImageButton
                     android:id="@+id/btn_audio_play"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="@dimen/icon_audio_play"
+                    android:layout_height="@dimen/icon_audio_play"
                     android:src="@android:drawable/ic_media_play"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:focusable="true"
                     android:contentDescription="@string/viewer_audio_play"
                     app:tint="@color/textPrimary" />
             </LinearLayout>
@@ -223,6 +340,7 @@
             android:id="@+id/web_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:importantForAccessibility="yes"
             android:visibility="gone" />
 
         <!-- Unsupported type fallback -->
@@ -232,6 +350,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
+            android:padding="@dimen/spacing_4xl"
+            android:accessibilityLiveRegion="polite"
             android:visibility="gone">
 
             <TextView
@@ -239,14 +359,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                android:textColor="@color/textSecondary" />
+                android:textColor="@color/textSecondary"
+                android:gravity="center"
+                android:contentDescription="@string/a11y_unsupported_file" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_open_fallback"
+                style="@style/Widget.FileCleaner.Button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/button_height"
                 android:layout_marginTop="@dimen/spacing_lg"
-                android:text="@string/ctx_open" />
+                android:text="@string/ctx_open"
+                android:textAllCaps="false"
+                android:focusable="true"
+                app:cornerRadius="@dimen/radius_pill" />
         </LinearLayout>
     </FrameLayout>
 
@@ -255,10 +381,12 @@
         android:id="@+id/tv_file_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_sm"
-        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_sm"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
         android:textColor="@color/textTertiary"
         android:gravity="center"
-        android:background="@color/surfaceElevated" />
+        android:background="@color/surfaceElevated"
+        android:accessibilityLiveRegion="polite" />
 
 </LinearLayout>

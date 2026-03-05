@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/spacing_lg"
+    android:paddingBottom="@dimen/spacing_xs"
+    android:paddingHorizontal="@dimen/spacing_sm">
+
+    <!-- Top row: Checkbox + Title + Expand/Collapse arrow -->
+    <LinearLayout
+        android:id="@+id/header_clickable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/touch_target_min"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="@dimen/spacing_xs">
+
+        <CheckBox
+            android:id="@+id/cb_category_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/touch_target_min"
+            android:minHeight="@dimen/touch_target_min"
+            android:contentDescription="@string/a11y_optimize_select_category" />
+
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_xs"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+            android:textColor="@color/textPrimary"
+            android:accessibilityHeading="true"
+            tools:text="Photos" />
+
+        <ImageView
+            android:id="@+id/iv_expand_arrow"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:padding="@dimen/spacing_md"
+            android:src="@drawable/ic_arrow_back"
+            android:rotation="-90"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/collapse_expand"
+            android:layout_marginStart="@dimen/spacing_sm"
+            app:tint="@color/textTertiary" />
+    </LinearLayout>
+
+    <!-- Bottom row: Size info + Selection count badge -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/spacing_4xl"
+        android:paddingEnd="@dimen/spacing_sm"
+        android:paddingTop="@dimen/spacing_xs">
+
+        <TextView
+            android:id="@+id/tv_header_size_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+            android:textColor="@color/textTertiary"
+            tools:text="2.4 GB, 340 files" />
+
+        <TextView
+            android:id="@+id/tv_header_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge"
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingVertical="@dimen/spacing_micro"
+            android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
+            android:textColor="@color/colorPrimary"
+            tools:text="5/10 selected" />
+    </LinearLayout>
+
+</LinearLayout>

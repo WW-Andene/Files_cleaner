@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pill-shaped focus ring for buttons and chips -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <stroke
+        android:width="@dimen/stroke_selected"
+        android:color="@color/borderFocus" />
+    <corners android:radius="@dimen/radius_pill" />
+    <solid android:color="@android:color/transparent" />
+</shape>

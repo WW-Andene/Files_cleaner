@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_xxl"
+        android:paddingTop="@dimen/spacing_xxl"
+        android:paddingBottom="@dimen/spacing_lg">
+
+        <!-- Provider-specific help text (top of form) -->
+        <TextView
+            android:id="@+id/tv_provider_help"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:drawablePadding="@dimen/spacing_sm"
+            android:lineSpacingExtra="@dimen/spacing_xs" />
+
+        <!-- Connection name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_display_name"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Host / URL -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_host_hint"
+            app:errorEnabled="true"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_host"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Port -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_port"
+            android:layout_width="@dimen/port_field_width"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_port_hint"
+            app:errorEnabled="true"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1"
+                android:text="@string/cloud_default_port" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_username_hint"
+            app:errorEnabled="true"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password / Token -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/cloud_password_hint"
+            app:errorEnabled="true"
+            app:endIconMode="password_toggle"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ═══ OAuth Configuration Section (visible for Google Drive & GitHub) ═══ -->
+        <LinearLayout
+            android:id="@+id/oauth_config_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- OAuth config title -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm"
+                android:text="@string/cloud_oauth_config_title"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                android:textColor="@color/textSecondary" />
+
+            <!-- OAuth Client ID -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_oauth_client_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:hint="@string/cloud_oauth_client_id_hint"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="@dimen/radius_input"
+                app:boxCornerRadiusTopEnd="@dimen/radius_input"
+                app:boxCornerRadiusBottomStart="@dimen/radius_input"
+                app:boxCornerRadiusBottomEnd="@dimen/radius_input"
+                style="@style/Widget.FileCleaner.TextInput">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_oauth_client_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- OAuth Client Secret -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_oauth_client_secret"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_sm"
+                android:hint="@string/cloud_oauth_client_secret_hint"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopStart="@dimen/radius_input"
+                app:boxCornerRadiusTopEnd="@dimen/radius_input"
+                app:boxCornerRadiusBottomStart="@dimen/radius_input"
+                app:boxCornerRadiusBottomEnd="@dimen/radius_input"
+                app:endIconMode="password_toggle"
+                style="@style/Widget.FileCleaner.TextInput">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_oauth_client_secret"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- OAuth Sign-In button (visible for Google Drive & GitHub) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_oauth_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/cloud_oauth_sign_in"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:visibility="gone"
+            style="@style/Widget.FileCleaner.Button.Outlined"
+            app:icon="@drawable/ic_cloud"
+            app:iconGravity="textStart"
+            app:iconSize="@dimen/icon_inline"
+            app:cornerRadius="@dimen/radius_btn"
+            app:strokeColor="@color/colorPrimary"
+            app:strokeWidth="@dimen/stroke_default"
+            app:iconTint="@color/colorPrimary"
+            android:textColor="@color/colorPrimary" />
+
+        <!-- Divider with "or enter token manually" -->
+        <LinearLayout
+            android:id="@+id/oauth_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginVertical="@dimen/spacing_md"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/stroke_default"
+                android:layout_weight="1"
+                android:background="@color/borderDefault" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cloud_or_manual_token"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textColor="@color/textTertiary"
+                android:paddingHorizontal="@dimen/spacing_md" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/stroke_default"
+                android:layout_weight="1"
+                android:background="@color/borderDefault" />
+        </LinearLayout>
+
+        <!-- Test Connection button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_test_connection"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_target_min"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/cloud_test_connection"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/Widget.FileCleaner.Button.Text"
+            app:icon="@drawable/ic_cloud"
+            app:iconGravity="textStart"
+            app:iconSize="@dimen/icon_test_result"
+            app:iconPadding="@dimen/spacing_sm"
+            app:iconTint="@color/colorPrimary"
+            app:rippleColor="@color/selectedBackground" />
+
+        <!-- Test connection result -->
+        <LinearLayout
+            android:id="@+id/test_result_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_test_result_icon"
+                android:layout_width="@dimen/icon_test_result"
+                android:layout_height="@dimen/icon_test_result"
+                android:importantForAccessibility="no"
+                android:contentDescription="@string/a11y_connection_status" />
+
+            <TextView
+                android:id="@+id/tv_test_result"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall" />
+        </LinearLayout>
+
+        <!-- Loading indicator for test connection -->
+        <ProgressBar
+            android:id="@+id/progress_test"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="gone"
+            android:contentDescription="@string/a11y_loading" />
+
+    </LinearLayout>
+</ScrollView>

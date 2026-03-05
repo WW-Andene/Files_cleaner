@@ -5,7 +5,6 @@ import com.filecleaner.app.data.DirectoryNode
 import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
@@ -19,6 +18,8 @@ object ScanCache {
     private const val MAX_TREE_DEPTH = 100
     // B2: Limit cached entries to prevent unbounded cache file growth
     private const val MAX_CACHED_FILES = 50_000
+    // F-C5-01/F-C3-04: Auto-expire cache to limit persistent file inventory exposure
+    private const val CACHE_MAX_AGE_MS = 30L * 24 * 60 * 60 * 1000 // 30 days
 
     suspend fun save(context: Context, files: List<FileItem>, tree: DirectoryNode) =
         withContext(Dispatchers.IO) {
@@ -34,12 +35,18 @@ object ScanCache {
             }
             root.put("files", filesArray)
 
-            // Serialize directory tree
-            root.put("tree", directoryNodeToJson(tree))
+            // Serialize directory tree (with depth guard matching read-side MAX_TREE_DEPTH)
+            root.put("tree", directoryNodeToJson(tree, 0))
 
             // Write to file
             val cacheFile = File(context.filesDir, CACHE_FILE)
-            cacheFile.writeText(root.toString())
+            val tempFile = File(context.filesDir, "$CACHE_FILE.tmp")
+            tempFile.writeText(root.toString())
+            if (!tempFile.renameTo(cacheFile)) {
+                // Fallback: copy content if rename fails (cross-filesystem)
+                tempFile.copyTo(cacheFile, overwrite = true)
+                tempFile.delete()
+            }
         }
 
     suspend fun load(context: Context): Pair<List<FileItem>, DirectoryNode>? =
@@ -47,58 +54,47 @@ object ScanCache {
             val cacheFile = File(context.filesDir, CACHE_FILE)
             if (!cacheFile.exists()) return@withContext null
 
-            try {
-                val root = JSONObject(cacheFile.readText())
+            // F-C5-01: Auto-expire old cache to limit persistent data exposure
+            val cacheAge = System.currentTimeMillis() - cacheFile.lastModified()
+            if (cacheAge > CACHE_MAX_AGE_MS) {
+                cacheFile.delete()
+                return@withContext null
+            }
 
-                // Version check — incompatible cache is discarded
-                val version = root.optInt("version", 0)
+            try {
+                // D2-01: Stream JSON instead of loading entire file into memory
+                var version = 0
+                var files: List<FileItem>? = null
+                var tree: DirectoryNode? = null
+
+                android.util.JsonReader(cacheFile.reader(Charsets.UTF_8)).use { reader ->
+                    reader.beginObject()
+                    while (reader.hasNext()) {
+                        when (reader.nextName()) {
+                            "version" -> version = reader.nextInt()
+                            "files" -> files = readFileArray(reader)
+                            "tree" -> tree = readTreeNode(reader, 0)
+                            else -> reader.skipValue()
+                        }
+                    }
+                    reader.endObject()
+                }
+
                 if (version != CACHE_VERSION) {
                     cacheFile.delete()
                     return@withContext null
                 }
 
-                val filesArray = root.getJSONArray("files")
-                val files = mutableListOf<FileItem>()
-                for (i in 0 until filesArray.length()) {
-                    if (i % 100 == 0) ensureActive()
-                    files.add(jsonToFileItem(filesArray.getJSONObject(i)))
-                }
-                // Skip File.exists() validation here — on app restart the storage
-                // permission may not yet be active, causing all files to appear
-                // missing.  Stale entries are harmless (they show "file not found"
-                // if opened) and will be refreshed on the next scan.
+                val f = files ?: return@withContext null
+                val t = tree ?: return@withContext null
+                if (f.isEmpty()) return@withContext null
 
-                val tree = jsonToDirectoryNode(root.getJSONObject("tree"), depth = 0)
-
-                Pair(files, tree)
+                Pair(f, t)
             } catch (e: Exception) {
-                // Corrupt cache — delete and return null
                 cacheFile.delete()
                 null
             }
         }
-
-    /**
-     * Recursively prune files from the tree that are NOT in [validPaths].
-     * Uses the pre-validated path set from the flat file list, avoiding
-     * redundant File.exists() disk checks for every tree entry.
-     */
-    private fun pruneTreeByPaths(node: DirectoryNode, validPaths: Set<String>): DirectoryNode {
-        val validFiles = node.files.filter { it.path in validPaths }
-        val prunedChildren = node.children.map { pruneTreeByPaths(it, validPaths) }.toMutableList()
-
-        val ownFileSize = validFiles.sumOf { it.size }
-        val ownFileCount = validFiles.size
-        val totalSize = ownFileSize + prunedChildren.sumOf { it.totalSize }
-        val totalFileCount = ownFileCount + prunedChildren.sumOf { it.totalFileCount }
-
-        return node.copy(
-            files = validFiles,
-            children = prunedChildren,
-            totalSize = totalSize,
-            totalFileCount = totalFileCount
-        )
-    }
 
     private fun fileItemToJson(item: FileItem): JSONObject = JSONObject().apply {
         put("path", item.path)
@@ -109,63 +105,106 @@ object ScanCache {
         put("duplicateGroup", item.duplicateGroup)
     }
 
-    private fun jsonToFileItem(json: JSONObject): FileItem = FileItem(
-        path = json.getString("path"),
-        name = json.getString("name"),
-        size = json.getLong("size"),
-        lastModified = json.getLong("lastModified"),
-        category = try {
-            FileCategory.valueOf(json.getString("category"))
-        } catch (_: Exception) {
-            FileCategory.OTHER
-        },
-        duplicateGroup = json.optInt("duplicateGroup", -1)
-    )
+    // D2-01: Streaming file array reader — parses one FileItem at a time
+    private fun readFileArray(reader: android.util.JsonReader): List<FileItem> {
+        val files = mutableListOf<FileItem>()
+        reader.beginArray()
+        while (reader.hasNext()) {
+            files.add(readFileItem(reader))
+        }
+        reader.endArray()
+        return files
+    }
 
-    private fun directoryNodeToJson(node: DirectoryNode): JSONObject = JSONObject().apply {
+    private fun readFileItem(reader: android.util.JsonReader): FileItem {
+        var path = ""
+        var name = ""
+        var size = 0L
+        var lastModified = 0L
+        var category = FileCategory.OTHER
+        var duplicateGroup = -1
+
+        reader.beginObject()
+        while (reader.hasNext()) {
+            when (reader.nextName()) {
+                "path" -> path = reader.nextString()
+                "name" -> name = reader.nextString()
+                "size" -> size = reader.nextLong()
+                "lastModified" -> lastModified = reader.nextLong()
+                "category" -> category = try {
+                    FileCategory.valueOf(reader.nextString())
+                } catch (_: Exception) {
+                    FileCategory.OTHER
+                }
+                "duplicateGroup" -> duplicateGroup = reader.nextInt()
+                else -> reader.skipValue()
+            }
+        }
+        reader.endObject()
+        return FileItem(path, name, size, lastModified, category, duplicateGroup)
+    }
+
+    // D2-01: Streaming tree node reader
+    private fun readTreeNode(reader: android.util.JsonReader, depth: Int): DirectoryNode {
+        var path = ""
+        var name = ""
+        var totalSize = 0L
+        var totalFileCount = 0
+        var nodeDepth = 0
+        val children = mutableListOf<DirectoryNode>()
+
+        reader.beginObject()
+        while (reader.hasNext()) {
+            when (reader.nextName()) {
+                "path" -> path = reader.nextString()
+                "name" -> name = reader.nextString()
+                "totalSize" -> totalSize = reader.nextLong()
+                "totalFileCount" -> totalFileCount = reader.nextInt()
+                "depth" -> nodeDepth = reader.nextInt()
+                "children" -> {
+                    if (depth < MAX_TREE_DEPTH) {
+                        reader.beginArray()
+                        while (reader.hasNext()) {
+                            children.add(readTreeNode(reader, depth + 1))
+                        }
+                        reader.endArray()
+                    } else {
+                        reader.skipValue()
+                    }
+                }
+                "files" -> reader.skipValue() // D6-02: files loaded from flat list
+                else -> reader.skipValue()
+            }
+        }
+        reader.endObject()
+
+        return DirectoryNode(
+            path = path,
+            name = name,
+            files = emptyList(),
+            children = children,
+            totalSize = totalSize,
+            totalFileCount = totalFileCount,
+            depth = nodeDepth
+        )
+    }
+
+    // D6-02: Only serialize structural data in tree nodes.
+    // File items are already in the flat "files" array — no need to duplicate them.
+    private fun directoryNodeToJson(node: DirectoryNode, depth: Int = 0): JSONObject = JSONObject().apply {
         put("path", node.path)
         put("name", node.name)
         put("totalSize", node.totalSize)
         put("totalFileCount", node.totalFileCount)
         put("depth", node.depth)
 
-        val filesArray = JSONArray()
-        for (file in node.files) {
-            filesArray.put(fileItemToJson(file))
-        }
-        put("files", filesArray)
-
         val childrenArray = JSONArray()
-        for (child in node.children) {
-            childrenArray.put(directoryNodeToJson(child))
+        if (depth < MAX_TREE_DEPTH) {
+            for (child in node.children) {
+                childrenArray.put(directoryNodeToJson(child, depth + 1))
+            }
         }
         put("children", childrenArray)
     }
 
-    private fun jsonToDirectoryNode(json: JSONObject, depth: Int): DirectoryNode {
-        val filesArray = json.getJSONArray("files")
-        val files = mutableListOf<FileItem>()
-        for (i in 0 until filesArray.length()) {
-            files.add(jsonToFileItem(filesArray.getJSONObject(i)))
-        }
-
-        val children = mutableListOf<DirectoryNode>()
-        // C3: Stop recursion beyond MAX_TREE_DEPTH to prevent stack overflow
-        if (depth < MAX_TREE_DEPTH) {
-            val childrenArray = json.getJSONArray("children")
-            for (i in 0 until childrenArray.length()) {
-                children.add(jsonToDirectoryNode(childrenArray.getJSONObject(i), depth + 1))
-            }
-        }
-
-        return DirectoryNode(
-            path = json.getString("path"),
-            name = json.getString("name"),
-            files = files,
-            children = children,
-            totalSize = json.getLong("totalSize"),
-            totalFileCount = json.getInt("totalFileCount"),
-            depth = json.getInt("depth")
-        )
-    }
 }

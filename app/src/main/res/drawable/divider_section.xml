@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Heavy section divider — used between major content groups -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size android:height="@dimen/divider_thick" />
+    <solid android:color="@color/surfaceDim" />
+    <corners android:radius="@dimen/track_corner_radius" />
+</shape>

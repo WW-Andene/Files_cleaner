@@ -61,7 +61,11 @@ object AppVerificationScanner {
         withContext(Dispatchers.IO) {
             val results = mutableListOf<ThreatResult>()
             val pm = context.packageManager
-            val packages = pm.getInstalledPackages(PackageManager.GET_SIGNATURES)
+            // Combine signature + permission flags to avoid N+1 queries in checkPermissionOverreach
+            val sigFlag = if (android.os.Build.VERSION.SDK_INT >= 28)
+                PackageManager.GET_SIGNING_CERTIFICATES
+            else PackageManager.GET_SIGNATURES
+            val packages = pm.getInstalledPackages(sigFlag or PackageManager.GET_PERMISSIONS)
             val total = packages.size
             onProgress(0)
 
@@ -134,10 +138,39 @@ object AppVerificationScanner {
         appName: String,
         results: MutableList<ThreatResult>
     ) {
-        val signatures = pkg.signatures ?: return
+        // Use signingInfo on API 28+ for proper APK Signature Scheme v3 support
+        val signatures: Array<Signature> = if (android.os.Build.VERSION.SDK_INT >= 28) {
+            val signingInfo = pkg.signingInfo
+            if (signingInfo != null) {
+                if (signingInfo.hasMultipleSigners()) {
+                    signingInfo.apkContentsSigners
+                } else {
+                    signingInfo.signingCertificateHistory ?: emptyArray()
+                }
+            } else {
+                pkg.signatures ?: return
+            }
+        } else {
+            pkg.signatures ?: return
+        }
+        if (signatures.isEmpty()) return
 
         // Check for multiple signers (unusual, may indicate tampering)
-        if (signatures.size > 1) {
+        if (android.os.Build.VERSION.SDK_INT >= 28) {
+            val signingInfo = pkg.signingInfo
+            if (signingInfo != null && signingInfo.hasMultipleSigners()) {
+                results.add(
+                    ThreatResult(
+                        name = "Multiple Signers",
+                        description = "\"$appName\" is signed by multiple different certificates. This is unusual and may indicate the app was tampered with.",
+                        severity = ThreatResult.Severity.HIGH,
+                        source = ThreatResult.ScannerSource.APP_VERIFICATION,
+                        packageName = pkg.packageName,
+                        category = ThreatResult.ThreatCategory.MALWARE
+                    )
+                )
+            }
+        } else if (signatures.size > 1) {
             results.add(
                 ThreatResult(
                     name = "Multiple Signers",
@@ -158,7 +191,7 @@ object AppVerificationScanner {
                 // Check expiration
                 try {
                     cert.checkValidity(Date())
-                } catch (_: Exception) {
+                } catch (_: java.security.cert.CertificateExpiredException) {
                     results.add(
                         ThreatResult(
                             name = "Expired Certificate",
@@ -167,6 +200,17 @@ object AppVerificationScanner {
                             source = ThreatResult.ScannerSource.APP_VERIFICATION,
                             packageName = pkg.packageName,
                             category = ThreatResult.ThreatCategory.GENERAL
+                        )
+                    )
+                } catch (_: java.security.cert.CertificateNotYetValidException) {
+                    results.add(
+                        ThreatResult(
+                            name = "Not-Yet-Valid Certificate",
+                            description = "\"$appName\" is signed with a certificate not valid until ${cert.notBefore}. This may indicate clock manipulation or certificate fraud.",
+                            severity = ThreatResult.Severity.HIGH,
+                            source = ThreatResult.ScannerSource.APP_VERIFICATION,
+                            packageName = pkg.packageName,
+                            category = ThreatResult.ThreatCategory.MALWARE
                         )
                     )
                 }
@@ -216,7 +260,15 @@ object AppVerificationScanner {
         appName: String,
         results: MutableList<ThreatResult>
     ) {
-        val signatures = pkg.signatures ?: return
+        // Use signingInfo on API 28+ for proper signature access
+        val signatures: Array<Signature> = if (android.os.Build.VERSION.SDK_INT >= 28) {
+            val si = pkg.signingInfo
+            if (si != null) {
+                if (si.hasMultipleSigners()) si.apkContentsSigners else si.signingCertificateHistory ?: emptyArray()
+            } else pkg.signatures ?: return
+        } else {
+            pkg.signatures ?: return
+        }
 
         for (sig in signatures) {
             try {
@@ -288,13 +340,8 @@ object AppVerificationScanner {
         appName: String,
         results: MutableList<ThreatResult>
     ) {
-        // Re-fetch with permissions
-        val pkgWithPerms = try {
-            pm.getPackageInfo(pkg.packageName, PackageManager.GET_PERMISSIONS)
-        } catch (_: Exception) {
-            return
-        }
-        val requested = pkgWithPerms.requestedPermissions ?: return
+        // Permissions already fetched with combined flags in scan()
+        val requested = pkg.requestedPermissions ?: return
 
         // Simple calculator/flashlight/wallpaper apps requesting SMS, contacts, etc.
         val appInfo = pkg.applicationInfo ?: return

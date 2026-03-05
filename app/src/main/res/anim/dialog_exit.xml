@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dialog exit — subtle scale down with fade, exits faster than entrance (160ms vs 220ms).
+     Scale to 0.95 for a gentle, considered dismiss rather than dramatic shrink. -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator">
+
+    <scale
+        android:fromXScale="1.0"
+        android:toXScale="0.95"
+        android:fromYScale="1.0"
+        android:toYScale="0.95"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="@integer/motion_exit" />
+
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:duration="@integer/motion_exit" />
+</set>

@@ -4,6 +4,7 @@ import com.filecleaner.app.data.FileCategory
 import com.filecleaner.app.data.FileItem
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -121,5 +122,134 @@ class SearchQueryParserTest {
         assertTrue(SearchQueryParser.hasOperators("after:2025-01-01"))
         assertFalse(SearchQueryParser.hasOperators("plain text search"))
         assertFalse(SearchQueryParser.hasOperators(""))
+    }
+
+    // ── filterItems tests ──
+
+    @Test
+    fun `filterItems returns all for empty query`() {
+        val files = listOf(item("a.txt"), item("b.pdf"), item("c.jpg"))
+        val result = SearchQueryParser.filterItems(files, "")
+        assertEquals(3, result.size)
+    }
+
+    @Test
+    fun `filterItems plain text search is case insensitive`() {
+        val files = listOf(item("Report.txt"), item("notes.txt"), item("REPORT_final.pdf"))
+        val result = SearchQueryParser.filterItems(files, "report")
+        assertEquals(2, result.size)
+    }
+
+    @Test
+    fun `filterItems with operators uses parsed query`() {
+        val files = listOf(
+            item("small.pdf", size = 500L),
+            item("big.pdf", size = 2 * 1024 * 1024L),
+            item("big.txt", size = 5 * 1024 * 1024L)
+        )
+        val result = SearchQueryParser.filterItems(files, ">1mb ext:pdf")
+        assertEquals(1, result.size)
+        assertEquals("big.pdf", result[0].name)
+    }
+
+    // ── sortItems tests ──
+
+    @Test
+    fun `sortItems by name ascending`() {
+        val files = listOf(item("charlie.txt"), item("alpha.txt"), item("bravo.txt"))
+        val result = SearchQueryParser.sortItems(files, 0)
+        assertEquals("alpha.txt", result[0].name)
+        assertEquals("bravo.txt", result[1].name)
+        assertEquals("charlie.txt", result[2].name)
+    }
+
+    @Test
+    fun `sortItems by name descending`() {
+        val files = listOf(item("alpha.txt"), item("charlie.txt"), item("bravo.txt"))
+        val result = SearchQueryParser.sortItems(files, 1)
+        assertEquals("charlie.txt", result[0].name)
+        assertEquals("bravo.txt", result[1].name)
+        assertEquals("alpha.txt", result[2].name)
+    }
+
+    @Test
+    fun `sortItems by size ascending`() {
+        val files = listOf(item(size = 300L), item(size = 100L), item(size = 200L))
+        val result = SearchQueryParser.sortItems(files, 2)
+        assertEquals(100L, result[0].size)
+        assertEquals(200L, result[1].size)
+        assertEquals(300L, result[2].size)
+    }
+
+    @Test
+    fun `sortItems by size descending`() {
+        val files = listOf(item(size = 100L), item(size = 300L), item(size = 200L))
+        val result = SearchQueryParser.sortItems(files, 3)
+        assertEquals(300L, result[0].size)
+        assertEquals(200L, result[1].size)
+        assertEquals(100L, result[2].size)
+    }
+
+    @Test
+    fun `sortItems by date ascending`() {
+        val files = listOf(
+            item(lastModified = 3000L),
+            item(lastModified = 1000L),
+            item(lastModified = 2000L)
+        )
+        val result = SearchQueryParser.sortItems(files, 4)
+        assertEquals(1000L, result[0].lastModified)
+        assertEquals(2000L, result[1].lastModified)
+        assertEquals(3000L, result[2].lastModified)
+    }
+
+    @Test
+    fun `sortItems by date descending`() {
+        val files = listOf(
+            item(lastModified = 1000L),
+            item(lastModified = 3000L),
+            item(lastModified = 2000L)
+        )
+        val result = SearchQueryParser.sortItems(files, 5)
+        assertEquals(3000L, result[0].lastModified)
+        assertEquals(2000L, result[1].lastModified)
+        assertEquals(1000L, result[2].lastModified)
+    }
+
+    @Test
+    fun `sortItems with invalid index returns original order`() {
+        val files = listOf(item("a.txt"), item("b.txt"))
+        val result = SearchQueryParser.sortItems(files, 99)
+        assertEquals(files, result)
+    }
+
+    // ── Edge case tests ──
+
+    @Test
+    fun `parse size with decimal`() {
+        val result = SearchQueryParser.parse(">1.5gb")
+        assertEquals((1.5 * 1024 * 1024 * 1024).toLong(), result.minSizeBytes)
+    }
+
+    @Test
+    fun `parse handles case insensitive operators`() {
+        val result = SearchQueryParser.parse(">10MB EXT:PDF AFTER:2025-01-01")
+        assertNotNull(result.minSizeBytes)
+        assertNotNull(result.extensions)
+        assertNotNull(result.afterMs)
+    }
+
+    @Test
+    fun `matches with all filters combined`() {
+        val parsed = SearchQueryParser.parse(">1kb <1mb ext:txt report")
+        val matching = item(name = "report_2025.txt", size = 50 * 1024L)
+        val wrongExt = item(name = "report.pdf", size = 50 * 1024L)
+        val wrongName = item(name = "notes.txt", size = 50 * 1024L)
+        val tooSmall = item(name = "report.txt", size = 500L)
+
+        assertTrue(SearchQueryParser.matches(matching, parsed))
+        assertFalse(SearchQueryParser.matches(wrongExt, parsed))
+        assertFalse(SearchQueryParser.matches(wrongName, parsed))
+        assertFalse(SearchQueryParser.matches(tooSmall, parsed))
     }
 }

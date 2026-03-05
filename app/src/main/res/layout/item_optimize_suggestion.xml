@@ -5,22 +5,30 @@
     android:layout_height="wrap_content"
     android:layout_marginVertical="@dimen/spacing_xs"
     app:cardCornerRadius="@dimen/radius_card"
-    app:cardElevation="@dimen/elevation_none"
+    app:cardElevation="@dimen/elevation_subtle"
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
-    app:strokeColor="@color/borderSubtle">
+    app:strokeColor="@color/borderSubtle"
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="@dimen/touch_target_min">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/spacing_md">
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_md">
 
         <CheckBox
             android:id="@+id/cb_accept"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/touch_target_min"
+            android:minHeight="@dimen/touch_target_min"
+            android:contentDescription="@string/a11y_optimize_accept_suggestion" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -33,7 +41,8 @@
                 android:id="@+id/tv_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
+                android:textColor="@color/textPrimary"
                 android:maxLines="1"
                 android:ellipsize="middle" />
 
@@ -42,8 +51,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginTop="@dimen/spacing_xs" />
+                android:textColor="@color/textSecondary"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:lineSpacingExtra="@dimen/spacing_micro" />
 
             <TextView
                 android:id="@+id/tv_move_path"

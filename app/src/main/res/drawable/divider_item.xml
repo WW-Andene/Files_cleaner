@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Light item divider — used between list items within a section -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size android:height="@dimen/divider_width" />
+    <solid android:color="@color/borderSubtle" />
+</shape>

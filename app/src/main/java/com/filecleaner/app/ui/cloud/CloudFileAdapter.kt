@@ -26,15 +26,21 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
         val isDirectory: Boolean,
         val size: Long,
         val lastModified: Long,
-        var selected: Boolean = false
+        val selected: Boolean = false
     )
 
     companion object {
+        private const val PAYLOAD_SELECTION = "selection"
+
         private val DIFF = object : DiffUtil.ItemCallback<CloudFileItem>() {
             override fun areItemsTheSame(a: CloudFileItem, b: CloudFileItem) =
                 a.cloudFile.remotePath == b.cloudFile.remotePath
             override fun areContentsTheSame(a: CloudFileItem, b: CloudFileItem) =
                 a == b
+            override fun getChangePayload(a: CloudFileItem, b: CloudFileItem): Any? {
+                if (a.copy(selected = b.selected) == b) return PAYLOAD_SELECTION
+                return null
+            }
         }
     }
 
@@ -44,8 +50,7 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
     fun getSelectedItems(): List<CloudFileItem> = currentList.filter { it.selected }
 
     fun clearSelection() {
-        currentList.forEach { it.selected = false }
-        notifyItemRangeChanged(0, itemCount)
+        submitList(currentList.map { it.copy(selected = false) })
         onSelectionChanged?.invoke()
     }
 
@@ -53,6 +58,24 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_dual_pane_file, parent, false)
         return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: List<Any>) {
+        if (payloads.contains(PAYLOAD_SELECTION)) {
+            val item = getItem(position)
+            holder.checkbox.setOnCheckedChangeListener(null)
+            holder.checkbox.isChecked = item.selected
+            holder.checkbox.setOnCheckedChangeListener { _, checked ->
+                val pos = holder.bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@setOnCheckedChangeListener
+                val updated = currentList.toMutableList()
+                updated[pos] = updated[pos].copy(selected = checked)
+                submitList(updated)
+                onSelectionChanged?.invoke()
+            }
+            return
+        }
+        super.onBindViewHolder(holder, position, payloads)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -77,7 +100,11 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
         holder.checkbox.setOnCheckedChangeListener(null)
         holder.checkbox.isChecked = item.selected
         holder.checkbox.setOnCheckedChangeListener { _, checked ->
-            item.selected = checked
+            val pos = holder.bindingAdapterPosition
+            if (pos == RecyclerView.NO_POSITION) return@setOnCheckedChangeListener
+            val updated = currentList.toMutableList()
+            updated[pos] = updated[pos].copy(selected = checked)
+            submitList(updated)
             onSelectionChanged?.invoke()
         }
 

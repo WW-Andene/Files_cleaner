@@ -5,17 +5,22 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/spacing_sm"
     app:cardCornerRadius="@dimen/radius_card"
-    app:cardElevation="@dimen/elevation_none"
+    app:cardElevation="@dimen/elevation_subtle"
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
-    app:strokeColor="@color/borderSubtle">
+    app:strokeColor="@color/borderSubtle"
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="@dimen/touch_target_min">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/spacing_md">
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_md">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -27,7 +32,7 @@
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                 android:textColor="@color/textPrimary" />
 
             <TextView
@@ -36,15 +41,16 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                 android:textColor="@color/textSecondary"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="@dimen/spacing_xs" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tv_threat_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+            android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
             android:textColor="@color/colorError"
-            android:layout_marginStart="@dimen/spacing_sm" />
+            android:layout_marginStart="@dimen/spacing_md"
+            android:contentDescription="@string/a11y_scan_threat_count" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -23,6 +23,500 @@ description: >
 
 ---
 
+## TABLE OF CONTENTS — What's in This File, How to Use It
+
+> **How to use this table**: Find the category you care about, then tell Claude:
+> - `"Run §A1"` or `"Audit §C2"` — to audit a specific section
+> - `"Fix §D5"` or `"Implement §E3 recommendations"` — to fix issues in a specific area
+> - `"Audit Category C"` or `"Run the security audit"` — to audit an entire category
+> - `"Run P3"` or `"Do Part 3"` — to run a full audit part
+> - Or use any **trigger phrase** listed below to jump directly to what you need.
+
+---
+
+### SETUP & ROUTING (read once, then jump to what you need)
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| — | **QUICK START** | How to invoke this skill (for you and Claude) | — |
+| — | **SKILL MAP** | Section index + common execution paths | "what sections are there", "show the skill map" |
+| §TRIAGE | **Audit Routing** | Asks which audit mode you want | "audit my app", "review my app", "analyze my app" |
+| §0 | **App Context Block** | Captures app identity, tech stack, constraints, design, domain rules | "fill the context", "set up the audit", "describe my app" |
+
+---
+
+### CALIBRATION & PHILOSOPHY (how the audit adapts to YOUR app)
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| §I.1 | **Domain Classification** | Maps your app type → severity multipliers | "what domain is my app", "classify my app" |
+| §I.2 | **Architecture Classification** | Maps your architecture → failure modes to hunt | "what failure modes", "architecture risks" |
+| §I.3 | **App Size → Scope** | Determines how many audit parts based on LOC | "how long will this audit be" |
+| §I.4 | **Five-Axis Aesthetic Profile** | Classifies aesthetic goals across 5 independent axes | "what aesthetic profile", "classify my design goals" |
+| §I.5 | **Domain Rule Extraction** | Extracts constants/formulas from code for verification | "extract domain rules", "find constants" |
+| §I.6 | **Knowledge & Source Integrity** | Rules for sourcing domain facts (web, code, user) | — |
+| §I.7 | **Adaptive Analysis Protocols** | Mid-audit reclassification triggers | — |
+| §II | **10 Iron Laws** | Governing rules for auditor behavior (never violated) | — |
+
+---
+
+### EXECUTION PLAN (how the audit is structured)
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| §III | **Pre-Flight Checklist** | Mandatory steps before any finding | "start the audit", "run pre-flight" |
+| P1 | **Part 1: Inventory & Architecture** | Feature ledger, constraint map, workflow map | "run part 1", "do the inventory" |
+| P2 | **Part 2: Domain Logic** | Rule-by-rule verification, formula test vectors | "run part 2", "check my business logic" |
+| P3 | **Part 3: Security** | Threat model, attack surface, compliance gaps | "run part 3", "security audit" |
+| P4 | **Part 4: State & Data** | State schema, validation gaps, corruption paths | "run part 4", "check state management" |
+| P5 | **Part 5: Performance** | Web vitals, resource budget, memory leaks | "run part 5", "performance audit" |
+| P6 | **Part 6: Visual Design** | Design tokens, visual rhythm, polish gaps | "run part 6", "design audit" |
+| P7 | **Part 7: UX & IA** | Flow analysis, information architecture, copy | "run part 7", "UX audit" |
+| P8 | **Part 8: Accessibility** | WCAG 2.1 AA, screen reader, keyboard nav | "run part 8", "accessibility audit" |
+| P9 | **Part 9: Compatibility** | Cross-browser, PWA, mobile, network | "run part 9", "compatibility check" |
+| P10 | **Part 10: Code Quality** | Dead code, duplication, naming, architecture | "run part 10", "code quality audit" |
+| P11 | **Part 11: AI/LLM** | Prompt injection, output sanitization, costs | "run part 11", "audit AI integration" |
+| P12 | **Part 12: i18n** | Hardcoded strings, locale formats, RTL | "run part 12", "i18n audit" |
+| P13 | **Part 13: Projections** | Scale cliffs, tech debt, dependency decay | "run part 13", "future-proof my app" |
+| Final | **Summary Dashboard** | Findings table, root cause, quick wins, roadmap | "show the summary", "give me the dashboard" |
+
+---
+
+### CATEGORY A — DOMAIN LOGIC & CORRECTNESS
+
+> **When to use**: Your app produces wrong numbers, calculations are off, formulas seem broken, or you want to verify business rules are implemented correctly.
+>
+> **Trigger phrases**: "check my formulas", "verify calculations", "audit business logic", "my numbers are wrong", "check domain rules", "verify correctness"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §A1 | Business Rule & Formula Correctness | Constants, formulas, operator precision, rounding, units, invariants |
+| §A2 | Probability & Statistical Correctness | RNG, distributions, pity systems, expected value, displayed odds |
+| §A3 | Temporal & Timezone Correctness | Timezone handling, DST, date boundaries, scheduling, format |
+| §A4 | State Machine Correctness | State transitions, unreachable states, deadlocks, illegal transitions |
+| §A5 | Embedded Data Accuracy | Lookup tables, reference data, version currency, fallback values |
+| §A6 | Async & Concurrency Bug Patterns | Race conditions, stale closures, debounce, cancellation, ordering |
+| §A7 | JS Type Coercion & Implicit Conversion | `==` vs `===`, falsy traps, parseInt pitfalls, NaN propagation |
+
+---
+
+### CATEGORY B — STATE MANAGEMENT & DATA INTEGRITY
+
+> **When to use**: Data gets lost, state behaves unexpectedly, imports/exports are broken, or persistence has issues.
+>
+> **Trigger phrases**: "fix state management", "data gets lost", "audit state", "persistence issues", "import/export broken", "data integrity"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §B1 | State Architecture | Single source of truth, derived state, initialization, schema |
+| §B2 | Persistence & Storage | localStorage/SharedPreferences, quota, migration, concurrent access |
+| §B3 | Input Validation & Sanitization | Boundary values, type coercion, injection through input |
+| §B4 | Import & Export Integrity | Round-trip fidelity, version compatibility, corruption detection |
+| §B5 | Data Flow Map | Data lifecycle from entry to display, transformation audit |
+| §B6 | Mutation & Reference Integrity | Immutability discipline, shared reference bugs, deep copy |
+
+---
+
+### CATEGORY C — SECURITY & TRUST
+
+> **When to use**: Security review before launch, handling sensitive data, API key management, compliance requirements.
+>
+> **Trigger phrases**: "security review", "security audit", "check for vulnerabilities", "is my app secure", "privacy audit", "GDPR check", "check permissions"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §C1 | Authentication & Authorization | Credential storage, session management, privilege escalation |
+| §C2 | Injection & XSS | innerHTML, DOM XSS, eval, URL injection, CSS injection |
+| §C3 | Prototype Pollution & Import Safety | JSON.parse safety, prototype pollution, property collision |
+| §C4 | Network & Dependencies | HTTPS, SRI, CORS, CSP, third-party tracking |
+| §C5 | Privacy & Data Minimization | PII inventory, URL leakage, fingerprinting, export sensitivity |
+| §C6 | Compliance & Legal | GDPR/CCPA, age restrictions, IP/copyright, financial/medical disclaimers |
+| §C7 | Mobile-Specific Security | Permission audit, exported components, WebView, ProGuard, deep links |
+
+---
+
+### CATEGORY D — PERFORMANCE & RESOURCES
+
+> **When to use**: App is slow, uses too much memory, loads slowly, or has performance issues on mobile.
+>
+> **Trigger phrases**: "make it faster", "performance issues", "too slow", "memory leak", "optimize performance", "reduce load time", "app freezes", "ANR"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §D1 | Runtime Performance | Main thread blocking, worker offloading, re-renders, throttling |
+| §D2 | Web Vitals & Loading | LCP, FID, CLS, critical rendering path, code splitting |
+| §D3 | Resource Budget | Bundle size, image optimization, font loading, CDN assets |
+| §D4 | Memory Management | Closure leaks, event listener leaks, timer leaks, blob URLs |
+| §D5 | Mobile-Specific Performance | Coroutine lifecycle, RecyclerView, image loading, process death, ANR |
+
+---
+
+### CATEGORY E — VISUAL DESIGN QUALITY & POLISH
+
+> **When to use**: App looks unprofessional, design feels inconsistent, colors/spacing are off, needs visual polish.
+>
+> **Trigger phrases**: "improve the design", "make it look professional", "design review", "polish the UI", "fix the colors", "design system", "make it premium", "visual consistency"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §E1 | Design Token System | CSS variables / theme attributes coverage, naming, gaps |
+| §E2 | Visual Rhythm & Spatial Composition | Spacing consistency, grid alignment, whitespace |
+| §E3 | Color Craft & Contrast | Contrast ratios, palette coherence, dark mode quality |
+| §E4 | Typography Craft | Font scale, weight hierarchy, tracking, line height, rendering |
+| §E5 | Component Visual Quality | Buttons, inputs, cards, modals — visual consistency |
+| §E6 | Interaction Design Quality | Hover/active/focus/disabled states, transitions, feedback |
+| §E7 | Overall Visual Professionalism | First-impression test, visual noise, alignment, polish gaps |
+| §E8 | Product Aesthetics (Axis-Driven) | Commercial credibility, cognitive load, emotional safety, fidelity |
+| §E9 | Visual Identity & Recognizability | Distinctiveness, brand signature, memorability |
+| §E10 | Data Storytelling & Visual Communication | How data is presented visually, chart quality |
+
+---
+
+### CATEGORY F — UX, INFORMATION ARCHITECTURE & COPY
+
+> **When to use**: Users get confused, flows feel broken, onboarding is bad, copy needs work, app doesn't feel intuitive.
+>
+> **Trigger phrases**: "UX review", "improve user experience", "fix the flow", "onboarding sucks", "improve copy", "make it intuitive", "information architecture"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §F1 | Information Architecture | Navigation clarity, grouping logic, discoverability, depth |
+| §F2 | User Flow Quality | Critical path efficiency, dead ends, error recovery, back navigation |
+| §F3 | Onboarding & First Use | First-run experience, progressive disclosure, value communication |
+| §F4 | Copy Quality | Clarity, consistency, tone, technical jargon, error messages |
+| §F5 | Micro-Interaction Quality | Feedback loops, state transitions, gesture responses |
+| §F6 | Engagement, Delight & Emotional Design | Personality moments, reward patterns, celebration states |
+
+---
+
+### CATEGORY G — ACCESSIBILITY
+
+> **When to use**: Making the app accessible, screen reader support, keyboard navigation, WCAG compliance.
+>
+> **Trigger phrases**: "accessibility audit", "a11y", "WCAG", "screen reader", "keyboard navigation", "make it accessible", "color blind support"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §G1 | WCAG 2.1 AA Compliance | Semantic HTML/views, ARIA/accessibility labels, focus management, contrast |
+| §G2 | Screen Reader Trace | Content order, live regions, meaningful labels, hidden decorative elements |
+| §G3 | Keyboard Navigation | Tab order, focus traps, skip links, custom component keyboard support |
+| §G4 | Reduced Motion | `prefers-reduced-motion` / `ANIMATOR_DURATION_SCALE` respect, alternatives |
+
+---
+
+### CATEGORY H — BROWSER / PLATFORM COMPATIBILITY
+
+> **When to use**: App breaks on certain browsers/devices, PWA issues, touch interactions don't work, offline problems.
+>
+> **Trigger phrases**: "browser compatibility", "doesn't work on Safari", "mobile broken", "PWA issues", "offline support", "touch not working"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §H1 | Cross-Browser Matrix | Feature detection, API availability, CSS compatibility, polyfills |
+| §H2 | PWA & Service Worker | Manifest, SW lifecycle, cache strategy, update flow, install prompt |
+| §H3 | Mobile & Touch | Touch targets, viewport, safe areas, gesture conflicts, orientation |
+| §H4 | Network Resilience | Offline behavior, retry logic, degraded connectivity, sync |
+
+---
+
+### CATEGORY I — CODE QUALITY & ARCHITECTURE
+
+> **When to use**: Codebase is messy, hard to maintain, has duplication, needs restructuring, poor naming.
+>
+> **Trigger phrases**: "clean up my code", "code review", "refactor", "reduce duplication", "improve architecture", "code quality", "naming review"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §I1 | Dead Code & Waste | Unreachable code, unused imports, disabled features, commented code |
+| §I2 | Naming Quality | Variable/function/file naming consistency, domain vocabulary alignment |
+| §I3 | Error Handling Coverage | Try/catch completeness, error propagation, user-facing error messages |
+| §I4 | Code Duplication | Copy-paste code, near-duplicates, abstraction opportunities |
+| §I5 | Component & Module Architecture | Separation of concerns, coupling, cohesion, dependency direction |
+| §I6 | Documentation & Maintainability | Comments quality, self-documenting code, onboarding ease |
+
+---
+
+### CATEGORY J — DATA PRESENTATION & PORTABILITY
+
+> **When to use**: Numbers display wrong, charts look bad, assets are poorly managed, real-time data is stale.
+>
+> **Trigger phrases**: "fix number formatting", "chart looks wrong", "data display issues", "asset management", "real-time data"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §J1 | Number & Data Formatting | Precision, locale formatting, currency, percentages, units |
+| §J2 | Data Visualization Quality | Chart accuracy, axis labeling, color accessibility, empty states |
+| §J3 | Asset Management | Image optimization, lazy loading, fallbacks, format selection |
+| §J4 | Real-Time Data Freshness | Polling intervals, stale data indicators, update propagation |
+
+---
+
+### CATEGORY K — SPECIALIZED DOMAIN DEPTHS
+
+> **When to use**: App handles money, health data, gambling mechanics, real-time collaboration, or AI integration.
+>
+> **Trigger phrases**: "audit financial logic", "medical safety check", "gambling compliance", "audit AI integration", "real-time sync issues"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §K1 | Financial Precision | Decimal arithmetic, currency rounding, tax calculation, audit trails |
+| §K2 | Medical / Health Precision | Dosage safety, unit conversions, contraindication checks, disclaimers |
+| §K3 | Probability & Gambling-Adjacent | RNG fairness, pity system correctness, disclosed rates, age gating |
+| §K4 | Real-Time & Collaborative | Conflict resolution, sync ordering, presence, latency handling |
+| §K5 | AI / LLM Integration | Prompt injection, output sanitization, streaming errors, token/cost risk, hallucination exposure |
+
+---
+
+### CATEGORY L — OPTIMIZATION, STANDARDIZATION & POLISH
+
+> **When to use**: App works but feels rough, needs consistent standards, polish pass, or optimization sweep.
+>
+> **Trigger phrases**: "standardize my code", "polish everything", "make it consistent", "optimization pass", "unify the design", "clean up standards"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §L1 | Code Optimization Opportunities | Algorithm improvements, caching, lazy evaluation, batching |
+| §L2 | Code Standardization | Coding conventions, formatting consistency, lint configuration |
+| §L3 | Design System Standardization | Token consistency, component variants, spacing unification |
+| §L4 | Copy & Content Standardization | Voice consistency, terminology, label conventions |
+| §L5 | Interaction & Experience Polish | Micro-animation refinement, transition consistency, gesture polish |
+| §L6 | Performance Polish | Perceived performance, skeleton screens, optimistic updates |
+| §L7 | Accessibility Polish | Beyond compliance — toward excellent accessibility |
+
+---
+
+### CATEGORY M — DEPLOYMENT & OPERATIONS
+
+> **When to use**: App needs versioning, monitoring, feature flags, or operational improvements.
+>
+> **Trigger phrases**: "deployment audit", "add monitoring", "feature flags", "version management", "operational readiness"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §M1 | Version & Update Management | Version strategy, changelog, migration paths, update notifications |
+| §M2 | Observability | Error tracking, analytics, performance monitoring, crash reporting |
+| §M3 | Feature Flags & Gradual Rollout | Flag architecture, rollback capability, A/B testing readiness |
+
+---
+
+### CATEGORY N — INTERNATIONALIZATION & LOCALIZATION
+
+> **When to use**: App needs multi-language support, locale-aware formatting, or RTL layout support.
+>
+> **Trigger phrases**: "i18n audit", "add translations", "locale formatting", "RTL support", "internationalization", "localization check"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §N1 | Hardcoded String Inventory | All user-facing strings not in a translation system |
+| §N2 | Locale-Sensitive Formatting | Dates, numbers, currency, pluralization, sort order |
+| §N3 | RTL Layout | Bidirectional text, mirrored layouts, directional icons |
+| §N4 | Locale Loading & Performance | Translation bundle size, lazy loading, fallback chains |
+
+---
+
+### CATEGORY O — DEVELOPMENT SCENARIO PROJECTION
+
+> **When to use**: Planning for growth, worried about scaling, tech debt accumulating, future-proofing the app.
+>
+> **Trigger phrases**: "future-proof my app", "scale analysis", "tech debt audit", "dependency check", "what breaks at scale", "maintenance risks"
+
+| Code | Section | What It Audits |
+|------|---------|---------------|
+| §O1 | Scale Cliff Analysis | Points where current architecture breaks under growth |
+| §O2 | Feature Addition Risk Map | How hard it is to add the next likely features |
+| §O3 | Technical Debt Compounding Map | Which debts compound over time and their cost trajectory |
+| §O4 | Dependency Decay Forecast | Outdated dependencies, EOL risk, upgrade difficulty |
+| §O5 | Constraint Evolution Analysis | When current constraints should be relaxed/changed |
+| §O6 | Maintenance Trap Inventory | Patterns that are easy now but become costly to maintain |
+| §O7 | Bus Factor & Knowledge Concentration | Single points of failure in codebase knowledge |
+
+---
+
+### DELIVERABLES & FORMAT
+
+| Code | Section | What It Does | Trigger Phrases |
+|------|---------|-------------|-----------------|
+| §V | Finding Format | Standard template for all findings (severity, confidence, specifics) | — |
+| §VI | Required Deliverables | Tier 1/2/3 deliverables by audit depth | — |
+| §VII | Summary Dashboard | Final findings table, root cause, quick wins, roadmap | "show summary", "give me the roadmap" |
+| §VIII | Cross-Cutting Concern Map | Patterns spanning multiple categories | — |
+| §IX | Final Mandate | Binding audit contract | — |
+
+---
+
+### R&D & IMPROVEMENT MODE (§X)
+
+> **When to use**: You want to improve existing features, find what to build next, compare with competitors, or plan your roadmap.
+>
+> **Trigger phrases**: "what should I build next", "improve my features", "competitive analysis", "R&D roadmap", "feature prioritization", "what's missing", "help me improve my app"
+
+| Code | Section | What It Does |
+|------|---------|-------------|
+| §X.0 | Existing Feature Deep Evaluation | Health audit of every existing feature — what to elevate, evolve, consolidate, or reimagine |
+| §X.1 | Competitive & Landscape Research | Competitor inventory, feature gap matrix, user signal synthesis |
+| §X.2 | Improvement Prioritization | Ranks all improvements by impact × effort × strategic value |
+| §X.3 | R&D Roadmap Deliverable | Structured roadmap: immediate → short → medium → long term |
+
+---
+
+### POLISH & RESTRUCTURATION MODE (§XI)
+
+> **When to use**: App grew messy over time, codebase needs restructuring, design feels incoherent, needs systematic polish.
+>
+> **Trigger phrases**: "my app is messy", "restructure my app", "polish my app", "clean up my codebase", "my app feels incoherent", "unify my app", "my app grew messy"
+
+| Code | Section | What It Does |
+|------|---------|-------------|
+| §XI.0 | Deep Comprehension Phase | Reads and understands the app deeply before changing anything (MANDATORY) |
+| §XI.1 | Pre-Polish Inventory | Maps all coherence fractures, inconsistencies, rough edges |
+| §XI.2 | Systematic Polish Passes | 7 polish passes from structural to fine-grained |
+| §XI.3 | Codebase Restructuration | File structure, module boundaries, naming, architecture cleanup |
+| §XI.4 | Architecture Evolution | Incremental architecture improvements without rewrites |
+| §XI.5 | Quality Gates | Verification that polish and restructuring preserved behavior |
+| §XI.6 | Polish & Restructuration Deliverable | Structured delivery of all changes |
+
+---
+
+### QUICK REFERENCE — "I want to..." → Run this
+
+| I want to... | Run this |
+|--------------|----------|
+| **Full audit of everything** | `"full app audit"` → all parts P1–P14 |
+| **Just check security** | `"run Category C"` or `"security audit"` |
+| **Just check performance** | `"run Category D"` or `"performance audit"` |
+| **Just fix the design** | `"run Category E"` or `"design polish"` |
+| **Verify my business logic** | `"run §A1"` or `"check my formulas"` |
+| **Check one specific thing** | `"audit §C2"` (injection) or `"run §D5"` (mobile perf) |
+| **Fix issues in a section** | `"fix §E3"` (color craft) or `"implement §G1 fixes"` |
+| **Plan what to build next** | `"run §X"` or `"R&D mode"` |
+| **Clean up a messy codebase** | `"run §XI"` or `"polish mode"` |
+| **Compare with competitors** | `"run §X.1"` or `"competitive analysis"` |
+| **Future-proof my app** | `"run Category O"` or `"projection analysis"` |
+| **Check AI integration** | `"run §K5"` or `"audit AI integration"` |
+| **Check mobile-specific issues** | `"run §C7 and §D5"` or `"mobile audit"` |
+
+---
+
+## QUICK START — How to Use This Skill
+
+> **For Claude**: When this skill activates, follow these steps:
+> 1. **Use `AskUserQuestion`** to present the §TRIAGE options (unless the user already specified a mode)
+> 2. **Use `TodoWrite`** to create a progress tracker with one todo per audit part
+> 3. **Use `Agent` (subagent_type: Explore)** to read the entire codebase in parallel before writing any findings
+> 4. **Fill §0** by extracting from code first, then asking the user only for what can't be extracted
+> 5. **Work in parts** — output one part per response, update the todo list after each
+>
+> **For the User**: Just say one of the trigger phrases (e.g., "audit my app", "review before launch", "help me improve my features") and Claude will guide you through the options. You can also jump directly to a mode: "do a full audit", "run R&D mode", "polish my app".
+
+---
+
+## SCOPE CONVENTION — "audit/fix" vs "full deep audit/fix"
+
+> **This is a binding instruction.** The words "full deep" in a user request are a scope multiplier. They change what gets audited and fixed.
+
+### The Rule
+
+| User Says | Scope | What Claude Does |
+|-----------|-------|-----------------|
+| **"audit/fix [subject]"** | **Standard** | Run only the core SKILL or category for that subject. Stay within its boundaries. |
+| **"full deep audit/fix [subject]"** | **Expanded — everything the subject touches** | Run the core SKILL/category **PLUS every cross-cutting section from either SKILL that affects the subject**. Follow every dependency chain. Leave nothing UI-adjacent unexamined. |
+
+### The Principle
+
+**"Full deep"** means: if the subject touches it, audit it. Not just the primary category — every section in both `app-audit-SKILL.md` and `design-aesthetic-audit-SKILL.md` where the subject has a dependency, a side effect, or a shared concern.
+
+### Subject-Specific Expansion Map
+
+#### "full deep audit/fix art design aesthetic" — EVERYTHING UI
+
+Standard scope: `design-aesthetic-audit-SKILL.md` 21-step path only.
+
+Full deep adds from `app-audit-SKILL.md`:
+| Added Section | Why — What It Touches |
+|---------------|----------------------|
+| §E (Visual Design Quality) | Structural/code side of design: tokens in code, spacing in layouts, contrast in implementation |
+| §F1 (Information Architecture) | Navigation structure, grouping logic, discoverability — design depends on IA |
+| §F2 (User Flow Quality) | Dead ends, error recovery, back navigation — aesthetic breaks if flow breaks |
+| §F3 (Onboarding & First Use) | First-run experience, permission requests — first visual impression |
+| §F4 (Copy Quality) | Labels, error messages, terminology — copy IS part of the visual surface |
+| §F5 (Micro-Interactions) | Functional feedback loops — motion architecture needs interaction triggers |
+| §F6 (Engagement & Delight) | Personality moments, reward patterns — aesthetic at its most expressive |
+| §G1-G4 (Accessibility) | Content descriptions, TalkBack, focus order, contrast, reduced motion — design must be accessible |
+| §H3 (Mobile & Touch) | Touch targets (48dp min), safe areas, gesture conflicts — design must be touchable |
+| §L3 (Design System Standard.) | Token consistency, component variants, spacing unification — the system under the design |
+| §L4 (Copy & Content Standard.) | Voice consistency, terminology — copy-visual alignment at scale |
+| §L5 (Interaction & Experience Polish) | Micro-animation refinement, transition consistency — the polish layer |
+| §D5 (Mobile Performance) | RecyclerView jank, animation frame drops — design that stutters is broken design |
+
+#### "full deep audit/fix security" — EVERYTHING TRUST
+
+Standard scope: §C (Security & Trust) only.
+
+Full deep adds:
+| Added Section | Why |
+|---------------|-----|
+| §B3 (Input Validation) | Validation gaps are security gaps |
+| §C7 (Mobile Security) | Permissions, exported components, WebView, ProGuard |
+| §K1-K5 (Domain Depths) | Financial precision, medical safety, AI prompt injection |
+| §B2 (Persistence) | Storage security, encryption, concurrent access |
+| §B4 (Import/Export) | Malformed import → prototype pollution → state corruption |
+| §M2 (Observability) | Can you detect a breach? Crash reporting, error tracking |
+| §O4 (Dependency Decay) | Outdated dependencies with known CVEs |
+| §H4 (Network Resilience) | Retry logic, degraded connectivity — attack surface |
+
+#### "full deep audit/fix performance" — EVERYTHING SPEED
+
+Standard scope: §D (Performance & Resources) only.
+
+Full deep adds:
+| Added Section | Why |
+|---------------|-----|
+| §D5 (Mobile Performance) | Coroutines, RecyclerView, process death, ANR |
+| §L6 (Performance Polish) | Perceived performance, skeleton screens, optimistic updates |
+| §O1 (Scale Cliffs) | Where does it break under load? |
+| §H4 (Network Resilience) | Retry, offline, degraded connectivity |
+| §D3 (Resource Budget) | APK size, image optimization, font loading |
+| §I1 (Dead Code) | Dead code = wasted bundle size = slower load |
+| §A6 (Async & Concurrency) | Race conditions, stale closures, ordering bugs — perf symptoms |
+| §J3 (Asset Management) | Image optimization, lazy loading, format selection |
+
+#### "full deep audit/fix UX" — EVERYTHING USER-FACING
+
+Standard scope: §F (UX, IA & Copy) only.
+
+Full deep adds:
+| Added Section | Why |
+|---------------|-----|
+| §E (Visual Design Quality) | UX and visual design are inseparable |
+| §G1-G4 (Accessibility) | Accessibility IS UX for affected users |
+| §H3 (Mobile & Touch) | Touch interaction IS UX |
+| §L5 (Interaction Polish) | Polish IS the UX quality ceiling |
+| §F6 (Engagement & Delight) | Emotional design IS UX at its best |
+| Full `design-aesthetic-audit-SKILL.md` | The aesthetic layer IS part of the user experience |
+
+#### "full deep audit/fix code quality" — EVERYTHING MAINTAINABLE
+
+Standard scope: §I (Code Quality & Architecture) only.
+
+Full deep adds:
+| Added Section | Why |
+|---------------|-----|
+| §L1-L2 (Optimization & Standardization) | Standards are code quality infrastructure |
+| §O1-O7 (All Projections) | Future maintainability depends on today's architecture |
+| §M1-M3 (Deployment & Ops) | Versioning, monitoring, feature flags — operational code quality |
+| §B1 (State Architecture) | State bugs are architecture bugs |
+| §I5 (Module Architecture) | Coupling, cohesion, dependency direction |
+
+### Claude Execution Note
+
+When "full deep" is detected:
+1. **Use `TodoWrite`** to list ALL sections (core + expanded) as individual tasks
+2. **Run core SKILL sections first**, then expanded sections in order
+3. **Cross-reference findings** — a design finding may reveal a UX gap, a UX gap may reveal an accessibility gap
+4. **Follow the Cross-Cutting Concern Map (§VIII)** — it maps exactly these dependency chains
+
+---
+
 ## SKILL MAP — Quick Reference
 
 > **Read this first.** This is a 2,800+ line skill. You never need all of it. Use this map.
@@ -71,14 +565,106 @@ description: >
 - **§X and §XI can be run independently.** They don't require a full audit. But they work better with one.
 - **§X.0 (existing feature eval) always runs before §X.1 (competitive research).** Look inward first.
 - **§XI.0 (comprehension) is non-negotiable.** Never skip it — it's what prevents "clean but soulless" restructuring.
-- **When in doubt about which section applies:** ask the user. Use the `ask_user_input` tool with the triage options.
+- **When in doubt about which section applies:** ask the user. Use the `AskUserQuestion` tool with the triage options.
 - **For apps > 3,000 lines:** always confirm with user after completing §0 + §I before continuing.
+
+### Claude Code Tool Integration Protocol
+
+> **These instructions are specific to Claude Code (CLI/web).** Use the right tool for each audit task.
+
+#### Tool Usage Map
+
+| Audit Task | Tool to Use | Why |
+|------------|-------------|-----|
+| **Read the codebase** | `Agent` (subagent_type: Explore) | Explores files in parallel without bloating the main context |
+| **Search for patterns** (e.g., hardcoded strings, security issues) | `Grep` or `Glob` | Fast, targeted codebase searches |
+| **Ask user which mode** | `AskUserQuestion` | Presents triage options with descriptions |
+| **Track audit progress** | `TodoWrite` | Creates visible progress tracker for multi-part audits |
+| **Research competitors/sources** | `WebSearch` / `WebFetch` | Live web research for §X.1 competitive analysis |
+| **Present findings** | Direct text output | Findings are displayed directly to the user |
+| **Implement fixes** | `Edit` / `Write` | Apply recommended changes to code |
+
+#### Multi-Part Audit Progress Protocol
+
+At the start of any multi-part audit, create a progress tracker:
+
+```
+TodoWrite([
+  { content: "Fill §0 App Context Block", status: "in_progress", activeForm: "Filling §0 context" },
+  { content: "§I Adaptive Calibration", status: "pending", activeForm: "Classifying domain and architecture" },
+  { content: "Part 1: Core Logic & Domain", status: "pending", activeForm: "Auditing core logic" },
+  { content: "Part 2: State & Data Integrity", status: "pending", activeForm: "Auditing state management" },
+  ...continue for each part
+])
+```
+
+Update status to `completed` as each part finishes. The user sees real-time progress.
+
+#### Parallel Research Strategy
+
+For large codebases (> 2,000 lines), launch parallel Explore agents to read different modules simultaneously:
+
+```
+Agent(subagent_type: Explore, prompt: "Read all UI/fragment files in app/src/main/java/.../ui/")
+Agent(subagent_type: Explore, prompt: "Read all utility/service files in app/src/main/java/.../utils/")
+Agent(subagent_type: Explore, prompt: "Read all data model files in app/src/main/java/.../data/")
+```
+
+This prevents context window bloat while ensuring thorough coverage.
+
+### Platform Awareness
+
+> This skill was originally written for web/frontend apps but applies to **any frontend platform**. When auditing non-web apps, adapt the terminology:
+
+| Web Concept | Android/Kotlin Equivalent | iOS/Swift Equivalent |
+|-------------|--------------------------|---------------------|
+| CSS variables / design tokens | `colors.xml`, `themes.xml`, `dimens.xml` | Asset catalogs, `UIColor` extensions |
+| `localStorage` | `SharedPreferences`, Room DB | `UserDefaults`, CoreData |
+| Components / React state | Fragments, ViewModels, LiveData | ViewControllers, SwiftUI State |
+| `innerHTML` / XSS | `WebView.loadData()` injection | `WKWebView` injection |
+| Bundle size | APK size, DEX method count | IPA size |
+| Service Workers | WorkManager, Foreground Services | Background Tasks |
+| CSS animations | `MotionLayout`, `ObjectAnimator`, `MotionUtil` | `UIView.animate`, SwiftUI `.animation` |
+| `border-radius` | `cornerRadius` in ShapeableImageView / MaterialCardView | `layer.cornerRadius` |
+| Tailwind/CSS classes | XML attributes, Material Design 3 theme | SwiftUI modifiers |
+| `prefers-reduced-motion` | `Settings.Global.ANIMATOR_DURATION_SCALE` | `UIAccessibility.isReduceMotionEnabled` |
+
+**When auditing Android apps specifically:**
+- Check `AndroidManifest.xml` for permission issues (§C)
+- Audit `proguard-rules.pro` for security implications
+- Review `build.gradle` for dependency versions (§O4)
+- Check `values/` and `values-night/` for theme completeness (§E)
+- Review navigation graph (`nav_graph.xml`) for flow coherence (§H)
+- Check for proper lifecycle handling in Fragments/ViewModels (§B)
+- Verify Material Design 3 component usage and theming (§E, §L)
+
+**When auditing iOS apps specifically:**
+- Check `Info.plist` for permission descriptions
+- Review asset catalogs for theme support
+- Audit `Podfile`/`Package.swift` for dependencies
+- Check for proper SwiftUI/UIKit lifecycle handling
 
 ---
 
 ## §TRIAGE — MANDATORY AUDIT ROUTING (execute BEFORE reading the rest of this skill)
 
-**Always ask first** using `ask_user_input`:
+**Always ask first** using `AskUserQuestion`. Example invocation:
+
+```
+AskUserQuestion({
+  questions: [{
+    question: "What kind of audit would you like?",
+    header: "Audit mode",
+    options: [
+      { label: "Full App Audit", description: "Code, security, performance, accessibility, UX, design, architecture, domain correctness, i18n, AI risks, future projections" },
+      { label: "Design & Aesthetic Audit", description: "Deep visual analysis — color science, typography, motion, brand identity, competitive positioning" },
+      { label: "R&D & Improvement", description: "Existing feature health evaluation, competitive analysis, improvement prioritization, R&D roadmap" },
+      { label: "Polish & Restructure", description: "Deep app comprehension, coherence fracture healing, systematic polish, codebase restructuring" }
+    ],
+    multiSelect: false
+  }]
+})
+```
 
 | Option | What You Get |
 |--------|-------------|
@@ -92,11 +678,11 @@ description: >
 
 | Selection | What Claude Does |
 |-----------|-----------------|
-| Full App Audit | Continue from §ORCHESTRATION. Do NOT load `design-aesthetic-audit`. |
-| Design & Aesthetic Audit | Stop this skill. Load `design-aesthetic-audit/SKILL.md`. |
+| Full App Audit | Continue from §ORCHESTRATION. Do NOT load `design-aesthetic-audit-SKILL.md`. |
+| Design & Aesthetic Audit | Stop this skill. Load `design-aesthetic-audit-SKILL.md`. |
 | R&D & Improvement | Fill §0 → lightweight §I classification → skip to §X. If prior audit exists, reference findings. |
 | Polishing & Restructuration | Fill §0 → skip to §XI. Prior audit strongly recommended. If none, do Parts 1–3 first. |
-| Companion Mode | Continue this skill + load `design-aesthetic-audit/SKILL.md`. Follow companion protocol. |
+| Companion Mode | Continue this skill + load `design-aesthetic-audit-SKILL.md`. Follow companion protocol. |
 
 **Skip triage when:** user explicitly names which mode, has already selected, or says "continue" / "next part" during an in-progress session.
 
@@ -159,6 +745,18 @@ Visualization: # e.g. "Recharts" / "D3.js" / "Chart.js" / "None"
 Build:         # e.g. "Zero build tools — CDN only" / "Vite 5" / "Webpack 5"
 External APIs: # e.g. "None" / "Stripe" / "OpenWeather" / "Anthropic Claude API"
 AI/LLM:        # e.g. "None" / "OpenAI GPT-4o via fetch" / "Claude claude-sonnet-4-6, streaming"
+
+# ─── MOBILE / NATIVE STACK (fill if applicable) ──────────────────────────────
+Platform:      # e.g. "Android" / "iOS" / "Flutter" / "React Native" / "Web only"
+Language:      # e.g. "Kotlin 1.9.0" / "Swift 5.9" / "Dart 3.2" / "TypeScript"
+Min SDK:       # e.g. "Android 29 (10)" / "iOS 15.0" / "N/A"
+Target SDK:    # e.g. "Android 35 (15)" / "iOS 17.0" / "N/A"
+Architecture:  # e.g. "MVVM (ViewModel + LiveData)" / "MVI (Compose)" / "VIPER" / "BLoC"
+UI Framework:  # e.g. "Material Design 3 (XML Views)" / "Jetpack Compose" / "SwiftUI" / "UIKit"
+Navigation:    # e.g. "Navigation Component 2.7.4" / "NavigationStack" / "go_router"
+DI:            # e.g. "Manual" / "Hilt/Dagger" / "Koin" / "Swinject"
+Testing:       # e.g. "JUnit 4 + Espresso" / "XCTest" / "flutter_test"
+CI/CD:         # e.g. "GitHub Actions" / "Fastlane" / "Bitrise" / "None"
 
 # ─── PLATFORM & LOCALE ────────────────────────────────────────────────────────
 Target Platforms: # e.g. "Desktop-first" / "Mobile-first PWA" / "Both (responsive)"
@@ -287,6 +885,11 @@ Before writing any finding, classify the app along three axes. These classificat
 | PWA (any) | SW versioning, cache poisoning, offline-first edge cases |
 | LocalStorage-only | Quota exhaustion, schema migration gaps, concurrent-tab conflicts |
 | Backend-connected | Race conditions, optimistic update failures, token leaks, CORS |
+| Android (MVVM/Kotlin) | Fragment lifecycle leaks, ViewModel scope misuse, coroutine cancellation gaps, permission model gaps, process death state loss, ProGuard stripping |
+| Android (Compose) | Recomposition storms, state hoisting confusion, side-effect lifecycle, LazyColumn performance |
+| iOS (UIKit) | Retain cycles, main-thread violations, lifecycle misuse, deep-link handling |
+| iOS (SwiftUI) | @State/@StateObject confusion, view identity issues, NavigationStack complexity |
+| Cross-platform (Flutter/RN) | Bridge bottleneck, platform-specific fallback gaps, native module versioning |
 
 ### §I.3. App Size → Audit Scope
 
@@ -625,17 +1228,48 @@ When a chain exists: document it, escalate the combined severity, and number the
 
 ### Pre-Flight Checklist (Mandatory — Before Any Finding)
 
+> **Claude Code**: Use `Agent` (subagent_type: Explore) to read the entire codebase in parallel. For large apps, launch multiple agents targeting different directories. Use `TodoWrite` to create the audit progress tracker. Use `AskUserQuestion` for any §0 fields you can't extract from code.
+
 ```
 [ ] Read the entire source file(s) top-to-bottom without skipping
+    → Claude Code: Use Agent(Explore) for large codebases, Glob + Read for small ones
+
 [ ] Classify: domain type, architecture pattern, app size → determine part count
+
 [ ] Extract all domain rules from code → verify against §0 → flag discrepancies
+    → Claude Code: Use Grep with these patterns:
+      Constants:      Grep(pattern: "(val|const|let|var|static|final)\\s+[A-Z_]{2,}\\s*=", type: "kotlin")
+      Magic numbers:  Grep(pattern: "[^0-9][0-9]{2,}[^0-9dpsp]", glob: "*.kt")  — then filter non-obvious
+      Hardcoded URLs: Grep(pattern: "https?://", glob: "*.{kt,java,xml}")
+      Formulas:       Grep(pattern: "(Math\\.|ceil|floor|round|sqrt|pow|abs|max|min)", type: "kotlin")
+
 [ ] Identify all architectural constraints → acknowledge them explicitly
+    → Claude Code: Read build config files first:
+      Android: Glob(pattern: "**/build.gradle*") + Read AndroidManifest.xml
+      iOS:     Glob(pattern: "**/Podfile") or Glob(pattern: "**/Package.swift")
+      Web:     Read package.json, vite.config.*, webpack.config.*
+
 [ ] Extract Design Identity from code if not provided → confirm with user
+    → Claude Code: Read theme/style files:
+      Android: Glob(pattern: "**/res/values/colors.xml") + Glob(pattern: "**/res/values/themes.xml")
+              + Glob(pattern: "**/res/values/styles.xml") + Glob(pattern: "**/res/values-night/**")
+      Web:     Grep(pattern: "--[a-z]", glob: "*.css") for CSS variables
+      iOS:     Glob(pattern: "**/*.xcassets/**")
+
 [ ] Build Feature Preservation Ledger (every named feature: status + safety flags)
+    → Claude Code: Use Grep(pattern: "class.*Fragment|class.*Activity|class.*ViewModel", type: "kotlin")
+      to inventory all screens/features
+
 [ ] Map each critical workflow from §0 through the actual code
+
 [ ] Identify top 5 risk areas based on domain classification
+
 [ ] Announce: domain class, architecture class, planned part count, top-risk areas
+
 [ ] For apps > 3,000 lines: wait for user acknowledgment before Part 2
+    → Claude Code: Use AskUserQuestion to confirm before proceeding
+
+[ ] Create progress tracker with TodoWrite listing all planned parts
 ```
 
 ### Part Structure
@@ -666,6 +1300,28 @@ When a chain exists: document it, escalate the combined severity, and number the
 
 > 120+ dimensions across 15 categories. Every dimension applies to every app.
 > Domain Classification (§I.1) determines depth and severity multipliers.
+
+> **Claude:** This is the largest section (~1,400 lines). Do NOT read it all at once. Use this mini-index to jump to the category you need:
+>
+> | Category | Line Anchor | Sections |
+> |----------|------------|----------|
+> | **A** Domain Logic | `### CATEGORY A` | §A1–§A7 |
+> | **B** State & Data | `### CATEGORY B` | §B1–§B6 |
+> | **C** Security | `### CATEGORY C` | §C1–§C7 |
+> | **D** Performance | `### CATEGORY D` | §D1–§D5 |
+> | **E** Visual Design | `### CATEGORY E` | §E1–§E11 |
+> | **F** UX & IA | `### CATEGORY F` | §F1–§F6 |
+> | **G** Accessibility | `### CATEGORY G` | §G1–§G5 |
+> | **H** Compatibility | `### CATEGORY H` | §H1–§H4 |
+> | **I** Code Quality | `### CATEGORY I` | §I1–§I6 |
+> | **J** Data Presentation | `### CATEGORY J` | §J1–§J4 |
+> | **K** Domain Depths | `### CATEGORY K` | §K1–§K5 |
+> | **L** Polish & Standard. | `### CATEGORY L` | §L1–§L7 |
+> | **M** Deployment | `### CATEGORY M` | §M1–§M3 |
+> | **N** i18n | `### CATEGORY N` | §N1–§N4 |
+> | **O** Projections | `### CATEGORY O` | §O1–§O7 |
+>
+> Use `Grep` with the category header (e.g., `### CATEGORY E`) to jump directly.
 
 ---
 
@@ -842,6 +1498,19 @@ Mutation bugs are among the hardest to find — the code looks correct but silen
 - **Medical regulations**: App gives health guidance? "Not medical advice" disclaimer prominent?
 - **Accessibility law**: ADA/EN 301 549 obligations relevant to this app?
 
+#### §C7. MOBILE-SPECIFIC SECURITY *(activated for Android/iOS apps)*
+- **Permission audit**: Are all declared permissions actually used? Over-requesting permissions signals privacy issues and can trigger store rejection.
+  - Android: Check `AndroidManifest.xml` `<uses-permission>` vs actual usage in code
+  - iOS: Check `Info.plist` usage descriptions vs actual API calls
+- **Exported components**: Android — are Activities/Services/BroadcastReceivers unnecessarily exported? (`android:exported="true"` without intent filters = attack surface)
+- **Data storage security**: Sensitive data in SharedPreferences/UserDefaults without encryption? Use EncryptedSharedPreferences / Keychain.
+- **WebView security**: `setJavaScriptEnabled(true)` + `addJavascriptInterface()` = injection surface. `setAllowFileAccess(true)` = local file read risk.
+- **Network security config**: Android — is `android:networkSecurityConfig` present? Does it allow cleartext traffic unnecessarily?
+- **ProGuard/R8 rules**: Are security-critical classes excluded from obfuscation appropriately? Are reflection-dependent classes kept?
+- **Content Provider exposure**: Android — `android:exported` on ContentProviders without proper permission checks = data leak.
+- **Deep link validation**: Are deep links/app links validated against expected patterns, or can arbitrary URIs trigger sensitive actions?
+- **Clipboard security**: Sensitive data (passwords, tokens) copied to clipboard without timeout/clearing?
+
 ---
 
 ### CATEGORY D — Performance & Resources
@@ -886,6 +1555,17 @@ Produce this table for the app:
 - **Computation array retention**: Heavy tables (DP, MC) released after use or held in closure?
 - **Canvas/WebGL cleanup**: Contexts and canvases disposed on unmount?
 
+#### §D5. MOBILE-SPECIFIC PERFORMANCE *(activated for Android/iOS apps)*
+- **Coroutine/async lifecycle**: Are coroutines properly scoped to ViewModel/Fragment lifecycle? Orphaned coroutines running after fragment destruction?
+- **RecyclerView / LazyColumn optimization**: ViewHolder pattern correct? DiffUtil used? No nested scrolling conflicts? ViewType reuse?
+- **Image loading**: Thumbnails appropriately sized? Image caching configured? Large bitmaps loaded on main thread?
+- **Database queries on main thread**: Room/CoreData queries dispatched to background? No `runBlocking` on main thread?
+- **Fragment transaction overhead**: Excessive fragment replacements causing layout thrashing? Proper use of `replace` vs `add`?
+- **APK/IPA size**: ProGuard/R8 shrinking enabled? Unused resources stripped? Large assets that could be on-demand?
+- **Process death recovery**: Is state saved via `onSaveInstanceState` / ViewModel SavedState for critical user data? Process death = complete state loss without this.
+- **ANR risk**: Any operation > 5s on main thread triggers ANR dialog (Android). Check file I/O, network calls, heavy computation.
+- **Battery impact**: Unnecessary background work? Wake locks held too long? Location updates too frequent?
+
 ---
 
 ### CATEGORY E — Visual Design Quality & Polish
@@ -894,7 +1574,7 @@ Produce this table for the app:
 > The goal is to make the app's existing design vision more **refined, consistent, and polished** — not to replace it with generic conventions.
 > §0 Design Identity is protected throughout. All findings improve toward the app's own aesthetic, not away from it.
 
-> **Deep visual work:** When this audit's §E findings reveal systemic visual design issues — or when the user specifically requests a design audit, asks to "make it feel like [X]", or references a named aesthetic — the `design-aesthetic-audit` skill should be invoked as a companion. It covers 95 sections of visual-design-specific analysis (component character, copy alignment, illustration, data viz, token architecture, state design, responsive character, source material intelligence) that go well beyond what §E covers here. Route to it via §COMPANION in that skill, which maps directly to §E/P6 in this audit.
+> **Deep visual work:** When this audit's §E findings reveal systemic visual design issues — or when the user specifically requests a design audit, asks to "make it feel like [X]", or references a named aesthetic — the `design-aesthetic-audit-SKILL.md` skill should be invoked as a companion. It covers 95 sections of visual-design-specific analysis (component character, copy alignment, illustration, data viz, token architecture, state design, responsive character, source material intelligence) that go well beyond what §E covers here. Route to it via §COMPANION in that skill, which maps directly to §E/P6 in this audit.
 
 #### §E1. DESIGN TOKEN SYSTEM
 - **Spacing scale**: Is every padding and margin value from a coherent mathematical scale (4/8/12/16/24/32/48/64)? List every one-off value like `p-[13px]` or `margin: 7px`. Each one is a token debt.
@@ -906,6 +1586,10 @@ Produce this table for the app:
 - **Z-index governance**: Is stacking order explicitly managed? List every z-index value used. Collisions between layers (modals, toasts, dropdowns, sticky headers)?
 - **Animation token set**: Are duration values from a consistent set (e.g., 100/200/300/500ms)? Are easing curves consistent for the same type of motion?
 - **Token naming as documentation**: Are token names semantic (what they *mean*) rather than presentational (what they *look like*)? `--color-action-primary` scales to theming and dark mode; `--color-blue-500` does not. A well-named token system is itself product documentation — and for paid/multi-tenant products, also scales to whitelabeling and multi-brand use. For any product nature, naming tokens semantically reduces the cost of every future visual change.
+- **Android theme attribute coverage**: Are colors referenced via theme attributes (`?attr/colorPrimary`, `?attr/colorOnSurface`) or hardcoded hex values? Every hardcoded color is a dark mode bug waiting to happen. Check `themes.xml`, `colors.xml`, and all layout files for `#RRGGBB` literals vs `?attr/` or `@color/` references. Material 3 dynamic color support — is it leveraged?
+- **Dimension resource consistency**: Are dp/sp values defined in `dimens.xml` as named resources, or scattered as literals across layouts? Audit `android:padding="16dp"` vs `@dimen/spacing_md`. Literal values are token debt on Android just as `px` literals are in CSS.
+- **Style inheritance chain**: Is there a clean style hierarchy (`Theme.App` → `Widget.App.Button` → specific overrides)? Or are styles flat-copied with minor variations, creating maintenance debt? Count the number of `<style>` definitions and check for near-duplicate styles that should be consolidated via parent inheritance.
+- **Night mode token completeness**: Every color resource has a `-night` variant? Every drawable has a night-appropriate version? Missing night resources cause jarring fallbacks to light-mode values in dark theme.
 
 #### §E2. VISUAL RHYTHM & SPATIAL COMPOSITION
 - **Vertical rhythm**: Is there consistent spacing between sections, between cards, between form groups? Inconsistent vertical spacing destroys the feeling of order even when individual components look fine.
@@ -915,6 +1599,10 @@ Produce this table for the app:
 - **Proportion**: Do related elements (label + value, icon + text, header + content) feel proportionally balanced?
 - **Focal point clarity**: On every key screen — is there one clear visual focal point that draws the eye first? If the answer is "everything has equal visual weight," the design has no hierarchy and users don't know where to look. Identify the intended focal point on each primary view, then assess whether the current visual treatment actually draws the eye there.
 - **Visual weight distribution**: Is visual mass (size, color saturation, contrast, bold weight) distributed intentionally across the screen? Heavy visual elements clustering in one corner makes the layout feel unbalanced. Scan each primary view for unintentional visual weight accumulation.
+- **Mobile screen real estate discipline**: On mobile, every pixel is expensive. Is vertical space used efficiently? Are there screens where excessive padding, oversized headers, or decorative spacing pushes primary content below the fold? Count how many primary-content items are visible without scrolling on a standard phone (360×640dp). If fewer than 3 items are visible, the density is likely too low.
+- **Edge-to-edge content**: Modern Android (API 30+) and iOS support edge-to-edge layouts behind system bars. Is the app using this for immersive content (image galleries, maps, media)? Are system bar insets handled correctly via `WindowInsetsCompat` so content doesn't hide under status/navigation bars?
+- **Landscape layout quality**: If landscape is supported — is there a dedicated layout, or does the portrait layout just stretch? Wide screens should use master-detail, side-by-side, or multi-column layouts. A single-column layout stretched to landscape wastes half the screen.
+- **Responsive grid breakpoints**: For tablets and foldables — does the layout adapt? `ConstraintLayout` with guidelines, or responsive grid layouts? A phone layout pixel-doubled on a tablet is a craft failure.
 
 #### §E3. COLOR CRAFT & CONTRAST
 - **Color harmony**: Does the accent color work harmoniously with the background and surface colors? Is there a clear hierarchy: background → surface → elevated surface → accent?
@@ -925,6 +1613,8 @@ Produce this table for the app:
 - **Non-text contrast**: UI components (input borders, icon buttons, focus rings) meet 3:1 (WCAG 1.4.11).
 - **State colors**: Hover, active, disabled, error, success, warning — distinct, consistent, and on-brand?
 - **Color psychology alignment**: Does the palette's psychological character match the app's emotional target (§0)? Blues and cool grays signal reliability and precision — appropriate for financial and medical tools. Warm oranges and greens signal energy and growth — appropriate for gamified or wellness tools. Misalignment between color psychology and domain creates subconscious friction.
+- **Material 3 color system adherence**: If using Material 3 — are colors generated from a proper tonal palette (primary, secondary, tertiary, error, surface, outline)? Are `colorOnPrimary`, `colorOnSecondary`, etc. properly set for text/icon contrast on colored surfaces? Are surface tones (surface1–5) used for elevation rather than shadow on dark theme? Check `themes.xml` for complete Material 3 color attribute coverage.
+- **Dark mode color quality**: Not just inverted light mode — dark surfaces need intentional tonal elevation. Material 3 uses surface tint (primary color overlay at low opacity) for elevation rather than shadows. Pure `#000000` backgrounds are acceptable for OLED power savings but need intentional tonal surfaces for cards and elevated elements. Check every screen in dark mode for: text contrast, icon visibility, image background blending, divider visibility.
 - **Color saturation calibration**: Oversaturated colors (`#FF0000`, `#00FF00`) signal low craft regardless of product nature — a pure green is less refined than a calibrated `#14b8a6`. Assess the saturation and lightness of the palette: does it feel purposeful, or do any values feel like the first pick from a color wheel? *For paid/professional tools*: this directly affects trust and willingness to pay. *For fan/creative tools*: this affects whether the palette feels artistically considered or placeholder-level. The standard changes; the question doesn't.
 
 #### §E4. TYPOGRAPHY CRAFT
@@ -949,14 +1639,49 @@ Produce this table for the app:
   - *Any product*: Is there any typographic personality (weight contrast, tracked caps, a purposeful accent) that makes the app feel designed rather than defaulted? Intentionality — not prestige — is the goal.
 
 #### §E5. COMPONENT VISUAL QUALITY
-- **Button states completeness**: Every button variant has all five states: default, hover, active/pressed, focus (keyboard-visible), disabled. Missing states feel broken during interaction.
-- **Input field states**: Default, focus, filled, error, disabled. The focus ring must be clearly visible.
-- **Card design quality**: Internal padding consistent. Border or shadow — not both unless intentional. Corner radius consistent. Content alignment consistent across all instances.
-- **Badge/chip/tag design**: Consistent padding, radius, typography across all instances.
-- **Modal/dialog quality**: Consistent backdrop opacity, border/shadow, corner radius, header/body/footer structure. Close button always in same position and same size.
-- **Icon quality**: All icons from the same family at the same base size. Mixed icon families are visually noisy. Icons sized to optical weight, not just pixel dimensions.
-- **Divider usage**: Lines/dividers used consistently — not as decoration but as structural separators. Too many dividers fragment the layout.
-- **Image presentation**: Images consistently cropped (same aspect ratios for same context), with consistent corner radius treatment.
+
+> Every UI component must be audited for visual consistency, state completeness, and craft. This section covers every element type that can appear in a modern app. On Android: check both XML layout definitions AND runtime-applied styles. On iOS: check both Storyboard/XIB and programmatic styling.
+
+**Core Interactive Components:**
+- **Button states completeness**: Every button variant has all five states: default, hover, active/pressed, focus (keyboard-visible), disabled. Missing states feel broken during interaction. On Android: check `StateListDrawable`, `ColorStateList`, ripple effects, Material Button styles. Every button type (text, outlined, contained, elevated, tonal) must have complete state coverage.
+- **FAB (Floating Action Button) quality**: Correct elevation and shadow? Consistent size (regular 56dp, mini 40dp, extended)? Proper color contrast against all backgrounds it floats over? Hide/show animation on scroll smooth? Position consistent across screens? Extended FAB with icon+text properly sized? FAB does not overlap critical content or navigation elements.
+- **Input field states**: Default, focus, filled, error, disabled. The focus ring must be clearly visible. On Android: `TextInputLayout` with proper hint animation, error text below field, helper text, character counter, prefix/suffix icons, end icon (clear, password toggle, dropdown). Check: does the field expand/contract smoothly? Is the label animation smooth? Does error state include both color change AND error text?
+- **Checkbox and radio button quality**: Visual size consistent (minimum 48dp touch target on mobile). Custom styled or default? If custom — are they visually consistent with the app's design language? Animation between checked/unchecked smooth? Indeterminate state designed (for checkboxes)? Group alignment consistent?
+- **Switch/toggle quality**: Track and thumb proportions feel balanced? On/off state visually unambiguous (not just color — also position, icon, or text)? Animation between states smooth? Disabled state clearly distinguishable? Label positioned consistently (before or after, never mixed)?
+- **Slider quality**: Track, thumb, and value label styled consistently? Active vs inactive track colors distinct? Discrete steps clearly marked if applicable? Range slider (two thumbs) handles overlap gracefully? Touch target large enough? Value tooltip positioned without clipping at edges?
+- **Dropdown/spinner quality**: Consistent trigger appearance across all instances? Dropdown menu elevation and shadow match the app's shadow hierarchy? Selected item clearly indicated? Menu positioned to avoid clipping at screen edges? Animation for open/close smooth?
+- **Search bar quality**: Consistent styling across all screens? Clear/cancel button appears when text is entered? Search icon properly positioned? Voice search icon if applicable? Suggestion dropdown styled consistently? Transition between collapsed and expanded states smooth?
+
+**Container Components:**
+- **Card design quality**: Internal padding consistent. Border or shadow — not both unless intentional. Corner radius consistent. Content alignment consistent across all instances. On Android: card elevation consistent across similar card types? Material CardView used with consistent `cardCornerRadius`, `cardElevation`, `strokeWidth`? Clickable cards have proper ripple and elevation change on press?
+- **Bottom sheet quality**: Handle/drag indicator consistent? Peek height appropriate for content preview? Expansion animation smooth? Backdrop dimming consistent? Half-expanded state properly designed? Does the bottom sheet conflict with system gesture navigation? Rounded top corners consistent radius?
+- **Modal/dialog quality**: Consistent backdrop opacity, border/shadow, corner radius, header/body/footer structure. Close button always in same position and same size. On Android: `MaterialAlertDialogBuilder` styled consistently? Title, message, and buttons properly spaced? Scrollable content within dialog handled? Full-screen dialog for complex forms?
+- **Tab bar/TabLayout quality**: Active and inactive tab states visually distinct (color, weight, indicator)? Tab indicator animation smooth? Scroll behavior for many tabs? Tab text not truncated? Icon+text tabs properly aligned? Tab indicator width (full-width vs content-width) consistent?
+- **Bottom navigation quality**: Active/inactive icon and label states distinct? Badge/notification dot positioned consistently? Animation between states smooth? Icons optically consistent in weight and size? Label text never truncated? Correct number of items (3-5, never more)?
+- **Toolbar/AppBar quality**: Title alignment consistent (centered vs left-aligned)? Overflow menu icon positioned correctly? Navigation icon (back, hamburger) consistent size and position? Collapsing toolbar parallax and fade effects smooth? Status bar color coordinated? Elevation changes on scroll correct?
+- **Navigation drawer quality**: Header section designed (not default)? Item height and padding consistent? Active item clearly highlighted? Dividers between groups consistent? Drawer width correct (standard: 256dp)? Edge-to-edge content or properly inset? Scrim overlay opacity consistent?
+
+**Informational Components:**
+- **Badge/chip/tag design**: Consistent padding, radius, typography across all instances. On Android: input chips, filter chips, choice chips, action chips, assist chips — each type has consistent styling? Chip close/remove icon consistent? Chip groups wrap properly or scroll horizontally?
+- **Snackbar/toast quality**: Consistent position (typically bottom), elevation, corner radius? Action button styled differently from message text? Text never truncated? Duration appropriate (short: 4s, long: 10s, indefinite for critical)? Multiple snackbars queued, not stacked? Does not overlap FAB or bottom nav?
+- **Progress indicator quality**: Determinate and indeterminate variants styled consistently? Linear progress bar height and color consistent? Circular progress size appropriate for context? Progress color matches app accent? Buffer state designed for streaming/download? Percentage text positioned clearly?
+- **Tooltip quality**: Consistent appearance (background color, text color, corner radius, padding)? Arrow/caret positioned correctly? Appears on hover/long-press without delay? Disappears when no longer relevant? Never clips at screen edges? Text concise (one line preferred)?
+- **Banner/alert quality**: Distinct visual treatment for info, warning, error, success? Icon used alongside color to differentiate? Dismissible with consistent close button? Action buttons styled consistently? Does not push content in a jarring way (smooth height animation)?
+
+**Content Display Components:**
+- **List item quality**: Consistent height for single-line, two-line, three-line variants? Leading element (icon, avatar, thumbnail) consistently sized and aligned? Trailing element (text, icon, switch) consistently positioned? Dividers between items consistent (full-bleed vs inset)? Long text properly truncated with ellipsis?
+- **Icon quality**: All icons from the same family at the same base size. Mixed icon families are visually noisy. Icons sized to optical weight, not just pixel dimensions. On Android: consistent use of outlined vs filled style? Icon tinting using `colorControlNormal` and theme attributes, not hardcoded colors? Vector drawables preferred over rasterized assets?
+- **Avatar/thumbnail quality**: Consistent size across same-context usage? Circular vs rounded-square applied consistently? Placeholder/loading state designed? Fallback for missing images (initials, generic icon)? Image scaling (center-crop, fit) consistent?
+- **Divider usage**: Lines/dividers used consistently — not as decoration but as structural separators. Too many dividers fragment the layout. On Android: `MaterialDivider` with consistent `dividerInsetStart` and `dividerInsetEnd`?
+- **Image presentation**: Images consistently cropped (same aspect ratios for same context), with consistent corner radius treatment. Loading placeholder (solid color, shimmer, blur-up)? Error state for failed loads? Transition animation on load?
+- **Empty state design quality**: Every empty state designed (not default system text). Illustration or icon consistent in style? Message text helpful and action-oriented? Primary action button prominent? Visual weight appropriate — not so heavy it feels like an error, not so light it feels like a bug.
+- **Date/time picker quality**: Styled consistently with app theme? Calendar view properly designed? Time picker format consistent (12h/24h matching device settings)? Range selection visual treatment clear? Today/selected state visually distinct?
+
+**Structural/Layout Components:**
+- **Status bar integration**: Color coordinated with toolbar/app bar? Light/dark status bar icons matching background? Transparent/translucent for edge-to-edge content? Consistent across all screens?
+- **System navigation bar integration**: Color or transparency consistent? Handles edge-to-edge content properly? Button bar vs gesture bar visual treatment consistent?
+- **Skeleton/shimmer loading quality**: Shimmer shapes match the actual content layout? Animation smooth and not distracting? Color and brightness appropriate (not too flashy, not invisible)? Consistent across all loading states in the app?
+- **RecyclerView/list visual quality**: Scroll performance smooth (no jank)? Item animations consistent (add, remove, move)? Overscroll effect styled or disabled intentionally? Grid vs linear layout spacing consistent?
 
 #### §E6. INTERACTION DESIGN QUALITY
 - **Hover feedback**: Every interactive element has a perceptible hover state that communicates interactivity. Elements that look interactive but have no hover state confuse users.
@@ -985,8 +1710,13 @@ Produce this table for the app:
 
 #### §E7. OVERALL VISUAL PROFESSIONALISM
 - **Design coherence**: Does the app feel like it was designed as a whole, or like different sections were designed independently? Incoherence is visible even when users can't articulate it.
-- **Attention to detail**: Pixel-perfect alignment? No 1-pixel misalignments on borders? No slight gaps where elements should touch? Details matter at the professional level.
+- **Attention to detail**: Pixel-perfect alignment? No 1-pixel misalignments on borders? No slight gaps where elements should touch? Details matter at the professional level. On Android: check for inconsistent `layout_margin` values between similar components, padding differences between fragments using the same layout patterns.
 - **Brand consistency**: Is the app's visual identity consistent from section to section? Would a user recognize a new section as part of the same app?
+- **First-impression test**: Show the app to someone for 7 seconds, then take it away. Ask them: "What kind of app is this? Does it feel professional?" Their snap judgment reveals the design's non-verbal communication. If they say "it looks like a default/template app" — the design is generic. If they say "it looks polished" — the design is working.
+- **Screenshot quality test**: Take a single static screenshot of each primary screen. Would each screenshot look good in an App Store listing, a social media post, or a presentation slide? A screenshot that looks unprofessional out of context signals weak visual design — because App Store screenshots ARE the first impression for most users.
+- **Visual noise inventory**: List every element on each primary screen that could be removed, reduced in visual weight, or hidden behind progressive disclosure without losing core functionality. Each unnecessary visual element competes for attention and reduces the signal-to-noise ratio. Count decorative dividers, redundant labels, low-information badges, and visual elements that exist "because they were in the template."
+- **Cross-device visual consistency**: Does the app look equally intentional on different screen densities (hdpi vs xxxhdpi), different device sizes (compact vs large phone), and different system themes (light/dark)? Test on at least two device sizes — inconsistencies between devices reveal design decisions that are pixel-tuned for one screen rather than systematically designed.
+- **Competitive credibility check**: Name the 2–3 most polished apps in the same category. Compare specific craft elements side-by-side: spacing consistency, color calibration, transition quality, empty state design, typography hierarchy. For each dimension: is this app at parity, close behind, or visibly less polished? The user's mental benchmark is always the best app they use regularly — not the average.
 - **Polish delta**: For each section — list specific changes that would move it from "functional" to "intentional" within the existing design language and axis profile.
 - **Polish level assessment** `[A1][A2][A5]`: The right polish standard depends on the axes — not on a tier label:
   - *High commercial intent (A1)*: Verify these credibility signals — consistent 4/8-based spacing — subtle shadows with intentional offset and blur — smooth 200–300ms transitions — letter-spacing on headings — antialiased type — hover states that feel physical — skeleton loaders that mirror content shape — contextual empty states — confirmation animations on success.
@@ -1085,6 +1815,11 @@ Produce this table for the app:
 - **Accent color intentionality** `[A1][A4]`: Is the accent color purposeful — a calibrated hue with intentional saturation, not the first pick from a wheel? *Commercial*: Is it distinctive within the competitive landscape? *Subject identity*: Does it feel tonally connected to the subject?
 - **Emotional arc design** *(all)*: Does the visual language guide users through the right emotional journey for this specific app and audience? Map the intended emotional arc (e.g., focus → confidence → satisfaction for a work tool; curiosity → discovery → delight for an exploratory tool; calm → trust → relief for a sensitive-context tool), then assess whether the visual transitions, state changes, and feedback moments support it.
 - **Anti-genericness audit** *(all)*: Identify visual elements that make the app look interchangeable with a dozen others — same default palette, same component style, same layout conventions with no adaptation to the subject or audience. For each: what is the specific, minimal change that would make this element more distinctly *this* app?
+- **App icon / launcher icon quality**: The app icon is the single most-seen brand element — appearing on the home screen, recent apps, app stores, and notifications. Is it legible at every size (16×16 notification, 48×48 launcher, 512×512 store listing)? Visually coherent with the app's internal design language? Distinct enough to pick out on a crowded home screen? On Android: does the adaptive icon have properly designed foreground and background layers? Does the icon work on all launcher shapes (circle, squircle, rounded square)?
+- **Motion identity**: Does the app have a recognizable animation vocabulary — a consistent timing, easing, and direction language that feels like *this* app? A spring-physics app has a different identity than a snappy-instant app. If all animations use the same generic 300ms ease-in-out, there is no motion identity. Identify the motion character and whether it's consistent or accidental.
+- **Iconography as identity signal**: Beyond technical consistency (§E5) — do the icons communicate the brand's personality? A clinical precision tool with rounded bubbly icons has a split personality. The icon family's weight, corner treatment, and fill style are identity decisions, not just aesthetic ones.
+- **Color system as memory**: Is the palette memorable? After using the app for 10 minutes and closing it, could a user describe its color character? A palette that is merely "correct" (good contrast, harmonious) but unmemorable is a missed identity opportunity. The accent color, the surface temperature, the dark mode character — each is a memory anchor.
+- **Brand scalability**: Does the visual identity work at all scales — icon size, watch complication, widget, tablet, splash screen, notification, share card? An identity that only works at phone-screen scale is fragile. Test: does the brand's key visual element (color, shape, motif) survive at 32×32px?
 
 #### §E10. DATA STORYTELLING & VISUAL COMMUNICATION
 
@@ -1097,6 +1832,36 @@ Produce this table for the app:
 - **Data density calibration**: Assess whether the information density is calibrated for the target audience. A tool for analysts can be dense; a tool for casual users must be generous with whitespace and explanation. Is the current density right? What is the cost to the app's usability of the current density choice?
 - **Empty → populated visual storytelling**: The transition from empty state to populated state is one of the most important visual moments in the product. Does populating data feel like the app coming alive, or does it feel like a spreadsheet being filled in? Identify the specific visual improvements — animation, color, layout shift — that would make this transition feel more meaningful.
 - **Error as communication**: Error states should communicate clearly, not just signal failure. Does the visual design of error states match their urgency? A critical error and a mild warning should look visually distinct. Are error states designed with the same craft as the default states?
+- **Colorblind-safe data encoding**: If data is differentiated by color (chart series, status indicators, category badges), is the encoding also distinguishable without color? Use shape, pattern, label, position, or icon as secondary encoding. Test: view every data visualization in grayscale — can each category still be distinguished?
+- **Data table design quality**: Tables are data visualization too. Assess: header row visually distinct (background, weight, sticky position)? Rows alternating or separated clearly? Number columns right-aligned with `tabular-nums`? Sort indicators designed (not default arrows)? Long text truncated with tooltip? Row hover state designed? Empty cells handled (dash, "—", or explicitly styled "N/A")?
+- **Responsive data display**: When charts, tables, or data-dense views are compressed to mobile — do they remain useful? Common failures: chart labels overlapping, axis labels rotated to illegibility, table columns truncated beyond recognition, data cards that collapse into a wall of text. Every data view needs a mobile-specific layout strategy — not just the same view squeezed smaller.
+- **Number formatting as visual design**: Beyond accuracy (§J1) — is number formatting serving the visual hierarchy? Key metrics should use the app's display typography. File sizes, dates, and counts should use the app's secondary typography. Consistent thousands separators, decimal places, and unit labels across all screens. On Android: use `NumberFormat` with appropriate locale, and ensure numbers use `tabular-nums` equivalent (`android:fontFeatureSettings="tnum"`) for alignment.
+- **Real-time data visual treatment**: For data that updates live (download progress, file scan counts, storage usage) — is the update animation smooth or does it jump/flash? Counters should animate between values, not snap. Progress bars should have smooth transitions. Timestamps like "3 minutes ago" should update without the entire view rebinding.
+
+#### §E11. MOBILE-SPECIFIC VISUAL QUALITY
+
+> Mobile platforms have unique visual concerns that web-centric audits miss entirely. This section covers Android and iOS-specific visual quality checks.
+
+**System Integration:**
+- **Material You / Dynamic Color**: On Android 12+, does the app support Material You dynamic color theming? If yes — do all custom colors harmonize with the user's wallpaper-derived palette? If no — is the static palette still high quality? Dynamic color is a free polish upgrade on Android.
+- **Dark mode completeness**: Switch to dark mode and audit EVERY screen. Common failures: hardcoded white backgrounds on individual views, hardcoded text colors that become invisible, images with white backgrounds that don't adapt, splash screen still light, WebView content still light, third-party views not themed.
+- **System font scaling**: Increase system font size to maximum. Does the layout survive? Text overflow, truncation, overlapping elements, buttons that can't fit their label — all are failures. Use `sp` for text sizes, and ensure layouts use `wrap_content` or constrain properly. This is not just accessibility — many users run slightly larger text.
+- **Display cutout handling**: Does the app handle notches, camera holes, and display cutouts correctly? Content should not be hidden behind cutouts. Use `WindowInsetsCompat` for proper safe area handling.
+- **Splash screen quality**: Android 12+ uses the Splash Screen API. Is the splash screen designed (themed icon, correct background color, proper branding moment) or default? The splash screen is the app's first visual impression — a white flash or mismatched color is a craft failure.
+
+**Visual Fidelity:**
+- **Screen density handling**: Are all raster assets provided at appropriate densities (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)? Missing density variants cause blurry upscaling or wasteful downscaling. Prefer vector drawables (`VectorDrawable`) for icons — they scale perfectly at all densities.
+- **Ripple effect consistency**: Material Design ripple effects on all touchable surfaces? Ripple bounded correctly (not spilling outside card edges, not clipped incorrectly)? Ripple color appropriate for the surface (light ripple on dark surfaces, dark ripple on light surfaces)?
+- **Elevation and shadow consistency**: On Android, elevation creates shadows. Are shadows consistent across similar component types? Do elevated surfaces in dark mode use surface tint instead of visible shadows? Are there any z-fighting issues where overlapping elevated surfaces produce visual artifacts?
+- **Animation performance**: Do animations run at 60fps (or 120fps on high-refresh devices)? Jank during fragment transitions, RecyclerView item animations, or bottom sheet expansion is a visual quality failure. Check for: layout passes during animation, overdraw, alpha animation on complex views.
+- **Overscroll effect**: The edge glow (pre-Android 12) or stretch overscroll (Android 12+) — does it feel natural? Is the color appropriate? On iOS, the bounce effect should feel physics-based and smooth.
+- **Font rendering quality**: On Android, check that custom fonts are loaded correctly via `ResourcesCompat.getFont()` or XML font resources. Font weight interpolation working? No fallback to system default causing visual inconsistency? Variable font axes properly configured?
+- **RTL (Right-to-Left) visual quality**: If supporting RTL languages — are all layouts mirrored correctly? Icons that have directional meaning (arrows, back buttons) flipped? Padding and margins mirrored? Text alignment correct? This is not just a layout check — it's a visual quality check for half the world's languages.
+
+**Platform Convention Fidelity:**
+- **Navigation pattern correctness**: Android uses bottom navigation + back button. iOS uses tab bar + swipe-back. Are the platform-correct patterns used, or is an iOS pattern forced onto Android (or vice versa)? Platform convention violations feel foreign to users.
+- **System dialog integration**: When the app invokes system dialogs (file picker, permission dialog, share sheet) — does the visual transition feel smooth? Is the app's theme compatible with the system dialog's appearance?
+- **Keyboard interaction visual quality**: When the keyboard appears — does the layout resize smoothly or jump? Is the focused field scrolled into view? Does the keyboard's color scheme (light/dark) match the app? Are input fields not hidden behind the keyboard?
 
 ---
 
@@ -1108,15 +1873,31 @@ Produce this table for the app:
 - **Progressive disclosure**: Advanced/infrequently-used options hidden behind expandable sections? Or are all options shown at once overwhelming the user?
 - **Categorization logic**: Is content grouped in ways that feel natural to the target audience? Groups should reflect user mental models, not implementation structure.
 - **Section depth**: Is the navigation hierarchy the right depth — not so flat that everything is at the same level, not so deep that users lose track of where they are?
+- **Location awareness**: Does the user always know where they are? Breadcrumbs, highlighted nav items, screen titles, back button context — every screen must answer "where am I?" instantly. On Android: is the toolbar title updating per fragment? Is the bottom nav item highlighted correctly?
+- **Search UX**: If the app has search — is it discoverable (visible on primary screens, not buried)? Does it provide recent searches, suggestions, or filtered results? Does it handle empty results gracefully with actionable guidance? Is search scope clear (searching this screen vs entire app)?
+- **Cross-linking between related content**: When the user is looking at item A, can they easily navigate to related items B and C? Missing cross-links force users to go "back, scroll, find, tap" when a direct link would save 4 steps.
+- **Tab bar / bottom nav vs drawer**: Is the right navigation pattern chosen for the content volume and access frequency? Bottom nav for 3–5 high-frequency destinations. Drawer for 6+ low-frequency destinations. Tabs for same-level parallel content. Mixing patterns without clear hierarchy confuses users.
+- **Navigation affordances**: Are interactive elements visually distinguishable from static content? Clickable items must signal clickability — via chevrons, underlines, color, elevation, or cursor changes. "Flat" clickable items that look identical to text are discoverability failures.
+- **Cognitive load per screen**: How many distinct decisions or information items are on each screen? Screens with > 7 distinct items need grouping, progressive disclosure, or simplification. Count the decisions a user must make on each primary screen.
+- **Dead zones**: Are there screens or sections a user can navigate to but cannot navigate out of easily? Every screen must have a clear path back AND a clear path forward.
+- **Feature discoverability over time**: Are there powerful features that a new user wouldn't find for weeks? Long-press actions, swipe gestures, hidden menus, advanced filters — each one needs a discovery mechanism (contextual hints, onboarding tips, "did you know" prompts after N sessions).
 
 #### §F2. USER FLOW QUALITY
 - **Friction audit**: For each workflow in §0 — count the steps. Are any steps unnecessary, confusable, or surprising? Every unnecessary step is a design failure.
 - **Default value quality**: Are default values the most common/sensible choice? Good defaults dramatically reduce user effort.
 - **Action reversibility**: Can users undo or go back from every action? Irreversible actions are acceptable if the user is clearly warned with enough context to make an informed decision.
-- **Confirmation dialog quality**: Destructive confirmations tell the user specifically what will be destroyed and whether it is recoverable — not just "Are you sure?".
-- **Feedback immediacy**: Does every action produce immediate visual feedback? Clicks that feel unresponsive damage trust.
+- **Confirmation dialog quality**: Destructive confirmations tell the user specifically what will be destroyed and whether it is recoverable — not just "Are you sure?". The confirmation must name the item ("Delete 'vacation_photos.zip'?"), state the consequence ("This cannot be undone"), and offer an alternative when possible ("Move to trash instead?").
+- **Feedback immediacy**: Does every action produce immediate visual feedback? Clicks that feel unresponsive damage trust. Even a 100ms delay without any visual change makes users doubt the tap registered.
 - **Perceived performance**: During recomputation — does the UI show stale data, blank space, or a skeleton? Which is chosen, and is it the right choice?
 - **Keyboard shortcuts**: For power users — are common actions keyboard-accessible? Are shortcuts discoverable (tooltip mentions it)?
+- **Multi-step workflow state preservation**: If a user is mid-way through a multi-step flow (e.g., batch rename, file conversion, cloud setup) and the app is backgrounded, rotated, or interrupted by a phone call — is their progress preserved? On Android: does `onSaveInstanceState` cover the flow state? Does the ViewModel survive config changes?
+- **Error recovery flows**: When something fails mid-flow — can the user retry from the failure point, or must they restart from scratch? A file transfer that fails at 80% should offer "retry remaining" not "start over." Every error state needs a recovery path that preserves user work.
+- **Interruption handling**: What happens when the user leaves mid-action and returns? Draft state for forms? Pause state for operations? Or silent data loss? Map every interruptible flow and verify the resume behavior.
+- **Deep link entry points**: Can users enter the app at any screen (via notification, share intent, shortcut)? Does each entry point provide enough context, or does the user arrive disoriented? Every deep-linked screen must work standalone — not just as part of a navigation sequence.
+- **Gesture navigation conflicts**: On Android 10+, system gesture navigation (back swipe from edge) conflicts with app drawer swipes and edge-based gestures. On iOS, swipe-back conflicts with horizontal content. Map every conflict and verify the resolution.
+- **Batch operation UX**: When performing actions on multiple items — is the selection model clear (checkboxes, long-press-to-select, select all)? Is the count of selected items visible? Can the user preview what will happen before confirming? Is there progress feedback during batch operations?
+- **Contextual actions**: Are the right actions available at the right time? A file that's selected should show file-relevant actions. A folder should show folder-relevant actions. Actions that don't apply to the current context should be hidden or disabled with explanation — never shown and silently failing.
+- **Back navigation predictability**: Does the back button always do what the user expects? After a deep navigation chain, does back retrace the path or jump to an unexpected screen? After completing a flow (e.g., file conversion), does back go to the result or the starting screen? Back behavior must be predictable and consistent.
 
 #### §F3. ONBOARDING & FIRST USE
 - **First impression**: On the very first visit, does the user understand what the app does and what to do first? Without tooltips or documentation?
@@ -1134,6 +1915,12 @@ Produce this table for the app:
   - *Community / subject tools*: The result presented in a way that resonates with how the community experiences the subject — using the right vocabulary, the right visual weight.
   - *Emotional / sensitive tools*: A warm, gentle affirmation — not enthusiasm, just reassurance.
 - **Time-to-function legibility** *(all)*: Can a new user tell within 10 seconds what they will be able to do? This is a visual clarity question — the app's core function should be visually legible, not just textually stated.
+- **Permission request UX**: Permission dialogs are trust gates. Are permissions requested in context (when the user tries to use the feature that needs it) or upfront in a wall of permission dialogs? Context-triggered permission requests have dramatically higher acceptance rates. Is the reason explained BEFORE the system dialog? ("We need storage access to scan your files" → then system dialog). Denied permissions — does the app degrade gracefully with a clear explanation of what's lost, or does it break silently?
+- **Tutorial skippability**: Can the user skip the onboarding entirely and figure things out by doing? Forced tutorials that block the primary experience are a friction source. The best onboarding is no onboarding — the UI is self-explanatory.
+- **Re-engagement after absence**: A user who returns after 2 weeks — do they land on a useful screen or a stale empty state? Is there a "welcome back" moment that orients them? Is their last context preserved (last folder browsed, last tab open)?
+- **Contextual help and tooltips**: Beyond onboarding — are there in-context hints for complex features? Tooltips on icons, "?" buttons near advanced settings, info icons that explain jargon? Help should be available where the question arises, not in a separate FAQ screen.
+- **Feature discovery over time**: New features should surface gradually, not all at once. First session: core features only. After 3 sessions: introduce power features. After 10 sessions: surface advanced/hidden capabilities. Drip-feed discovery prevents overwhelm and creates ongoing delight.
+- **Settings discoverability**: Can users find how to change their preferences? Is the settings screen organized logically (grouped by function, not by implementation)? Are the most-changed settings near the top? Do settings explain their effect before the user changes them?
 
 #### §F4. COPY QUALITY
 - **Tone consistency**: Does every piece of UI copy feel like it came from the same voice? List any copy that sounds notably different from the rest.
@@ -1150,11 +1937,22 @@ Produce this table for the app:
 - **Brand voice extraction** *(all)*: Based on the copy that exists, extract a 3-adjective voice descriptor. Then identify every piece of copy that violates this voice — too formal, too casual, too generic, or out of register for this app's axis profile.
 
 #### §F5. MICRO-INTERACTION QUALITY
-- **Hover states communicate intent**: Every interactive element has a hover state that feels intentional (cursor change, color shift, underline, elevation change).
-- **Loading states**: Async operations have immediate feedback — even a short 200ms delay without feedback feels broken.
-- **Success confirmation**: Successful actions are confirmed visually — save, copy, export, submit all acknowledge completion.
-- **Scroll behavior**: Scroll-to-content after navigation? Scroll position preserved on back navigation? Smooth scrolling where appropriate?
+- **Hover states communicate intent**: Every interactive element has a hover state that feels intentional (cursor change, color shift, underline, elevation change). On mobile: the hover equivalent is ripple/highlight on touch.
+- **Loading states**: Async operations have immediate feedback — even a short 200ms delay without feedback feels broken. A scan that takes 10 seconds needs a progress indicator. A file delete that takes 500ms needs an optimistic removal with undo.
+- **Success confirmation**: Successful actions are confirmed visually — save, copy, export, submit all acknowledge completion. The confirmation must match the weight of the action: a settings toggle gets a subtle checkmark; a file deletion gets a snackbar with undo; a major operation gets a dedicated success state.
+- **Scroll behavior**: Scroll-to-content after navigation? Scroll position preserved on back navigation? Smooth scrolling where appropriate? RecyclerView scroll position restored after returning from detail screen?
 - **Focus indicator quality**: Visible and styled to match the app's design language — not just the browser default blue rectangle (unless the design is minimal).
+- **Pull-to-refresh**: If implemented — does it have a threshold that feels natural (not triggering on casual scrolls)? Does the refresh indicator match the app's design? Does it show meaningful feedback ("Scanning..." not just a generic spinner)? Is it available on every list screen where the user expects it?
+- **Swipe gesture feedback**: Swipe-to-delete, swipe-to-archive, swipe-to-reveal — does the gesture preview the action before committing? (Show the delete icon/color as the user drags.) Is the threshold for committing the action clear? Does the animation complete satisfyingly? Is there an undo path?
+- **Long-press interactions**: If long-press enters selection mode — is the transition clear (visual mode change, selection count, contextual toolbar)? Does the first long-press provide haptic feedback? Can the user exit selection mode easily (clear button, back press)?
+- **Drag-and-drop UX**: If supported — does the dragged item have a distinct visual state (elevated, semi-transparent)? Is the drop target highlighted? Does the placeholder show where the item will land? What happens on invalid drops (smooth return to origin, not a jarring snap)?
+- **Haptic feedback**: On Android/iOS — are haptic responses used for meaningful moments (selection, toggle, delete, completion)? Haptics that match the visual action reinforce the interaction. Over-use of haptics creates noise. Under-use misses a free quality signal. Map every interaction that should have haptic feedback and verify it exists.
+- **Selection feedback**: In multi-select modes — is the selection state of each item unambiguous? Checkmarks, color change, elevation change — the selected state must be instantly distinguishable from the unselected state. Is the selection count visible? Is "select all" available?
+- **Animation interruption**: If the user taps a button while an animation is playing — does the animation complete, cancel, or get interrupted gracefully? Animations that block input feel broken. Animations that get cut mid-way feel janky. The right behavior: new input cancels the current animation and immediately responds.
+- **Gesture cancellation**: If the user starts a swipe/drag but changes their mind — does the gesture cancel cleanly when they lift their finger in the original position? Or does it commit the action accidentally?
+- **Empty state interaction**: Empty states are not static dead ends — they are interaction opportunities. Every empty state should have a primary action (create, import, scan) that is tappable and prominent, not just decorative text.
+- **Error state interaction**: Error states must have actionable recovery — retry buttons, alternative paths, contact options. An error with no action is a dead end. The error state should be as interactive as the success state.
+- **Toast/snackbar interaction**: Toasts with actions (Undo, Retry, View) — is the action tap target large enough? Does the toast stay long enough for the user to read and decide? Does it dismiss on the right edge (action completed OR timeout, not both simultaneously)?
 
 #### §F6. ENGAGEMENT, DELIGHT & EMOTIONAL DESIGN
 
@@ -1187,66 +1985,131 @@ Produce this table for the app:
 
 ### CATEGORY G — Accessibility
 
-#### §G1. WCAG 2.1 AA COMPLIANCE
+> This section covers accessibility for all platforms. Web uses WCAG/ARIA. Android uses TalkBack/contentDescription. iOS uses VoiceOver/accessibilityLabel. The principles are universal — the implementation differs.
+
+#### §G1. ACCESSIBILITY COMPLIANCE
+
+> **Platform mapping**: Web WCAG → Android Accessibility Scanner → iOS Accessibility Inspector. All three platforms share the same goal: perceivable, operable, understandable, robust. The implementation APIs differ.
 
 **Perceivable:**
-- **1.1.1** — Every meaningful image has descriptive `alt` text. Decorative images have `alt=""`.
-- **1.3.1** — Semantic HTML: `<button>`, `<nav>`, `<main>`, `<header>`, `<h1>–<h6>`, `<label>`, `<table>` used correctly — not `<div>` for everything.
-- **1.3.2** — DOM reading order matches visual order.
-- **1.3.3** — No instruction relies solely on sensory characteristic ("click the red button").
-- **1.4.1** — Color not the only signal — status/error/success also conveyed by icon or text.
-- **1.4.3** — All text: 4.5:1 contrast (normal), 3:1 (large/bold ≥18px or ≥14px bold).
-- **1.4.4** — Text readable at 200% zoom without horizontal scroll.
-- **1.4.11** — UI components and focus rings: 3:1 against adjacent colors.
-- **1.4.13** — Tooltips dismissible, persistent, hoverable.
+- **Images and icons**: Every meaningful image has a description. Decorative images are hidden from assistive technology.
+  - *Web*: `alt` text on `<img>`; decorative = `alt=""` or `role="presentation"`.
+  - *Android*: `android:contentDescription` on `ImageView`; decorative = `android:importantForAccessibility="no"`.
+  - *iOS*: `accessibilityLabel` on `UIImageView`; decorative = `isAccessibilityElement = false`.
+- **Semantic structure**: UI elements use semantically correct components, not generic containers styled to look interactive.
+  - *Web*: `<button>`, `<nav>`, `<main>`, `<header>`, `<h1>–<h6>`, `<label>` — not `<div>` for everything.
+  - *Android*: `Button`, `Toolbar`, `NavigationView` — not `TextView` with `onClickListener` (no accessibility role). Custom views must set `AccessibilityNodeInfoCompat` roles.
+  - *iOS*: `UIButton`, `UINavigationBar` — not `UILabel` with `tapGestureRecognizer`. Custom views must set `accessibilityTraits`.
+- **Reading order**: Assistive technology traversal order matches visual layout order.
+  - *Web*: DOM order matches visual order.
+  - *Android*: `android:accessibilityTraversalBefore`/`After` for custom ordering; default is layout tree order. `ConstraintLayout` children may need explicit traversal ordering if visual order differs from XML order.
+  - *iOS*: `accessibilityElements` array for custom ordering.
+- **Sensory-only instructions**: No instruction relies solely on color, shape, or position ("tap the red button", "the icon on the left"). Always pair with text.
+- **Color independence**: Status, error, success conveyed by icon + text + color — never color alone. Test: would a colorblind user understand every state?
+- **Text contrast**: All text meets 4.5:1 contrast (normal) or 3:1 (large/bold ≥18sp or ≥14sp bold). Pay special attention to: muted text on dark surfaces, colored text on colored backgrounds, placeholder text in inputs, disabled state text.
+- **Text scaling**: App survives system font size at maximum (200% on web, largest setting on Android/iOS). No text truncation that hides critical information, no overlapping elements, no buttons that can't fit their labels. On Android: use `sp` for text sizes, test with Settings > Display > Font Size at maximum.
+- **Non-text contrast**: UI components (input borders, icon buttons, switches, sliders) meet 3:1 against adjacent backgrounds.
+- **Touch target size**: Every tappable element ≥ 48×48dp (Android) or 44×44pt (iOS) or 44×44px (web). This includes: icon-only buttons, close buttons, overflow menu icons, checkbox/radio buttons, list item trailing actions. Measure the actual touch area, not just the visible element.
 
 **Operable:**
-- **2.1.1** — Every interactive element keyboard-reachable and operable.
-- **2.1.2** — No keyboard traps (except intentional modal focus trapping).
-- **2.4.1** — Skip navigation link for keyboard users to skip repeated content.
-- **2.4.3** — Logical focus order follows visual reading order.
-- **2.4.7** — Visible focus indicator on every interactive element.
-- **2.4.11** — Focused element not fully obscured by sticky headers/overlays (WCAG 2.2).
-- **2.5.3** — Button visible label text is included in the accessible name.
-- **2.5.5** — Touch targets ≥44×44px CSS.
+- **Full navigability**: Every interactive element reachable via assistive technology (TalkBack swipe, VoiceOver swipe, Tab key). No orphaned interactive elements that can't receive focus.
+- **No focus traps**: Focus never gets stuck in a component. Exceptions: modal dialogs intentionally trap focus and provide a dismiss action. On Android: TalkBack users can always navigate back via the system back gesture.
+- **Logical focus order**: Focus traversal follows the visual reading order (left-to-right, top-to-bottom for LTR languages). Custom focus ordering only when the default order is genuinely wrong.
+- **Visible focus indicator**: When navigating via keyboard or switch access, the focused element is clearly highlighted. Not just the platform default — styled to match the app's design language while meeting 3:1 contrast.
+- **Focus not obscured**: Focused element not fully hidden by sticky headers, floating toolbars, or bottom sheets (WCAG 2.4.11). On Android: `CoordinatorLayout` with `AppBarLayout` can obscure focused content during TalkBack navigation — verify scroll-to-focus behavior.
+- **Action labels**: Every button and interactive element has an accessible name that describes its action. Icon-only buttons must have labels.
+  - *Web*: `aria-label` on icon buttons.
+  - *Android*: `android:contentDescription` on `ImageButton`, or `app:tooltipText` on Material buttons.
+  - *iOS*: `accessibilityLabel` on `UIButton`.
+- **Custom gestures documented**: Swipe-to-delete, long-press, drag-and-drop — all have alternative accessible actions. On Android: custom actions via `AccessibilityNodeInfoCompat.addAction()`. On iOS: `accessibilityCustomActions`.
 
 **Understandable:**
-- **3.1.1** — `lang` attribute on `<html>`.
-- **3.2.1** — No unexpected context change on focus.
-- **3.3.1** — Input errors identified in text, not just color.
-- **3.3.2** — Every input has an associated label or clear instruction.
+- **Language declared**: App language declared for screen readers. Web: `lang` on `<html>`. Android: locale set in `Configuration`. iOS: `accessibilityLanguage`.
+- **Predictable behavior**: No unexpected context changes on focus or input. Navigation is predictable. Back button does what the user expects.
+- **Error identification**: Input errors described in text near the field, not just color change. On Android: `TextInputLayout.setError()` properly announces the error via TalkBack. Error text must state what went wrong AND how to fix it.
+- **Input labels**: Every input has a visible label or clear accessible name. On Android: `TextInputLayout` with `hint` provides both visual and accessible label. Standalone `EditText` must have `labelFor` association.
+- **Form instructions**: Complex inputs (date formats, password requirements, character limits) provide instructions before the user attempts input, not just as error messages after.
 
 **Robust:**
-- **4.1.2** — Custom interactive components: correct ARIA roles, names, states.
-- **4.1.3** — Dynamic status messages (toasts, counters, results) announced via `aria-live`.
+- **Custom component accessibility**: Non-standard interactive elements have correct roles and states.
+  - *Web*: ARIA roles (`role="tab"`, `aria-selected`), states (`aria-expanded`), live regions (`aria-live`).
+  - *Android*: `AccessibilityDelegateCompat` on custom views. `ViewCompat.setAccessibilityDelegate()` for role, state, and action overrides. `RecyclerView` items must announce position ("Item 3 of 15").
+  - *iOS*: `accessibilityTraits`, `accessibilityValue`, `UIAccessibilityNotification` for dynamic updates.
+- **Dynamic content announcements**: When content changes without user action (toasts, live counters, async results), the change is announced to screen readers.
+  - *Web*: `aria-live="polite"` for informational, `aria-live="assertive"` for urgent.
+  - *Android*: `announceForAccessibility()` for transient messages; `AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED` for structural changes. Snackbar announcements: verify TalkBack reads the snackbar content AND action.
+  - *iOS*: `UIAccessibility.post(notification: .announcement, argument:)`.
+- **State changes communicated**: Toggle states (on/off), expanded/collapsed states, selected states — all communicated to assistive technology, not just visual changes. On Android: `setChecked()`, `setSelected()`, `setExpanded()` on appropriate widgets, or custom `AccessibilityNodeInfo` state reporting.
 
 #### §G2. SCREEN READER TRACE
-- Simulate reading the primary user workflow in DOM order only (no visual reference).
-- Modal open/close: focus moves to modal on open, returns to trigger on close?
-- Dynamic updates (results, timers, validation): announced via appropriate `aria-live` polarity?
-- Icon-only buttons: `aria-label` present?
-- Custom tabs, dropdowns, sliders: correct ARIA patterns (`role="tab"`, `aria-selected`, etc.)?
 
-#### §G3. KEYBOARD NAVIGATION
-- Tab through the full app — every interactive element reachable in logical order?
-- Custom components (date pickers, sliders, carousels) — arrow key navigation?
-- Modal focus trapping — Tab cycles within modal, cannot escape to page behind?
-- Escape key closes dialogs/modals/dropdowns?
-- Visible focus style matches the app design (not just default browser ring)?
+> Simulate the primary user workflow using ONLY the screen reader — no visual reference. This is the real-world accessibility test.
 
-#### §G4. REDUCED MOTION
-- `prefers-reduced-motion: reduce` honored for ALL animations:
-  - CSS transitions and `@keyframes` animations
-  - JavaScript `requestAnimationFrame` loops
-  - Canvas animations (requires explicit JS media query check — often missed)
-  - Video/GIF autoplay
-- Reduced motion removes non-essential animation but preserves state communication.
+**Android TalkBack trace:**
+- Enable TalkBack on device/emulator. Navigate the primary workflow by swiping right through all elements.
+- Does every screen announce its title when entered? (Check `Toolbar` title, or custom `announceForAccessibility` on fragment transitions.)
+- Can the user complete the primary workflow end-to-end? Count the steps via TalkBack vs visual — more than 2× steps via TalkBack is a navigation efficiency problem.
+- Dialog open: does TalkBack focus move to the dialog? Dialog close: does focus return to the trigger? Bottom sheet open: does focus move inside the sheet? Sheet dismiss: focus returns correctly?
+- RecyclerView items: does each item announce meaningful content (not "FrameLayout, double-tap to activate")? Does it announce position ("Item 3 of 47")?
+- Icon-only buttons: do they announce their action ("Navigate up", "More options", "Delete")? Not just "button" with no label.
+- Custom components (seekbar, custom toggles, swipe-to-reveal): accessible? Do they announce their type, current value, and available actions?
+- Tab navigation: does swiping through tabs announce "Tab 1 of 4, selected" or just "Tab"?
+
+**iOS VoiceOver trace** *(if building for iOS)*:
+- Same workflow trace as above, using VoiceOver swipe navigation.
+- Does Rotor work correctly for headings, links, and form controls?
+- Custom scroll views: does VoiceOver 3-finger scroll work?
+
+**Web screen reader trace** *(if building for web)*:
+- Test with NVDA (Windows) or VoiceOver (Mac) + Chrome/Safari.
+- Heading hierarchy navigable via H key? Landmark regions navigable via D key?
+- `aria-live` regions announcing at appropriate politeness levels?
+
+#### §G3. KEYBOARD & SWITCH ACCESS
+
+> This section covers keyboard navigation (web + desktop apps), switch access (Android/iOS), and external keyboard use on mobile.
+
+- **Full keyboard operability**: Every interactive element reachable and operable via Tab/Enter/Space/Arrow keys. Test with an external Bluetooth keyboard connected to the mobile device — many Android users with motor impairments use this.
+- **Focus traversal**: Tab order matches visual order. Custom `android:nextFocusDown`/`nextFocusRight` used only when the default order is wrong, not as a band-aid for layout issues.
+- **Dialog focus management**: Modal dialog traps focus (Tab cycles within). Dialog close returns focus to trigger. On Android: `DialogFragment` handles this automatically if `setCancelable(true)`. Custom bottom sheets need explicit `importantForAccessibility` management.
+- **Dismiss actions**: Back button/gesture closes dialogs, bottom sheets, drawers, dropdown menus. Consistent everywhere — no "stuck" states where back does nothing.
+- **Custom component keyboard support**: Date pickers, color pickers, sliders, custom dropdowns — all operable via arrow keys and Enter/Space when focused via keyboard. On Android: override `onKeyDown`/`onKeyUp` for custom views.
+- **Switch Access compatibility**: On Android, Switch Access allows users to navigate via one or two physical switches. Test: can the primary workflow be completed using Switch Access scanning? Are focusable elements grouped logically so scanning isn't painfully slow?
+
+#### §G4. REDUCED MOTION & SENSORY ACCOMMODATIONS
+
+- **Reduced motion respected**: When the user requests reduced motion, all non-essential animations are disabled or minimized. Essential state-communicating animations (loading indicators, progress bars) may continue but should be simplified.
+  - *Web*: `prefers-reduced-motion: reduce` media query for CSS transitions, `@keyframes`, and JS-driven animations. Canvas/WebGL animations need explicit JS check.
+  - *Android*: Check `Settings.Global.ANIMATOR_DURATION_SCALE` — when set to 0 by the user, ALL animations should respect this. `ViewCompat.animate()` respects this automatically; custom `ObjectAnimator` instances should check this value. Also respect `Settings.Global.TRANSITION_ANIMATION_SCALE`.
+  - *iOS*: `UIAccessibility.isReduceMotionEnabled` — check and disable spring animations, parallax, auto-playing content.
+- **Reduced transparency**: Some users request reduced transparency for readability. Frosted glass, blurred backgrounds, semi-transparent overlays — provide solid fallbacks.
+  - *Android*: No system-level setting, but consider providing an in-app option for users who struggle with transparency effects.
+  - *iOS*: `UIAccessibility.isReduceTransparencyEnabled`.
+- **Bold text support**: On iOS, users can request bold text system-wide. Does the app's typography survive this without breaking layout?
+- **Color inversion compatibility**: When the user enables color inversion (Android: Settings > Accessibility > Color inversion), does the app remain usable? Images and videos should be exempt from inversion. On Android: set `android:forceDarkAllowed="false"` on views that should not be inverted.
+- **Haptic feedback as information**: If the app uses haptic feedback to communicate state (success vibration, error vibration), there must be a visual/audio equivalent for users who cannot perceive haptics.
+
+#### §G5. ANDROID-SPECIFIC ACCESSIBILITY DEEP DIVE
+
+> Android has platform-specific accessibility concerns that don't map to web WCAG. This section covers them.
+
+- **ContentDescription audit**: Use `Grep` to find all `ImageView`, `ImageButton`, and `FloatingActionButton` elements. Every one must have `android:contentDescription` or `app:contentDescription` — or be explicitly marked `importantForAccessibility="no"` if decorative. Missing contentDescription is the #1 Android accessibility failure.
+- **TalkBack navigation grouping**: Related elements should be grouped so TalkBack reads them as a single item, not as 5 separate swipes. On Android: set `android:focusable="true"` on the parent container and provide a merged `contentDescription`, or use `android:screenReaderFocusable="true"` (API 28+). Example: a list item with icon + title + subtitle should be ONE TalkBack stop, not three.
+- **Live region announcements**: Views that update asynchronously (download progress, file count, scan status) must use `android:accessibilityLiveRegion="polite"` or `"assertive"` so TalkBack announces changes. Without this, TalkBack users don't know something changed unless they manually navigate to it.
+- **Touch exploration**: With TalkBack enabled, the first tap selects/reads an element, the second tap activates it. Does every interaction work correctly with this double-tap model? Long-press actions need alternative accessible paths (accessibility custom actions or context menu).
+- **Heading structure**: Use `android:accessibilityHeading="true"` (API 28+) on section titles so TalkBack users can navigate between headings, just as screen reader users navigate by H key on web. Without headings, TalkBack users must swipe through every element linearly.
+- **Scrolling accessibility**: Can TalkBack users scroll through long lists? `RecyclerView` handles this, but custom scroll implementations may not announce "scrolled to item X" or provide scroll actions to TalkBack.
+- **Permission dialog accessibility**: When runtime permissions are requested, is the rationale dialog accessible? Does TalkBack correctly announce the purpose of the permission before the system dialog appears?
 
 ---
 
-### CATEGORY H — Browser Compatibility & Platform
+### CATEGORY H — Platform Compatibility & Resilience
 
-#### §H1. CROSS-BROWSER MATRIX
+> This category covers platform-specific compatibility. For native Android/iOS apps, §H1 and §H2 are replaced by platform-specific equivalents. For web apps, the original web-focused checks apply. §H3 (Touch) and §H4 (Network) apply to all platforms.
+
+#### §H1. PLATFORM COMPATIBILITY
+
+**For web apps — Cross-Browser Matrix:**
 
 Build this table for the specific APIs and features the app uses:
 
@@ -1256,23 +2119,57 @@ Build this table for the specific APIs and features the app uses:
 | `crypto.randomUUID` | ✓ | 15.4+ | 92+ | ? | ✓ | Math.random fallback |
 | `backdrop-filter` | ✓ | ✓`-webkit-` | 70+ | ? | ✓ | Graceful skip |
 | `navigator.vibrate` | ✓ | ✗ | ✓ | ✓ | ✓ | No-op |
-| `CSS.supports()` | ✓ | ✓ | ✓ | ✓ | ✓ | — |
-| `optional chaining ?.` | ✓ | 14+ | 74+ | ? | ✓ | — |
-| `gap` in flexbox | ✓ | 14.1+ | 63+ | ? | ✓ | — |
+| View Transitions API | ✓ | ✗ | ✗ | ? | ✓ | Graceful skip |
+| `dialog` element | ✓ | 15.4+ | 98+ | ? | ✓ | Polyfill |
+| CSS container queries | ✓ | 16+ | 110+ | ? | ✓ | Media query fallback |
+| CSS logical properties | ✓ | 15+ | 66+ | ? | ✓ | Physical property fallback |
 | *[App-specific APIs]* | | | | | | |
 
 For every ✗ or uncertain cell: does the app crash or degrade gracefully?
 
-#### §H2. PWA & SERVICE WORKER
-- **Blob SW incompatibility**: Firefox and Safari reject Blob URL service workers — graceful fallback?
+**Discovery strategy**: Use `Grep` to find API-specific calls (`navigator.`, `window.`, `CSS.`, `new IntersectionObserver`, `new ResizeObserver`, etc.) and check each against browser support tables.
+
+**For Android apps — API Level Compatibility:**
+
+| Feature / API | Min API | App's minSdk | Needs compat? | Current handling |
+|--------------|---------|-------------|--------------|-----------------|
+| Material 3 Dynamic Color | 31 (Android 12) | | `DynamicColors.applyIfAvailable()` guards? |
+| Splash Screen API | 31 | | `core-splashscreen` compat library used? |
+| Predictive back gesture | 33 (Android 13) | | `android:enableOnBackInvokedCallback`? |
+| Photo picker | 33 | | Falls back to `ACTION_OPEN_DOCUMENT`? |
+| Edge-to-edge | 30 (Android 11) | | `WindowCompat.setDecorFitsSystemWindows(false)`? |
+| `WindowInsetsCompat` | All via AndroidX | | Used for safe area handling? |
+| `BlurMaskFilter` / RenderEffect | 31 | | Blur effects degrade gracefully on older devices? |
+| Scoped storage | 29 (Android 10) | | `MediaStore` / SAF used instead of direct file paths? |
+| *[App-specific APIs]* | | | | |
+
+For every feature above the app's `minSdkVersion`: is there a version check (`if (Build.VERSION.SDK_INT >= X)`) with a graceful fallback? Missing version guards cause crashes on older devices.
+
+**For iOS apps — OS Version Compatibility:**
+- Check deployment target vs API availability
+- Use `@available` checks for newer APIs
+- Verify backward-compatible alternatives exist
+
+#### §H2. APP DISTRIBUTION & UPDATE
+
+**For web apps — PWA & Service Worker:**
 - **Cache strategy correctness**: Cache-first for static assets, network-first for data, stale-while-revalidate for semi-static?
 - **Version cleanup**: Old caches purged on app update? User ever stuck on stale JS?
 - **Update notification**: User notified when a new version is deployed? Can they act on it?
 - **Offline completeness**: Core functionality works offline? Network-dependent features fail gracefully?
-- **Manifest completeness**: Required icon sizes (192×192, 512×512, 180×180 iOS), `display`, `theme_color`, `background_color`, `start_url`, `scope`.
-- **Install prompt**: `beforeinstallprompt` handled? iOS Add to Home Screen flow (no event) documented?
+- **Manifest completeness**: Required icon sizes (192×192, 512×512, 180×180 iOS, maskable for Android), `display`, `theme_color`, `background_color`, `start_url`, `scope`.
+
+**For Android apps — Distribution & Update:**
+- **Play Store metadata**: App icon at all required sizes (adaptive icon with foreground/background layers)? Feature graphic designed? Screenshot quality matching the UI polish?
+- **In-app update**: For critical fixes, is Google Play In-App Update API used (`AppUpdateManager`)? Flexible vs immediate update flow chosen correctly?
+- **Version code management**: `versionCode` always incrementing? `versionName` human-readable and meaningful?
+- **ProGuard/R8 rules**: Obfuscation rules correct? No runtime crashes from missing keep rules on reflection-dependent classes (Room entities, Gson models, Navigation args)?
+- **App bundle vs APK**: Using Android App Bundle for optimal download size? Split APKs for density/ABI/language?
+- **Baseline profiles**: Startup and critical path code pre-compiled via baseline profiles for faster cold start?
 
 #### §H3. MOBILE & TOUCH
+
+**Web-specific:**
 - **iOS Safari quirks**: `position: fixed` + virtual keyboard? `100vh` including address bar (use `dvh`)?
 - **Android**: Back gesture in PWA — navigates back or exits app?
 - **Touch vs hover**: Hover-only interactions blocked by `@media (hover: hover)`?
@@ -1280,18 +2177,44 @@ For every ✗ or uncertain cell: does the app crash or degrade gracefully?
 - **Pinch-to-zoom**: `user-scalable=no` present? (Accessibility violation — WCAG 1.4.4)
 - **Swipe gestures**: Conflict with native scroll? Threshold too sensitive for intentional scroll?
 
+**Touch interaction quality (all platforms):**
+- **Touch target sizing**: Every tappable element ≥ 48×48dp (Android Material guideline) or 44×44pt (iOS HIG). This includes: list items, icons, toggle switches, close buttons, action buttons in toolbars. Measure the actual hit area, not just the visible element — a 24dp icon with no padding is a miss target. Use `Grep` to find `layout_height` and `layout_width` values < 48dp on interactive elements.
+- **Touch target spacing**: Adjacent touch targets must have sufficient spacing (≥ 8dp gap) to prevent accidental taps. Toolbar icons packed tightly together cause misfire. Bottom navigation items too close together cause wrong-tab taps.
+- **Touch feedback**: Every tappable element must provide immediate visual feedback on press. On Android: ripple effect (`?attr/selectableItemBackground` or `?attr/selectableItemBackgroundBorderless`). On iOS: highlight state. On web: `:active` state. Missing touch feedback makes the UI feel broken — the user doesn't know if their tap registered.
+- **Thumb zone ergonomics**: Primary actions should be in the natural thumb reach zone (bottom half of screen on mobile). Critical actions placed at the top of the screen require stretching — move them to bottom sheets, FABs, or bottom action bars. Map the most-used actions and verify they're in comfortable reach.
+- **Scroll vs tap ambiguity**: In scrollable lists with tappable items — is there enough distinction between a scroll gesture and a tap? Quick taps on list items while the list is still settling (momentum scroll) can trigger accidental selections. Minimum scroll distance threshold should prevent this.
+- **Edge gesture conflicts**: Android 10+ gesture navigation reserves the left and right edges for back-swipe. Apps with drawer menus, edge-based swipe actions, or horizontal scroll views near edges must handle this conflict. iOS swipe-from-left-edge is system back — app horizontal swipes near the left edge will conflict.
+- **Orientation handling**: Does the app support landscape? If so — does the layout adapt meaningfully (not just stretch)? Are dialogs, bottom sheets, and keyboards handled in landscape? If portrait-only — is `android:screenOrientation="portrait"` set, or does the app rotate and break?
+- **Keyboard interaction**: When a text input is focused — does the content scroll to keep the input visible above the keyboard? On Android: `android:windowSoftInputMode="adjustResize"` or `adjustPan`? Are action buttons (Submit, Next) still accessible when the keyboard is up, or do they disappear behind it?
+- **Multi-touch handling**: If the app supports multi-select via tap, or zoom via pinch — are these gestures correctly scoped? A pinch-to-zoom on an image viewer shouldn't accidentally trigger a list scroll. A two-finger gesture shouldn't register as two single taps.
+- **One-handed usability audit**: For phone-primary apps — can all primary workflows be completed one-handed? Map the full primary flow and mark every point where the user must reach to the top of the screen or use two hands. Each one is a friction point worth optimizing.
+
 #### §H4. NETWORK RESILIENCE
-- **CDN failure**: React/framework CDN unavailable — blank page or meaningful error?
-- **Error boundaries**: React Error Boundaries around CDN-dependent components?
-- **Third-party image failure**: Image host down — placeholder shown? Layout preserved?
-- **Reconnection**: Back online after offline — state sync correct? Presence reconnects?
-- **Timeout handling**: Operations that can hang indefinitely — timeout and error gracefully?
+
+> This section applies to all platforms. Network is unreliable — every network-dependent feature must handle failure gracefully.
+
+- **Offline detection reliability**: How does the app detect network availability? `ConnectivityManager` (Android) / `NWPathMonitor` (iOS) / `navigator.onLine` (web, unreliable). The correct signal is actual request failure, not just connectivity state — the device can be "connected" to WiFi with no internet. Does the app distinguish between "no connection" and "connection too slow"?
+- **Offline mode**: What happens when the network is unavailable? Can the user still browse cached/local content? Are network-dependent features clearly marked as unavailable (grayed out, disabled with explanation)? Or does the entire app become a blank loading screen?
+- **Retry strategy**: Failed network requests — does the app retry with exponential backoff and jitter (e.g., 1s, 2s, 4s, 8s ± random)? Or does it fail silently, retry infinitely, or show a generic error? Each retry must have a maximum attempt count and a final failure state with user action (retry button, contact support).
+- **Timeout handling**: Every network request must have a timeout. On Android: OkHttp `connectTimeout`, `readTimeout`, `writeTimeout` set to appropriate values (not infinite). Operations that can hang (file uploads, cloud sync, API calls) — does the UI show a timeout error after a reasonable duration, or does it spinner forever?
+- **Request cancellation**: When the user navigates away from a screen, are pending network requests cancelled? On Android: coroutine scope tied to ViewModel lifecycle? Orphaned requests waste battery, data, and can cause crashes if they complete after the fragment is destroyed.
+- **Third-party service failure**: Image host down, cloud storage API error, analytics SDK timeout — does the app degrade gracefully? Placeholder shown for failed images? Layout preserved (no collapsed/invisible elements)? Core functionality still works when non-essential services fail?
+- **Reconnection behavior**: When connectivity returns after an offline period — does the app detect this and refresh stale content? Does it show a "back online" indicator? Does pending work (queued uploads, deferred syncs) resume automatically? Is there a risk of duplicate operations (upload sent twice because the first attempt's response was lost)?
+- **Low-bandwidth resilience**: On slow connections (2G, spotty WiFi) — does the app remain usable? Are images loaded at appropriate quality/resolution? Are large operations (file download, backup) resumable if interrupted? Does the UI show meaningful progress for slow operations rather than appearing frozen?
+- **Data saver mode**: On Android, users can enable Data Saver (`ConnectivityManager.isActiveNetworkMetered()` + `RESTRICT_BACKGROUND_DATA`). Does the app respect this by reducing image quality, deferring non-critical syncs, and avoiding background data usage?
 
 ---
 
 ### CATEGORY I — Code Quality & Architecture
 
 #### §I1. DEAD CODE & WASTE
+
+> **Claude Code** — grep patterns for dead code detection:
+> - Dev artifacts: `Grep(pattern: "console\\.log|debugger|TODO|FIXME|HACK|XXX|TEMP", glob: "*.{kt,java,js,ts,swift}")`
+> - Commented code: `Grep(pattern: "^\\s*//.*\\(|^\\s*//.*=|^\\s*//.*fun |^\\s*//.*class ", glob: "*.{kt,java}")`
+> - Unused imports (Android): `Grep(pattern: "^import ", type: "kotlin")` — then cross-reference usage
+> - Unused string resources: `Grep(pattern: "<string name=\"", glob: "**/strings.xml")` — cross-ref with layout XMLs and Kotlin
+
 - **Unused functions**: Defined but never called?
 - **Unused constants**: Defined but never referenced?
 - **Unreachable branches**: `if (CONSTANT === false)`, conditions that can never be true given state machine?
@@ -1455,6 +2378,9 @@ Activate at maximum depth based on §0 Stakes and §I.1 Domain Classification.
 - **Theme variable completeness**: Every value that changes with theme (light/dark/OLED/brand) should be a CSS variable or theme token, never hardcoded. List every hardcoded value that bypasses the theme system.
 - **Design system as product asset**: A coherent design system enables faster iteration, safer changes, and visual coherence as the product grows — for any product nature. Assess: does the current system have enough structure to support adding 5 new components without breaking the visual language? If not — what minimal token/component foundations would make it robust?
 - **Theming readiness** *(paid/multi-tenant products only)*: If the monetization tier or distribution model involves multiple brands, clients, or customization — are brand-identity values (primary color, radius personality, font) isolated in a small set of root tokens that could be swapped per tenant? Flag this only when relevant — this is not a goal for a single-user or community tool.
+- **Design system documentation**: Is the design system documented anywhere — even minimally? A `colors.xml` with organized groups and comments? A `styles.xml` with a clear hierarchy? A design spec document? Without documentation, every new component is a guess that may or may not match the system. Even a single README listing "these are our tokens" prevents divergence.
+- **Accessibility baked into the system**: Do design tokens include focus ring styles, minimum touch target sizes, and contrast-safe color pairings? Are component patterns accessible by default (buttons with ripple feedback, inputs with proper label association, lists with proper contentDescription)? Accessibility that must be remembered per-component will be forgotten — it must be built into the system.
+- **Android theme architecture**: Is there a clean theme hierarchy? `Theme.App` → `Theme.App.NoActionBar` → activity-specific overrides? Are styles organized by component type (`Widget.App.Button`, `Widget.App.Card`)? Does the theme properly extend Material Components (`Theme.Material3.DayNight`)? Flat, unstructured `styles.xml` with dozens of near-duplicate styles is design system debt.
 
 #### §L4. COPY & CONTENT STANDARDIZATION
 - **Voice guide**: Describe the app's copy voice in 3 adjectives, then list any copy that violates this voice.
@@ -1496,19 +2422,37 @@ Activate at maximum depth based on §0 Stakes and §I.1 Domain Classification.
   - *Aesthetic-primary contexts (A5)*: UI chrome transitions under 100ms so attention stays on the output — output presentation given full visual investment — no interface element competes with what the tool produces.
   - *Any app — universal baseline*: Is there at least one detail that clearly took extra effort? Does the app look intentional rather than defaulted? Is spacing consistent enough that nothing feels accidental? Do transitions feel considered rather than left at browser defaults?
 - **Motion budget**: Every animation in the app consumes attention. Total the number of simultaneous animated elements a user might see at once. More than 2–3 simultaneous animations competes for attention and degrades perceived quality. Identify any views where the motion budget is exceeded and recommend which animations to reduce or remove.
+- **Enter/exit animation asymmetry**: Elements should typically enter slower than they exit — the entrance draws attention, the exit clears space. A common refinement: enter at 250ms, exit at 150ms (60% of enter). Assess whether enter and exit animations are differentiated, or whether they use the same duration bidirectionally (which feels less polished).
+- **Stagger sequencing**: When multiple elements appear simultaneously (list items, grid cards, dashboard widgets) — do they stagger their entrance (30–50ms delay per element, capped at 150ms total)? Staggered entrances create a feeling of orchestration; simultaneous appearance feels like a jump cut. On Android: use `RecyclerView.ItemAnimator` with stagger, or `LayoutAnimation` with delay multiplier.
+- **Fragment/screen transition quality**: On Android, screen transitions are a primary polish surface. Default fragment transitions are functional but generic. Assess: are shared element transitions used where appropriate (tapping a list item that expands into a detail screen)? Are enter/exit/popEnter/popExit animations defined in `nav_graph.xml` or set programmatically? Do transitions match the app's motion character (Material motion: container transform, shared axis, fade through)?
+- **Haptic feedback polish**: On Android, haptic feedback at the right moments transforms "functional" into "premium." Key moments: toggle switch state change, selection mode entry (long-press), destructive action confirmation, pull-to-refresh threshold, slider value change. Use `HapticFeedbackConstants.CONFIRM`, `REJECT`, `GESTURE_START`, `GESTURE_END` (API 30+). Over-use of haptics degrades the signal — limit to 5–8 key moments maximum.
 
 #### §L6. PERFORMANCE POLISH
-- **Render jank identification**: Identify specific interactions where frame drops are likely and suggest targeted fixes within architecture constraints.
-- **Perceived performance improvements**: Even without changing actual speed — optimistic UI, instant visual feedback, skeleton screens that match real content shape, progressive disclosure of complex results.
-- **Startup sequence optimization**: What is the minimum viable first render? What can be deferred? Can the critical path be reduced without changing functionality?
-- **Memory footprint reduction**: Identify data structures that could be more memory-efficient without changing behavior.
+
+> Performance polish is about perceived speed — making the app feel fast regardless of actual computation time. §D covers raw performance bugs; this section covers the perception layer.
+
+- **Render jank identification**: Identify specific interactions where frame drops are likely and suggest targeted fixes within architecture constraints. On Android: use `GPU profiling` bars or Systrace to identify frames exceeding 16ms. Common jank sources: RecyclerView item inflation, fragment transition with complex layouts, bitmap decoding on main thread, alpha animation on complex view hierarchies.
+- **Perceived performance improvements**: Even without changing actual speed — optimistic UI (show the result before server confirms), instant visual feedback (button press acknowledged in <50ms), skeleton screens that match real content shape (not generic gray rectangles), progressive disclosure of complex results (show the summary immediately, load details on demand).
+- **Startup sequence optimization**: What is the minimum viable first render? What can be deferred? Can the critical path be reduced without changing functionality? On Android: use `Baseline Profiles` to pre-compile critical startup code. Defer heavy initialization (`Room` database open, analytics SDK init, non-essential feature modules) to background threads after first frame.
+- **Memory footprint reduction**: Identify data structures that could be more memory-efficient without changing behavior. On Android: large bitmap handling (`inSampleSize` for downscaling), RecyclerView view pool sizing, fragment lifecycle management (fragments in back stack holding large views), LiveData observers not cleaned up.
+- **Image loading optimization**: Images are the most common perceived-performance bottleneck. Are images loaded at the correct resolution for their display size (not loading a 4000px photo for a 48dp thumbnail)? Is there a blur-up or dominant-color placeholder while full images load? Do image transitions feel smooth (crossfade from placeholder to loaded image)? On Android: `Glide` or `Coil` with proper `override()` sizing, `placeholder()`, `transition(DrawableTransitionOptions.withCrossFade())`.
+- **Animation performance**: CSS `transform` and `opacity` are GPU-composited (fast). `width`, `height`, `top`, `left`, `background-color` trigger layout/paint (slow). On Android: `ObjectAnimator` on `translationX`/`translationY`/`alpha`/`scaleX`/`scaleY` is hardware-accelerated. Animating `layout_width`, `layout_height`, or calling `requestLayout()` during animation causes jank. For complex animations: use `MotionLayout` instead of programmatic layout changes.
+- **Scroll performance**: RecyclerView/ListView scrolling should be butter-smooth at 60fps. Common causes of scroll jank: inflating complex layouts in `onBindViewHolder`, loading images synchronously, calculating layouts during scroll (`wrap_content` heights that change), nested scrollable views. On Android: use `RecyclerView.setHasFixedSize(true)` when item sizes are constant, use `DiffUtil` for efficient list updates, prefetch items with `LinearLayoutManager.setInitialPrefetchItemCount()`.
+- **Cold start time**: On Android, cold start > 1 second is noticeable, > 2 seconds feels slow. Use the Splash Screen API to provide branded visual during initialization. Audit `Application.onCreate()` for heavy synchronous work. Consider lazy initialization for non-critical services. Measure with `adb shell am start -W` and `Perfetto`.
 
 #### §L7. ACCESSIBILITY POLISH *(beyond compliance — toward excellence)*
-- **Landmark structure**: Is the page structure clear to screen reader users navigating by landmark? `<main>`, `<nav>`, `<aside>`, `<header>`, `<footer>` used intentionally?
-- **Heading hierarchy excellence**: Not just technically correct — does the heading structure help a screen reader user understand the page structure and navigate efficiently?
-- **ARIA live region tuning**: Are `aria-live` regions set to the right politeness level (`polite` for informational, `assertive` only for genuinely urgent)?
-- **Focus choreography**: For complex interactions (modals, multi-step flows, wizards) — does focus movement tell a coherent spatial story?
-- **Color-independent comprehension**: Can every piece of meaning in the app be understood in grayscale?
+
+> §G covers compliance (does it work for assistive technology users?). This section covers excellence (is it a *good* experience for assistive technology users?).
+
+- **Screen reader navigation efficiency**: Can a TalkBack/VoiceOver user complete the primary workflow in roughly the same number of steps as a sighted user? If the screen reader path requires 3× more swipes because of ungrouped elements, redundant labels, or poor heading structure — the experience is compliant but poor. Count the steps and optimize.
+- **Heading hierarchy excellence**: Not just technically correct — does the heading structure help a screen reader user understand the page structure and navigate efficiently? On Android: `accessibilityHeading="true"` on section titles enables TalkBack's heading navigation (swipe up/down with reading controls set to Headings). Every screen should have at least one heading so TalkBack users can orient quickly.
+- **Content description quality**: Beyond "present or absent" — are content descriptions genuinely useful? "Image" is worse than no description. "Profile photo of the current user" is useful. "Button" is worse than "Delete selected files." Audit every `contentDescription` for informational value, not just existence. Descriptions should convey *purpose*, not *appearance* ("Navigate back" not "Left arrow icon").
+- **Announcement verbosity calibration**: TalkBack reads every `contentDescription`, role, and state. Overly verbose descriptions slow down experienced screen reader users (who often run at 3× speed). "File item, vacation_photos.zip, 24 megabytes, modified January 3rd, double-tap to open, long-press for more options" is comprehensive but slow. Group information logically: "vacation_photos.zip, 24 MB, January 3. Double-tap to open."
+- **Focus choreography**: For complex interactions (dialogs, bottom sheets, multi-step flows, selection mode) — does focus movement tell a coherent spatial story? When a dialog opens, focus moves inside. When it closes, focus returns to the trigger. When selection mode activates, focus moves to the contextual action bar. When a fragment transition occurs, focus moves to the new screen's first meaningful element. Each focus movement should be intentional, not accidental.
+- **Live region tuning**: Dynamic content updates (scan progress, file counts, download status) announced at the right frequency. `accessibilityLiveRegion="polite"` for informational updates (announces when TalkBack is idle). `"assertive"` only for genuinely urgent updates (errors, critical alerts). A progress counter that announces every 1% is too verbose — announce at 25% intervals or meaningful milestones.
+- **Color-independent comprehension**: Can every piece of meaning in the app be understood in grayscale? Test: take a screenshot, convert to grayscale. Can you still distinguish: selected vs unselected items? Error vs success states? Active vs inactive tabs? Primary vs secondary buttons? If any distinction relies solely on color — add shape, icon, weight, or position as a secondary signal.
+- **High contrast mode support**: On Android, some users enable high contrast text (Settings > Accessibility > High contrast text). Does the app remain well-designed in this mode, or do elements become visually broken? Test and verify that critical UI elements survive high contrast mode without visual artifacts.
+- **Cognitive accessibility**: Beyond screen reader and motor support — is the interface kind to users with cognitive disabilities? Plain language in labels and instructions. Consistent navigation patterns (same actions in the same place on every screen). Error prevention (confirmation before destructive actions). Time limits that can be extended. No auto-playing content that demands immediate attention.
 
 ---
 
@@ -1541,11 +2485,22 @@ Activate at maximum depth based on §0 Stakes and §I.1 Domain Classification.
 > Even English-only apps should pass the hardcoded-strings check — future i18n cost compounds with every unchecked string.
 
 #### §N1. HARDCODED STRING INVENTORY
-- **User-visible strings in source**: Every string rendered in the UI that is hardcoded in JS/JSX/HTML rather than in a locale resource — list all.
-- **Pluralization logic**: `"1 item" / "2 items"` — handled with `Intl.PluralRules` or equivalent? Not `count === 1 ? "item" : "items"` (fails in many languages).
-- **Concatenated UI strings**: `"You have " + count + " messages"` — word order varies by language; must use a template/message format, not concatenation.
-- **Hardcoded error messages**: Error strings in catch blocks, validation messages, toast content — all extractable?
-- **Screen reader only text**: `aria-label`, `alt`, `title` — hardcoded or localizable?
+
+> **Platform mapping**: Web uses JS/HTML strings → locale JSON/YAML. Android uses `strings.xml` in `res/values/`. iOS uses `Localizable.strings` or `String Catalogs`. The principle is the same: no user-visible text hardcoded in source code.
+
+- **User-visible strings in source**: Every string rendered in the UI that is hardcoded in source code rather than in a locale resource — list all.
+  - *Web*: Strings in JS/JSX/HTML/TSX files instead of locale JSON/i18n library.
+  - *Android*: Strings in Kotlin/Java code (`"Delete"`, `"Error"`) or in XML layouts (`android:text="Submit"`) instead of `@string/` references. Use `Grep(pattern: 'android:text="[^@]', glob: "*.xml")` to find hardcoded strings in layouts. Use `Grep(pattern: '"[A-Z][a-z].*"', glob: "*.kt")` to find potential UI strings in Kotlin code.
+  - *iOS*: Strings in Swift/ObjC code instead of `NSLocalizedString` / `String(localized:)`.
+- **Pluralization logic**: `"1 item" / "2 items"` — handled with proper pluralization API? Not `count === 1 ? "item" : "items"` (fails in many languages — Russian has 3 plural forms, Arabic has 6).
+  - *Web*: Use `Intl.PluralRules` or i18n library's plural system (i18next, FormatJS).
+  - *Android*: Use `<plurals>` resource in `strings.xml` with `getQuantityString()`. Never use `if (count == 1)` in Kotlin.
+  - *iOS*: Use `Localizable.stringsdict` with `NSStringPluralRuleType`.
+- **Concatenated UI strings**: `"You have " + count + " messages"` — word order varies by language; must use a template/message format, not string concatenation.
+  - *Android*: Use `getString(R.string.message_count, count)` with positional arguments (`%1$d items in %2$s`), not string concatenation in Kotlin.
+- **Hardcoded error messages**: Error strings in catch blocks, validation messages, toast content, snackbar text — all extractable to string resources?
+- **Accessibility text**: `contentDescription` (Android) / `accessibilityLabel` (iOS) / `aria-label` (web) — hardcoded or localizable? These are user-facing strings that screen reader users hear — they must be localized.
+- **Android-specific string resource audit**: Check for: strings in `menu.xml` items (should use `@string/`), strings in `AndroidManifest.xml` (`android:label`), strings in Navigation graph arguments, strings in notification builders, strings in preference XML.
 
 #### §N2. LOCALE-SENSITIVE FORMATTING
 - **Number formatting**: Uses `Intl.NumberFormat` (or equivalent) for display? Decimal separator differs: `.` (EN) vs `,` (DE, FR). Thousands separator differs. Hardcoded `toFixed(2)` is not locale-safe for display.
@@ -2016,6 +2971,36 @@ ARCHITECTURAL — 6+ months:
 
 **Execution:** Follow §III. Begin with Part 1. For apps > 3,000 lines, confirm with user after Part 1. Part 1 = read entire codebase → classify → extract domain rules → confirm design identity → build Feature Preservation Ledger → announce plan → wait.
 
+### Audit Completion Criteria
+
+> **Claude:** Use this checklist to determine when the audit is complete. An audit is "done" when all applicable criteria are met.
+
+```
+COMPLETION GATES — check each before delivering the Summary Dashboard (§VII):
+
+[ ] Every Part from §III Part Structure has been executed (or explicitly skipped with reason)
+[ ] §0 is fully populated — no placeholder values remain
+[ ] Every CRITICAL and HIGH finding includes a specific fix (not "improve X")
+[ ] Every finding has a confidence tag: [CODE], [§0-CONFIRMED], or [UNVERIFIED]
+[ ] Summary Dashboard (§VII) is populated: findings table, root cause analysis, quick wins
+[ ] Top 10 Quick Wins are ranked by (severity × impact) / effort
+[ ] Remediation Roadmap has at least IMMEDIATE and SHORT-TERM sections filled
+[ ] Cross-Cutting Concern Map (§VIII) checked — compound chains documented
+[ ] Feature Preservation Ledger confirms no existing feature was accidentally invalidated
+[ ] TodoWrite shows all parts as "completed"
+
+EARLY EXIT — acceptable to stop before full completion when:
+  - User says "that's enough" or "stop here" → deliver §VII with what you have
+  - Context window is running low → deliver §VII, note which parts were not completed
+  - User redirects to "fix mode" → switch from auditing to implementing fixes
+  - Only LOW/NIT findings remain in uncovered parts → note and stop
+
+NOT DONE — do not stop if:
+  - Any CRITICAL finding exists without a documented fix
+  - §VII Summary Dashboard has not been produced
+  - §0 Domain Rules have [UNVERIFIED] items that could affect CRITICAL findings
+```
+
 ---
 
 ## X. RESEARCH, DEVELOPMENT & IMPROVEMENT PROTOCOL
@@ -2146,7 +3131,9 @@ Feature Coherence:
 
 > Internal state understood — now look outward. Understand what exists, what users expect, and where the gaps are.
 >
-> **Claude execution note**: Use web search for competitor discovery. If web search is unavailable, ask the user to list 2–3 competitors and describe their strengths/weaknesses. Skip §X.1.1–X.1.3 if the developer explicitly says they don't care about competitors — go straight to §X.2 with only §X.0 findings as input.
+> **Claude execution note**: Use `WebSearch` for competitor discovery — launch parallel searches for different competitor aspects. Use `WebFetch` to analyze competitor websites/app store listings. If web search is unavailable, use `AskUserQuestion` to ask the user to list 2–3 competitors and describe their strengths/weaknesses. Skip §X.1.1–X.1.3 if the developer explicitly says they don't care about competitors — go straight to §X.2 with only §X.0 findings as input.
+>
+> **For mobile apps**: Search app stores (Google Play, App Store) for competitor analysis. Use `WebFetch` on store listing URLs to extract feature lists, ratings, and user reviews.
 
 #### X.1.1 — Direct Competitor Inventory
 
@@ -2374,6 +3361,20 @@ DEFERRED: {items not being pursued, with rationale}
 > **Prerequisite**: §0 + §I classification. Prior audit strongly recommended. If none, do Parts 1–3 first.
 >
 > **Execution order**: §XI.0 (understand) → §XI.1 (inventory) → §XI.2 (polish passes) → §XI.3 (code restructure) → §XI.4 (architecture) → §XI.5 (quality gates) → §XI.6 (deliverable).
+
+> **Claude:** This section is ~500 lines. Work through one subsection at a time. Here's the map:
+>
+> | Subsection | What It Does | Skip When |
+> |------------|-------------|-----------|
+> | **§XI.0** Comprehension | Reads and internalizes the app as a product | NEVER — mandatory |
+> | **§XI.1** Pre-Polish Inventory | Maps all coherence fractures and rough edges | Never |
+> | **§XI.2** Polish Passes (0–6) | 7 passes from structural to fine-grained | Passes 3–6 if time-limited |
+> | **§XI.3** Code Restructure | File structure, modules, naming, architecture | If user only wants visual polish |
+> | **§XI.4** Architecture Evolution | Incremental arch improvements without rewrites | If app is small (<500 lines) |
+> | **§XI.5** Quality Gates | Verifies polish preserved behavior | NEVER — mandatory after changes |
+> | **§XI.6** Deliverable | Structured output of all changes | Never |
+>
+> **Minimum viable path**: §XI.0 + §XI.1 + §XI.2 (Passes 0, 1, 1.5) + §XI.5
 
 ---
 

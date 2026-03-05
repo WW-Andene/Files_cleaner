@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/surfaceBase">
 
-    <!-- Toolbar -->
+    <!-- Top toolbar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_sm">
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_sm"
+        android:background="@color/surfaceColor"
+        android:elevation="0dp"
+        android:minHeight="?attr/actionBarSize">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -30,9 +34,21 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/dual_pane_title"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
             android:textColor="@color/textPrimary"
-            android:layout_marginStart="@dimen/spacing_sm" />
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
+
+        <!-- Swap panes button -->
+        <ImageButton
+            android:id="@+id/btn_swap_panes"
+            android:layout_width="@dimen/icon_button"
+            android:layout_height="@dimen/icon_button"
+            android:src="@drawable/ic_swap_horiz"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/a11y_swap_panes"
+            android:scaleType="centerInside"
+            app:tint="@color/textSecondary" />
     </LinearLayout>
 
     <!-- Dual panes side by side -->
@@ -50,27 +66,51 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@color/surfaceColor"
-            android:layout_marginEnd="1dp">
+            android:layout_marginEnd="@dimen/divider_width"
+            android:contentDescription="@string/a11y_pane_left"
+            android:accessibilityPaneTitle="@string/a11y_pane_left">
+
+            <!-- Left pane content mode selector -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_mode_left"
+                style="@style/Widget.FileCleaner.Button.Text"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dual_pane_tab_height"
+                android:background="@color/surfaceDim"
+                android:text="@string/dual_pane_tab_browse"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:gravity="start|center_vertical"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="@dimen/spacing_sm"
+                app:icon="@drawable/ic_arrow_down"
+                app:iconSize="@dimen/icon_btn_size_sm"
+                app:iconGravity="end"
+                app:iconTint="@color/textSecondary" />
 
             <!-- Left pane path bar -->
             <LinearLayout
+                android:id="@+id/path_bar_left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="@dimen/spacing_sm"
+                android:paddingHorizontal="@dimen/spacing_xs"
                 android:paddingVertical="@dimen/spacing_xs"
-                android:background="@color/surfaceDim">
+                android:background="@color/surfaceDim"
+                android:minHeight="@dimen/touch_target_min">
 
                 <ImageButton
                     android:id="@+id/btn_up_left"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_folder"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_arrow_up"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_go_up"
                     android:scaleType="centerInside"
-                    android:padding="4dp"
+                    android:padding="@dimen/spacing_chip"
                     app:tint="@color/textSecondary" />
 
                 <TextView
@@ -78,12 +118,28 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="/"
+                    tools:text="/"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                    android:textColor="@color/textSecondary"
-                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLines="1"
                     android:ellipsize="start"
-                    android:layout_marginStart="@dimen/spacing_xs" />
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/spacing_micro"
+                    android:minHeight="@dimen/spacing_xxl"
+                    android:gravity="center_vertical"
+                    android:accessibilityLiveRegion="polite" />
+
+                <ImageButton
+                    android:id="@+id/btn_pick_dir_left"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_folder"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/dual_pane_pick_directory"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_chip"
+                    app:tint="@color/textSecondary" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -92,26 +148,78 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:clipToPadding="false"
+                android:layoutAnimation="@anim/layout_item_stagger"
                 android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Left pane empty state -->
+            <LinearLayout
+                android:id="@+id/empty_state_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_xl"
+                android:paddingTop="@dimen/spacing_3xl"
+                android:paddingBottom="@dimen/spacing_xxl"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/a11y_empty_state"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_empty_state"
+                    android:layout_height="@dimen/icon_empty_state"
+                    android:src="@drawable/ic_raccoon_logo"
+                    android:alpha="@dimen/alpha_raccoon_logo"
+                    android:importantForAccessibility="no"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/tv_empty_title_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xxl"
+                    android:text="@string/dual_pane_empty_title"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                    android:textColor="@color/textPrimary"
+                    android:gravity="center"
+                    android:maxWidth="@dimen/content_max_width_narrow"
+                    android:lineSpacingExtra="@dimen/spacing_xs" />
+
+                <TextView
+                    android:id="@+id/tv_empty_subtitle_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/dual_pane_empty_subtitle"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:textColor="@color/textSecondary"
+                    android:gravity="center"
+                    android:maxWidth="@dimen/content_max_width_compact"
+                    android:lineSpacingExtra="@dimen/spacing_xs" />
+            </LinearLayout>
 
             <!-- Left pane file count -->
             <TextView
                 android:id="@+id/tv_count_left"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                 android:textColor="@color/textTertiary"
                 android:gravity="center"
-                android:paddingVertical="@dimen/spacing_xs"
-                android:background="@color/surfaceDim" />
+                android:paddingVertical="@dimen/spacing_micro"
+                android:background="@color/surfaceDim"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/a11y_file_count" />
         </LinearLayout>
 
-        <!-- Splitter / divider -->
+        <!-- Divider -->
         <View
-            android:id="@+id/splitter"
-            android:layout_width="4dp"
+            android:id="@+id/divider_handle"
+            android:layout_width="@dimen/divider_width"
             android:layout_height="match_parent"
-            android:background="@color/borderDefault" />
+            android:background="@color/surfaceDim"
+            android:importantForAccessibility="no" />
 
         <!-- Right pane -->
         <LinearLayout
@@ -121,27 +229,51 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@color/surfaceColor"
-            android:layout_marginStart="1dp">
+            android:layout_marginStart="@dimen/divider_width"
+            android:contentDescription="@string/a11y_pane_right"
+            android:accessibilityPaneTitle="@string/a11y_pane_right">
+
+            <!-- Right pane content mode selector -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_mode_right"
+                style="@style/Widget.FileCleaner.Button.Text"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dual_pane_tab_height"
+                android:background="@color/surfaceDim"
+                android:text="@string/dual_pane_tab_browse"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:gravity="start|center_vertical"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="@dimen/spacing_sm"
+                app:icon="@drawable/ic_arrow_down"
+                app:iconSize="@dimen/icon_btn_size_sm"
+                app:iconGravity="end"
+                app:iconTint="@color/textSecondary" />
 
             <!-- Right pane path bar -->
             <LinearLayout
+                android:id="@+id/path_bar_right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="@dimen/spacing_sm"
+                android:paddingHorizontal="@dimen/spacing_xs"
                 android:paddingVertical="@dimen/spacing_xs"
-                android:background="@color/surfaceDim">
+                android:background="@color/surfaceDim"
+                android:minHeight="@dimen/touch_target_min">
 
                 <ImageButton
                     android:id="@+id/btn_up_right"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_folder"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_arrow_up"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/dual_pane_go_up"
                     android:scaleType="centerInside"
-                    android:padding="4dp"
+                    android:padding="@dimen/spacing_chip"
                     app:tint="@color/textSecondary" />
 
                 <TextView
@@ -149,12 +281,28 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="/"
+                    tools:text="/"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                    android:textColor="@color/textSecondary"
-                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:maxLines="1"
                     android:ellipsize="start"
-                    android:layout_marginStart="@dimen/spacing_xs" />
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/spacing_micro"
+                    android:minHeight="@dimen/spacing_xxl"
+                    android:gravity="center_vertical"
+                    android:accessibilityLiveRegion="polite" />
+
+                <ImageButton
+                    android:id="@+id/btn_pick_dir_right"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_folder"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/dual_pane_pick_directory"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_chip"
+                    app:tint="@color/textSecondary" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -163,72 +311,191 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:clipToPadding="false"
+                android:layoutAnimation="@anim/layout_item_stagger"
                 android:paddingBottom="@dimen/spacing_sm" />
+
+            <!-- Right pane empty state -->
+            <LinearLayout
+                android:id="@+id/empty_state_right"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/spacing_xl"
+                android:paddingTop="@dimen/spacing_3xl"
+                android:paddingBottom="@dimen/spacing_xxl"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/a11y_empty_state"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_empty_state"
+                    android:layout_height="@dimen/icon_empty_state"
+                    android:src="@drawable/ic_raccoon_logo"
+                    android:alpha="@dimen/alpha_raccoon_logo"
+                    android:importantForAccessibility="no"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/tv_empty_title_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xxl"
+                    android:text="@string/dual_pane_empty_title"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                    android:textColor="@color/textPrimary"
+                    android:gravity="center"
+                    android:maxWidth="@dimen/content_max_width_narrow"
+                    android:lineSpacingExtra="@dimen/spacing_xs" />
+
+                <TextView
+                    android:id="@+id/tv_empty_subtitle_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="@string/dual_pane_empty_subtitle"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:textColor="@color/textSecondary"
+                    android:gravity="center"
+                    android:maxWidth="@dimen/content_max_width_compact"
+                    android:lineSpacingExtra="@dimen/spacing_xs" />
+            </LinearLayout>
 
             <!-- Right pane file count -->
             <TextView
                 android:id="@+id/tv_count_right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                 android:textColor="@color/textTertiary"
                 android:gravity="center"
-                android:paddingVertical="@dimen/spacing_xs"
-                android:background="@color/surfaceDim" />
+                android:paddingVertical="@dimen/spacing_micro"
+                android:background="@color/surfaceDim"
+                android:accessibilityLiveRegion="polite"
+                android:contentDescription="@string/a11y_file_count" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Bottom action bar -->
-    <LinearLayout
+    <!-- Floating selection action bar (hidden by default) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/selection_action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_sm"
-        android:background="@color/surfaceDim">
+        android:layout_marginHorizontal="@dimen/spacing_md"
+        android:layout_marginBottom="@dimen/spacing_md"
+        android:visibility="gone"
+        android:contentDescription="@string/a11y_selection_actions"
+        android:accessibilityLiveRegion="polite"
+        android:focusable="true"
+        app:cardCornerRadius="@dimen/radius_card"
+        app:cardElevation="@dimen/elevation_floating"
+        app:cardBackgroundColor="@color/surfaceColor"
+        app:strokeWidth="@dimen/stroke_default"
+        app:strokeColor="@color/selectedBorder">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_copy_to_other"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height_sm"
-            android:text="@string/dual_pane_copy"
-            android:textAllCaps="false"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:cornerRadius="@dimen/radius_pill"
-            app:strokeColor="@color/borderDefault" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_move_to_other"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height_sm"
-            android:text="@string/dual_pane_move"
-            android:textAllCaps="false"
-            android:layout_marginHorizontal="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:cornerRadius="@dimen/radius_pill"
-            app:strokeColor="@color/borderDefault" />
+            <!-- Selection info row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/touch_target_min">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_delete_selected"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height_sm"
-            android:text="@string/delete"
-            android:textAllCaps="false"
-            android:layout_marginStart="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:cornerRadius="@dimen/radius_pill"
-            app:strokeColor="@color/colorError"
-            android:textColor="@color/colorError" />
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_selection_count"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
+                    android:textColor="@color/colorPrimary"
+                    android:accessibilityLiveRegion="polite" />
+
+                <ImageButton
+                    android:id="@+id/btn_select_all"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_select_all"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/select_all"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_sm"
+                    app:tint="@color/textSecondary" />
+
+                <ImageButton
+                    android:id="@+id/btn_clear_selection"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_close"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/a11y_clear_selection"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_sm"
+                    app:tint="@color/textSecondary" />
+            </LinearLayout>
+
+            <!-- Action buttons row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:minHeight="@dimen/touch_target_min">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_copy_to_other"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/dual_pane_copy"
+                    android:textAllCaps="false"
+                    android:layout_marginEnd="@dimen/spacing_xs"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
+                    app:icon="@drawable/ic_copy"
+                    app:iconSize="@dimen/icon_small"
+                    app:cornerRadius="@dimen/radius_pill"
+                    app:strokeColor="@color/borderDefault" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_move_to_other"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/dual_pane_move"
+                    android:textAllCaps="false"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
+                    app:icon="@drawable/ic_move"
+                    app:iconSize="@dimen/icon_small"
+                    app:cornerRadius="@dimen/radius_pill"
+                    app:strokeColor="@color/borderDefault" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_delete_selected"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/delete"
+                    android:textAllCaps="false"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.FileCleaner.Button.Destructive"
+                    app:icon="@drawable/ic_delete"
+                    app:iconSize="@dimen/icon_small"
+                    app:cornerRadius="@dimen/radius_pill" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

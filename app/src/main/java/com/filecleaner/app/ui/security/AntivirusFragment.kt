@@ -5,6 +5,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +14,9 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -22,9 +25,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.filecleaner.app.R
 import com.filecleaner.app.databinding.FragmentAntivirusBinding
+import com.filecleaner.app.services.ScanService
 import com.filecleaner.app.utils.antivirus.*
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.google.android.material.button.MaterialButton
+import com.filecleaner.app.utils.styleAsError
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,12 +49,33 @@ import java.io.File
 class AntivirusFragment : Fragment() {
 
     private var _binding: FragmentAntivirusBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
     private var isScanning = false
     private val allThreats = mutableListOf<ThreatResult>()
     private var currentFilter: SeverityFilter = SeverityFilter.ALL
     private var pulseAnimation: Animation? = null
+
+    private val progressHandler = Handler(Looper.getMainLooper())
+    private val progressRunnable = object : Runnable {
+        override fun run() {
+            if (ScanService.isRunning) {
+                updateProgress(ScanService.currentProgress)
+                _binding?.tvPhase?.text = ScanService.currentPhase
+                progressHandler.postDelayed(this, 500)
+            } else if (ScanService.scanComplete) {
+                val results = ScanService.scanResults
+                if (results != null) {
+                    allThreats.clear()
+                    allThreats.addAll(results)
+                    isScanning = false
+                    stopShieldPulse()
+                    showResults()
+                }
+            }
+        }
+    }
 
     private enum class SeverityFilter {
         ALL, CRITICAL, HIGH, MEDIUM, LOW_INFO
@@ -66,6 +92,10 @@ class AntivirusFragment : Fragment() {
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
         binding.recyclerResults.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerResults.isNestedScrollingEnabled = false
+        // §DM4: Disable stagger animation when user prefers reduced motion
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
+            binding.recyclerResults.layoutAnimation = null
+        }
 
         binding.btnScan.setOnClickListener {
             if (!isScanning) startScan()
@@ -88,6 +118,20 @@ class AntivirusFragment : Fragment() {
 
         // Show last scan time
         showLastScanTime()
+
+        // Restore state if the service is running or has completed results
+        if (ScanService.isRunning) {
+            isScanning = true
+            binding.btnScan.isEnabled = false
+            binding.btnScan.text = getString(R.string.av_scanning)
+            binding.progressContainer.visibility = View.VISIBLE
+            startShieldPulse()
+            progressHandler.post(progressRunnable)
+        } else if (ScanService.scanComplete && ScanService.scanResults != null) {
+            allThreats.clear()
+            allThreats.addAll(ScanService.scanResults!!)
+            showResults()
+        }
     }
 
     private fun showLastScanTime() {
@@ -102,10 +146,19 @@ class AntivirusFragment : Fragment() {
         }
     }
 
+    /** Update both the ProgressBar value and the percentage text. */
+    private fun updateProgress(pct: Int) {
+        _binding?.progress?.post {
+            _binding?.progress?.progress = pct
+            _binding?.tvProgressPct?.text = getString(R.string.av_progress_pct, pct)
+        }
+    }
+
     private fun startScan() {
         isScanning = true
         allThreats.clear()
         currentFilter = SeverityFilter.ALL
+        ScanService.clearResults()
 
         val b = _binding ?: return
         b.btnScan.isEnabled = false
@@ -114,6 +167,7 @@ class AntivirusFragment : Fragment() {
         b.progressContainer.visibility = View.VISIBLE
         b.progress.isIndeterminate = false
         b.progress.progress = 0
+        b.tvProgressPct.text = getString(R.string.av_progress_pct, 0)
         b.summaryRow.visibility = View.GONE
         b.recyclerResults.visibility = View.GONE
         b.filterScroll.visibility = View.GONE
@@ -123,85 +177,36 @@ class AntivirusFragment : Fragment() {
         // Pulse the shield icon during scan
         startShieldPulse()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val ctx = context ?: return@launch
+        // Start the foreground service
+        ScanService.start(requireContext())
 
-            // Phase 1: App Integrity (0-20%)
-            updatePhase(R.string.av_phase_integrity, R.string.av_phase_integrity_desc)
-            val integrityResults = AppIntegrityScanner.scan(ctx) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = pct / 5 }
-            }
-            allThreats.addAll(integrityResults)
-
-            // Phase 2: File Signatures (20-40%)
-            updatePhase(R.string.av_phase_signature, R.string.av_phase_signature_desc)
-            val allFiles = vm.filesByCategory.value?.values?.flatten() ?: emptyList()
-            if (allFiles.isNotEmpty()) {
-                val signatureResults = SignatureScanner.scan(allFiles) { scanned, total ->
-                    val pct = if (total > 0) (scanned * 20 / total) + 20 else 20
-                    _binding?.progress?.post { _binding?.progress?.progress = pct }
-                }
-                allThreats.addAll(signatureResults)
-            }
-            _binding?.progress?.post { _binding?.progress?.progress = 40 }
-
-            // Phase 3: Privacy Audit (40-60%)
-            updatePhase(R.string.av_phase_privacy, R.string.av_phase_privacy_desc)
-            val ctx2 = context ?: return@launch
-            val privacyResults = PrivacyAuditor.audit(ctx2) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = 40 + (pct / 5) }
-            }
-            allThreats.addAll(privacyResults)
-
-            // Phase 4: Network Security (60-80%)
-            updatePhase(R.string.av_phase_network, R.string.av_phase_network_desc)
-            val ctx3 = context ?: return@launch
-            val networkResults = NetworkSecurityScanner.scan(ctx3) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = 60 + (pct / 5) }
-            }
-            allThreats.addAll(networkResults)
-
-            // Phase 5: App Verification (80-100%)
-            updatePhase(R.string.av_phase_verification, R.string.av_phase_verification_desc)
-            val ctx4 = context ?: return@launch
-            val verificationResults = AppVerificationScanner.scan(ctx4) { pct ->
-                _binding?.progress?.post { _binding?.progress?.progress = 80 + (pct / 5) }
-            }
-            allThreats.addAll(verificationResults)
-
-            _binding?.progress?.post { _binding?.progress?.progress = 100 }
-
-            // Save scan history
-            val ctx5 = context ?: return@launch
-            withContext(Dispatchers.IO) {
-                ScanHistoryManager.saveResult(ctx5, allThreats)
-            }
-
-            isScanning = false
-            stopShieldPulse()
-            if (_binding != null) showResults()
-        }
+        // Start polling for progress
+        progressHandler.post(progressRunnable)
     }
 
     private fun updatePhase(titleRes: Int, descRes: Int) {
-        _binding?.tvPhase?.text = getString(titleRes)
-        _binding?.tvPhaseDesc?.text = getString(descRes)
+        val ctx = _binding?.tvPhase?.context ?: return
+        _binding?.tvPhase?.text = ctx.getString(titleRes)
+        _binding?.tvPhaseDesc?.text = ctx.getString(descRes)
     }
 
     private fun startShieldPulse() {
+        _binding?.ivShield?.let {
+            it.setColorFilter(ContextCompat.getColor(it.context, R.color.colorAccent))
+        }
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(requireContext())) {
+            return
+        }
         pulseAnimation = ScaleAnimation(
             1f, 1.1f, 1f, 1.1f,
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f
         ).apply {
-            duration = 600
+            duration = resources.getInteger(R.integer.motion_emphasis).toLong()
             repeatCount = Animation.INFINITE
             repeatMode = Animation.REVERSE
         }
         _binding?.ivShield?.startAnimation(pulseAnimation)
-        _binding?.ivShield?.let {
-            it.setColorFilter(ContextCompat.getColor(it.context, R.color.colorAccent))
-        }
     }
 
     private fun stopShieldPulse() {
@@ -307,6 +312,10 @@ class AntivirusFragment : Fragment() {
         val noHistory = dialogView.findViewById<TextView>(R.id.tv_no_history)
 
         recycler.layoutManager = LinearLayoutManager(ctx)
+        // §DM4: Disable stagger animation when user prefers reduced motion
+        if (com.filecleaner.app.utils.MotionUtil.isReducedMotion(ctx)) {
+            recycler.layoutAnimation = null
+        }
 
         if (history.isEmpty()) {
             recycler.visibility = View.GONE
@@ -315,7 +324,8 @@ class AntivirusFragment : Fragment() {
             recycler.adapter = HistoryAdapter(history)
         }
 
-        AlertDialog.Builder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setView(dialogView)
             .setPositiveButton(R.string.av_dismiss, null)
             .setNeutralButton(R.string.av_clear_history) { _, _ ->
@@ -335,12 +345,13 @@ class AntivirusFragment : Fragment() {
         val uninstall = actionable.filter { it.action == ThreatResult.ThreatAction.UNINSTALL }
 
         val summary = buildString {
-            if (quarantine.isNotEmpty()) append("${quarantine.size} files to quarantine\n")
-            if (delete.isNotEmpty()) append("${delete.size} files to delete\n")
-            if (uninstall.isNotEmpty()) append("${uninstall.size} apps to uninstall")
+            if (quarantine.isNotEmpty()) append(resources.getQuantityString(R.plurals.av_fix_quarantine, quarantine.size, quarantine.size) + "\n")
+            if (delete.isNotEmpty()) append(resources.getQuantityString(R.plurals.av_fix_delete, delete.size, delete.size) + "\n")
+            if (uninstall.isNotEmpty()) append(resources.getQuantityString(R.plurals.av_fix_uninstall, uninstall.size, uninstall.size))
         }.trim()
 
-        AlertDialog.Builder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(getString(R.string.av_fix_all))
             .setMessage(getString(R.string.av_fix_all_confirm, summary))
             .setPositiveButton(getString(R.string.av_proceed)) { _, _ ->
@@ -392,6 +403,7 @@ class AntivirusFragment : Fragment() {
     }
 
     private fun showThreatDetail(threat: ThreatResult) {
+
         val ctx = context ?: return
         val dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_threat_detail, null)
 
@@ -435,11 +447,13 @@ class AntivirusFragment : Fragment() {
         }
 
         // Category
-        tvCategory.text = categoryLabel(threat.category)
+        tvCategory.text = categoryLabel(ctx, threat.category)
 
-        val dialog = AlertDialog.Builder(ctx)
+        activeDialog?.dismiss()
+        val dialog = MaterialAlertDialogBuilder(ctx)
             .setView(dialogView)
             .create()
+        activeDialog = dialog
 
         btnDismiss.setOnClickListener { dialog.dismiss() }
 
@@ -488,12 +502,24 @@ class AntivirusFragment : Fragment() {
         quarantineDir.mkdirs()
         val src = File(filePath)
         val dst = File(quarantineDir, "${System.currentTimeMillis()}_${src.name}")
-        return src.renameTo(dst)
+        // renameTo fails across filesystems; fall back to copy + delete
+        if (src.renameTo(dst)) return true
+        return try {
+            src.copyTo(dst, overwrite = false)
+            if (!src.delete()) {
+                dst.delete()
+                false
+            } else true
+        } catch (_: Exception) {
+            dst.delete()
+            false
+        }
     }
 
     private fun confirmDelete(filePath: String) {
         val ctx = context ?: return
-        AlertDialog.Builder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.av_confirm_delete, File(filePath).name))
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
@@ -515,7 +541,7 @@ class AntivirusFragment : Fragment() {
             })
         } catch (e: Exception) {
             _binding?.root?.let {
-                Snackbar.make(it, getString(R.string.av_uninstall_failed), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(it, getString(R.string.av_uninstall_failed), Snackbar.LENGTH_SHORT).styleAsError().show()
             }
         }
     }
@@ -547,7 +573,7 @@ class AntivirusFragment : Fragment() {
         return when (severity) {
             ThreatResult.Severity.CRITICAL -> R.color.colorError to ctx.getString(R.string.av_critical)
             ThreatResult.Severity.HIGH -> R.color.colorError to ctx.getString(R.string.av_high)
-            ThreatResult.Severity.MEDIUM -> R.color.catVideo to ctx.getString(R.string.av_medium)
+            ThreatResult.Severity.MEDIUM -> R.color.colorWarning to ctx.getString(R.string.av_medium)
             ThreatResult.Severity.LOW -> R.color.colorAccent to ctx.getString(R.string.av_low)
             ThreatResult.Severity.INFO -> R.color.textTertiary to ctx.getString(R.string.av_info)
         }
@@ -563,18 +589,18 @@ class AntivirusFragment : Fragment() {
         }
     }
 
-    private fun categoryLabel(category: ThreatResult.ThreatCategory): String {
+    private fun categoryLabel(ctx: android.content.Context, category: ThreatResult.ThreatCategory): String {
         return when (category) {
-            ThreatResult.ThreatCategory.GENERAL -> "General"
-            ThreatResult.ThreatCategory.MALWARE -> "Malware"
-            ThreatResult.ThreatCategory.ROOT_TAMPERING -> "Root / Tampering"
-            ThreatResult.ThreatCategory.PRIVACY -> "Privacy"
-            ThreatResult.ThreatCategory.NETWORK -> "Network Security"
-            ThreatResult.ThreatCategory.SIDELOAD -> "Sideloaded App"
-            ThreatResult.ThreatCategory.ACCESSIBILITY_ABUSE -> "Accessibility Abuse"
-            ThreatResult.ThreatCategory.DEVICE_ADMIN -> "Device Admin"
-            ThreatResult.ThreatCategory.SUSPICIOUS_FILE -> "Suspicious File"
-            ThreatResult.ThreatCategory.DEBUG_RISK -> "Debug / Dev Risk"
+            ThreatResult.ThreatCategory.GENERAL -> ctx.getString(R.string.threat_category_general)
+            ThreatResult.ThreatCategory.MALWARE -> ctx.getString(R.string.threat_category_malware)
+            ThreatResult.ThreatCategory.ROOT_TAMPERING -> ctx.getString(R.string.threat_category_root_tampering)
+            ThreatResult.ThreatCategory.PRIVACY -> ctx.getString(R.string.threat_category_privacy)
+            ThreatResult.ThreatCategory.NETWORK -> ctx.getString(R.string.threat_category_network)
+            ThreatResult.ThreatCategory.SIDELOAD -> ctx.getString(R.string.threat_category_sideload)
+            ThreatResult.ThreatCategory.ACCESSIBILITY_ABUSE -> ctx.getString(R.string.threat_category_accessibility_abuse)
+            ThreatResult.ThreatCategory.DEVICE_ADMIN -> ctx.getString(R.string.threat_category_device_admin)
+            ThreatResult.ThreatCategory.SUSPICIOUS_FILE -> ctx.getString(R.string.threat_category_suspicious_file)
+            ThreatResult.ThreatCategory.DEBUG_RISK -> ctx.getString(R.string.threat_category_debug_risk)
         }
     }
 
@@ -613,6 +639,9 @@ class AntivirusFragment : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
             val ctx = holder.itemView.context
+
+            // Reset state from recycled ViewHolder
+            holder.actionBtn.isEnabled = true
 
             holder.name.text = item.name
             holder.description.text = item.description
@@ -700,8 +729,8 @@ class AntivirusFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val record = items[position]
-            holder.time.text = record.formattedTime
-            holder.summary.text = "${record.totalFindings} findings (${record.critical}C ${record.high}H ${record.medium}M)"
+            holder.time.text = record.formattedTime(holder.itemView.context)
+            holder.summary.text = holder.itemView.context.getString(R.string.av_scan_history_summary, record.totalFindings, record.critical, record.high, record.medium)
             holder.threatCount.text = record.threatCount.toString()
             holder.threatCount.setTextColor(
                 ContextCompat.getColor(
@@ -715,6 +744,9 @@ class AntivirusFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
+        progressHandler.removeCallbacksAndMessages(null)
         stopShieldPulse()
         super.onDestroyView()
         _binding = null

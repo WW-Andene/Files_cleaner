@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Accent emphasis divider — used for branded section breaks -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="center_horizontal">
+        <shape android:shape="rectangle">
+            <size
+                android:width="48dp"
+                android:height="@dimen/track_corner_radius" />
+            <solid android:color="@color/colorPrimaryLight" />
+            <corners android:radius="@dimen/track_corner_radius" />
+        </shape>
+    </item>
+</layer-list>

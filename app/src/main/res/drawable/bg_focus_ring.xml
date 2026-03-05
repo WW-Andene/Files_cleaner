@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Focus ring for keyboard/accessibility navigation — branded green ring -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <stroke
+        android:width="@dimen/stroke_selected"
+        android:color="@color/borderFocus" />
+    <corners android:radius="@dimen/radius_card" />
+    <solid android:color="@android:color/transparent" />
+</shape>

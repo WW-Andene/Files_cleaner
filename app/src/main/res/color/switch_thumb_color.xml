@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SwitchMaterial thumb — primary green when checked, neutral when unchecked.
+     §DC4: Disabled states use reduced-contrast colors for clear inactive affordance. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/borderSubtle" android:state_enabled="false" android:state_checked="true" />
+    <item android:color="@color/borderSubtle" android:state_enabled="false" />
+    <item android:color="@color/colorPrimary" android:state_checked="true" />
+    <item android:color="@color/borderDefault" />
+</selector>

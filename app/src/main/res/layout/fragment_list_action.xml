@@ -7,8 +7,9 @@
     android:orientation="vertical"
     android:background="@color/surfaceBase">
 
-    <!-- Header card -->
+    <!-- Header card (title + subtitle only — selection buttons moved to action bar) -->
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.FileCleaner.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
@@ -22,7 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_lg">
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_md">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -32,6 +34,7 @@
                 android:textColor="@color/colorOnPrimaryContainer"
                 android:maxLines="2"
                 android:ellipsize="end"
+                android:accessibilityHeading="true"
                 tools:text="Title" />
 
             <TextView
@@ -40,79 +43,21 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                 android:textColor="@color/colorOnPrimaryContainer"
-                android:alpha="0.8"
+                android:alpha="@dimen/alpha_raccoon_logo"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:accessibilityLiveRegion="polite"
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:text="@string/scan_to_see_results" />
-
-            <!-- Select All / Deselect All -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="@dimen/spacing_md">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_select_all"
-                    style="@style/Widget.FileCleaner.Button.Outlined"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/button_height_sm"
-                    android:text="@string/select_all"
-                    android:textSize="@dimen/text_body_small"
-                    android:layout_marginEnd="@dimen/spacing_sm"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    app:strokeColor="@color/colorOnPrimaryContainer"
-                    android:textColor="@color/colorOnPrimaryContainer"
-                    app:cornerRadius="@dimen/radius_pill" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_deselect_all"
-                    style="@style/Widget.FileCleaner.Button.Outlined"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/button_height_sm"
-                    android:text="@string/deselect_all"
-                    android:textSize="@dimen/text_body_small"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    app:strokeColor="@color/colorOnPrimaryContainer"
-                    android:textColor="@color/colorOnPrimaryContainer"
-                    app:cornerRadius="@dimen/radius_pill" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_batch_rename"
-                    style="@style/Widget.FileCleaner.Button.Outlined"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/button_height_sm"
-                    android:text="@string/batch_rename"
-                    android:textSize="@dimen/text_body_small"
-                    android:layout_marginStart="@dimen/spacing_sm"
-                    android:visibility="gone"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    app:strokeColor="@color/colorOnPrimaryContainer"
-                    android:textColor="@color/colorOnPrimaryContainer"
-                    app:cornerRadius="@dimen/radius_pill" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_batch_compress"
-                    style="@style/Widget.FileCleaner.Button.Outlined"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/button_height_sm"
-                    android:text="@string/ctx_compress"
-                    android:textSize="@dimen/text_body_small"
-                    android:layout_marginStart="@dimen/spacing_sm"
-                    android:visibility="gone"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    app:strokeColor="@color/colorOnPrimaryContainer"
-                    android:textColor="@color/colorOnPrimaryContainer"
-                    app:cornerRadius="@dimen/radius_pill" />
-            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Color legend strip (populated programmatically per screen) -->
+    <include
+        layout="@layout/view_color_legend"
+        android:id="@+id/legend_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <!-- Search bar -->
     <com.google.android.material.textfield.TextInputLayout
@@ -121,6 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_md"
+        android:contentDescription="@string/a11y_search_files"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -131,7 +77,7 @@
         app:boxStrokeColor="@color/borderDefault"
         app:hintTextColor="@color/colorPrimary"
         app:startIconTint="@color/textTertiary"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        style="@style/Widget.FileCleaner.TextInput">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search"
@@ -145,7 +91,7 @@
             android:lineSpacingMultiplier="1.0" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Sort row -->
+    <!-- Collapsible filter toggle bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -154,27 +100,92 @@
         android:layout_marginHorizontal="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_sm">
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_toggle_filters"
+            style="@style/Widget.FileCleaner.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height"
+            android:text="@string/filter_options"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:contentDescription="@string/a11y_filter_options"
+            app:icon="@drawable/ic_arrow_down"
+            app:iconSize="@dimen/icon_small"
+            app:iconGravity="end"
+            app:iconTint="@color/textSecondary" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:importantForAccessibility="no" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_view_mode"
+            style="@style/Widget.FileCleaner.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height"
+            android:text="@string/display_options"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:contentDescription="@string/a11y_display_options"
+            app:icon="@drawable/ic_arrow_down"
+            app:iconSize="@dimen/icon_small"
+            app:iconGravity="end"
+            app:iconTint="@color/textSecondary" />
+    </LinearLayout>
+
+    <!-- Expandable filter panel -->
+    <LinearLayout
+        android:id="@+id/filter_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sort_by_label"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_xs" />
+
         <Spinner
             android:id="@+id/spinner_sort"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:minHeight="@dimen/touch_target_min"
             android:background="@drawable/bg_spinner"
             android:popupBackground="@drawable/bg_spinner_dropdown"
             android:paddingHorizontal="@dimen/spacing_md"
             android:contentDescription="@string/a11y_sort_order" />
 
-        <ImageButton
-            android:id="@+id/btn_view_mode"
-            android:layout_width="@dimen/icon_button"
-            android:layout_height="@dimen/icon_button"
-            android:src="@drawable/ic_view_list"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/a11y_view_mode"
-            android:scaleType="centerInside"
-            android:padding="@dimen/spacing_md"
-            app:tint="@color/textSecondary"
-            android:layout_marginStart="@dimen/spacing_sm" />
+        <!-- Size selector -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/size_label"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_grid_columns"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="@dimen/spacing_chip" />
     </LinearLayout>
 
     <!-- F5: Scan progress indicator -->
@@ -184,42 +195,51 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_xs"
         android:indeterminate="true"
+        android:indeterminateTint="@color/colorPrimary"
+        android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/a11y_scan_progress"
         android:visibility="gone" />
 
     <!-- Empty state -->
     <LinearLayout
         android:id="@+id/tv_empty"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="@dimen/spacing_4xl"
+        android:paddingHorizontal="@dimen/spacing_3xl"
         android:accessibilityLiveRegion="polite"
+        android:contentDescription="@string/a11y_empty_state"
         android:visibility="gone">
 
         <ImageView
             android:layout_width="@dimen/icon_empty_state"
             android:layout_height="@dimen/icon_empty_state"
             android:src="@drawable/ic_raccoon_logo"
-            android:alpha="0.55"
-            android:importantForAccessibility="no" />
+            android:alpha="@dimen/alpha_raccoon_logo"
+            android:importantForAccessibility="no"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/tv_empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_lg"
+            android:layout_marginTop="@dimen/spacing_xxl"
             android:text="@string/nothing_found"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textColor="@color/textSecondary"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+            android:textColor="@color/textPrimary"
             android:gravity="center"
+            android:maxWidth="@dimen/content_max_width_narrow"
             android:lineSpacingExtra="@dimen/spacing_xs" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_scan_now"
+            style="@style/Widget.FileCleaner.Button"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_height_sm"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="@dimen/spacing_lg"
             android:text="@string/scan_storage"
             android:textAllCaps="false"
@@ -236,28 +256,92 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingHorizontal="@dimen/spacing_lg"
         android:paddingTop="@dimen/spacing_sm"
-        android:paddingBottom="@dimen/spacing_above_nav"
+        android:paddingBottom="@dimen/spacing_fab_clearance"
         android:layoutAnimation="@anim/layout_item_stagger" />
+
+    <!-- Selection scope buttons (visible only when items are selected) -->
+    <HorizontalScrollView
+        android:id="@+id/selection_buttons_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_select_all"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/select_all"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_deselect_all"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/deselect_all"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_batch_rename"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/batch_rename"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:visibility="gone"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_batch_compress"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/ctx_compress"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:visibility="gone"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <!-- Action button — not full-width for better visual proportion (§DBI3 #10) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_action"
+        style="@style/Widget.FileCleaner.Button.Destructive"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm"
         android:layout_marginBottom="@dimen/spacing_bottom_inset"
         android:minWidth="@dimen/button_min_width"
         android:paddingHorizontal="@dimen/spacing_3xl"
         android:text="@string/delete_selected"
-        android:backgroundTint="@color/colorError"
-        android:textColor="@color/textOnPrimary"
         android:enabled="false"
-        app:cornerRadius="@dimen/radius_btn"
-        android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-        android:fontFamily="sans-serif-medium" />
+        android:focusable="true"
+        android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium" />
 
 </LinearLayout>

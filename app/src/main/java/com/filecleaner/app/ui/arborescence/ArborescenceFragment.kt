@@ -1,6 +1,8 @@
 package com.filecleaner.app.ui.arborescence
 
+import android.os.Build
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.filecleaner.app.MainActivity
@@ -27,6 +30,7 @@ import java.io.File
 class ArborescenceFragment : Fragment() {
 
     private var _binding: FragmentArborescenceBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
 
@@ -67,7 +71,8 @@ class ArborescenceFragment : Fragment() {
         binding.arborescenceView.onFileMoveRequested = { filePath, targetDirPath ->
             val fileName = File(filePath).name
             val targetName = File(targetDirPath).name
-            AlertDialog.Builder(requireContext())
+            activeDialog?.dismiss()
+            activeDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.confirm_move_title))
                 .setMessage(getString(R.string.confirm_move_message, fileName, targetName))
                 .setPositiveButton(getString(R.string.move)) { _, _ ->
@@ -116,7 +121,8 @@ class ArborescenceFragment : Fragment() {
         binding.arborescenceView.onFolderMoveRequested = { folderPath, targetDirPath ->
             val folderName = File(folderPath).name
             val targetName = File(targetDirPath).name
-            AlertDialog.Builder(requireContext())
+            activeDialog?.dismiss()
+            activeDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.confirm_move_title))
                 .setMessage(getString(R.string.confirm_move_message, folderName, targetName))
                 .setPositiveButton(getString(R.string.move)) { _, _ ->
@@ -231,6 +237,11 @@ class ArborescenceFragment : Fragment() {
 
         // Observe move results
         vm.moveResult.observe(viewLifecycleOwner) { result ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                binding.root.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            } else {
+                binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            }
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
         }
 
@@ -367,7 +378,7 @@ class ArborescenceFragment : Fragment() {
 
     private val contextMenuCallback by lazy {
         FileContextMenu.defaultCallback(vm,
-            onOpenInTree = { binding.arborescenceView.highlightFilePath(it.path) },
+            onOpenInTree = { _binding?.arborescenceView?.highlightFilePath(it.path) },
             onMoveTo = { item -> showDirectoryPicker(item) })
     }
 
@@ -391,9 +402,12 @@ class ArborescenceFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         savedExpandedPaths = binding.arborescenceView.getExpandedPaths()
         binding.spinnerTreeCategory.onItemSelectedListener = null
         binding.spinnerTreeSort.onItemSelectedListener = null
+        lastTreeRef = null  // Release reference to prevent tree memory leak
         super.onDestroyView()
         _binding = null
     }

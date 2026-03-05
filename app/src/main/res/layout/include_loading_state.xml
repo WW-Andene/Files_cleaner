@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reusable loading/scanning state: branded circular progress with message -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingHorizontal="@dimen/spacing_3xl"
+    android:paddingTop="@dimen/spacing_5xl"
+    android:paddingBottom="@dimen/spacing_4xl"
+    android:visibility="gone"
+    android:accessibilityLiveRegion="assertive"
+    android:contentDescription="@string/a11y_loading">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_loading"
+        style="@style/Widget.FileCleaner.CircularProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:contentDescription="@string/a11y_loading"
+        android:importantForAccessibility="yes"
+        app:indicatorSize="@dimen/progress_indicator_size" />
+
+    <TextView
+        android:id="@+id/tv_loading_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxl"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+        android:textColor="@color/textPrimary"
+        android:gravity="center"
+        android:maxWidth="@dimen/empty_state_title_max_width"
+        android:lineSpacingExtra="@dimen/spacing_xs" />
+
+    <TextView
+        android:id="@+id/tv_loading_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+        android:textColor="@color/textTertiary"
+        android:gravity="center"
+        android:maxWidth="@dimen/empty_state_subtitle_max_width"
+        android:lineSpacingExtra="@dimen/spacing_xs" />
+</LinearLayout>

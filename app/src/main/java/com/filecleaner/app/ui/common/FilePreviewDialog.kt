@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.filecleaner.app.R
@@ -100,13 +100,15 @@ object FilePreviewDialog {
             )
             adjustViewBounds = true
             scaleType = ImageView.ScaleType.FIT_CENTER
+            // §G1: Describe the preview image for screen readers
+            contentDescription = context.getString(R.string.a11y_preview_image, item.name)
         }
 
         Glide.with(context)
             .load(item.file)
             .into(imageView)
 
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context)
             .setTitle(item.name)
             .setView(imageView)
             .setPositiveButton(android.R.string.ok, null)
@@ -139,6 +141,8 @@ object FilePreviewDialog {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
             setPadding(padding, padding, padding, padding)
             setTextIsSelectable(true)
+            // §G1: Describe the text preview for screen readers
+            contentDescription = context.getString(R.string.a11y_preview_text, item.name)
         }
 
         val scrollView = ScrollView(context).apply {
@@ -149,7 +153,7 @@ object FilePreviewDialog {
             addView(textView)
         }
 
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context)
             .setTitle(item.name)
             .setView(scrollView)
             .setPositiveButton(android.R.string.ok, null)

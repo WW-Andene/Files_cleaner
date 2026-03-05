@@ -1,11 +1,11 @@
 package com.filecleaner.app.ui.onboarding
 
 import android.content.Context
-import android.util.TypedValue
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.filecleaner.app.R
 import com.filecleaner.app.data.UserPreferences
 
@@ -40,16 +40,20 @@ object OnboardingDialog {
         val current = steps[step]
         val isLast = step == steps.lastIndex
 
-        val padding = (24 * context.resources.displayMetrics.density).toInt()
+        val padding = context.resources.getDimensionPixelSize(R.dimen.spacing_xxl)
+        val halfPadding = context.resources.getDimensionPixelSize(R.dimen.spacing_md)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(padding, padding, padding, padding / 2)
+            setPadding(padding, padding, padding, halfPadding)
         }
 
         val stepIndicator = TextView(context).apply {
             text = context.getString(R.string.onboarding_step, step + 1, steps.size)
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body_small))
+            setTextAppearance(R.style.TextAppearance_FileCleaner_BodySmall)
             setTextColor(context.getColor(R.color.textTertiary))
+            // §G1: Announce step changes to TalkBack
+            contentDescription = context.getString(R.string.a11y_onboarding_step, step + 1, steps.size)
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         }
         container.addView(stepIndicator)
 
@@ -59,12 +63,20 @@ object OnboardingDialog {
             2 -> R.drawable.ic_scan
             else -> R.drawable.ic_raccoon_logo
         }
+        // §G1: Descriptive contentDescription for each onboarding icon
+        val iconDesc = when (step) {
+            0 -> context.getString(R.string.a11y_onboarding_icon_welcome)
+            1 -> context.getString(R.string.a11y_onboarding_icon_browse)
+            2 -> context.getString(R.string.a11y_onboarding_icon_scan)
+            else -> context.getString(R.string.a11y_onboarding_icon_welcome)
+        }
         val iconView = android.widget.ImageView(context).apply {
             setImageResource(iconRes)
-            val size = (64 * context.resources.displayMetrics.density).toInt()
+            contentDescription = iconDesc
+            val size = context.resources.getDimensionPixelSize(R.dimen.onboarding_icon_size)
             layoutParams = LinearLayout.LayoutParams(size, size).apply {
                 gravity = android.view.Gravity.CENTER_HORIZONTAL
-                topMargin = padding / 2
+                topMargin = halfPadding
             }
             scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
         }
@@ -72,13 +84,13 @@ object OnboardingDialog {
 
         val bodyView = TextView(context).apply {
             text = current.body
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_body))
-            setPadding(0, padding / 2, 0, 0)
+            setTextAppearance(R.style.TextAppearance_FileCleaner_Body)
+            setPadding(0, halfPadding, 0, 0)
             setLineSpacing(4f, 1.2f)
         }
         container.addView(bodyView)
 
-        val builder = AlertDialog.Builder(context)
+        val builder = MaterialAlertDialogBuilder(context)
             .setTitle(current.title)
             .setView(container)
             .setCancelable(false)

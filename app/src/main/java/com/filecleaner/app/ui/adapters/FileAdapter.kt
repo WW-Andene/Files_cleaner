@@ -1,5 +1,6 @@
 package com.filecleaner.app.ui.adapters
 
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -50,7 +52,16 @@ class FileAdapter(
         }
     }
 
-    var viewMode: ViewMode = ViewMode.LIST
+    var viewMode: ViewMode = ViewMode.LIST_MD
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
+    /** Color-coding mode — set by the hosting fragment to match its screen context. */
+    var colorMode: ColorMode = ColorMode.NONE
         set(value) {
             if (field != value) {
                 field = value
@@ -66,15 +77,19 @@ class FileAdapter(
         val name: TextView = view.findViewById(R.id.tv_file_name)
         val meta: TextView? = view.findViewById(R.id.tv_file_meta)
         val check: CheckBox? = view.findViewById(R.id.cb_select)
+        val accentStripe: View? = view.findViewById(R.id.view_accent_stripe)
     }
 
-    override fun getItemViewType(position: Int): Int = when (viewMode) {
-        ViewMode.LIST, ViewMode.LIST_WITH_THUMBNAILS -> TYPE_LIST
-        ViewMode.GRID_SMALL, ViewMode.GRID_MEDIUM, ViewMode.GRID_LARGE -> TYPE_GRID
+    override fun getItemViewType(position: Int): Int = when {
+        viewMode.usesGridLayout -> TYPE_GRID
+        else -> TYPE_LIST
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
-        val layoutRes = if (viewType == TYPE_GRID) R.layout.item_file_grid else R.layout.item_file
+        val layoutRes = when (viewType) {
+            TYPE_GRID -> R.layout.item_file_grid
+            else -> R.layout.item_file
+        }
         val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
         return FileViewHolder(view)
     }
@@ -89,14 +104,17 @@ class FileAdapter(
             val card = holder.itemView as? MaterialCardView
 
             // Partial rebind: only update selection visual state (skip icon, text, thumbnail)
-            if (item.duplicateGroup < 0) {
-                if (isSelected) {
-                    card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
-                    card?.strokeColor = c.selectedBorder
-                } else {
-                    card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
-                    card?.strokeColor = c.border
-                }
+            // For dup/junk/size modes, background stays; selection shown via border only
+            if (item.duplicateGroup >= 0) {
+                card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+            } else if (colorMode == ColorMode.JUNK_CATEGORY || colorMode == ColorMode.SIZE_SEVERITY) {
+                card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+            } else if (isSelected) {
+                card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
+                card?.strokeColor = c.selectedBorder
+            } else {
+                card?.setCardBackgroundColor(c.surface) ?: run { holder.itemView.background = null }
+                card?.strokeColor = c.border
             }
             if (selectable && holder.check != null) {
                 holder.check.isChecked = isSelected
@@ -106,6 +124,10 @@ class FileAdapter(
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: "")
+            // §G1: Set stateDescription so TalkBack announces "selected"/"not selected"
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                    item.name, holder.meta?.text ?: ""))
             return
         }
         super.onBindViewHolder(holder, position, payloads)
@@ -119,27 +141,60 @@ class FileAdapter(
 
         holder.name.text = item.name
 
-        // Larger thumbnails for LIST_WITH_THUMBNAILS mode
-        if (viewMode == ViewMode.LIST_WITH_THUMBNAILS) {
-            val thumbSize = ctx.resources.getDimensionPixelSize(R.dimen.icon_file_list_large)
+        // Scale grid thumbnail height to match cell width (≈ square aspect ratio)
+        if (viewMode.usesGridLayout) {
             val lp = holder.icon.layoutParams
-            lp.width = thumbSize
-            lp.height = thumbSize
+            val screenWidth = ctx.resources.displayMetrics.widthPixels
+            val cellWidth = screenWidth / viewMode.spanCount
+            lp.height = cellWidth
             holder.icon.layoutParams = lp
         }
 
-        // Load thumbnail for images/videos, category icon for everything else
-        val isGrid = viewMode != ViewMode.LIST && viewMode != ViewMode.LIST_WITH_THUMBNAILS
-        FileItemUtils.loadThumbnail(holder.icon, item, isGrid)
+        // Resize icon/container and card padding based on mode + size
+        if (!viewMode.usesGridLayout) {
+            val density = ctx.resources.displayMetrics.density
+            val sizePx = (viewMode.iconSizeDp * density).toInt()
+            val container = holder.icon.parent as? View
+            if (container != null) {
+                val clp = container.layoutParams
+                clp.width = sizePx
+                clp.height = sizePx
+                container.layoutParams = clp
+            }
+            // Scale card inner padding for compact sizes
+            val padPx = (viewMode.listCardPaddingDp * density).toInt()
+            val innerLayout = (holder.itemView as? ViewGroup)?.getChildAt(0) as? ViewGroup
+            val contentRow = innerLayout?.let {
+                // Skip accent stripe (index 0) -> content row is index 1
+                if (it.childCount > 1) it.getChildAt(1) as? ViewGroup else it.getChildAt(0) as? ViewGroup
+            }
+            contentRow?.setPadding(padPx, padPx, padPx, padPx)
+            // Hide meta line for the most compact size
+            holder.meta?.visibility = if (viewMode.listMetaVisible) View.VISIBLE else View.GONE
+        }
 
-        // Visual state: duplicate group colouring → selection highlight → default
+        // Load thumbnail or category icon
+        FileItemUtils.loadThumbnail(holder.icon, item, viewMode.showsRichThumbnails)
+
+        // Accent stripe (color-coded indicator)
+        bindAccentStripe(holder, item)
+
+        // Visual state: duplicate/junk/size bg always shown (selection via border only) → selection → default
         val c = colors!!
         val card = holder.itemView as? MaterialCardView
         val dupColors = resolvedDupColors
         if (item.duplicateGroup >= 0 && dupColors != null) {
             val color = dupColors[item.duplicateGroup % dupColors.size]
             card?.setCardBackgroundColor(color) ?: holder.itemView.setBackgroundColor(color)
-            card?.strokeColor = c.border
+            card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+        } else if (colorMode == ColorMode.JUNK_CATEGORY) {
+            val bgColor = FileItemUtils.junkBgColor(ctx, item)
+            card?.setCardBackgroundColor(bgColor) ?: holder.itemView.setBackgroundColor(bgColor)
+            card?.strokeColor = if (isSelected) c.selectedBorder else c.border
+        } else if (colorMode == ColorMode.SIZE_SEVERITY) {
+            val bgColor = FileItemUtils.sizeBgColor(ctx, item)
+            card?.setCardBackgroundColor(bgColor) ?: holder.itemView.setBackgroundColor(bgColor)
+            card?.strokeColor = if (isSelected) c.selectedBorder else c.border
         } else if (isSelected) {
             card?.setCardBackgroundColor(c.selectedBg) ?: holder.itemView.setBackgroundColor(c.selectedBg)
             card?.strokeColor = c.selectedBorder
@@ -157,39 +212,99 @@ class FileAdapter(
             holder.check.isChecked = isSelected
             holder.check.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
+            // Use bindingAdapterPosition to avoid stale item capture from ViewHolder recycling
             val toggle = {
-                toggleSelection(item.path)
-                val nowSelected = item.path in selectedPaths
-                holder.check.isChecked = nowSelected
-                holder.check.contentDescription = ctx.getString(
-                    if (nowSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, item.name)
-                // Immediate card visual feedback for selection (§DP3)
-                if (item.duplicateGroup < 0) {
-                    if (nowSelected) {
-                        card?.setCardBackgroundColor(c.selectedBg)
-                        card?.strokeColor = c.selectedBorder
-                    } else {
-                        card?.setCardBackgroundColor(c.surface)
-                        card?.strokeColor = c.border
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val currentItem = getItem(pos)
+                    toggleSelection(currentItem.path)
+                    val nowSelected = currentItem.path in selectedPaths
+                    holder.check.isChecked = nowSelected
+                    holder.check.contentDescription = ctx.getString(
+                        if (nowSelected) R.string.a11y_deselect_file else R.string.a11y_select_file, currentItem.name)
+                    // Immediate card visual feedback for selection (§DP3)
+                    if (currentItem.duplicateGroup < 0) {
+                        if (nowSelected) {
+                            card?.setCardBackgroundColor(c.selectedBg)
+                            card?.strokeColor = c.selectedBorder
+                        } else {
+                            card?.setCardBackgroundColor(c.surface)
+                            card?.strokeColor = c.border
+                        }
                     }
+                    notifySelectionChanged()
                 }
-                notifySelectionChanged()
             }
-            holder.check.setOnClickListener { toggle() }
+            // Only wire click on itemView, not on checkbox separately (avoids double-toggle)
+            holder.check.isClickable = false
             holder.itemView.setOnClickListener { toggle() }
+            holder.itemView.setOnLongClickListener { v ->
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    onItemLongClick?.invoke(getItem(pos), v)
+                }
+                true
+            }
             holder.itemView.contentDescription = ctx.getString(
                 if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
                 item.name, holder.meta?.text ?: "")
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                    item.name, holder.meta?.text ?: ""))
+        } else if (selectable) {
+            // G2-3: Grid mode with selection — no checkbox, use tap to toggle + stateDescription
+            holder.itemView.setOnClickListener {
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val currentItem = getItem(pos)
+                    toggleSelection(currentItem.path)
+                    notifyItemChanged(pos, PAYLOAD_SELECTION)
+                    notifySelectionChanged()
+                }
+            }
+            holder.itemView.setOnLongClickListener { v ->
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    onItemLongClick?.invoke(getItem(pos), v)
+                }
+                true
+            }
+            holder.itemView.contentDescription = ctx.getString(
+                if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                item.name, holder.meta?.text ?: item.sizeReadable)
+            ViewCompat.setStateDescription(holder.itemView,
+                ctx.getString(if (isSelected) R.string.a11y_file_selected else R.string.a11y_file_not_selected,
+                    item.name, holder.meta?.text ?: item.sizeReadable))
         } else {
             holder.check?.visibility = View.GONE
-            // Wire click and long-click for non-selectable mode
-            holder.itemView.setOnClickListener { onItemClick?.invoke(item) }
+            // Wire click and long-click for non-selectable mode (use bindingAdapterPosition)
+            holder.itemView.setOnClickListener {
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    onItemClick?.invoke(getItem(pos))
+                }
+            }
             holder.itemView.setOnLongClickListener { v ->
-                onItemLongClick?.invoke(item, v)
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    onItemLongClick?.invoke(getItem(pos), v)
+                }
                 true
             }
             holder.itemView.contentDescription = ctx.getString(
                 R.string.a11y_file_info, item.name, holder.meta?.text ?: item.sizeReadable)
+        }
+    }
+
+    override fun onCurrentListChanged(previousList: MutableList<FileItem>, currentList: MutableList<FileItem>) {
+        super.onCurrentListChanged(previousList, currentList)
+        // Prune stale selections that no longer exist in the new list
+        val validPaths = currentList.mapTo(HashSet(currentList.size)) { it.path }
+        if (selectedPaths.retainAll(validPaths)) {
+            notifySelectionChanged()
         }
     }
 
@@ -198,7 +313,8 @@ class FileAdapter(
     }
 
     private fun notifySelectionChanged() {
-        onSelectionChanged(currentList.filter { it.path in selectedPaths })
+        val selected = currentList.filter { it.path in selectedPaths }
+        onSelectionChanged(selected)
     }
 
     // D1: Use notifyItemRangeChanged for selection changes instead of
@@ -243,6 +359,22 @@ class FileAdapter(
         selectedPaths.addAll(paths)
         notifyItemRangeChanged(0, itemCount, PAYLOAD_SELECTION)
         notifySelectionChanged()
+    }
+
+    /**
+     * Binds the 4dp accent stripe on the left (list) or top (grid) edge of
+     * the card, using the current [colorMode] to determine the color.
+     */
+    private fun bindAccentStripe(holder: FileViewHolder, item: FileItem) {
+        val stripe = holder.accentStripe ?: return
+        val ctx = holder.itemView.context
+        val accentColor = FileItemUtils.accentColor(ctx, item, colorMode)
+        if (accentColor != null) {
+            stripe.setBackgroundColor(accentColor)
+            stripe.visibility = View.VISIBLE
+        } else {
+            stripe.visibility = View.GONE
+        }
     }
 
 }

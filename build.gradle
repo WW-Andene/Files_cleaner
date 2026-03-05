@@ -1,15 +1,19 @@
 // Top-level build file
 buildscript {
-    ext.kotlin_version = "1.9.0"
+    ext.kotlin_version = "1.9.24"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.0"
+        classpath "com.android.tools.build:gradle:8.5.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.7.4"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7"
     }
+}
+
+plugins {
+    id 'com.google.devtools.ksp' version '1.9.24-1.0.20' apply false
 }
 
 allprojects {

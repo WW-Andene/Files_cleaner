@@ -10,6 +10,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Environment
 import com.filecleaner.app.R
 import com.filecleaner.app.data.DirectoryNode
@@ -29,7 +30,6 @@ object DirectoryPickerDialog {
         onSelected: (String) -> Unit
     ) {
         var currentNode = rootNode
-        val dp = context.resources.displayMetrics.density
 
         var currentDialog: AlertDialog? = null
 
@@ -59,7 +59,7 @@ object DirectoryPickerDialog {
             val scrollView = ScrollView(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    (300 * dp).toInt()
+                    context.resources.getDimensionPixelSize(R.dimen.dir_picker_list_height)
                 )
             }
 
@@ -109,7 +109,7 @@ object DirectoryPickerDialog {
             scrollView.addView(listLayout)
             container.addView(scrollView)
 
-            currentDialog = AlertDialog.Builder(context)
+            currentDialog = MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.move_to_title))
                 .setView(container)
                 .setPositiveButton(context.getString(R.string.select_directory)) { _, _ ->

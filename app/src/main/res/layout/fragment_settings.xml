@@ -3,204 +3,400 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surfaceBase">
+    android:background="@color/surfaceBase"
+    android:clipToPadding="false"
+    android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
+        android:id="@+id/settings_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_lg">
+        android:padding="@dimen/spacing_lg"
+        android:paddingBottom="@dimen/spacing_bottom_inset">
 
         <!-- Settings title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-            android:layout_marginBottom="@dimen/spacing_lg" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
+            android:layout_marginBottom="@dimen/spacing_xl"
+            android:accessibilityHeading="true" />
 
         <!-- Appearance section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_appearance_section"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true"
+            android:contentDescription="@string/a11y_settings_section" />
 
-        <TextView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_theme_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
-
-        <RadioGroup
-            android:id="@+id/rg_theme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/spacing_sm"
             android:layout_marginBottom="@dimen/spacing_lg">
 
-            <RadioButton
-                android:id="@+id/rb_theme_system"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/theme_system" />
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
 
-            <RadioButton
-                android:id="@+id/rb_theme_light"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/theme_light" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_theme_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/rg_theme" />
 
-            <RadioButton
-                android:id="@+id/rb_theme_dark"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/theme_dark" />
-        </RadioGroup>
+                <RadioGroup
+                    android:id="@+id/rg_theme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:contentDescription="@string/a11y_theme_selection">
+
+                    <RadioButton
+                        android:id="@+id/rb_theme_system"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:text="@string/theme_system" />
+
+                    <RadioButton
+                        android:id="@+id/rb_theme_light"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:text="@string/theme_light" />
+
+                    <RadioButton
+                        android:id="@+id/rb_theme_dark"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:text="@string/theme_dark" />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Scan Settings section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_scan_section"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
-        <!-- Large file threshold -->
-        <TextView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_large_file_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+            android:layout_marginBottom="@dimen/spacing_lg">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <SeekBar
-                android:id="@+id/seek_large_file"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
 
-            <TextView
-                android:id="@+id/tv_large_file_value"
-                android:layout_width="@dimen/seekbar_value_width"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
-        </LinearLayout>
+                <!-- Large file threshold -->
+                <TextView
+                    android:id="@+id/label_large_file"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_large_file_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/seek_large_file" />
 
-        <!-- Stale download age -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_stale_age_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:layout_marginTop="@dimen/spacing_md" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+                    <SeekBar
+                        android:id="@+id/seek_large_file"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:contentDescription="@string/a11y_seek_large_file_threshold" />
 
-            <SeekBar
-                android:id="@+id/seek_stale_age"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                    <TextView
+                        android:id="@+id/tv_large_file_value"
+                        android:layout_width="@dimen/seekbar_value_width"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_stale_age_value"
-                android:layout_width="@dimen/seekbar_value_width"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
-        </LinearLayout>
+                <!-- Stale download age -->
+                <TextView
+                    android:id="@+id/label_stale_age"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_stale_age_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:labelFor="@+id/seek_stale_age" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false">
+
+                    <SeekBar
+                        android:id="@+id/seek_stale_age"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:contentDescription="@string/a11y_seek_stale_download_age" />
+
+                    <TextView
+                        android:id="@+id/tv_stale_age_value"
+                        android:layout_width="@dimen/seekbar_value_width"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- F1: Safety section header -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_safety_section"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:layout_marginTop="@dimen/spacing_xl"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
-        <!-- Undo timeout -->
-        <TextView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_undo_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:layout_marginTop="@dimen/spacing_md" />
+            android:layout_marginBottom="@dimen/spacing_lg">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <SeekBar
-                android:id="@+id/seek_undo_timeout"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
 
-            <TextView
-                android:id="@+id/tv_undo_value"
-                android:layout_width="@dimen/seekbar_value_width"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
-        </LinearLayout>
+                <!-- Undo timeout -->
+                <TextView
+                    android:id="@+id/label_undo_timeout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_undo_label"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/seek_undo_timeout" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false">
+
+                    <SeekBar
+                        android:id="@+id/seek_undo_timeout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:contentDescription="@string/a11y_seek_undo_timeout" />
+
+                    <TextView
+                        android:id="@+id/tv_undo_value"
+                        android:layout_width="@dimen/seekbar_value_width"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.NumericBody"
+                        android:accessibilityLiveRegion="polite"
+                        android:importantForAccessibility="yes" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- F1: Display section header -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_display_section"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
             android:layout_marginTop="@dimen/spacing_xl"
-            android:layout_marginBottom="@dimen/spacing_md" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
 
-        <!-- Show hidden files -->
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/spacing_lg"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="@dimen/icon_button"
-            android:paddingVertical="@dimen/spacing_sm">
+            android:layout_marginBottom="@dimen/spacing_lg">
 
-            <TextView
-                android:layout_width="0dp"
+            <!-- Show hidden files -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/settings_hidden_files"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:minHeight="@dimen/touch_target_min"
+                android:padding="@dimen/spacing_lg">
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switch_hidden_files"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/settings_hidden_files"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:labelFor="@+id/switch_hidden_files" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_hidden_files"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:minWidth="@dimen/touch_target_min"
+                    android:contentDescription="@string/a11y_switch_hidden_files" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Crash Reporting section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_crash_section"
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_crash_description"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginBottom="@dimen/spacing_md" />
+
+                <!-- Enable crash reporting toggle -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:minHeight="@dimen/touch_target_min"
+                    android:paddingVertical="@dimen/spacing_sm">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings_crash_enable"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                        android:labelFor="@+id/switch_crash_reporting" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_crash_reporting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minHeight="@dimen/touch_target_min"
+                        android:minWidth="@dimen/touch_target_min"
+                        android:contentDescription="@string/a11y_switch_crash_reporting" />
+                </LinearLayout>
+
+                <!-- GitHub token input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_github_token"
+                    style="@style/Widget.FileCleaner.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:hint="@string/settings_crash_token_hint"
+                    app:endIconMode="password_toggle"
+                    app:endIconContentDescription="@string/a11y_toggle_token_visibility">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_github_token"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- GitHub repo input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_github_repo"
+                    style="@style/Widget.FileCleaner.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:hint="@string/settings_crash_repo_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_github_repo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Pending reports status -->
+                <TextView
+                    android:id="@+id/tv_crash_pending"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:textColor="@color/textSecondary"
+                    android:accessibilityLiveRegion="polite"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Note -->
         <TextView
@@ -211,6 +407,49 @@
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textTertiary"
             android:textStyle="italic" />
+
+        <!-- Data Management section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_data_section"
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xl">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_clear_data_desc"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginBottom="@dimen/spacing_lg" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_clear_data"
+                    style="@style/Widget.FileCleaner.Button.Destructive"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:text="@string/settings_clear_data"
+                    android:textAllCaps="false"
+                    app:icon="@drawable/ic_delete"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="@dimen/radius_btn" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>

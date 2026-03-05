@@ -1,15 +1,11 @@
 package com.filecleaner.app.utils.antivirus
 
-import android.accessibilityservice.AccessibilityServiceInfo
-import android.app.admin.DevicePolicyManager
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.content.pm.ServiceInfo
-import android.os.Build
 import android.provider.Settings
-import android.view.accessibility.AccessibilityManager
+import com.filecleaner.app.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -29,56 +25,56 @@ import kotlinx.coroutines.withContext
  */
 object PrivacyAuditor {
 
-    /** Dangerous permissions grouped by concern */
+    /** Dangerous permissions grouped by concern, keyed by string resource ID */
     private val PRIVACY_PERMISSIONS = mapOf(
-        "SMS Access" to listOf(
+        R.string.threat_privacy_cat_sms_access to listOf(
             "android.permission.READ_SMS",
             "android.permission.SEND_SMS",
             "android.permission.RECEIVE_SMS",
             "android.permission.RECEIVE_MMS",
             "android.permission.RECEIVE_WAP_PUSH"
         ),
-        "Call Log Access" to listOf(
+        R.string.threat_privacy_cat_call_log_access to listOf(
             "android.permission.READ_CALL_LOG",
             "android.permission.WRITE_CALL_LOG",
             "android.permission.PROCESS_OUTGOING_CALLS"
         ),
-        "Contacts Access" to listOf(
+        R.string.threat_privacy_cat_contacts_access to listOf(
             "android.permission.READ_CONTACTS",
             "android.permission.WRITE_CONTACTS",
             "android.permission.GET_ACCOUNTS"
         ),
-        "Camera Access" to listOf(
+        R.string.threat_privacy_cat_camera_access to listOf(
             "android.permission.CAMERA"
         ),
-        "Microphone Access" to listOf(
+        R.string.threat_privacy_cat_microphone_access to listOf(
             "android.permission.RECORD_AUDIO"
         ),
-        "Location Access" to listOf(
+        R.string.threat_privacy_cat_location_access to listOf(
             "android.permission.ACCESS_FINE_LOCATION",
             "android.permission.ACCESS_COARSE_LOCATION",
             "android.permission.ACCESS_BACKGROUND_LOCATION"
         ),
-        "Phone Access" to listOf(
+        R.string.threat_privacy_cat_phone_access to listOf(
             "android.permission.READ_PHONE_STATE",
             "android.permission.CALL_PHONE",
             "android.permission.READ_PHONE_NUMBERS",
             "android.permission.ANSWER_PHONE_CALLS"
         ),
-        "Storage Access" to listOf(
+        R.string.threat_privacy_cat_storage_access to listOf(
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.MANAGE_EXTERNAL_STORAGE"
         ),
-        "Body Sensors" to listOf(
+        R.string.threat_privacy_cat_body_sensors to listOf(
             "android.permission.BODY_SENSORS",
             "android.permission.BODY_SENSORS_BACKGROUND"
         ),
-        "Calendar Access" to listOf(
+        R.string.threat_privacy_cat_calendar_access to listOf(
             "android.permission.READ_CALENDAR",
             "android.permission.WRITE_CALENDAR"
         ),
-        "Nearby Devices" to listOf(
+        R.string.threat_privacy_cat_nearby_devices to listOf(
             "android.permission.BLUETOOTH_CONNECT",
             "android.permission.BLUETOOTH_SCAN",
             "android.permission.NEARBY_WIFI_DEVICES",
@@ -109,19 +105,22 @@ object PrivacyAuditor {
                 val requestedPerms = pkg.requestedPermissions ?: continue
 
                 // Check each privacy category
-                val matchedCategories = mutableListOf<String>()
-                for ((category, permissions) in PRIVACY_PERMISSIONS) {
+                val matchedCategoryIds = mutableListOf<Int>()
+                for ((categoryResId, permissions) in PRIVACY_PERMISSIONS) {
                     if (permissions.any { it in requestedPerms }) {
-                        matchedCategories.add(category)
+                        matchedCategoryIds.add(categoryResId)
                     }
                 }
 
+                // Resolve category names for display
+                val matchedCategoryNames = matchedCategoryIds.map { context.getString(it) }
+
                 // 1. Excessive permissions
-                if (matchedCategories.size >= EXCESSIVE_PERMISSION_THRESHOLD) {
+                if (matchedCategoryIds.size >= EXCESSIVE_PERMISSION_THRESHOLD) {
                     results.add(
                         ThreatResult(
-                            name = "Excessive Permissions",
-                            description = "\"$appName\" requests ${matchedCategories.size} dangerous permission categories: ${matchedCategories.joinToString(", ")}.",
+                            name = context.getString(R.string.threat_privacy_excessive_permissions),
+                            description = context.getString(R.string.threat_privacy_excessive_permissions_desc, appName, matchedCategoryIds.size, matchedCategoryNames.joinToString(", ")),
                             severity = ThreatResult.Severity.HIGH,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -132,11 +131,11 @@ object PrivacyAuditor {
                 }
 
                 // 2. SMS access (very few apps need this)
-                if ("SMS Access" in matchedCategories && !isLikelySmsApp(pkg.packageName)) {
+                if (R.string.threat_privacy_cat_sms_access in matchedCategoryIds && !isLikelySmsApp(pkg.packageName)) {
                     results.add(
                         ThreatResult(
-                            name = "SMS Access",
-                            description = "\"$appName\" can read/send SMS. This is a common malware capability used for premium SMS fraud and 2FA interception.",
+                            name = context.getString(R.string.threat_privacy_sms_access),
+                            description = context.getString(R.string.threat_privacy_sms_access_desc, appName),
                             severity = ThreatResult.Severity.MEDIUM,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -149,8 +148,8 @@ object PrivacyAuditor {
                 if ("android.permission.ACCESS_BACKGROUND_LOCATION" in requestedPerms) {
                     results.add(
                         ThreatResult(
-                            name = "Background Location Tracking",
-                            description = "\"$appName\" can track your location continuously, even when the app is not in use.",
+                            name = context.getString(R.string.threat_privacy_background_location),
+                            description = context.getString(R.string.threat_privacy_background_location_desc, appName),
                             severity = ThreatResult.Severity.MEDIUM,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -160,11 +159,11 @@ object PrivacyAuditor {
                 }
 
                 // 4. Call log access
-                if ("Call Log Access" in matchedCategories && !isLikelyPhoneApp(pkg.packageName)) {
+                if (R.string.threat_privacy_cat_call_log_access in matchedCategoryIds && !isLikelyPhoneApp(pkg.packageName)) {
                     results.add(
                         ThreatResult(
-                            name = "Call Log Access",
-                            description = "\"$appName\" can read your call history, including who you called, when, and for how long.",
+                            name = context.getString(R.string.threat_privacy_call_log_access),
+                            description = context.getString(R.string.threat_privacy_call_log_access_desc, appName),
                             severity = ThreatResult.Severity.LOW,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -174,12 +173,12 @@ object PrivacyAuditor {
                 }
 
                 // 5. Camera + Microphone combo (surveillance risk)
-                if ("Camera Access" in matchedCategories && "Microphone Access" in matchedCategories) {
+                if (R.string.threat_privacy_cat_camera_access in matchedCategoryIds && R.string.threat_privacy_cat_microphone_access in matchedCategoryIds) {
                     if (!isLikelyMediaApp(pkg.packageName)) {
                         results.add(
                             ThreatResult(
-                                name = "Camera + Microphone Access",
-                                description = "\"$appName\" has access to both camera and microphone. This combination enables secret audio/video recording.",
+                                name = context.getString(R.string.threat_privacy_camera_mic),
+                                description = context.getString(R.string.threat_privacy_camera_mic_desc, appName),
                                 severity = ThreatResult.Severity.MEDIUM,
                                 source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                                 packageName = pkg.packageName,
@@ -194,8 +193,8 @@ object PrivacyAuditor {
                     if (!isLikelyStoreApp(pkg.packageName)) {
                         results.add(
                             ThreatResult(
-                                name = "Can Install Apps",
-                                description = "\"$appName\" can install other applications. Malware uses this capability to download and install additional malicious apps (\"dropper\" behavior).",
+                                name = context.getString(R.string.threat_privacy_can_install_apps),
+                                description = context.getString(R.string.threat_privacy_can_install_apps_desc, appName),
                                 severity = ThreatResult.Severity.MEDIUM,
                                 source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                                 packageName = pkg.packageName,
@@ -207,13 +206,13 @@ object PrivacyAuditor {
                 }
 
                 // 7. Body sensors + Internet (health data exfiltration)
-                if ("Body Sensors" in matchedCategories &&
+                if (R.string.threat_privacy_cat_body_sensors in matchedCategoryIds &&
                     "android.permission.INTERNET" in requestedPerms
                 ) {
                     results.add(
                         ThreatResult(
-                            name = "Health Data Network Access",
-                            description = "\"$appName\" can read body sensors and send data over the network. Sensitive health data could be exfiltrated.",
+                            name = context.getString(R.string.threat_privacy_health_data),
+                            description = context.getString(R.string.threat_privacy_health_data_desc, appName),
                             severity = ThreatResult.Severity.LOW,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -226,8 +225,8 @@ object PrivacyAuditor {
                 if ("android.permission.MANAGE_EXTERNAL_STORAGE" in requestedPerms) {
                     results.add(
                         ThreatResult(
-                            name = "Full Storage Access",
-                            description = "\"$appName\" has permission to read and modify all files on the device, including photos, documents, and app data.",
+                            name = context.getString(R.string.threat_privacy_full_storage),
+                            description = context.getString(R.string.threat_privacy_full_storage_desc, appName),
                             severity = ThreatResult.Severity.MEDIUM,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -248,7 +247,7 @@ object PrivacyAuditor {
             onProgress(90)
 
             // Phase D: Check apps with QUERY_ALL_PACKAGES (can enumerate all installed apps)
-            results.addAll(checkQueryAllPackages(pm, packages))
+            results.addAll(checkQueryAllPackages(context, packages))
             onProgress(100)
 
             results
@@ -267,7 +266,9 @@ object PrivacyAuditor {
             val listeners = flat.split(":").filter { it.isNotBlank() }
 
             for (listener in listeners) {
-                val pkg = listener.substringBefore('/')
+                // Use ComponentName.unflattenFromString for robust parsing of OEM formats
+                val component = android.content.ComponentName.unflattenFromString(listener)
+                val pkg = component?.packageName ?: listener.substringBefore('/')
                 if (pkg.startsWith("com.google.") || pkg.startsWith("com.android.") ||
                     pkg.startsWith("com.samsung.")
                 ) continue
@@ -281,8 +282,8 @@ object PrivacyAuditor {
 
                 results.add(
                     ThreatResult(
-                        name = "Notification Listener",
-                        description = "\"$appName\" can read ALL your notifications, including messages, emails, 2FA codes, and banking alerts.",
+                        name = context.getString(R.string.threat_privacy_notification_listener),
+                        description = context.getString(R.string.threat_privacy_notification_listener_desc, appName),
                         severity = ThreatResult.Severity.HIGH,
                         source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                         packageName = pkg,
@@ -302,7 +303,7 @@ object PrivacyAuditor {
         val results = mutableListOf<ThreatResult>()
 
         try {
-            val usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as? UsageStatsManager
+            (context.getSystemService(Context.USAGE_STATS_SERVICE) as? UsageStatsManager)
                 ?: return results
 
             val pm = context.packageManager
@@ -322,8 +323,8 @@ object PrivacyAuditor {
 
                     results.add(
                         ThreatResult(
-                            name = "App Usage Tracking",
-                            description = "\"$appName\" can monitor which apps you use, when, and for how long. This is a significant privacy concern.",
+                            name = context.getString(R.string.threat_privacy_usage_tracking),
+                            description = context.getString(R.string.threat_privacy_usage_tracking_desc, appName),
                             severity = ThreatResult.Severity.LOW,
                             source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                             packageName = pkg.packageName,
@@ -342,10 +343,13 @@ object PrivacyAuditor {
 
     @Suppress("DEPRECATION")
     private fun checkQueryAllPackages(
-        pm: PackageManager,
+        context: Context,
         packages: List<android.content.pm.PackageInfo>
     ): List<ThreatResult> {
         val results = mutableListOf<ThreatResult>()
+        // QUERY_ALL_PACKAGES only meaningful on API 30+ (package visibility filtering)
+        if (android.os.Build.VERSION.SDK_INT < 30) return results
+        val pm = context.packageManager
 
         for (pkg in packages) {
             val appInfo = pkg.applicationInfo ?: continue
@@ -356,8 +360,8 @@ object PrivacyAuditor {
                 val appName = pm.getApplicationLabel(appInfo).toString()
                 results.add(
                     ThreatResult(
-                        name = "App Enumeration",
-                        description = "\"$appName\" can see all installed apps on your device. This data can be used for fingerprinting and targeted advertising.",
+                        name = context.getString(R.string.threat_privacy_app_enumeration),
+                        description = context.getString(R.string.threat_privacy_app_enumeration_desc, appName),
                         severity = ThreatResult.Severity.LOW,
                         source = ThreatResult.ScannerSource.PRIVACY_AUDIT,
                         packageName = pkg.packageName,

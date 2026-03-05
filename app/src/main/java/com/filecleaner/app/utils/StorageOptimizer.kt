@@ -34,6 +34,7 @@ object StorageOptimizer {
      */
     fun analyze(files: List<FileItem>, storagePath: String): List<Suggestion> {
         val suggestions = mutableListOf<Suggestion>()
+        val usedPaths = mutableSetOf<String>()
         val dateFmt = SimpleDateFormat("yyyy-MM", Locale.getDefault())
 
         for (file in files) {
@@ -79,19 +80,40 @@ object StorageOptimizer {
                     } else null
                 }
                 FileCategory.DOWNLOAD -> {
-                    val ageMs = System.currentTimeMillis() - file.lastModified
-                    val ageDays = ageMs / (24 * 60 * 60 * 1000L)
-                    if (ageDays > 90) {
-                        val targetDir = "$storagePath/OldDownloads"
-                        Suggestion(file, file.path, "$targetDir/${file.name}",
-                            "Old download (${ageDays}d)")
-                    } else null
+                    if (file.lastModified <= 0L) {
+                        null // P2-A1-08: Skip files with unknown modification time
+                    } else {
+                        val ageMs = System.currentTimeMillis() - file.lastModified
+                        val ageDays = ageMs / (24 * 60 * 60 * 1000L)
+                        if (ageDays > 90) {
+                            val targetDir = "$storagePath/OldDownloads"
+                            Suggestion(file, file.path, "$targetDir/${file.name}",
+                                "Old download (${ageDays}d)")
+                        } else null
+                    }
                 }
                 else -> null
             }
 
             if (suggestion != null) {
-                suggestions.add(suggestion)
+                // P2-A1-09: Avoid duplicate target paths by appending a suffix
+                var finalPath = suggestion.suggestedPath
+                if (finalPath in usedPaths || File(finalPath).exists()) {
+                    val targetFile = File(finalPath)
+                    val parent = targetFile.parent ?: ""
+                    val nameNoExt = targetFile.nameWithoutExtension
+                    val ext = targetFile.extension
+                    var counter = 1
+                    while (finalPath in usedPaths || File(finalPath).exists()) {
+                        val suffix = if (ext.isNotEmpty()) "${nameNoExt}_($counter).$ext" else "${nameNoExt}_($counter)"
+                        finalPath = "$parent/$suffix"
+                        counter++
+                    }
+                    suggestions.add(suggestion.copy(suggestedPath = finalPath))
+                } else {
+                    suggestions.add(suggestion)
+                }
+                usedPaths.add(finalPath)
             }
         }
 

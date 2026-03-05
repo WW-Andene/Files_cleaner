@@ -5,17 +5,29 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
+    android:minHeight="@dimen/touch_target_min"
     android:paddingHorizontal="@dimen/spacing_lg"
     android:paddingTop="@dimen/spacing_lg"
     android:paddingBottom="@dimen/spacing_sm"
-    android:background="@color/surfaceBase">
+    android:background="@color/surfaceBase"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
-    <ImageView
-        android:layout_width="@dimen/icon_inline"
-        android:layout_height="@dimen/icon_inline"
-        android:src="@drawable/ic_folder"
-        android:importantForAccessibility="no"
-        app:tint="@color/colorPrimary" />
+    <FrameLayout
+        android:layout_width="@dimen/touch_target_min"
+        android:layout_height="@dimen/touch_target_min"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="@dimen/icon_inline"
+            android:layout_height="@dimen/icon_inline"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_folder"
+            android:importantForAccessibility="no"
+            android:contentDescription="@string/a11y_folder_icon"
+            app:tint="@color/colorPrimary" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_folder_name"
@@ -23,9 +35,8 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_sm"
-        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
         android:textColor="@color/colorPrimary"
-        android:fontFamily="sans-serif-medium"
         android:maxLines="1"
         android:ellipsize="middle"
         android:accessibilityHeading="true" />
@@ -35,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_sm"
-        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
         android:textColor="@color/textTertiary" />
 
     <TextView
@@ -43,7 +54,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_sm"
-        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-        android:textColor="@color/textTertiary" />
+        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+        android:textColor="@color/textTertiary"
+        android:contentDescription="@string/a11y_file_count" />
+
+    <ImageView
+        android:id="@+id/iv_chevron"
+        android:layout_width="@dimen/icon_inline"
+        android:layout_height="@dimen/icon_inline"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:src="@drawable/ic_arrow_down"
+        android:importantForAccessibility="no"
+        android:contentDescription="@string/collapse_expand"
+        app:tint="@color/textTertiary" />
 
 </LinearLayout>

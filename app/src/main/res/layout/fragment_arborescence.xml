@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_sm"
+        android:contentDescription="@string/a11y_search_tree"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
         app:boxBackgroundMode="outline"
@@ -23,7 +24,7 @@
         app:boxStrokeColor="@color/borderDefault"
         app:hintTextColor="@color/colorPrimary"
         app:startIconTint="@color/textTertiary"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        style="@style/Widget.FileCleaner.TextInput">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search_tree"
@@ -47,6 +48,7 @@
         android:paddingVertical="@dimen/spacing_sm">
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="@dimen/icon_button"
             android:layout_height="@dimen/icon_button"
             app:cardCornerRadius="@dimen/radius_btn"
@@ -62,6 +64,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
                 android:padding="@dimen/spacing_md"
+                android:focusable="true"
                 android:contentDescription="@string/toggle_filters"
                 app:tint="@color/textSecondary" />
         </com.google.android.material.card.MaterialCardView>
@@ -88,6 +91,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="@dimen/button_height"
+                android:minHeight="@dimen/touch_target_min"
                 android:layout_marginEnd="@dimen/spacing_sm"
                 android:background="@drawable/bg_spinner"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
@@ -99,6 +103,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="@dimen/button_height"
+                android:minHeight="@dimen/touch_target_min"
                 android:layout_marginStart="@dimen/spacing_sm"
                 android:background="@drawable/bg_spinner"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
@@ -153,9 +158,8 @@
                 android:id="@+id/tv_stats_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                android:textAppearance="@style/TextAppearance.FileCleaner.NumericMedium"
                 android:textColor="@color/textOnPrimary"
-                android:fontFamily="sans-serif-medium"
                 android:accessibilityLiveRegion="polite"
                 android:visibility="gone" />
 
@@ -183,23 +187,25 @@
                 android:layout_width="@dimen/icon_empty_state"
                 android:layout_height="@dimen/icon_empty_state"
                 android:src="@drawable/ic_raccoon_logo"
-                android:alpha="0.55"
+                android:alpha="@dimen/alpha_raccoon_logo"
                 android:importantForAccessibility="no" />
 
             <TextView
                 android:id="@+id/tv_empty_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_lg"
+                android:layout_marginTop="@dimen/spacing_xxl"
                 android:text="@string/scan_to_see_results"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                android:textColor="@color/textSecondary"
-                android:gravity="center" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:textColor="@color/textPrimary"
+                android:gravity="center"
+                android:lineSpacingExtra="@dimen/spacing_xs" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_scan_now"
+                style="@style/Widget.FileCleaner.Button"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/button_height_sm"
+                android:layout_height="@dimen/touch_target_min"
                 android:layout_marginTop="@dimen/spacing_lg"
                 android:text="@string/scan_storage"
                 android:textAllCaps="false"
@@ -221,8 +227,7 @@
             android:paddingHorizontal="@dimen/spacing_lg"
             android:paddingVertical="@dimen/spacing_md"
             android:textColor="@color/textOnPrimary"
-            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-            android:fontFamily="sans-serif-medium"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
             android:maxLines="4"
             android:ellipsize="end"
             android:elevation="@dimen/elevation_raised"
@@ -238,10 +243,12 @@
             android:layout_marginStart="@dimen/spacing_lg"
             android:layout_marginBottom="@dimen/spacing_bottom_inset"
             android:contentDescription="@string/reset_view"
+            android:focusable="true"
             android:src="@drawable/ic_recenter"
             app:fabSize="mini"
             app:backgroundTint="@color/surfaceDim"
             app:tint="@color/colorPrimary"
+            app:elevation="@dimen/elevation_floating"
             app:shapeAppearance="@style/ShapeSmall" />
     </FrameLayout>
 

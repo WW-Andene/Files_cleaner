@@ -14,12 +14,15 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.FutureTask
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * Enhanced batch rename dialog (P5).
@@ -144,7 +147,7 @@ object BatchRenameDialog {
                     val nameNoExt = file.name.substringBeforeLast('.', file.name)
                     val ext = file.extension
                     val newName = if (regexCheck.isChecked) {
-                        try { nameNoExt.replace(Regex(find), replace) } catch (_: Exception) { nameNoExt }
+                        safeRegexReplace(nameNoExt, find, replace) ?: nameNoExt
                     } else {
                         nameNoExt.replace(find, replace)
                     }
@@ -232,7 +235,7 @@ object BatchRenameDialog {
         // Initial state
         buildModeFields(MODE_PATTERN)
 
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(R.string.batch_rename_title, files.size))
             .setView(root)
             .setPositiveButton(context.getString(R.string.ctx_rename)) { _, _ ->
@@ -248,6 +251,25 @@ object BatchRenameDialog {
             }
             .setNegativeButton(context.getString(R.string.cancel), null)
             .show()
+    }
+
+    /** Apply regex with a timeout to prevent ReDoS from catastrophic backtracking */
+    private fun safeRegexReplace(input: String, pattern: String, replacement: String): String? {
+        return try {
+            val task = FutureTask { input.replace(Regex(pattern), replacement) }
+            val thread = Thread(task)
+            thread.isDaemon = true
+            thread.start()
+            try {
+                task.get(500, TimeUnit.MILLISECONDS)
+            } catch (_: TimeoutException) {
+                task.cancel(true)
+                thread.interrupt()
+                null
+            }
+        } catch (_: Exception) {
+            null
+        }
     }
 
     private fun applyPattern(file: FileItem, pattern: String, num: Int, padWidth: Int): String {

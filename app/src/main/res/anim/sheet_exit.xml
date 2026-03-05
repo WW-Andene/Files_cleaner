@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom sheet exit — slide down faster than entrance (asymmetric timing) -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator">
+
+    <translate
+        android:fromYDelta="0"
+        android:toYDelta="100%"
+        android:duration="@integer/motion_exit" />
+
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:duration="@integer/motion_exit" />
+</set>

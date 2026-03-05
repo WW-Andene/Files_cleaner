@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Card stroke color: shows a prominent focus border on keyboard focus -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:color="@color/borderFocus" />
+    <item android:color="@color/borderSubtle" />
+</selector>

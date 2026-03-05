@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Skeleton loading card for hub grid: matches advanced tool card structure -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/radius_card"
+    app:cardElevation="@dimen/elevation_none"
+    app:cardBackgroundColor="@color/surfaceColor"
+    app:strokeWidth="@dimen/stroke_default"
+    app:strokeColor="@color/borderSubtle"
+    android:importantForAccessibility="no">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_lg">
+
+        <!-- Icon circle placeholder -->
+        <View
+            android:layout_width="@dimen/icon_hub_circle"
+            android:layout_height="@dimen/icon_hub_circle"
+            android:background="@drawable/bg_shimmer_circle"
+            android:importantForAccessibility="no" />
+
+        <!-- Title placeholder -->
+        <View
+            android:layout_width="@dimen/skeleton_hub_title_width"
+            android:layout_height="@dimen/skeleton_title_height"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:background="@drawable/bg_shimmer_placeholder"
+            android:importantForAccessibility="no" />
+
+        <!-- Description placeholder -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/skeleton_subtitle_height"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:background="@drawable/bg_shimmer_placeholder"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

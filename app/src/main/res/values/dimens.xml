@@ -1,54 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Spacing scale -->
+    <!-- ═══ Spacing Scale (4dp base) ═══ -->
+    <!-- micro/2dp → xs/4dp → sm/8dp → md/12dp → lg/16dp → xl/20dp → xxl/24dp → 3xl/32dp → 4xl/48dp → 5xl/64dp -->
+    <dimen name="spacing_micro">2dp</dimen>
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
+    <!-- Off 4dp grid: intentional — chip dot and legend spacing -->
+    <dimen name="spacing_10">10dp</dimen>
     <dimen name="spacing_md">12dp</dimen>
     <dimen name="spacing_lg">16dp</dimen>
     <dimen name="spacing_xl">20dp</dimen>
     <dimen name="spacing_xxl">24dp</dimen>
 
-    <!-- Corner radii — intentional scale, not one-size-fits-all (§DBI3 #3) -->
-    <dimen name="radius_btn">10dp</dimen>
-    <dimen name="radius_input">10dp</dimen>
-    <dimen name="radius_card">14dp</dimen>
-    <dimen name="radius_icon_container">10dp</dimen>
-    <dimen name="radius_header">16dp</dimen>
-    <dimen name="radius_modal">20dp</dimen>
+    <!-- Corner radii — refined scale with softer, more modern rounding -->
+    <dimen name="radius_btn">12dp</dimen>
+    <dimen name="radius_input">12dp</dimen>
+    <dimen name="radius_card">16dp</dimen>
+    <dimen name="radius_icon_container">12dp</dimen>
+    <dimen name="radius_header">20dp</dimen>
+    <dimen name="radius_modal">24dp</dimen>
     <dimen name="radius_pill">24dp</dimen>
-    <!-- Legacy aliases -->
-    <dimen name="radius_sm">8dp</dimen>
-    <dimen name="radius_md">12dp</dimen>
-    <dimen name="radius_lg">16dp</dimen>
+    <!-- Bar / progress radii -->
+    <dimen name="radius_bar">6dp</dimen>
+    <dimen name="radius_bar_sm">4dp</dimen>
+    <!-- Thumbnail corner radius -->
+    <dimen name="radius_thumbnail">8dp</dimen>
+    <!-- Shape system aliases (match ShapeSmall/Medium/Large — kept for legacy XML references) -->
+    <dimen name="radius_sm">10dp</dimen>
+    <dimen name="radius_md">14dp</dimen>
+    <dimen name="radius_lg">18dp</dimen>
 
     <!-- Large spacing -->
     <dimen name="spacing_3xl">32dp</dimen>
     <dimen name="spacing_4xl">48dp</dimen>
+    <dimen name="spacing_5xl">64dp</dimen>
+    <dimen name="divider_width">1dp</dimen>
+    <dimen name="divider_thick">4dp</dimen>
     <dimen name="spacing_bottom_inset">72dp</dimen>
+    <dimen name="bottom_nav_height">57dp</dimen>
     <dimen name="spacing_above_nav">80dp</dimen>
+    <dimen name="spacing_fab_clearance">80dp</dimen>
 
-    <!-- Elevation scale -->
+    <!-- Elevation scale — 0 / 1 / 2 / 4 / 8 / 16 -->
     <dimen name="elevation_none">0dp</dimen>
+    <dimen name="elevation_border">1dp</dimen>
+    <dimen name="elevation_subtle">2dp</dimen>
     <dimen name="elevation_raised">4dp</dimen>
-    <dimen name="elevation_floating">6dp</dimen>
+    <dimen name="elevation_floating">8dp</dimen>
     <dimen name="elevation_nav">8dp</dimen>
+    <dimen name="elevation_modal">16dp</dimen>
 
     <!-- Stroke widths -->
     <dimen name="stroke_none">0dp</dimen>
     <dimen name="stroke_default">1dp</dimen>
+    <dimen name="stroke_selected">2dp</dimen>
 
     <!-- Icon sizes -->
     <dimen name="icon_small">16dp</dimen>
     <dimen name="icon_inline">20dp</dimen>
     <dimen name="icon_file_list">64dp</dimen>
+    <dimen name="icon_file_list_default">40dp</dimen>
     <dimen name="icon_file_list_large">72dp</dimen>
     <dimen name="icon_file_grid">140dp</dimen>
     <dimen name="icon_nav">24dp</dimen>
-    <dimen name="icon_raccoon_bubble">36dp</dimen>
+
     <dimen name="icon_button">48dp</dimen>
     <dimen name="icon_raccoon_inner">46dp</dimen>
-    <dimen name="icon_raccoon">52dp</dimen>
-    <dimen name="icon_empty_state">80dp</dimen>
+    <dimen name="icon_raccoon">56dp</dimen>
+    <dimen name="icon_empty_state">96dp</dimen>
+    <dimen name="icon_hub_circle">52dp</dimen>
 
     <!-- Component sizes -->
     <dimen name="spacing_chip">6dp</dimen>
@@ -56,12 +76,112 @@
     <dimen name="node_detail_max_width">240dp</dimen>
     <dimen name="card_min_height">80dp</dimen>
     <dimen name="seekbar_value_width">64dp</dimen>
+    <dimen name="icon_provider_container">44dp</dimen>
+    <dimen name="icon_dual_pane">26dp</dimen>
+    <dimen name="icon_tree_node">22dp</dimen>
+    <dimen name="icon_compact">28dp</dimen>
+    <dimen name="icon_severity_dot">16dp</dimen>
+    <dimen name="icon_test_result">20dp</dimen>
+    <dimen name="icon_audio_art">200dp</dimen>
+    <dimen name="icon_audio_play">56dp</dimen>
+    <dimen name="grid_thumbnail_min_height">120dp</dimen>
+    <dimen name="port_field_width">120dp</dimen>
+    <dimen name="dual_pane_tab_height">48dp</dimen>
+    <dimen name="icon_btn_size_sm">14dp</dimen>
+    <dimen name="dialog_max_height">400dp</dimen>
+    <dimen name="track_corner_radius">2dp</dimen>
 
-    <!-- Button heights -->
+    <!-- Segmented bar / category bar dimensions -->
+    <dimen name="segment_gap">1dp</dimen>
+    <dimen name="category_card_margin">6dp</dimen>
+    <dimen name="category_bar_height">6dp</dimen>
+    <dimen name="category_bar_radius">3dp</dimen>
+    <dimen name="emoji_margin_end">10dp</dimen>
+    <dimen name="top_file_card_margin">4dp</dimen>
+    <dimen name="top_file_bar_height">3dp</dimen>
+    <dimen name="top_file_bar_radius">2dp</dimen>
+    <dimen name="rank_width">20dp</dimen>
+    <dimen name="bar_min_width">4dp</dimen>
+    <dimen name="bar_min_width_sm">2dp</dimen>
+
+    <!-- Arborescence / tree view dimensions -->
+    <dimen name="tree_block_width">220dp</dimen>
+    <dimen name="tree_block_min_height">64dp</dimen>
+    <dimen name="tree_file_line_height">24dp</dimen>
+    <dimen name="tree_h_gap">48dp</dimen>
+    <dimen name="tree_v_gap">16dp</dimen>
+    <dimen name="tree_corner_radius">10dp</dimen>
+    <dimen name="tree_header_height">48dp</dimen>
+    <dimen name="tree_ghost_text_size">12dp</dimen>
+    <dimen name="tree_pad">8dp</dimen>
+    <dimen name="tree_indicator_width">18dp</dimen>
+    <dimen name="tree_dot_radius">3dp</dimen>
+    <dimen name="tree_file_x_start">18dp</dimen>
+    <dimen name="tree_file_text_x">28dp</dimen>
+    <dimen name="tree_file_size_end_pad">6dp</dimen>
+    <dimen name="tree_ghost_pad">16dp</dimen>
+    <dimen name="tree_ghost_height">20dp</dimen>
+    <dimen name="tree_ghost_y_offset">6dp</dimen>
+    <dimen name="tree_ghost_text_offset">3dp</dimen>
+    <dimen name="tree_ghost_corner">8dp</dimen>
+    <dimen name="tree_initial_offset">60dp</dimen>
+    <dimen name="tree_highlight_stroke">3dp</dimen>
+    <dimen name="tree_highlight_corner">6dp</dimen>
+    <dimen name="tree_highlight_inset">2dp</dimen>
+    <dimen name="tree_arrow_length">20dp</dimen>
+    <dimen name="tree_arrow_half_height">12dp</dimen>
+    <dimen name="tree_arrow_tip_inset">4dp</dimen>
+    <dimen name="tree_zoom_padding">40dp</dimen>
+    <dimen name="tree_zoom_file_padding">200dp</dimen>
+
+    <!-- Alpha tokens -->
+    <item name="alpha_raccoon_logo" format="float" type="dimen">0.85</item>
+
+    <!-- Content max-width constraints -->
+    <dimen name="content_max_width_compact">200dp</dimen>
+    <dimen name="content_max_width_narrow">280dp</dimen>
+    <dimen name="content_max_width_medium">300dp</dimen>
+
+    <!-- Empty/loading state constraints -->
+    <dimen name="empty_state_title_max_width">280dp</dimen>
+    <dimen name="empty_state_subtitle_max_width">300dp</dimen>
+    <dimen name="progress_indicator_size">56dp</dimen>
+
+    <!-- Skeleton shimmer placeholder sizes -->
+    <dimen name="skeleton_title_width">160dp</dimen>
+    <dimen name="skeleton_title_height">14dp</dimen>
+    <dimen name="skeleton_subtitle_width">120dp</dimen>
+    <dimen name="skeleton_subtitle_height">10dp</dimen>
+    <dimen name="skeleton_hub_title_width">100dp</dimen>
+
+    <!-- Animation translation distances -->
+    <dimen name="anim_slide_in_y">24dp</dimen>
+    <dimen name="anim_slide_out_y">16dp</dimen>
+
+    <!-- Dialog / picker dimensions -->
+    <dimen name="dir_picker_list_height">300dp</dimen>
+    <dimen name="convert_count_input_width">80dp</dimen>
+
+    <!-- Onboarding icon size -->
+    <dimen name="onboarding_icon_size">64dp</dimen>
+
+    <!-- Outlined card border (Card.Flat style) -->
+    <dimen name="stroke_card_flat">1dp</dimen>
+
+    <!-- Hub card grid -->
+    <dimen name="hub_card_icon_inner">28dp</dimen>
+
+    <!-- Button heights & touch targets -->
     <dimen name="button_height_sm">36dp</dimen>
     <dimen name="button_height">48dp</dimen>
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="icon_button_size">48dp</dimen>
+    <dimen name="icon_button_size_sm">36dp</dimen>
 
-    <!-- Text sizes (modular scale) -->
+    <!-- ═══ Typographic Scale (§DT2) ═══ -->
+    <!-- Lower range: compressed for legibility at small mobile sizes -->
+    <!-- Upper range: ~Major Third (1.25×): 14 → 16 → 20 → 26 → 32 -->
+    <dimen name="text_overline">11sp</dimen>
     <dimen name="text_caption">10sp</dimen>
     <dimen name="text_label">11sp</dimen>
     <dimen name="text_body_small">12sp</dimen>
@@ -69,7 +189,9 @@
     <dimen name="text_body">14sp</dimen>
     <dimen name="text_subtitle">16sp</dimen>
     <dimen name="text_title">20sp</dimen>
-    <dimen name="text_headline">24sp</dimen>
+    <dimen name="text_headline">26sp</dimen>
+    <dimen name="text_display">32sp</dimen>
+    <dimen name="text_emoji">24sp</dimen>
 
     <!-- ═══ Motion Vocabulary (§DM1-2) ═══ -->
     <!-- Character: "considerate utility" — brisk but not mechanical -->

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- §DM5: FAB exit — scale down to center -->
+<!-- §DM5: FAB exit — scale down to center, exits faster than entrances -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:anim/accelerate_interpolator">
 
@@ -10,10 +10,10 @@
         android:toYScale="0.0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:duration="160" />
+        android:duration="@integer/motion_exit" />
 
     <alpha
         android:fromAlpha="1.0"
         android:toAlpha="0.0"
-        android:duration="120" />
+        android:duration="@integer/motion_exit" />
 </set>

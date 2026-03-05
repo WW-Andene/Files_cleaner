@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_xxl"
+        android:paddingTop="@dimen/spacing_xxl"
+        android:paddingBottom="@dimen/spacing_lg">
+
+        <!-- Provider type selector: card-style buttons -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cloud_provider_type"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Label"
+            android:textColor="@color/textSecondary"
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:accessibilityHeading="true" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_provider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            android:layout_marginBottom="@dimen/spacing_lg">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_sftp"
+                style="@style/Widget.FileCleaner.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cloud_type_sftp"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_webdav"
+                style="@style/Widget.FileCleaner.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cloud_type_webdav" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_gdrive"
+                style="@style/Widget.FileCleaner.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cloud_type_google_drive" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Connection name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_display_name"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Host / URL -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_host_hint"
+            app:errorEnabled="true"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_host"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Port -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_port"
+            android:layout_width="@dimen/port_field_width"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_port_hint"
+            app:errorEnabled="true"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1"
+                android:text="@string/cloud_default_port" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:hint="@string/cloud_username_hint"
+            app:errorEnabled="true"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password / Token -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/cloud_password_hint"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="@dimen/radius_input"
+            app:boxCornerRadiusTopEnd="@dimen/radius_input"
+            app:boxCornerRadiusBottomStart="@dimen/radius_input"
+            app:boxCornerRadiusBottomEnd="@dimen/radius_input"
+            app:errorEnabled="true"
+            app:endIconMode="password_toggle"
+            style="@style/Widget.FileCleaner.TextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Provider-specific help text -->
+        <TextView
+            android:id="@+id/tv_provider_help"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+            android:textColor="@color/textTertiary"
+            android:lineSpacingExtra="@dimen/spacing_xs" />
+
+    </LinearLayout>
+</ScrollView>

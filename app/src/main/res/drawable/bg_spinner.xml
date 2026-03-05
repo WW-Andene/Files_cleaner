@@ -4,5 +4,5 @@
     <corners android:radius="@dimen/radius_btn" />
     <stroke android:width="@dimen/stroke_default" android:color="@color/borderDefault" />
     <solid android:color="@color/surfaceColor" />
-    <padding android:left="12dp" android:right="12dp" android:top="8dp" android:bottom="8dp" />
+    <padding android:left="@dimen/spacing_md" android:right="@dimen/spacing_md" android:top="@dimen/spacing_sm" android:bottom="@dimen/spacing_sm" />
 </shape>

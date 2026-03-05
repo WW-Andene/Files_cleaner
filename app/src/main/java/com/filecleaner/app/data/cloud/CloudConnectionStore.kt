@@ -2,6 +2,8 @@ package com.filecleaner.app.data.cloud
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -21,11 +23,46 @@ object CloudConnectionStore {
         val ctx = appContext ?: throw IllegalStateException(
             "CloudConnectionStore.init(context) must be called first"
         )
-        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        try {
+            val encPrefs = EncryptedSharedPreferences.create(
+                PREFS_NAME,
+                masterKeyAlias,
+                ctx,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+            // Migrate from old plaintext prefs if needed
+            val oldPrefs = ctx.getSharedPreferences("${PREFS_NAME}_plain", Context.MODE_PRIVATE)
+            val oldJson = oldPrefs.getString(KEY_CONNECTIONS, null)
+            if (oldJson != null && encPrefs.getString(KEY_CONNECTIONS, null) == null) {
+                encPrefs.edit().putString(KEY_CONNECTIONS, oldJson).apply()
+                oldPrefs.edit().clear().apply()
+            }
+            encPrefs
+        } catch (_: Exception) {
+            // Fallback to regular prefs if encryption fails (e.g., device lacks secure hardware)
+            ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        }
     }
 
     fun init(context: Context) {
         appContext = context.applicationContext
+        // Migrate old plaintext prefs to the intermediate file for encrypted migration.
+        // Use a migration-complete flag to avoid re-running after encrypted prefs exist
+        // (which would read encrypted bytes as plaintext and destroy stored connections).
+        val migrationPrefs = context.applicationContext
+            .getSharedPreferences("${PREFS_NAME}_migration", Context.MODE_PRIVATE)
+        if (migrationPrefs.getBoolean("done", false)) return
+
+        val oldPrefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val oldData = oldPrefs.getString(KEY_CONNECTIONS, null)
+        if (oldData != null) {
+            context.applicationContext.getSharedPreferences("${PREFS_NAME}_plain", Context.MODE_PRIVATE)
+                .edit().putString(KEY_CONNECTIONS, oldData).apply()
+            oldPrefs.edit().clear().apply()
+        }
+        migrationPrefs.edit().putBoolean("done", true).apply()
     }
 
     fun getConnections(): List<CloudConnection> {
@@ -51,16 +88,20 @@ object CloudConnectionStore {
     }
 
     fun saveConnection(connection: CloudConnection) {
-        val connections = getConnections().toMutableList()
-        connections.removeAll { it.id == connection.id }
-        connections.add(connection)
-        saveAll(connections)
+        synchronized(this) {
+            val connections = getConnections().toMutableList()
+            connections.removeAll { it.id == connection.id }
+            connections.add(connection)
+            saveAll(connections)
+        }
     }
 
     fun removeConnection(id: String) {
-        val connections = getConnections().toMutableList()
-        connections.removeAll { it.id == id }
-        saveAll(connections)
+        synchronized(this) {
+            val connections = getConnections().toMutableList()
+            connections.removeAll { it.id == id }
+            saveAll(connections)
+        }
     }
 
     private fun saveAll(connections: List<CloudConnection>) {

@@ -60,7 +60,7 @@ object SearchQueryParser {
                 "gb" -> (num * 1024 * 1024 * 1024).toLong()
                 else -> return@forEach
             }
-            if (op == ">") minSize = bytes else maxSize = bytes
+            if (op == ">") minSize = maxOf(minSize ?: 0L, bytes) else maxSize = minOf(maxSize ?: Long.MAX_VALUE, bytes)
             remaining = remaining.replace(match.value, "")
         }
 
@@ -125,7 +125,7 @@ object SearchQueryParser {
      * I2: Extracted from BrowseFragment and BaseFileListFragment to eliminate duplication.
      */
     fun filterItems(items: List<FileItem>, query: String): List<FileItem> {
-        if (query.isEmpty()) return items
+        if (query.isBlank()) return items
         return if (hasOperators(query)) {
             val parsed = parse(query)
             items.filter { matches(it, parsed) }

@@ -2,6 +2,7 @@ package com.filecleaner.app.utils.antivirus
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.filecleaner.app.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -26,9 +27,6 @@ object ScanHistoryManager {
     fun saveResult(context: Context, results: List<ThreatResult>) {
         val p = prefs(context)
         val now = System.currentTimeMillis()
-
-        // Save last scan time
-        p.edit().putLong(KEY_LAST_SCAN, now).apply()
 
         // Build scan record
         val record = JSONObject().apply {
@@ -72,7 +70,11 @@ object ScanHistoryManager {
             updated.put(history.getJSONObject(i))
         }
 
-        p.edit().putString(KEY_HISTORY, updated.toString()).apply()
+        // Atomic write: save both last scan time and history in a single edit
+        p.edit()
+            .putLong(KEY_LAST_SCAN, now)
+            .putString(KEY_HISTORY, updated.toString())
+            .apply()
     }
 
     fun getLastScanTime(context: Context): Long {
@@ -82,7 +84,7 @@ object ScanHistoryManager {
     fun getLastScanTimeFormatted(context: Context): String? {
         val ts = getLastScanTime(context)
         if (ts == 0L) return null
-        return formatTimestamp(ts)
+        return formatRelativeTime(context, ts)
     }
 
     fun getHistory(context: Context): List<ScanRecord> {
@@ -128,16 +130,16 @@ object ScanHistoryManager {
             .apply()
     }
 
-    private fun formatTimestamp(ts: Long): String {
-        val now = System.currentTimeMillis()
-        val diff = now - ts
+    internal fun formatRelativeTime(context: Context, timestampMs: Long): String {
+        val diff = System.currentTimeMillis() - timestampMs
 
         return when {
-            diff < 60_000 -> "Just now"
-            diff < 3_600_000 -> "${diff / 60_000}m ago"
-            diff < 86_400_000 -> "${diff / 3_600_000}h ago"
-            diff < 172_800_000 -> "Yesterday"
-            else -> SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(ts))
+            diff < 0 -> SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(Date(timestampMs))
+            diff < 60_000 -> context.getString(R.string.time_just_now)
+            diff < 3_600_000 -> context.getString(R.string.time_minutes_ago, (diff / 60_000).toInt())
+            diff < 86_400_000 -> context.getString(R.string.time_hours_ago, (diff / 3_600_000).toInt())
+            diff < 172_800_000 -> context.getString(R.string.time_yesterday)
+            else -> SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(timestampMs))
         }
     }
 
@@ -151,18 +153,6 @@ object ScanHistoryManager {
         val low: Int,
         val info: Int
     ) {
-        val formattedTime: String get() = formatTimestamp(timestamp)
-
-        private fun formatTimestamp(ts: Long): String {
-            val now = System.currentTimeMillis()
-            val diff = now - ts
-            return when {
-                diff < 60_000 -> "Just now"
-                diff < 3_600_000 -> "${diff / 60_000}m ago"
-                diff < 86_400_000 -> "${diff / 3_600_000}h ago"
-                diff < 172_800_000 -> "Yesterday"
-                else -> SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(ts))
-            }
-        }
+        fun formattedTime(context: Context): String = ScanHistoryManager.formatRelativeTime(context, timestamp)
     }
 }

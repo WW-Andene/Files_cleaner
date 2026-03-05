@@ -4,13 +4,8 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+    <!-- Material arrow_upward icon -->
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M12,4l-1.41,1.41L16.17,11H4v2h12.17l-5.58,5.59L12,20l8,-8z"
-        android:scaleX="-1"
-        android:pivotX="12"
-        android:pivotY="12" />
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M4,4l7.41,7.41L6.83,16H20v-2H6.83l5.58,-5.59L11,7L4,4z" />
+        android:fillColor="@color/textSecondary"
+        android:pathData="M4,12l1.41,1.41L11,7.83V20h2V7.83l5.58,5.59L20,12l-8,-8z" />
 </vector>

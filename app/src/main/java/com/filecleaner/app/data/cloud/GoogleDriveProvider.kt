@@ -1,6 +1,7 @@
 package com.filecleaner.app.data.cloud
 
 import android.content.Context
+import com.filecleaner.app.utils.retryOnNetworkError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -34,21 +35,28 @@ class GoogleDriveProvider(
     private val accessToken: String get() = connection.authToken
 
     override suspend fun connect(): Boolean = withContext(Dispatchers.IO) {
-        var conn: HttpURLConnection? = null
         try {
-            val url = URL("https://www.googleapis.com/drive/v3/about?fields=user")
-            conn = (url.openConnection() as HttpURLConnection).apply {
-                setRequestProperty("Authorization", "Bearer $accessToken")
-                connectTimeout = 15000
-                readTimeout = 15000
+            retryOnNetworkError {
+                var conn: HttpURLConnection? = null
+                try {
+                    val url = URL("https://www.googleapis.com/drive/v3/about?fields=user")
+                    conn = (url.openConnection() as HttpURLConnection).apply {
+                        setRequestProperty("Authorization", "Bearer $accessToken")
+                        connectTimeout = 15000
+                        readTimeout = 15000
+                    }
+                    connected = conn.responseCode == 200
+                    if (!connected) {
+                        throw java.io.IOException("HTTP ${conn.responseCode}")
+                    }
+                } finally {
+                    conn?.disconnect()
+                }
             }
-            connected = conn.responseCode == 200
             connected
         } catch (e: Exception) {
             connected = false
-            false
-        } finally {
-            conn?.disconnect()
+            throw e
         }
     }
 
@@ -57,169 +65,182 @@ class GoogleDriveProvider(
     }
 
     override suspend fun listFiles(remotePath: String): List<CloudFile> = withContext(Dispatchers.IO) {
-        var conn: HttpURLConnection? = null
         try {
-            val folderId = if (remotePath == "/" || remotePath.isEmpty()) "root" else remotePath
-            val query = URLEncoder.encode("'$folderId' in parents and trashed=false", "UTF-8")
-            val fields = URLEncoder.encode(
-                "files(id,name,mimeType,size,modifiedTime)", "UTF-8"
-            )
-            val url = URL(
-                "https://www.googleapis.com/drive/v3/files?q=$query&fields=$fields&orderBy=folder,name&pageSize=1000"
-            )
-            conn = (url.openConnection() as HttpURLConnection).apply {
-                setRequestProperty("Authorization", "Bearer $accessToken")
-                connectTimeout = 15000
-                readTimeout = 15000
+            retryOnNetworkError {
+                var conn: HttpURLConnection? = null
+                try {
+                    val folderId = if (remotePath == "/" || remotePath.isEmpty()) "root" else remotePath
+                    val query = URLEncoder.encode("'$folderId' in parents and trashed=false", "UTF-8")
+                    val fields = URLEncoder.encode(
+                        "files(id,name,mimeType,size,modifiedTime)", "UTF-8"
+                    )
+                    val url = URL(
+                        "https://www.googleapis.com/drive/v3/files?q=$query&fields=$fields&orderBy=folder,name&pageSize=1000"
+                    )
+                    conn = (url.openConnection() as HttpURLConnection).apply {
+                        setRequestProperty("Authorization", "Bearer $accessToken")
+                        connectTimeout = 15000
+                        readTimeout = 15000
+                    }
+
+                    if (conn.responseCode != 200) {
+                        return@retryOnNetworkError emptyList()
+                    }
+
+                    val body = conn.inputStream.bufferedReader().readText()
+
+                    val json = JSONObject(body)
+                    val filesArray = json.getJSONArray("files")
+                    val result = mutableListOf<CloudFile>()
+
+                    for (i in 0 until filesArray.length()) {
+                        val file = filesArray.getJSONObject(i)
+                        val mime = file.optString("mimeType", "")
+                        val isDir = mime == "application/vnd.google-apps.folder"
+                        result.add(CloudFile(
+                            name = file.getString("name"),
+                            remotePath = file.getString("id"),
+                            isDirectory = isDir,
+                            size = file.optLong("size", 0L),
+                            lastModified = parseGoogleDate(file.optString("modifiedTime", "")),
+                            mimeType = mime
+                        ))
+                    }
+
+                    result.sortedWith(compareBy<CloudFile> { !it.isDirectory }.thenBy { it.name.lowercase() })
+                } finally {
+                    conn?.disconnect()
+                }
             }
-
-            if (conn.responseCode != 200) {
-                return@withContext emptyList()
-            }
-
-            val body = conn.inputStream.bufferedReader().readText()
-
-            val json = JSONObject(body)
-            val filesArray = json.getJSONArray("files")
-            val result = mutableListOf<CloudFile>()
-
-            for (i in 0 until filesArray.length()) {
-                val file = filesArray.getJSONObject(i)
-                val mime = file.optString("mimeType", "")
-                val isDir = mime == "application/vnd.google-apps.folder"
-                result.add(CloudFile(
-                    name = file.getString("name"),
-                    remotePath = file.getString("id"),
-                    isDirectory = isDir,
-                    size = file.optLong("size", 0L),
-                    lastModified = parseGoogleDate(file.optString("modifiedTime", "")),
-                    mimeType = mime
-                ))
-            }
-
-            result.sortedWith(compareBy<CloudFile> { !it.isDirectory }.thenBy { it.name.lowercase() })
         } catch (e: Exception) {
             emptyList()
-        } finally {
-            conn?.disconnect()
         }
     }
 
     override suspend fun download(remotePath: String, output: OutputStream) = withContext(Dispatchers.IO) {
-        var conn: HttpURLConnection? = null
-        try {
-            val fileId = remotePath
-            val url = URL("https://www.googleapis.com/drive/v3/files/$fileId?alt=media")
-            conn = (url.openConnection() as HttpURLConnection).apply {
-                setRequestProperty("Authorization", "Bearer $accessToken")
-                connectTimeout = 15000
-                readTimeout = 60000
+        retryOnNetworkError {
+            var conn: HttpURLConnection? = null
+            try {
+                val fileId = URLEncoder.encode(remotePath, "UTF-8")
+                val url = URL("https://www.googleapis.com/drive/v3/files/$fileId?alt=media")
+                conn = (url.openConnection() as HttpURLConnection).apply {
+                    setRequestProperty("Authorization", "Bearer $accessToken")
+                    connectTimeout = 15000
+                    readTimeout = 60000
+                }
+                val code = conn.responseCode
+                if (code !in 200..299) {
+                    throw java.io.IOException("Download failed with HTTP $code")
+                }
+                conn.inputStream.use { it.copyTo(output) }
+            } finally {
+                conn?.disconnect()
             }
-            val code = conn.responseCode
-            if (code !in 200..299) {
-                throw java.io.IOException("Download failed with HTTP $code")
-            }
-            conn.inputStream.use { it.copyTo(output) }
-        } finally {
-            conn?.disconnect()
         }
         Unit
     }
 
     override suspend fun upload(remotePath: String, input: InputStream, fileName: String, mimeType: String) =
         withContext(Dispatchers.IO) {
-            var conn: HttpURLConnection? = null
-            try {
-                val parentId = if (remotePath == "/" || remotePath.isEmpty()) "root" else remotePath
-                val metadata = JSONObject().apply {
-                    put("name", fileName)
-                    put("parents", org.json.JSONArray().put(parentId))
-                }
+            retryOnNetworkError {
+                var conn: HttpURLConnection? = null
+                try {
+                    val parentId = if (remotePath == "/" || remotePath.isEmpty()) "root" else remotePath
+                    val metadata = JSONObject().apply {
+                        put("name", fileName)
+                        put("parents", org.json.JSONArray().put(parentId))
+                    }
 
-                val boundary = "====${System.currentTimeMillis()}===="
-                val url = URL(
-                    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
-                )
-                conn = (url.openConnection() as HttpURLConnection).apply {
-                    requestMethod = "POST"
-                    setRequestProperty("Authorization", "Bearer $accessToken")
-                    setRequestProperty("Content-Type", "multipart/related; boundary=$boundary")
-                    connectTimeout = 15000
-                    readTimeout = 60000
-                    doOutput = true
-                }
+                    val boundary = "====${System.currentTimeMillis()}===="
+                    val url = URL(
+                        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+                    )
+                    conn = (url.openConnection() as HttpURLConnection).apply {
+                        requestMethod = "POST"
+                        setRequestProperty("Authorization", "Bearer $accessToken")
+                        setRequestProperty("Content-Type", "multipart/related; boundary=$boundary")
+                        connectTimeout = 15000
+                        readTimeout = 60000
+                        doOutput = true
+                    }
 
-                conn.outputStream.use { out ->
-                    val metaPart = "--$boundary\r\n" +
-                            "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
-                            metadata.toString() + "\r\n"
-                    out.write(metaPart.toByteArray())
+                    conn.outputStream.use { out ->
+                        val metaPart = "--$boundary\r\n" +
+                                "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+                                metadata.toString() + "\r\n"
+                        out.write(metaPart.toByteArray())
 
-                    val mediaPart = "--$boundary\r\n" +
-                            "Content-Type: $mimeType\r\n\r\n"
-                    out.write(mediaPart.toByteArray())
-                    input.copyTo(out)
-                    out.write("\r\n--$boundary--".toByteArray())
-                }
+                        val mediaPart = "--$boundary\r\n" +
+                                "Content-Type: $mimeType\r\n\r\n"
+                        out.write(mediaPart.toByteArray())
+                        input.copyTo(out)
+                        out.write("\r\n--$boundary--".toByteArray())
+                    }
 
-                val code = conn.responseCode
-                if (code !in 200..299) {
-                    throw java.io.IOException("Upload failed with HTTP $code")
+                    val code = conn.responseCode
+                    if (code !in 200..299) {
+                        throw java.io.IOException("Upload failed with HTTP $code")
+                    }
+                } finally {
+                    conn?.disconnect()
                 }
-            } finally {
-                conn?.disconnect()
             }
             Unit
         }
 
     override suspend fun delete(remotePath: String) = withContext(Dispatchers.IO) {
-        var conn: HttpURLConnection? = null
-        try {
-            val fileId = remotePath
-            val url = URL("https://www.googleapis.com/drive/v3/files/$fileId")
-            conn = (url.openConnection() as HttpURLConnection).apply {
-                requestMethod = "DELETE"
-                setRequestProperty("Authorization", "Bearer $accessToken")
-                connectTimeout = 15000
+        retryOnNetworkError {
+            var conn: HttpURLConnection? = null
+            try {
+                val fileId = URLEncoder.encode(remotePath, "UTF-8")
+                val url = URL("https://www.googleapis.com/drive/v3/files/$fileId")
+                conn = (url.openConnection() as HttpURLConnection).apply {
+                    requestMethod = "DELETE"
+                    setRequestProperty("Authorization", "Bearer $accessToken")
+                    connectTimeout = 15000
+                }
+                val code = conn.responseCode
+                // Treat 404 as success for DELETE (idempotent — file already gone)
+                if (code !in 200..299 && code != 204 && code != 404) {
+                    throw java.io.IOException("Delete failed with HTTP $code")
+                }
+            } finally {
+                conn?.disconnect()
             }
-            val code = conn.responseCode
-            if (code !in 200..299 && code != 204) {
-                throw java.io.IOException("Delete failed with HTTP $code")
-            }
-        } finally {
-            conn?.disconnect()
         }
         Unit
     }
 
     override suspend fun createDirectory(remotePath: String) = withContext(Dispatchers.IO) {
-        var conn: HttpURLConnection? = null
-        try {
-            val parentId = if (remotePath == "/" || remotePath.isEmpty()) "root"
-            else remotePath.substringBeforeLast("/").ifEmpty { "root" }
-            val dirName = remotePath.substringAfterLast("/")
+        retryOnNetworkError {
+            var conn: HttpURLConnection? = null
+            try {
+                val parentId = if (remotePath == "/" || remotePath.isEmpty()) "root"
+                else remotePath.substringBeforeLast("/").ifEmpty { "root" }
+                val dirName = remotePath.substringAfterLast("/")
 
-            val metadata = JSONObject().apply {
-                put("name", dirName)
-                put("mimeType", "application/vnd.google-apps.folder")
-                put("parents", org.json.JSONArray().put(parentId))
-            }
+                val metadata = JSONObject().apply {
+                    put("name", dirName)
+                    put("mimeType", "application/vnd.google-apps.folder")
+                    put("parents", org.json.JSONArray().put(parentId))
+                }
 
-            val url = URL("https://www.googleapis.com/drive/v3/files")
-            conn = (url.openConnection() as HttpURLConnection).apply {
-                requestMethod = "POST"
-                setRequestProperty("Authorization", "Bearer $accessToken")
-                setRequestProperty("Content-Type", "application/json; charset=UTF-8")
-                connectTimeout = 15000
-                doOutput = true
+                val url = URL("https://www.googleapis.com/drive/v3/files")
+                conn = (url.openConnection() as HttpURLConnection).apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Authorization", "Bearer $accessToken")
+                    setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+                    connectTimeout = 15000
+                    doOutput = true
+                }
+                conn.outputStream.use { it.write(metadata.toString().toByteArray()) }
+                val code = conn.responseCode
+                if (code !in 200..299) {
+                    throw java.io.IOException("Create directory failed with HTTP $code")
+                }
+            } finally {
+                conn?.disconnect()
             }
-            conn.outputStream.use { it.write(metadata.toString().toByteArray()) }
-            val code = conn.responseCode
-            if (code !in 200..299) {
-                throw java.io.IOException("Create directory failed with HTTP $code")
-            }
-        } finally {
-            conn?.disconnect()
         }
         Unit
     }

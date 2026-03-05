@@ -5,29 +5,37 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/spacing_sm"
     app:cardCornerRadius="@dimen/radius_card"
-    app:cardElevation="@dimen/elevation_none"
+    app:cardElevation="@dimen/elevation_subtle"
     app:cardBackgroundColor="@color/surfaceColor"
     app:strokeWidth="@dimen/stroke_default"
-    app:strokeColor="@color/borderSubtle">
+    app:strokeColor="@color/borderSubtle"
+    app:rippleColor="@color/colorPrimaryContainer"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="@dimen/touch_target_min">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_md">
+        android:paddingHorizontal="@dimen/spacing_lg"
+        android:paddingVertical="@dimen/spacing_md">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/touch_target_min">
 
             <!-- Severity indicator -->
             <View
                 android:id="@+id/severity_dot"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/bg_icon_circle" />
+                android:layout_width="@dimen/spacing_md"
+                android:layout_height="@dimen/spacing_md"
+                android:background="@drawable/bg_icon_circle"
+                android:importantForAccessibility="no"
+                android:contentDescription="@string/a11y_severity_indicator" />
 
             <TextView
                 android:id="@+id/tv_name"
@@ -36,15 +44,15 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
                 android:textColor="@color/textPrimary"
-                android:layout_marginStart="@dimen/spacing_sm" />
+                android:layout_marginStart="@dimen/spacing_md" />
 
             <TextView
                 android:id="@+id/tv_severity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-                android:textAllCaps="true"
-                android:letterSpacing="0.05" />
+                android:textAppearance="@style/TextAppearance.FileCleaner.Label"
+                android:importantForAccessibility="yes"
+                android:layout_marginStart="@dimen/spacing_sm" />
         </LinearLayout>
 
         <TextView
@@ -53,7 +61,8 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textSecondary"
-            android:layout_marginTop="@dimen/spacing_xs" />
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:lineSpacingExtra="@dimen/spacing_micro" />
 
         <TextView
             android:id="@+id/tv_source"
@@ -66,15 +75,17 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_action"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:minHeight="@dimen/touch_target_min"
             android:textAllCaps="false"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:visibility="gone"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.FileCleaner.Button.Outlined"
             app:cornerRadius="@dimen/radius_pill"
             app:strokeColor="@color/colorError"
-            android:textColor="@color/colorError" />
+            android:textColor="@color/colorError"
+            android:contentDescription="@string/a11y_fix_threat" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

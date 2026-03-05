@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/surfaceBase"
     android:clipToPadding="false"
-    android:paddingBottom="@dimen/spacing_above_nav">
+    android:paddingBottom="@dimen/spacing_above_nav"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,13 +14,13 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_lg">
 
-        <!-- Header with raccoon branding -->
+        <!-- Header with raccoon branding — larger, more prominent -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_lg">
+            android:layout_marginBottom="@dimen/spacing_xl">
 
             <ImageView
                 android:id="@+id/iv_raccoon_avatar"
@@ -35,14 +36,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_vertical"
-                android:layout_marginStart="@dimen/spacing_md">
+                android:layout_marginStart="@dimen/spacing_lg">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/raccoon_manager_title"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-                    android:textColor="@color/textPrimary" />
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Headline"
+                    android:textColor="@color/textPrimary"
+                    android:accessibilityHeading="true" />
 
                 <TextView
                     android:id="@+id/tv_subtitle"
@@ -51,7 +53,8 @@
                     android:text="@string/raccoon_manager_subtitle"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:textColor="@color/textSecondary"
-                    android:layout_marginTop="@dimen/spacing_xs" />
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:accessibilityLiveRegion="polite" />
             </LinearLayout>
         </LinearLayout>
 
@@ -61,33 +64,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
+            android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+            android:layout_marginBottom="@dimen/spacing_sm"
+            android:contentDescription="@string/a11y_scan_progress"
+            android:accessibilityLiveRegion="polite" />
 
-        <!-- Scan Storage card -->
+        <!-- Scan Storage card — hero gradient -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_scan"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
+            android:layout_marginBottom="@dimen/spacing_lg"
             android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
+            android:foreground="@drawable/ripple_hero_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusDown="@id/card_analysis"
+            android:stateListAnimator="@animator/hero_card_state_list_anim"
             android:contentDescription="@string/raccoon_action_scan"
-            app:cardCornerRadius="@dimen/radius_card"
+            app:cardCornerRadius="@dimen/radius_header"
             app:cardElevation="@dimen/elevation_raised"
-            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardBackgroundColor="@color/heroCardStart"
             app:strokeWidth="@dimen/stroke_none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/bg_hero_card"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="@dimen/spacing_lg">
+                android:padding="@dimen/spacing_xl">
 
                 <ImageView
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
+                    android:layout_width="@dimen/icon_hub_circle"
+                    android:layout_height="@dimen/icon_hub_circle"
                     android:src="@drawable/ic_scan"
                     android:scaleType="centerInside"
                     android:importantForAccessibility="no"
@@ -105,8 +118,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_scan"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textOnPrimary" />
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                        android:textColor="@color/textOnPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -114,26 +128,36 @@
                         android:text="@string/raccoon_action_scan_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textOnPrimary"
-                        android:alpha="0.85"
+                        android:alpha="@dimen/alpha_raccoon_logo"
                         android:layout_marginTop="@dimen/spacing_xs" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="@dimen/icon_nav"
+                    android:layout_height="@dimen/icon_nav"
+                    android:src="@drawable/ic_chevron_right"
+                    android:importantForAccessibility="no"
+                    app:tint="@color/textOnPrimary"
+                    android:alpha="0.87" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Analysis card -->
+        <!-- Analysis card — unique amber tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_analysis"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/raccoon_action_analysis"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:foreground="@drawable/ripple_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_scan"
+            android:nextFocusDown="@id/card_quick_clean"
+            android:stateListAnimator="@animator/card_state_list_anim"
+            android:contentDescription="@string/raccoon_action_analysis">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,19 +167,20 @@
                 android:padding="@dimen/spacing_lg">
 
                 <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
+                    android:layout_width="@dimen/icon_hub_circle"
+                    android:layout_height="@dimen/icon_hub_circle"
+                    android:background="@drawable/bg_hub_icon_circle"
+                    android:backgroundTint="@color/tintAnalysis"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
+                        android:layout_width="@dimen/hub_card_icon_inner"
+                        android:layout_height="@dimen/hub_card_icon_inner"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_dashboard"
                         android:scaleType="centerInside"
                         android:importantForAccessibility="no"
-                        app:tint="@color/colorAccent" />
+                        app:tint="@color/accentOnTintAnalysis" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -171,7 +196,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_analysis"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_analysis_desc"
@@ -180,25 +206,35 @@
                         android:text="@string/raccoon_action_analysis_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="@dimen/icon_nav"
+                    android:layout_height="@dimen/icon_nav"
+                    android:src="@drawable/ic_chevron_right"
+                    android:importantForAccessibility="no"
+                    app:tint="@color/textTertiary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Quick Clean card -->
+        <!-- Quick Clean card — red tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_quick_clean"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/raccoon_action_quick_clean"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:foreground="@drawable/ripple_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_analysis"
+            android:nextFocusDown="@id/card_janitor"
+            android:stateListAnimator="@animator/card_state_list_anim"
+            android:contentDescription="@string/raccoon_action_quick_clean">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -208,14 +244,15 @@
                 android:padding="@dimen/spacing_lg">
 
                 <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
+                    android:layout_width="@dimen/icon_hub_circle"
+                    android:layout_height="@dimen/icon_hub_circle"
+                    android:background="@drawable/bg_hub_icon_circle"
+                    android:backgroundTint="@color/tintQuickClean"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
+                        android:layout_width="@dimen/hub_card_icon_inner"
+                        android:layout_height="@dimen/hub_card_icon_inner"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_nav_junk"
                         android:scaleType="centerInside"
@@ -236,7 +273,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_quick_clean"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_quick_clean_desc"
@@ -245,358 +283,35 @@
                         android:text="@string/raccoon_action_quick_clean_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="@dimen/icon_nav"
+                    android:layout_height="@dimen/icon_nav"
+                    android:src="@drawable/ic_chevron_right"
+                    android:importantForAccessibility="no"
+                    app:tint="@color/textTertiary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Tree View card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_arborescence"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/raccoon_action_arborescence"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_tree_structure"
-                        android:scaleType="centerInside"
-                        android:importantForAccessibility="no"
-                        app:tint="@color/colorPrimary" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="@dimen/spacing_lg">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/raccoon_action_arborescence"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/raccoon_action_arborescence_desc"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- F1: Advanced tools section label -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/raccoon_section_advanced"
-            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-            android:textColor="@color/textTertiary"
-            android:textAllCaps="true"
-            android:letterSpacing="0.1"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:layout_marginBottom="@dimen/spacing_sm" />
-
-        <!-- Optimize Storage card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_optimize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/optimize_title"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_storage"
-                        android:scaleType="centerInside"
-                        android:importantForAccessibility="no"
-                        app:tint="@color/colorAccent" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="@dimen/spacing_lg">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/optimize_title"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:id="@+id/tv_optimize_desc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/optimize_desc"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Dual Pane card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_dual_pane"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/dual_pane_title"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_dual_pane"
-                        android:scaleType="centerInside"
-                        android:importantForAccessibility="no"
-                        app:tint="@color/colorPrimary" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="@dimen/spacing_lg">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dual_pane_title"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dual_pane_desc"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Cloud / Network card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_cloud"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/cloud_title"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_cloud"
-                        android:scaleType="centerInside"
-                        android:importantForAccessibility="no"
-                        app:tint="@color/colorAccent" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="@dimen/spacing_lg">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cloud_title"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cloud_desc"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Antivirus card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_antivirus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/av_title"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_shield"
-                        android:scaleType="centerInside"
-                        android:importantForAccessibility="no"
-                        app:tint="@color/colorPrimary" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginStart="@dimen/spacing_lg">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/av_title"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/av_desc"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Janitor card -->
+        <!-- Janitor card — blue tint icon -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_janitor"
+            style="@style/Widget.FileCleaner.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_md"
             android:minHeight="@dimen/card_min_height"
-            android:foreground="?attr/selectableItemBackground"
-            android:contentDescription="@string/raccoon_action_janitor"
-            app:cardCornerRadius="@dimen/radius_card"
-            app:cardElevation="@dimen/elevation_none"
-            app:cardBackgroundColor="@color/surfaceColor"
-            app:strokeWidth="@dimen/stroke_default"
-            app:strokeColor="@color/borderSubtle">
+            android:foreground="@drawable/ripple_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_quick_clean"
+            android:nextFocusDown="@id/card_optimize"
+            android:stateListAnimator="@animator/card_state_list_anim"
+            android:contentDescription="@string/raccoon_action_janitor">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -606,14 +321,15 @@
                 android:padding="@dimen/spacing_lg">
 
                 <FrameLayout
-                    android:layout_width="@dimen/icon_button"
-                    android:layout_height="@dimen/icon_button"
-                    android:background="@drawable/bg_icon_circle"
+                    android:layout_width="@dimen/icon_hub_circle"
+                    android:layout_height="@dimen/icon_hub_circle"
+                    android:background="@drawable/bg_hub_icon_circle"
+                    android:backgroundTint="@color/tintJanitor"
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_nav"
-                        android:layout_height="@dimen/icon_nav"
+                        android:layout_width="@dimen/hub_card_icon_inner"
+                        android:layout_height="@dimen/hub_card_icon_inner"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_janitor"
                         android:scaleType="centerInside"
@@ -634,7 +350,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/raccoon_action_janitor"
                         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
-                        android:textColor="@color/textPrimary" />
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
 
                     <TextView
                         android:id="@+id/tv_janitor_desc"
@@ -643,10 +360,366 @@
                         android:text="@string/raccoon_action_janitor_desc"
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                         android:textColor="@color/textSecondary"
-                        android:layout_marginTop="@dimen/spacing_xs" />
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="@dimen/icon_nav"
+                    android:layout_height="@dimen/icon_nav"
+                    android:src="@drawable/ic_chevron_right"
+                    android:importantForAccessibility="no"
+                    app:tint="@color/textTertiary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- Optimize Storage card — amber tint icon -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_optimize"
+            style="@style/Widget.FileCleaner.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            android:minHeight="@dimen/card_min_height"
+            android:foreground="@drawable/ripple_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:nextFocusUp="@id/card_janitor"
+            android:nextFocusDown="@id/card_arborescence"
+            android:stateListAnimator="@animator/card_state_list_anim"
+            android:contentDescription="@string/optimize_title">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <FrameLayout
+                    android:layout_width="@dimen/icon_hub_circle"
+                    android:layout_height="@dimen/icon_hub_circle"
+                    android:background="@drawable/bg_hub_icon_circle"
+                    android:backgroundTint="@color/tintOptimize"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="@dimen/hub_card_icon_inner"
+                        android:layout_height="@dimen/hub_card_icon_inner"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_storage"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"
+                        app:tint="@color/accentOnTintAnalysis" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="@dimen/spacing_lg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/optimize_title"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:id="@+id/tv_optimize_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/optimize_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:accessibilityLiveRegion="polite" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="@dimen/icon_nav"
+                    android:layout_height="@dimen/icon_nav"
+                    android:src="@drawable/ic_chevron_right"
+                    android:importantForAccessibility="no"
+                    app:tint="@color/textTertiary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Advanced tools section label — visually distinct -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/raccoon_section_advanced"
+            android:textAppearance="@style/TextAppearance.FileCleaner.SectionHeader"
+            android:background="@drawable/bg_section_header"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:accessibilityHeading="true"
+            android:importantForAccessibility="yes" />
+
+        <!-- 2-column grid for advanced tools -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:baselineAligned="false">
+
+            <!-- Tree View card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_arborescence"
+                style="@style/Widget.FileCleaner.Card"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:foreground="@drawable/ripple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_optimize"
+                android:nextFocusRight="@id/card_dual_pane"
+                android:nextFocusDown="@id/card_cloud"
+                android:stateListAnimator="@animator/card_state_list_anim"
+                android:contentDescription="@string/raccoon_action_arborescence">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/icon_hub_circle"
+                        android:layout_height="@dimen/icon_hub_circle"
+                        android:background="@drawable/bg_hub_icon_circle"
+                        android:backgroundTint="@color/tintTree"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="@dimen/hub_card_icon_inner"
+                            android:layout_height="@dimen/hub_card_icon_inner"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_tree_structure"
+                            android:scaleType="centerInside"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/catDocument" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:text="@string/raccoon_action_arborescence"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/raccoon_action_arborescence_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:maxLines="2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Dual Pane card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_dual_pane"
+                style="@style/Widget.FileCleaner.Card"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:foreground="@drawable/ripple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_optimize"
+                android:nextFocusLeft="@id/card_arborescence"
+                android:nextFocusDown="@id/card_antivirus"
+                android:stateListAnimator="@animator/card_state_list_anim"
+                android:contentDescription="@string/dual_pane_title">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/icon_hub_circle"
+                        android:layout_height="@dimen/icon_hub_circle"
+                        android:background="@drawable/bg_hub_icon_circle"
+                        android:backgroundTint="@color/tintDualPane"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="@dimen/hub_card_icon_inner"
+                            android:layout_height="@dimen/hub_card_icon_inner"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_dual_pane"
+                            android:scaleType="centerInside"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/catDocument" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:text="@string/dual_pane_title"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dual_pane_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:maxLines="2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- Second row: Cloud + Antivirus -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:baselineAligned="false">
+
+            <!-- Cloud / Network card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_cloud"
+                style="@style/Widget.FileCleaner.Card"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:foreground="@drawable/ripple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_arborescence"
+                android:nextFocusRight="@id/card_antivirus"
+                android:stateListAnimator="@animator/card_state_list_anim"
+                android:contentDescription="@string/cloud_title">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/icon_hub_circle"
+                        android:layout_height="@dimen/icon_hub_circle"
+                        android:background="@drawable/bg_hub_icon_circle"
+                        android:backgroundTint="@color/tintCloud"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="@dimen/hub_card_icon_inner"
+                            android:layout_height="@dimen/hub_card_icon_inner"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_cloud"
+                            android:scaleType="centerInside"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/catImageOnTintCloud" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:text="@string/cloud_title"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cloud_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:maxLines="2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Antivirus card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_antivirus"
+                style="@style/Widget.FileCleaner.Card"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:foreground="@drawable/ripple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_dual_pane"
+                android:nextFocusLeft="@id/card_cloud"
+                android:stateListAnimator="@animator/card_state_list_anim"
+                android:contentDescription="@string/av_title">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/icon_hub_circle"
+                        android:layout_height="@dimen/icon_hub_circle"
+                        android:background="@drawable/bg_hub_icon_circle"
+                        android:backgroundTint="@color/tintAntivirus"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="@dimen/hub_card_icon_inner"
+                            android:layout_height="@dimen/hub_card_icon_inner"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_shield"
+                            android:scaleType="centerInside"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:text="@string/av_title"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/av_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:maxLines="2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

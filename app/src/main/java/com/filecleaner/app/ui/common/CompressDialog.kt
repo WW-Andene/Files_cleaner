@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
+import java.io.File
 
 /**
  * Dialog for configuring compression of selected files.
@@ -66,11 +67,16 @@ object CompressDialog {
         }
         container.addView(previewText)
 
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context)
             .setTitle(context.getString(R.string.compress_title))
             .setView(container)
             .setPositiveButton(context.getString(R.string.ctx_compress)) { _, _ ->
                 var name = nameInput.text.toString().trim()
+                // Sanitize: extract only the filename (strip any path components),
+                // remove null bytes, and apply iteratively to prevent bypass (e.g. "....//" -> "../")
+                name = File(name).name.replace("\u0000", "")
+                var prev: String
+                do { prev = name; name = name.replace("..", "").replace("/", "").replace("\\", "") } while (name != prev)
                 if (name.isNotEmpty()) {
                     if (!name.endsWith(".zip", ignoreCase = true)) name += ".zip"
                     onConfirm(name, files.map { it.path })

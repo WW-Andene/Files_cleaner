@@ -3,7 +3,9 @@ package com.filecleaner.app.ui.duplicates
 import androidx.lifecycle.LiveData
 import com.filecleaner.app.R
 import com.filecleaner.app.data.FileItem
+import com.filecleaner.app.ui.adapters.ColorMode
 import com.filecleaner.app.ui.common.BaseFileListFragment
+import com.filecleaner.app.ui.common.ColorLegendHelper
 
 class DuplicatesFragment : BaseFileListFragment() {
     override val screenTitle get() = getString(R.string.title_duplicates)
@@ -16,6 +18,11 @@ class DuplicatesFragment : BaseFileListFragment() {
     override val emptySummary get() = getString(R.string.no_duplicates_found)
     override val emptyPreScan get() = getString(R.string.empty_duplicates_pre_scan)
     override val emptyPostScan get() = getString(R.string.empty_duplicates_post_scan)
+
+    override val colorMode: ColorMode get() = ColorMode.DUPLICATE_GROUP
+    override fun legendEntries(): List<ColorLegendHelper.LegendEntry> =
+        ColorLegendHelper.duplicateGroupLegend(requireContext(), 6)
+    override val legendTitleRes: Int get() = R.string.legend_duplicates_title
 
     override fun onSelectAll() {
         adapter.selectAllDuplicatesExceptBest()

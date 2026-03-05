@@ -50,8 +50,16 @@ class FileOperationService(private val app: Application, private val storagePath
         }
         if (!src.exists()) return OpResult(false, str(R.string.op_source_not_found))
         if (dst.exists()) return OpResult(false, str(R.string.op_file_exists_in_target))
-        return if (src.renameTo(dst)) OpResult(true, str(R.string.op_moved, src.name))
-        else OpResult(false, str(R.string.op_move_failed))
+        if (src.renameTo(dst)) return OpResult(true, str(R.string.op_moved, src.name))
+        // Fallback: copy + delete (handles cross-filesystem moves)
+        return try {
+            src.copyTo(dst, overwrite = false)
+            src.delete()
+            OpResult(true, str(R.string.op_moved, src.name))
+        } catch (e: Exception) {
+            dst.delete() // Clean up partial copy
+            OpResult(false, str(R.string.op_move_failed))
+        }
     }
 
     /** Copy a file to a target directory. Must be called on IO thread. */
@@ -82,8 +90,16 @@ class FileOperationService(private val app: Application, private val storagePath
             ?: return OpResult(false, str(R.string.op_no_parent_dir))
         val dst = File(parentDir, newName)
         if (dst.exists()) return OpResult(false, str(R.string.op_name_exists))
-        return if (src.renameTo(dst)) OpResult(true, str(R.string.op_renamed, newName))
-        else OpResult(false, str(R.string.op_rename_failed))
+        if (src.renameTo(dst)) return OpResult(true, str(R.string.op_renamed, newName))
+        // Fallback: copy + delete (handles cross-filesystem renames)
+        return try {
+            src.copyTo(dst, overwrite = false)
+            src.delete()
+            OpResult(true, str(R.string.op_renamed, newName))
+        } catch (e: Exception) {
+            dst.delete() // Clean up partial copy
+            OpResult(false, str(R.string.op_rename_failed))
+        }
     }
 
     /** Compress a file into a ZIP. Must be called on IO thread. */
@@ -101,7 +117,7 @@ class FileOperationService(private val app: Application, private val storagePath
         onProgress: ((current: Int, total: Int) -> Unit)? = null
     ): OpResult {
         return try {
-            if (filePaths.isEmpty()) return OpResult(false, "No files to compress")
+            if (filePaths.isEmpty()) return OpResult(false, str(R.string.error_no_files_to_compress))
             val firstFile = File(filePaths.first())
             val parentDir = firstFile.parent
                 ?: return OpResult(false, str(R.string.op_no_parent_dir))
@@ -154,10 +170,6 @@ class FileOperationService(private val app: Application, private val storagePath
                 val outDirCanonical = outDir.canonicalPath + File.separator
                 var entry = zis.nextEntry
                 while (entry != null) {
-                    if (entry.name.contains("..")) {
-                        entry = zis.nextEntry
-                        continue
-                    }
                     val outFile = File(outDir, entry.name)
                     if (!outFile.canonicalPath.startsWith(outDirCanonical) &&
                         outFile.canonicalPath != outDir.canonicalPath) {
@@ -175,7 +187,7 @@ class FileOperationService(private val app: Application, private val storagePath
                         outFile.outputStream().buffered().use { out ->
                             val buf = ByteArray(IO_BUFFER_SIZE)
                             var len: Int
-                            while (zis.read(buf).also { len = it } > 0) {
+                            while (zis.read(buf).also { len = it } != -1) {
                                 totalExtracted += len
                                 if (totalExtracted > MAX_EXTRACT_BYTES) {
                                     out.close()

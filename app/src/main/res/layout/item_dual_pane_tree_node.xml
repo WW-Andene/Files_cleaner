@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tree_node_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="@dimen/spacing_xs"
+    android:paddingEnd="@dimen/spacing_sm"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="@dimen/touch_target_min">
+
+    <!-- Expand/collapse indicator -->
+    <FrameLayout
+        android:layout_width="@dimen/touch_target_min"
+        android:layout_height="@dimen/touch_target_min"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/iv_expand"
+            android:layout_width="@dimen/icon_inline"
+            android:layout_height="@dimen/icon_inline"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_chevron_right"
+            android:scaleType="centerInside"
+            android:importantForAccessibility="no"
+            android:contentDescription="@string/a11y_expand_collapse_node"
+            app:tint="@color/textTertiary" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="@dimen/touch_target_min"
+        android:layout_height="@dimen/touch_target_min"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/spacing_xs">
+
+        <ImageView
+            android:id="@+id/iv_folder_icon"
+            android:layout_width="@dimen/icon_tree_node"
+            android:layout_height="@dimen/icon_tree_node"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_folder"
+            android:scaleType="centerInside"
+            android:importantForAccessibility="no"
+            android:contentDescription="@string/a11y_folder_icon"
+            app:tint="@color/textSecondary" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_node_name"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+        android:textColor="@color/textPrimary"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginStart="@dimen/spacing_sm" />
+
+    <TextView
+        android:id="@+id/tv_node_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
+        android:textColor="@color/textTertiary"
+        android:maxLines="1"
+        android:layout_marginStart="@dimen/spacing_sm" />
+</LinearLayout>

@@ -6,6 +6,6 @@
     android:viewportHeight="24">
     <!-- Two side-by-side panels icon -->
     <path
-        android:fillColor="@android:color/white"
+        android:fillColor="@color/textSecondary"
         android:pathData="M3,3h8v18H3V3zM13,3h8v18h-8V3zM5,5v14h4V5H5zM15,5v14h4V5h-4z" />
 </vector>

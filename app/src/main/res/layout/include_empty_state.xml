@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/empty_state"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingHorizontal="@dimen/spacing_3xl"
+    android:paddingTop="@dimen/spacing_5xl"
+    android:paddingBottom="@dimen/spacing_4xl"
+    android:accessibilityLiveRegion="polite"
+    android:contentDescription="@string/a11y_empty_state">
+
+    <ImageView
+        android:layout_width="@dimen/icon_empty_state"
+        android:layout_height="@dimen/icon_empty_state"
+        android:src="@drawable/ic_raccoon_logo"
+        android:alpha="@dimen/alpha_raccoon_logo"
+        android:importantForAccessibility="no"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/tv_empty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxl"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+        android:textColor="@color/textPrimary"
+        android:gravity="center"
+        android:maxWidth="@dimen/empty_state_title_max_width"
+        android:lineSpacingExtra="@dimen/spacing_xs"
+        tools:text="Ricky is waiting to dig in!" />
+
+    <TextView
+        android:id="@+id/tv_empty_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+        android:textColor="@color/textSecondary"
+        android:gravity="center"
+        android:maxWidth="@dimen/empty_state_subtitle_max_width"
+        android:lineSpacingExtra="@dimen/spacing_xs"
+        tools:text="Scan your storage and Ricky will crunch the numbers for you." />
+
+</LinearLayout>

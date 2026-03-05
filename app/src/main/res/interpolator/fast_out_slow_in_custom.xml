@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Custom fast-out-slow-in — slightly snappier than Material default for "considerate utility" motion character -->
+<pathInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:pathData="M 0,0 C 0.35,0 0.1,1 1,1" />

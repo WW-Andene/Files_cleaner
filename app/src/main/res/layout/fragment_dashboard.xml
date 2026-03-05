@@ -11,13 +11,31 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_lg">
 
-        <!-- Dashboard title -->
-        <TextView
+        <!-- Toolbar with back button -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/dashboard_title"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Title"
-            android:layout_marginBottom="@dimen/spacing_lg" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/spacing_md">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="@dimen/icon_button"
+                android:layout_height="@dimen/icon_button"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/dashboard_back"
+                app:tint="@color/textPrimary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:text="@string/dashboard_title"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title" />
+        </LinearLayout>
 
         <!-- Storage usage card -->
         <com.google.android.material.card.MaterialCardView
@@ -60,7 +78,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_sm"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorOnPrimaryContainer"
                     android:textAlignment="center" />
 
@@ -69,9 +87,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_xs"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorOnPrimaryContainer"
                     android:alpha="0.8"
+                    android:textAlignment="center" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Potential savings card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_savings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:cardBackgroundColor="@color/analysisSavingsBackground"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:id="@+id/tv_potential_savings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                    android:textStyle="bold"
+                    android:textColor="@color/analysisSavingsText"
                     android:textAlignment="center" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -106,13 +154,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_sm"
-                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:accessibilityLiveRegion="polite"
                     android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Category breakdown -->
+        <!-- Category breakdown with colored bars -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -121,7 +169,7 @@
             app:cardBackgroundColor="@color/surfaceColor"
             app:strokeWidth="@dimen/stroke_default"
             app:strokeColor="@color/borderSubtle"
-            android:foreground="?attr/selectableItemBackground">
+            android:layout_marginBottom="@dimen/spacing_md">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -134,15 +182,131 @@
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_category_title"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Body"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
 
+                <!-- Fallback text when no scan data -->
                 <TextView
                     android:id="@+id/tv_category_breakdown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
                     android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
                     android:lineSpacingExtra="@dimen/spacing_xs" />
+
+                <!-- Dynamic category rows container -->
+                <LinearLayout
+                    android:id="@+id/category_rows_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Top 10 Largest Files -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_top_files"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_top_files"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <LinearLayout
+                    android:id="@+id/top_files_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Quick Actions -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_quick_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/radius_card"
+            app:cardElevation="@dimen/elevation_none"
+            app:cardBackgroundColor="@color/surfaceColor"
+            app:strokeWidth="@dimen/stroke_default"
+            app:strokeColor="@color/borderSubtle"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_quick_actions"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.Body"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/spacing_md" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_clean_junk"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_clean_junk"
+                    android:textAllCaps="false"
+                    app:icon="@drawable/ic_delete"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:strokeColor="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    app:iconTint="@color/colorPrimary"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_view_duplicates"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_view_duplicates"
+                    android:textAllCaps="false"
+                    app:icon="@drawable/ic_file"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:strokeColor="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    app:iconTint="@color/colorPrimary"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_view_large"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dashboard_view_large"
+                    android:textAllCaps="false"
+                    app:icon="@drawable/ic_file"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="@dimen/radius_btn"
+                    app:strokeColor="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    app:iconTint="@color/colorPrimary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

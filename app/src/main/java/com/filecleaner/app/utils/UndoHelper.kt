@@ -36,7 +36,8 @@ object UndoHelper {
                 .setAction(ctx.getString(R.string.undo)) { vm.undoDelete() }
                 .addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(bar: Snackbar?, event: Int) {
-                        if (event != DISMISS_EVENT_ACTION) {
+                        // Don't auto-confirm when displaced by a consecutive snackbar
+                        if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
                             vm.confirmDelete()
                         }
                     }
@@ -47,11 +48,14 @@ object UndoHelper {
         }
     }
 
-    fun formatBytes(bytes: Long): String = when {
-        bytes >= 1_073_741_824 -> "%.1f GB".format(bytes / 1_073_741_824.0)
-        bytes >= 1_048_576     -> "%.1f MB".format(bytes / 1_048_576.0)
-        bytes >= 1_024         -> "%.1f KB".format(bytes / 1_024.0)
-        else                   -> "$bytes B"
+    fun formatBytes(bytes: Long): String {
+        val locale = java.util.Locale.getDefault()
+        return when {
+            bytes >= 1_073_741_824 -> String.format(locale, "%.1f GB", bytes / 1_073_741_824.0)
+            bytes >= 1_048_576     -> String.format(locale, "%.1f MB", bytes / 1_048_576.0)
+            bytes >= 1_024         -> String.format(locale, "%.1f KB", bytes / 1_024.0)
+            else                   -> "$bytes B"
+        }
     }
 
     fun totalSize(list: List<com.filecleaner.app.data.FileItem>): String {
