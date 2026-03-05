@@ -21,7 +21,7 @@
         android:indeterminate="true"
         android:contentDescription="@string/a11y_loading"
         android:importantForAccessibility="yes"
-        app:indicatorSize="56dp" />
+        app:indicatorSize="@dimen/progress_indicator_size" />
 
     <TextView
         android:id="@+id/tv_loading_title"
@@ -31,7 +31,7 @@
         android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
         android:textColor="@color/textPrimary"
         android:gravity="center"
-        android:maxWidth="280dp"
+        android:maxWidth="@dimen/empty_state_title_max_width"
         android:lineSpacingExtra="@dimen/spacing_xs" />
 
     <TextView
@@ -42,6 +42,6 @@
         android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
         android:textColor="@color/textTertiary"
         android:gravity="center"
-        android:maxWidth="300dp"
+        android:maxWidth="@dimen/empty_state_subtitle_max_width"
         android:lineSpacingExtra="@dimen/spacing_xs" />
 </LinearLayout>

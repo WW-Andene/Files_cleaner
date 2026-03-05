@@ -139,6 +139,7 @@
     <!-- Empty/loading state constraints -->
     <dimen name="empty_state_title_max_width">280dp</dimen>
     <dimen name="empty_state_subtitle_max_width">300dp</dimen>
+    <dimen name="progress_indicator_size">56dp</dimen>
 
     <!-- Animation translation distances -->
     <dimen name="anim_slide_in_y">24dp</dimen>
