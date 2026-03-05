@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="@color/surfaceBase">
 
-    <!-- Header card -->
+    <!-- Header card (title + subtitle only — selection buttons moved to action bar) -->
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.FileCleaner.Card"
         android:layout_width="match_parent"
@@ -23,7 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_lg">
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_md">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -48,77 +49,6 @@
                 android:accessibilityLiveRegion="polite"
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:text="@string/scan_to_see_results" />
-
-            <!-- Select All / Deselect All — scrollable for narrow screens -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_md"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_select_all"
-                        style="@style/Widget.FileCleaner.Button.Outlined"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/button_height"
-                        android:text="@string/select_all"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:layout_marginEnd="@dimen/spacing_sm"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        app:strokeColor="@color/colorOnPrimaryContainer"
-                        android:textColor="@color/colorOnPrimaryContainer"
-                        app:cornerRadius="@dimen/radius_pill" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_deselect_all"
-                        style="@style/Widget.FileCleaner.Button.Outlined"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/button_height"
-                        android:text="@string/deselect_all"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        app:strokeColor="@color/colorOnPrimaryContainer"
-                        android:textColor="@color/colorOnPrimaryContainer"
-                        app:cornerRadius="@dimen/radius_pill" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_batch_rename"
-                        style="@style/Widget.FileCleaner.Button.Outlined"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/button_height"
-                        android:text="@string/batch_rename"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:layout_marginStart="@dimen/spacing_sm"
-                        android:visibility="gone"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        app:strokeColor="@color/colorOnPrimaryContainer"
-                        android:textColor="@color/colorOnPrimaryContainer"
-                        app:cornerRadius="@dimen/radius_pill" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_batch_compress"
-                        style="@style/Widget.FileCleaner.Button.Outlined"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/button_height"
-                        android:text="@string/ctx_compress"
-                        android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
-                        android:layout_marginStart="@dimen/spacing_sm"
-                        android:visibility="gone"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        app:strokeColor="@color/colorOnPrimaryContainer"
-                        android:textColor="@color/colorOnPrimaryContainer"
-                        app:cornerRadius="@dimen/radius_pill" />
-                </LinearLayout>
-            </HorizontalScrollView>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -331,6 +261,72 @@
         android:paddingTop="@dimen/spacing_sm"
         android:paddingBottom="@dimen/spacing_fab_clearance"
         android:layoutAnimation="@anim/layout_item_stagger" />
+
+    <!-- Selection scope buttons (visible only when items are selected) -->
+    <HorizontalScrollView
+        android:id="@+id/selection_buttons_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_select_all"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/select_all"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_deselect_all"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/deselect_all"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_batch_rename"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/batch_rename"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:visibility="gone"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_batch_compress"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/ctx_compress"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:visibility="gone"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <!-- Action button — not full-width for better visual proportion (§DBI3 #10) -->
     <com.google.android.material.button.MaterialButton

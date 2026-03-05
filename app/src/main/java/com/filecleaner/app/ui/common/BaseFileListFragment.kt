@@ -153,6 +153,7 @@ abstract class BaseFileListFragment : Fragment() {
             selectionBackCallback.isEnabled = sel.isNotEmpty()
             binding.btnAction.isEnabled = sel.isNotEmpty()
             binding.btnAction.text = actionLabel(sel.size, UndoHelper.totalSize(sel))
+            binding.selectionButtonsBar.visibility = if (sel.isNotEmpty()) View.VISIBLE else View.GONE
             binding.btnBatchRename.visibility = if (sel.size >= 2) View.VISIBLE else View.GONE
             binding.btnBatchCompress.visibility = if (sel.isNotEmpty()) View.VISIBLE else View.GONE
         }
