@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -548,8 +549,9 @@ class CloudBrowserFragment : Fragment() {
         // Disconnect cloud provider to prevent leaking network connections
         currentProvider?.let { provider ->
             // D5-06: Use NonCancellable scope — viewLifecycleOwner scope is cancelled during onDestroyView
+            // #427: Wrap with timeout to prevent infinite hang on unresponsive server
             CoroutineScope(Dispatchers.IO + NonCancellable).launch {
-                try { provider.disconnect() } catch (_: Exception) {}
+                try { withTimeout(5000L) { provider.disconnect() } } catch (_: Exception) {}
             }
         }
         _binding?.spinnerConnection?.onItemSelectedListener = null

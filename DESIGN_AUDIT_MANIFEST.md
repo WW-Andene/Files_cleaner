@@ -929,7 +929,7 @@
 | 424 | MainViewModel.kt | Coroutine lifecycle | PASS — All I/O operations use `viewModelScope.launch` + `withContext(Dispatchers.IO)` — properly scoped to ViewModel lifecycle; no orphaned coroutines | §D5 | — |
 | 425 | MainViewModel.kt | runBlocking | PASS — No `runBlocking` usage on main thread; comment at line 268 explicitly notes avoiding `Thread + runBlocking` pattern | §D5 | — |
 | 426 | MainViewModel.kt | NonCancellable usage | PASS — `NonCancellable` used only for critical cleanup (trash commit, cloud state save) — appropriate for work that must complete even after scope cancellation | §D5 | — |
-| 427 | CloudBrowserFragment.kt:551 | NonCancellable standalone scope | `CoroutineScope(Dispatchers.IO + NonCancellable).launch` creates an unscoped coroutine for cloud state saving. While intentional (saving state during onDestroyView), this scope is never cancelled and could leak if the save operation hangs | §D5 | LOW |
+| 427 | CloudBrowserFragment.kt:552 | NonCancellable standalone scope | FIXED — Wrapped `provider.disconnect()` with `withTimeout(5000L)` to prevent infinite hang on unresponsive server | §D5 | ~~LOW~~ PASS |
 | 428 | Multiple fragments | Process death recovery | PASS — 7 fragments implement `onSaveInstanceState`: CloudBrowser, BaseFileList, Arborescence, Browse, DualPane, FileViewer — critical user state preserved across process death | §D5 | — |
 | 429 | build.gradle | R8 shrinking | PASS — `minifyEnabled true` + `shrinkResources true` in release build — dead code and unused resources removed from APK | §D5 | — |
 | 430 | build.gradle | No Baseline Profiles | App does not use Baseline Profiles for startup optimization. Not a bug but a missed performance opportunity for cold start time on Android 7+ | §D5 | LOW |
@@ -969,10 +969,10 @@
 | §L3 Design System Standard. | 3 | 3 | 0 | 0 | 6 |
 | §L4 Copy & Content Standard. | 2 | 0 | 0 | 0 | 2 |
 | §L5 Interaction & Experience Polish | 2 | 1 | 0 | 0 | 3 |
-| §D5 Mobile Performance | 7 | 2 | 0 | 0 | 9 |
-| **TOTALS** | **102** | **17** | **3** | **0** | **122** |
+| §D5 Mobile Performance | 8 | 1 | 0 | 0 | 9 |
+| **TOTALS** | **103** | **16** | **3** | **0** | **122** |
 
-### All open issues (17 LOW + 3 MEDIUM)
+### All open issues (16 LOW + 3 MEDIUM)
 
 | # | Section | Severity | Details |
 |---|---|---|---|
@@ -1002,7 +1002,7 @@
 | 412 | §L3 | LOW | Skeleton hub card token inconsistency |
 | 415 | §L3 | LOW | No standalone design system documentation |
 | 420 | §L5 | LOW | Limited haptic feedback (2 of 5-8 moments) |
-| 427 | §D5 | LOW | Unscoped NonCancellable coroutine in CloudBrowserFragment |
+| 427 | §D5 | ~~LOW~~ **FIXED** | NonCancellable coroutine wrapped with withTimeout(5000L) |
 | 430 | §D5 | LOW | No Baseline Profiles for startup optimization |
 
 ### Cross-reference with Phase 1 known issues
@@ -1015,4 +1015,4 @@
 
 ---
 
-**Phase 2 manifest complete. 122 findings: 102 PASS, 17 LOW, 3 MEDIUM, 0 REVIEW. Fixes in progress.**
+**Phase 2 manifest complete. 122 findings: 103 PASS, 16 LOW, 3 MEDIUM, 0 REVIEW. Fixes in progress.**
