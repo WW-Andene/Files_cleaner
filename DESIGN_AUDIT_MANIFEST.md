@@ -24,7 +24,7 @@
 | 6 | dimens.xml | motion_exit (160ms) | PASS — Exits faster than entries, matches "considerate" principle | §DP0 | — |
 | 7 | dimens.xml | motion_emphasis (400ms) | PASS — Delight moments appropriately longer | §DP0 | — |
 | 8 | themes.xml | Typography system | PASS — Major Third scale (1.25×) with compressed lower range for mobile legibility | §DP1 | — |
-| 9 | colors.xml | Surface ladder | [RE-AUDIT] — Chromatic warm-whites with ~3% OKLCH lightness steps — inferred from naming/comments, hex not converted to OKLCH to verify | §DP1 | — |
+| 9 | colors.xml | Surface ladder | PASS — Verified OKLCH: surfaceDim L=91.4%→surfaceBase L=94.7% (+3.3%)→surfaceColor L=98.0% (+3.3%)→surfaceElevated L=99.9% (+1.9%); first two steps ~3.3%, final step compressed to 1.9% | §DP1 | — |
 | 10 | themes.xml | Button styles (5 variants) | PASS — Hierarchy: Filled > Outlined > Text > Ghost > Icon — clear emphasis ladder | §DP2 | — |
 | 11 | themes.xml | Card styles (5 variants) | PASS — Card > Card.Elevated > Card.Flat > Card.Outlined > Card.Selected — distinct roles | §DP2 | — |
 
@@ -53,32 +53,32 @@
 | 25 | colors.xml | Accent family | PASS — 5-stop accent family with container variant | §DC1 | — |
 | 26 | colors.xml | Semantic colors | PASS — Error/Success/Warning each have base + light + onColor — warm-shifted | §DC1 | — |
 | 27 | colors.xml | Severity scale | PASS — 4-level threat severity with paired light backgrounds | §DC1 | — |
-| 28 | colors.xml | Category colors (8) | [RE-AUDIT] — "Perceptually balanced chroma" — judged subjectively from hex values, not plotted in any perceptual color space | §DC1 | — |
-| 29 | colors.xml | Duplicate group colors (6) | [RE-AUDIT] — "Sufficient inter-group contrast" — did not compute pairwise contrast between the 6 group colors | §DC1 | — |
+| 28 | colors.xml | Category colors (8) | [REVIEW] — Verified OKLCH: lightness L=45–61% (reasonable 15.7% spread), hue well-distributed, but chroma wildly unbalanced: C=0.023 (catOther) to C=0.247 (catImage) — 10.7× spread. catOther/catDownload/catArchive are visually muted vs catImage/catVideo | §DC1 | LOW |
+| 29 | colors.xml | Duplicate group colors (6) | PASS — Verified: pairwise luminance contrast 1.00–1.09:1 (near-identical lightness L=93–96%); but these are hue-differentiated background tints with 6 distinct hues at 151°/239°/78°/318°/27°/183° (well-distributed around wheel). Distinguishability relies on hue separation, which is adequate | §DC1 | — |
 
 ## §DC2 — Color Contrast & Accessibility
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 30 | colors.xml | accentOnTintAnalysis #A25D15 | [RE-AUDIT] — Documented 4.55:1 on tintAnalysis bg — ratio trusted from code comment, not independently computed | §DC2 | — |
-| 31 | colors.xml | catImageOnTintCloud #6941D8 | [RE-AUDIT] — Documented 4.94:1 on tintCloud bg — ratio trusted from code comment, not independently computed | §DC2 | — |
+| 30 | colors.xml | accentOnTintAnalysis #A25D15 | PASS — Verified 4.55:1 on tintAnalysis #FFF0DA — independently computed via sRGB→linear→luminance; matches documented ratio exactly | §DC2 | — |
+| 31 | colors.xml | catImageOnTintCloud #6941D8 | PASS — Verified 4.94:1 on tintCloud #E8E0FF — independently computed; matches documented ratio exactly | §DC2 | — |
 | 32 | colors.xml | textPrimary #161816 on surfaceColor #FAF8F4 | PASS — Near-black on warm-white ≈ 17:1 — exceeds AAA | §DC2 | — |
 | 33 | colors.xml | textSecondary #4B524E on surfaceColor #FAF8F4 | PASS — ≈ 7.2:1 — exceeds AA | §DC2 | — |
 | 34 | colors.xml | textTertiary #616966 on surfaceColor #FAF8F4 | [REVIEW] — ≈ 4.6:1 — passes AA for normal text but borderline; at 10sp (Caption) may fail AA-large threshold in practice | §DC2 | LOW |
 | 35 | colors.xml (night) | textTertiary #7E8682 on surfaceColor #141A17 | [REVIEW] — ≈ 4.2:1 — borderline AA for body text; used at Caption (10sp) size which is below 14sp threshold | §DC2 | LOW |
 | 36 | colors.xml | textDisabled #B0B5B2 | PASS — Disabled text intentionally low-contrast per WCAG exception for disabled controls | §DC2 | — |
-| 37 | colors.xml | colorOnPrimary #FFFFFF on colorPrimary #247A58 | [RE-AUDIT] — White on forest green ≈ 4.8:1 — mental approximation, not precisely computed; if actually <4.5:1 it fails AA | §DC2 | — |
-| 38 | colors.xml (night) | colorOnPrimary #0C1A14 on colorPrimary #5ECE9E | [RE-AUDIT] — Dark on lifted green ≈ 8.5:1 — approximated, not computed; large margin makes failure unlikely but unverified | §DC2 | — |
-| 39 | fragment_analysis.xml | analysisSavingsText #A45E15 on analysisSavingsBackground #FFF8E1 | [RE-AUDIT] — ≈ 4.5:1 — right at AA knife edge; approximated, could be 4.4:1 and fail | §DC2 | — |
+| 37 | colors.xml | colorOnPrimary #FFFFFF on colorPrimary #247A58 | PASS — Verified 5.25:1 — exceeds AA; original 4.8:1 estimate was conservative | §DC2 | — |
+| 38 | colors.xml (night) | colorOnPrimary #0C1A14 on colorPrimary #5ECE9E | PASS — Verified 9.20:1 — exceeds AAA; original 8.5:1 estimate was conservative | §DC2 | — |
+| 39 | fragment_analysis.xml | analysisSavingsText #A45E15 on analysisSavingsBackground #FFF8E1 | PASS — Verified 4.72:1 — clears AA with comfortable margin; original 4.5:1 estimate was conservative | §DC2 | — |
 
 ## §DC3 — Surface Elevation System
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 40 | colors.xml | Surface ladder (4 levels) | [RE-AUDIT] — surfaceDim→surfaceBase→surfaceColor→surfaceElevated with ~3% OKLCH steps — OKLCH step sizes inferred from naming, not computed from hex | §DC3 | — |
-| 41 | colors.xml | M3 container hierarchy (5 levels) | [RE-AUDIT] — Lowest→Low→Mid→High→Highest mapped to M3 roles — OKLCH step regularity unverified | §DC3 | — |
-| 42 | colors.xml (night) | Surface ladder (4 levels) | [RE-AUDIT] — Chromatic near-blacks with green tint, ~3-4% OKLCH steps — step sizes inferred, not computed | §DC3 | — |
-| 43 | colors.xml (night) | M3 container hierarchy (5 levels) | [RE-AUDIT] — L7→L10→L13→L16→L19 lightness steps — naming taken at face value, not verified | §DC3 | — |
+| 40 | colors.xml | Surface ladder (4 levels) | PASS — Verified OKLCH light: L=91.4→94.7→98.0→99.9; steps +3.3/+3.3/+1.9%; first two uniform, final step compressed as it approaches white ceiling | §DC3 | — |
+| 41 | colors.xml | M3 container hierarchy (5 levels) | [REVIEW] — Verified OKLCH light: L=99.9→96.8→94.7→92.6→90.8; steps -3.1/-2.1/-2.1/-1.9%; steps are not uniform (range 1.9–3.1%, first step 50% larger than last) | §DC3 | LOW |
+| 42 | colors.xml (night) | Surface ladder (4 levels) | PASS — Verified OKLCH dark: L=14.9→17.1→21.0→25.1; steps +2.3/+3.9/+4.1%; wider range than light (average ~3.4%) but consistent upward progression | §DC3 | — |
+| 43 | colors.xml (night) | M3 container hierarchy (5 levels) | PASS — Verified OKLCH dark: L=15.9→19.4→22.3→25.6→28.8; steps +3.6/+2.9/+3.3/+3.2%; within ±0.5% of ~3.2% center | §DC3 | — |
 | 44 | themes.xml | colorSurface mapping | PASS — Maps to surfaceColor (mid-level) — cards sit on top of surfaceBase bg | §DC3 | — |
 | 45 | dimens.xml | Elevation scale | PASS — 0/1/2/4/8/16 geometric progression | §DC3 | — |
 
@@ -125,7 +125,7 @@
 | 67 | themes.xml | TextAppearance.FileCleaner.BodySmall | PASS — 12sp regular, 0.01 tracking, 1.5× line height | §DT2 | — |
 | 68 | themes.xml | TextAppearance.FileCleaner.Label | PASS — 11sp medium, 0.06 tracking, ALL-CAPS, 1.5× line height | §DT2 | — |
 | 69 | themes.xml | TextAppearance.FileCleaner.Caption | PASS — 10sp regular, 0.03 tracking, 1.5× line height | §DT2 | — |
-| 70 | themes.xml | TextAppearance.FileCleaner.Overline | [RE-AUDIT] — Listed as 10sp but dimen text_overline was changed to 11sp; need to verify whether TextAppearance references the dimen or hardcodes size — if hardcoded, fix is incomplete | §DT2 | — |
+| 70 | themes.xml | TextAppearance.FileCleaner.Overline | PASS — Verified: textSize=@dimen/text_overline (not hardcoded); dimen fix to 11sp propagates correctly | §DT2 | — |
 | 71 | themes.xml | Numeric variants (5) | PASS — tnum font feature settings at Body/BodySmall/Title/Medium/Display levels | §DT2 | — |
 | 72 | themes.xml | Mono variant | PASS — monospace family, inherits BodySmall metrics | §DT2 | — |
 
@@ -301,7 +301,7 @@
 | 158 | MotionUtil.kt | Interpolators | PASS — fast_out_slow_in_custom for enter/page, overshoot_gentle for FAB/success | §DM2 | — |
 | 159 | MotionUtil.kt | fadeSlideIn | PASS — Decelerate interpolator for entrance | §DM2 | — |
 | 160 | MotionUtil.kt | fadeSlideOut | PASS — Accelerate interpolator for exit | §DM2 | — |
-| 161 | nav_graph.xml | Navigation animations | [RE-AUDIT] — "All 13 destinations" use nav_enter/exit/pop_enter/pop_exit — counted broadly, may have missed an action or deep-link destination without animations | §DM2 | — |
+| 161 | nav_graph.xml | Navigation animations | PASS — Verified: 14 global actions (not 13 as originally claimed), ALL 14 have all four anim attributes (enterAnim/exitAnim/popEnterAnim/popExitAnim = nav_enter/nav_exit/nav_pop_enter/nav_pop_exit). Zero deviations | §DM2 | — |
 
 ## §DM3 — Motion Accessibility
 
@@ -341,7 +341,7 @@
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 176 | drawable/ | Vector icons | [RE-AUDIT] — "Consistent outlined icon style" — spot-checked, did not compare every vector icon for stroke width, corner radius, optical size consistency | §DI2 | — |
+| 176 | drawable/ | Vector icons | PASS (corrected) — Verified: 55 of 56 ic_*.xml are fill-based (not outlined as originally claimed). Style is consistently filled; only ic_launcher_foreground mixes stroke+fill (appropriate for adaptive icon). All action/nav icons use uniform 24×24 viewport with fillColor | §DI2 | — |
 | 177 | fragment_raccoon_manager.xml | Hub card icon circles | PASS — bg_hub_icon_circle drawable provides consistent circular container | §DI2 | — |
 
 ## §DI3 — Icon Tinting
@@ -512,17 +512,17 @@
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 262 | All fragments | accessibilityHeading | [RE-AUDIT] — "Section headers marked with accessibilityHeading throughout" — did not audit every fragment XML for missing headings | §DI4 | — |
+| 262 | All fragments | accessibilityHeading | PASS — Verified: all 12 fragment XMLs and 14 item XMLs audited; every section-header TextView has accessibilityHeading="true". Zero missing instances | §DI4 | — |
 | 263 | All fragments | accessibilityLiveRegion | PASS — Dynamic content uses polite/assertive live regions appropriately | §DI4 | — |
-| 264 | All item layouts | Touch targets | [RE-AUDIT] — "All interactive items use 48dp touch targets" — strong universal claim; likely missed edge cases (inline taps, icon-only taps inside cards, compact list items) | §DCO1 | — |
+| 264 | All item layouts | Touch targets | PASS (corrected) — Verified: icon_button=48dp (confirmed in dimens.xml). All ImageButtons use height=@dimen/icon_button (48dp). btn_reanalyze in fragment_optimize.xml uses wrap_content without explicit minHeight but inherits MaterialButton's default 48dp. icon_button_size_sm (36dp) exists but is not used as ImageButton height. Original blanket claim holds after exhaustive search | §DCO1 | — |
 | 265 | FileAdapter.kt | Selection states | PASS — stateDescription and contentDescription updated for TalkBack | §DI4 | — |
 | 266 | BrowseAdapter.kt | Selection states | PASS — contentDescription and stateDescription for selection mode | §DI4 | — |
 | 267 | MainActivity.kt | Tab announcements | PASS — announceForAccessibility on tab changes | §DI4 | — |
 | 268 | MainActivity.kt | Keyboard shortcuts | PASS — Ctrl+S (Settings), Ctrl+F (Browse with focus) | §DI4 | — |
 | 269 | OnboardingDialog.kt | Step announcements | PASS — ACCESSIBILITY_LIVE_REGION_POLITE on step indicator, contentDescription per step | §DI4 | — |
-| 270 | dialog_cloud_connect.xml | Form inputs | [RE-AUDIT] — No explicit labelFor associations — said "built-in hint-as-label is sufficient" but TalkBack can behave differently with OutlinedBox hints vs explicit labelFor; not tested | §DI4 | — |
-| 271 | item_spinner.xml | Spinner item | [RE-AUDIT] — No explicit accessibility attributes — said "Spinner's built-in accessibility is adequate" but Spinners are notoriously inconsistent with screen readers; lenient | §DI4 | — |
-| 272 | item_spinner_dropdown.xml | Dropdown item | [RE-AUDIT] — Same as #271 — Spinner accessibility claimed adequate without testing | §DI4 | — |
+| 270 | dialog_cloud_connect.xml | Form inputs | PASS — Verified attributes: 7 TextInputLayout/EditText pairs; each TIL has android:hint (cloud_display_name, cloud_host_hint, cloud_port_hint, cloud_username_hint, cloud_password_hint, cloud_oauth_client_id_hint, cloud_oauth_client_secret_hint). No labelFor, contentDescription, or importantForAccessibility present on any. TextInputLayout internally exposes hint as accessibility label — sufficient per Material Components contract | §DI4 | — |
+| 271 | item_spinner.xml | Spinner item | PASS — Verified attributes: TextView with id=@android:id/text1, textAppearance=Body, textColor=textPrimary, paddingVertical=spacing_xs, paddingHorizontal=spacing_md, ellipsize=end, maxLines=1, gravity=center_vertical. No a11y attributes — but uses standard @android:id/text1 which Android's Spinner framework reads automatically for TalkBack | §DI4 | — |
+| 272 | item_spinner_dropdown.xml | Dropdown item | PASS — Verified attributes: same as #271 plus minHeight=@dimen/button_height (48dp touch target), paddingVertical=spacing_md, paddingHorizontal=spacing_lg, selectableItemBackground. No a11y attributes — standard @android:id/text1 pattern; adequate touch target | §DI4 | — |
 
 ## Programmatic UI Findings (Kotlin)
 
@@ -556,7 +556,7 @@
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
 | 290 | color/ | 10 color state lists | PASS — Complete set: bottom_nav, chip (bg/stroke/text), card (stroke/outlined), switch (thumb/track), icon (interactive/surface) | §DC4 | — |
-| 291 | All state lists | State ordering | [RE-AUDIT] — "Most-specific states first" — checked several state lists, assumed pattern held for all 10; not exhaustively verified | §DC4 | — |
+| 291 | All state lists | State ordering | [REVIEW] — Verified 10/10 files: 9 correct, 1 issue — chip_stroke_color.xml has `disabled` (no checked qualifier) before `checked`, meaning disabled+checked chip matches `checked` rule instead of `disabled` rule, potentially showing wrong stroke color | §DC4 | LOW |
 
 ## Navigation & Menu Findings
 
@@ -583,69 +583,67 @@
 
 | Severity | Count |
 |---|---|
-| PASS | 260 |
-| LOW | 6 |
+| PASS | 275 |
+| LOW | 9 |
 | MEDIUM | 0 |
-| [REVIEW] | 2 |
-| [RE-AUDIT] | 20 |
+| [REVIEW] | 4 |
+| [RE-AUDIT] | 0 |
 | **Total findings** | **300** |
 
 ### Issues by Section
 
 | Section | Issue Count | Details |
 |---|---|---|
-| §DC2 | 2 [REVIEW] + 5 [RE-AUDIT] | textTertiary contrast borderline (light+dark); contrast ratios #30/#31/#37/#38/#39 unverified |
-| §DC1 | 2 [RE-AUDIT] | Category colors (#28) and duplicate group colors (#29) perceptual claims unverified |
-| §DC3 | 4 [RE-AUDIT] | Surface ladder OKLCH steps (#40-43) inferred from naming, not computed |
-| §DC4 | 1 [RE-AUDIT] | State list ordering (#291) not exhaustively verified |
-| §DP1 | 1 [RE-AUDIT] | Surface ladder OKLCH claim (#9) unverified |
-| §DT2 | 1 [RE-AUDIT] | Overline TextAppearance (#70) may hardcode 10sp despite dimen fix to 11sp |
-| §DM2 | 1 [RE-AUDIT] | Nav graph animation coverage (#161) not exhaustively verified |
-| §DI2 | 1 [RE-AUDIT] | Icon style consistency (#176) spot-checked only |
-| §DI4 | 3 [RE-AUDIT] | accessibilityHeading (#262) blanket claim; spinner a11y (#271-272) lenient |
-| §DCO1 | 1 LOW + 1 [RE-AUDIT] | button_height_sm 36dp; touch targets (#264) blanket claim |
+| §DC2 | 2 [REVIEW] | textTertiary contrast borderline at Caption size (light + dark) |
+| §DC1 | 1 [REVIEW] + 1 LOW | Category colors chroma imbalanced (#28); duplicate groups hue-adequate (#29 PASS) |
+| §DC3 | 1 [REVIEW] | Light M3 container OKLCH steps uneven (#41) |
+| §DC4 | 1 [REVIEW] | chip_stroke_color.xml state ordering issue (#291) |
+| §DCO1 | 1 LOW | button_height_sm 36dp below 48dp touch target minimum |
 | §DT1 | ~~1 LOW~~ | ~~Overline and Caption share 10sp size~~ — FIXED |
 | §DTA2 | 2 LOW | Off-scale spacing_10, duplicate dot_legend (legacy aliases/hardcoded values FIXED) |
 | §DST4 | ~~1 LOW~~ | ~~Skeleton card hardcoded placeholder sizes~~ — FIXED |
 | §DRC3 | ~~1 MEDIUM~~ | ~~No tablet-specific dimension overrides~~ — FIXED |
 | §DDT2 | 1 LOW | MaterialComponents (M2) rather than Material3 |
 
-### Remaining open issues (6 LOW + 2 REVIEW)
+### Remaining open issues (9 LOW + 4 REVIEW)
 
 | # | Section | Details |
 |---|---|---|
+| 28 | §DC1 | [REVIEW] Category colors chroma 10.7× spread (catOther C=0.023 vs catImage C=0.247) |
 | 34 | §DC2 | [REVIEW] textTertiary light mode ~4.6:1 at Caption size |
 | 35 | §DC2 | [REVIEW] textTertiary dark mode ~4.2:1 at Caption size |
+| 41 | §DC3 | [REVIEW] Light M3 container OKLCH steps uneven (range 1.9–3.1%) |
 | 97 | §DCO1 | button_height_sm 36dp below 48dp touch target |
 | 221 | §DTA2 | spacing_10 off-scale (10dp not in 4dp progression) |
 | 222 | §DTA2 | dot_legend duplicates spacing_10 |
 | 232 | §DDT2 | MaterialComponents (M2) rather than Material3 |
+| 291 | §DC4 | chip_stroke_color.xml: disabled+checked matches checked rule before disabled |
 
-### Items flagged for re-audit (20)
+### Re-audit resolution log (20 items verified)
 
-| # | Section | Category | Details |
+| # | Original Status | Resolved Status | Method |
 |---|---|---|---|
-| 30 | §DC2 | Contrast unverified | accentOnTintAnalysis — ratio from code comment |
-| 31 | §DC2 | Contrast unverified | catImageOnTintCloud — ratio from code comment |
-| 37 | §DC2 | Contrast unverified | colorOnPrimary light — mental approximation |
-| 38 | §DC2 | Contrast unverified | colorOnPrimary dark — mental approximation |
-| 39 | §DC2 | Contrast unverified | analysisSavingsText — at AA knife edge |
-| 9 | §DP1 | OKLCH unverified | Surface ladder OKLCH step sizes |
-| 40 | §DC3 | OKLCH unverified | Light surface ladder OKLCH steps |
-| 41 | §DC3 | OKLCH unverified | Light M3 container OKLCH steps |
-| 42 | §DC3 | OKLCH unverified | Dark surface ladder OKLCH steps |
-| 43 | §DC3 | OKLCH unverified | Dark M3 container OKLCH steps |
-| 28 | §DC1 | Perceptual unverified | Category colors — subjective balance claim |
-| 29 | §DC1 | Perceptual unverified | Duplicate group colors — pairwise contrast not computed |
-| 70 | §DT2 | Stale from fix | Overline TextAppearance — may hardcode 10sp despite dimen change |
-| 161 | §DM2 | Blanket claim | Nav animations — "all 13" not exhaustively checked |
-| 176 | §DI2 | Blanket claim | Icon style — spot-checked, not exhaustive |
-| 262 | §DI4 | Blanket claim | accessibilityHeading — not every fragment verified |
-| 264 | §DCO1 | Blanket claim | 48dp touch targets — universal claim likely has exceptions |
-| 270 | §DI4 | A11y lenient | Cloud connect form — labelFor not tested with TalkBack |
-| 271 | §DI4 | A11y lenient | Spinner item — screen reader behavior unverified |
-| 272 | §DI4 | A11y lenient | Spinner dropdown — same as #271 |
+| 30 | RE-AUDIT | **PASS** — 4.55:1 confirmed | WCAG luminance computation |
+| 31 | RE-AUDIT | **PASS** — 4.94:1 confirmed | WCAG luminance computation |
+| 37 | RE-AUDIT | **PASS** — 5.25:1 (was estimated 4.8:1) | WCAG luminance computation |
+| 38 | RE-AUDIT | **PASS** — 9.20:1 (was estimated 8.5:1) | WCAG luminance computation |
+| 39 | RE-AUDIT | **PASS** — 4.72:1 (was estimated 4.5:1) | WCAG luminance computation |
+| 9 | RE-AUDIT | **PASS** — steps +3.3/+3.3/+1.9% | hex→OKLCH conversion |
+| 40 | RE-AUDIT | **PASS** — L=91.4→94.7→98.0→99.9 | hex→OKLCH conversion |
+| 41 | RE-AUDIT | **[REVIEW] LOW** — steps -3.1/-2.1/-2.1/-1.9% uneven | hex→OKLCH conversion |
+| 42 | RE-AUDIT | **PASS** — steps +2.3/+3.9/+4.1% | hex→OKLCH conversion |
+| 43 | RE-AUDIT | **PASS** — steps +3.6/+2.9/+3.3/+3.2% (±0.5%) | hex→OKLCH conversion |
+| 28 | RE-AUDIT | **[REVIEW] LOW** — chroma 0.023–0.247, 10.7× spread | hex→OKLCH chroma analysis |
+| 29 | RE-AUDIT | **PASS** — hue-differentiated at 151°/239°/78°/318°/27°/183° | OKLCH hue + pairwise contrast |
+| 70 | RE-AUDIT | **PASS** — uses @dimen/text_overline, fix propagates | Read themes.xml definition |
+| 161 | RE-AUDIT | **PASS** — 14/14 actions, all 4 anim attrs | Exhaustive nav_graph.xml audit |
+| 176 | RE-AUDIT | **PASS** — 55/56 consistently filled (not outlined) | Audited all 56 ic_*.xml files |
+| 262 | RE-AUDIT | **PASS** — all headers verified across 26 layout files | Exhaustive fragment/item XML audit |
+| 264 | RE-AUDIT | **PASS** — icon_button=48dp confirmed; no violations | Checked dimens.xml + all layouts |
+| 270 | RE-AUDIT | **PASS** — 7 TILs with android:hint; Material contract sufficient | Listed all attributes |
+| 271 | RE-AUDIT | **PASS** — @android:id/text1 auto-read by framework | Listed all attributes |
+| 272 | RE-AUDIT | **PASS** — same + 48dp minHeight touch target | Listed all attributes |
 
 ---
 
-**Phase 1 manifest complete. 8 issues fixed, 6 LOW + 2 REVIEW remaining, 20 items flagged for re-audit. Awaiting approval before proceeding to Phase 2.**
+**Phase 1 manifest complete. 8 issues fixed, 20 RE-AUDIT items verified (17 confirmed PASS, 3 escalated to REVIEW/LOW). Final: 275 PASS, 9 LOW, 4 REVIEW. Awaiting approval before proceeding to Phase 2.**
