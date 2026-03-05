@@ -378,120 +378,124 @@
     </LinearLayout>
 
     <!-- Floating selection action bar (hidden by default) -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/selection_action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/surfaceColor"
-        android:elevation="@dimen/elevation_nav"
-        android:layout_marginBottom="@dimen/bottom_nav_height"
+        android:layout_marginHorizontal="@dimen/spacing_md"
+        android:layout_marginBottom="@dimen/spacing_md"
         android:visibility="gone"
         android:contentDescription="@string/a11y_selection_actions"
         android:accessibilityLiveRegion="polite"
-        android:focusable="true">
+        android:focusable="true"
+        app:cardCornerRadius="@dimen/radius_card"
+        app:cardElevation="@dimen/elevation_floating"
+        app:cardBackgroundColor="@color/surfaceColor"
+        app:strokeWidth="@dimen/stroke_default"
+        app:strokeColor="@color/selectedBorder">
 
-        <!-- Selection info row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingVertical="@dimen/spacing_xs"
-            android:minHeight="@dimen/touch_target_min">
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
 
-            <TextView
-                android:id="@+id/tv_selection_count"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <!-- Selection info row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
-                android:textColor="@color/colorPrimary"
-                android:accessibilityLiveRegion="polite" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/touch_target_min">
 
-            <ImageButton
-                android:id="@+id/btn_select_all"
-                android:layout_width="@dimen/icon_button"
-                android:layout_height="@dimen/icon_button"
-                android:src="@drawable/ic_select_all"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/select_all"
-                android:scaleType="centerInside"
-                android:padding="@dimen/spacing_sm"
-                app:tint="@color/textSecondary" />
+                <TextView
+                    android:id="@+id/tv_selection_count"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.FileCleaner.BodySmallMedium"
+                    android:textColor="@color/colorPrimary"
+                    android:accessibilityLiveRegion="polite" />
 
-            <ImageButton
-                android:id="@+id/btn_clear_selection"
-                android:layout_width="@dimen/icon_button"
-                android:layout_height="@dimen/icon_button"
-                android:src="@drawable/ic_close"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/a11y_clear_selection"
-                android:scaleType="centerInside"
-                android:padding="@dimen/spacing_sm"
-                app:tint="@color/textSecondary" />
+                <ImageButton
+                    android:id="@+id/btn_select_all"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_select_all"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/select_all"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_sm"
+                    app:tint="@color/textSecondary" />
+
+                <ImageButton
+                    android:id="@+id/btn_clear_selection"
+                    android:layout_width="@dimen/icon_button"
+                    android:layout_height="@dimen/icon_button"
+                    android:src="@drawable/ic_close"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/a11y_clear_selection"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_sm"
+                    app:tint="@color/textSecondary" />
+            </LinearLayout>
+
+            <!-- Action buttons row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:minHeight="@dimen/touch_target_min">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_copy_to_other"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/dual_pane_copy"
+                    android:textAllCaps="false"
+                    android:layout_marginEnd="@dimen/spacing_xs"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
+                    app:icon="@drawable/ic_copy"
+                    app:iconSize="@dimen/icon_small"
+                    app:cornerRadius="@dimen/radius_pill"
+                    app:strokeColor="@color/borderDefault" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_move_to_other"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/dual_pane_move"
+                    android:textAllCaps="false"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
+                    app:icon="@drawable/ic_move"
+                    app:iconSize="@dimen/icon_small"
+                    app:cornerRadius="@dimen/radius_pill"
+                    app:strokeColor="@color/borderDefault" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_delete_selected"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="@dimen/button_height_sm"
+                    android:text="@string/delete"
+                    android:textAllCaps="false"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    style="@style/Widget.FileCleaner.Button.Destructive"
+                    app:icon="@drawable/ic_delete"
+                    app:iconSize="@dimen/icon_small"
+                    app:cornerRadius="@dimen/radius_pill" />
+            </LinearLayout>
         </LinearLayout>
-
-        <!-- Action buttons row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingBottom="@dimen/spacing_sm"
-            android:minHeight="@dimen/touch_target_min">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_copy_to_other"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="@dimen/button_height_sm"
-                android:text="@string/dual_pane_copy"
-                android:textAllCaps="false"
-                android:layout_marginEnd="@dimen/spacing_xs"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                style="@style/Widget.FileCleaner.Button.Outlined"
-                app:icon="@drawable/ic_copy"
-                app:iconSize="@dimen/icon_small"
-                app:cornerRadius="@dimen/radius_pill"
-                app:strokeColor="@color/borderDefault" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_move_to_other"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="@dimen/button_height_sm"
-                android:text="@string/dual_pane_move"
-                android:textAllCaps="false"
-                android:layout_marginHorizontal="@dimen/spacing_xs"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                style="@style/Widget.FileCleaner.Button.Outlined"
-                app:icon="@drawable/ic_move"
-                app:iconSize="@dimen/icon_small"
-                app:cornerRadius="@dimen/radius_pill"
-                app:strokeColor="@color/borderDefault" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete_selected"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="@dimen/button_height_sm"
-                android:text="@string/delete"
-                android:textAllCaps="false"
-                android:layout_marginStart="@dimen/spacing_xs"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                style="@style/Widget.FileCleaner.Button.Outlined"
-                app:icon="@drawable/ic_delete"
-                app:iconSize="@dimen/icon_small"
-                app:cornerRadius="@dimen/radius_pill"
-                app:strokeColor="@color/colorError"
-                android:textColor="@color/colorError"
-                app:iconTint="@color/colorError" />
-        </LinearLayout>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
