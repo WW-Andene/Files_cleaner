@@ -218,6 +218,7 @@
         style="@style/Widget.FileCleaner.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_md"
         android:visibility="gone"
         app:cardElevation="@dimen/elevation_floating"
         app:cardBackgroundColor="@color/colorPrimary"
