@@ -270,7 +270,6 @@ object ConvertDialog {
      * 2. "Extract key frames" to get evenly-spaced frames across the entire video
      */
     private fun showVideoConvertDialog(context: Context, item: FileItem, onResult: (FileConverter.ConvertResult) -> Unit) {
-        val dp = context.resources.displayMetrics.density
         val spacingXs = context.resources.getDimensionPixelSize(R.dimen.spacing_xs)
         val spacingSm = context.resources.getDimensionPixelSize(R.dimen.spacing_sm)
         val spacingMd = context.resources.getDimensionPixelSize(R.dimen.spacing_md)
@@ -433,7 +432,7 @@ object ConvertDialog {
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
             setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_subtitle))
             gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams((80 * dp).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams = LinearLayout.LayoutParams(context.resources.getDimensionPixelSize(R.dimen.convert_count_input_width), ViewGroup.LayoutParams.WRAP_CONTENT)
         }
         countRow.addView(countInput)
         container.addView(countRow)

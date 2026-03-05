@@ -30,17 +30,9 @@ class ArborescenceView @JvmOverloads constructor(
         get() = (context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-    // ── Layout constants (dp-based, scaled by screen density) ──
+    // ── Layout constants ──
     // I5: Named constants extracted from magic numbers for readability and maintainability
     companion object {
-        private const val BLOCK_WIDTH_DP = 220f
-        private const val BLOCK_MIN_HEIGHT_DP = 64f
-        private const val FILE_LINE_HEIGHT_DP = 24f
-        private const val H_GAP_DP = 48f       // horizontal gap between depth levels
-        private const val V_GAP_DP = 16f        // vertical gap between sibling blocks
-        private const val CORNER_RADIUS_DP = 10f
-        private const val HEADER_HEIGHT_DP = 48f
-        private const val GHOST_TEXT_SIZE_DP = 12f
         private const val DEFAULT_MAX_FILES = 5
         private const val EXPANDED_MAX_FILES = 50
         private const val STROKE_WIDTH_THIN = 1.5f
@@ -52,14 +44,13 @@ class ArborescenceView @JvmOverloads constructor(
         private const val MAX_SCALE = 3f
     }
 
-    private val dp = context.resources.displayMetrics.density
-    private val blockWidth = BLOCK_WIDTH_DP * dp
-    private val blockMinHeight = BLOCK_MIN_HEIGHT_DP * dp
-    private val fileLineHeight = FILE_LINE_HEIGHT_DP * dp
-    private val hGap = H_GAP_DP * dp
-    private val vGap = V_GAP_DP * dp
-    private val cornerRadius = CORNER_RADIUS_DP * dp
-    private val headerHeight = HEADER_HEIGHT_DP * dp
+    private val blockWidth = context.resources.getDimension(R.dimen.tree_block_width)
+    private val blockMinHeight = context.resources.getDimension(R.dimen.tree_block_min_height)
+    private val fileLineHeight = context.resources.getDimension(R.dimen.tree_file_line_height)
+    private val hGap = context.resources.getDimension(R.dimen.tree_h_gap)
+    private val vGap = context.resources.getDimension(R.dimen.tree_v_gap)
+    private val cornerRadius = context.resources.getDimension(R.dimen.tree_corner_radius)
+    private val headerHeight = context.resources.getDimension(R.dimen.tree_header_height)
 
     // ── Theme colors (resolved once — View is recreated on config change) ──
     private val colorPrimary by lazy { ContextCompat.getColor(context, R.color.colorPrimary) }
@@ -123,7 +114,7 @@ class ArborescenceView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val ghostTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = GHOST_TEXT_SIZE_DP * dp
+        textSize = context.resources.getDimension(R.dimen.tree_ghost_text_size)
     }
     private var highlightAnimator: ValueAnimator? = null
     private var highlightAlpha = 1f
@@ -207,17 +198,26 @@ class ArborescenceView @JvmOverloads constructor(
     private val tempPath = Path()
 
     // P5: Pre-computed dp-scaled constants used in drawBlock (avoid repeated multiply per frame)
-    private val padDp = 8f * dp
-    private val indicatorWidthDp = 18f * dp
-    private val dotRadius = 3f * dp
-    private val fileXStart = 18f * dp
-    private val fileTextX = 28f * dp
-    private val fileSizeEndPad = 6f * dp
-    private val ghostPad = 16f * dp
-    private val ghostHeight = 20f * dp
-    private val ghostYOffset = 6f * dp
-    private val ghostTextOffset = 3f * dp
-    private val ghostCorner = 8f * dp
+    private val padDp = context.resources.getDimension(R.dimen.tree_pad)
+    private val indicatorWidthDp = context.resources.getDimension(R.dimen.tree_indicator_width)
+    private val dotRadius = context.resources.getDimension(R.dimen.tree_dot_radius)
+    private val fileXStart = context.resources.getDimension(R.dimen.tree_file_x_start)
+    private val fileTextX = context.resources.getDimension(R.dimen.tree_file_text_x)
+    private val fileSizeEndPad = context.resources.getDimension(R.dimen.tree_file_size_end_pad)
+    private val ghostPad = context.resources.getDimension(R.dimen.tree_ghost_pad)
+    private val ghostHeight = context.resources.getDimension(R.dimen.tree_ghost_height)
+    private val ghostYOffset = context.resources.getDimension(R.dimen.tree_ghost_y_offset)
+    private val ghostTextOffset = context.resources.getDimension(R.dimen.tree_ghost_text_offset)
+    private val ghostCorner = context.resources.getDimension(R.dimen.tree_ghost_corner)
+    private val treeInitialOffset = context.resources.getDimension(R.dimen.tree_initial_offset)
+    private val treeHighlightStroke = context.resources.getDimension(R.dimen.tree_highlight_stroke)
+    private val treeHighlightCorner = context.resources.getDimension(R.dimen.tree_highlight_corner)
+    private val treeHighlightInset = context.resources.getDimension(R.dimen.tree_highlight_inset)
+    private val treeArrowLength = context.resources.getDimension(R.dimen.tree_arrow_length)
+    private val treeArrowHalfHeight = context.resources.getDimension(R.dimen.tree_arrow_half_height)
+    private val treeArrowTipInset = context.resources.getDimension(R.dimen.tree_arrow_tip_inset)
+    private val treeZoomPadding = context.resources.getDimension(R.dimen.tree_zoom_padding)
+    private val treeZoomFilePadding = context.resources.getDimension(R.dimen.tree_zoom_file_padding)
 
     // P5: Reusable float array for screenToWorld — avoids allocation on every drag move
     private val tempPts = FloatArray(2)
@@ -396,7 +396,7 @@ class ArborescenceView @JvmOverloads constructor(
         // Center on root
         viewMatrix.reset()
         scaleFactor = 1f
-        viewMatrix.postTranslate(60f, 60f)
+        viewMatrix.postTranslate(treeInitialOffset, treeInitialOffset)
         contentDescription = context.getString(
             R.string.a11y_tree_view, root.totalFileCount, formatSize(root.totalSize))
         invalidate()
@@ -415,7 +415,7 @@ class ArborescenceView @JvmOverloads constructor(
         if (expandedPaths.isEmpty()) {
             viewMatrix.reset()
             scaleFactor = 1f
-            viewMatrix.postTranslate(60f, 60f)
+            viewMatrix.postTranslate(treeInitialOffset, treeInitialOffset)
         }
         contentDescription = context.getString(
             R.string.a11y_tree_view, root.totalFileCount, formatSize(root.totalSize))
