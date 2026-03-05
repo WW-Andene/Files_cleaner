@@ -378,11 +378,8 @@ abstract class BaseFileListFragment : Fragment() {
     private fun showViewModePopup() {
         val popup = PopupMenu(requireContext(), binding.btnViewMode)
         val styles = listOf(
-            getString(R.string.display_mode_compact) to ViewMode.Style.COMPACT,
             getString(R.string.display_mode_list) to ViewMode.Style.LIST,
-            getString(R.string.display_mode_thumbnails) to ViewMode.Style.THUMBNAIL,
-            getString(R.string.display_mode_grid) to ViewMode.Style.GRID,
-            getString(R.string.display_mode_gallery) to ViewMode.Style.GALLERY
+            getString(R.string.display_mode_grid) to ViewMode.Style.GRID
         )
         styles.forEachIndexed { index, (label, _) ->
             popup.menu.add(0, index, index, label)
@@ -416,6 +413,7 @@ abstract class BaseFileListFragment : Fragment() {
     private fun setupSizeChips() {
         val chipGroup = binding.chipGroupGridColumns
         val sizes = listOf(
+            getString(R.string.size_xxs) to ViewMode.Size.XXS,
             getString(R.string.size_xs) to ViewMode.Size.XS,
             getString(R.string.size_sm) to ViewMode.Size.SM,
             getString(R.string.size_md) to ViewMode.Size.MD,

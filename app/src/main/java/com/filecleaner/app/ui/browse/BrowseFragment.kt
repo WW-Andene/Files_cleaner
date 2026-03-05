@@ -382,11 +382,8 @@ class BrowseFragment : Fragment() {
     private fun setupDisplayModeChips() {
         val chipGroup = binding.chipGroupDisplayMode
         val styles = listOf(
-            getString(R.string.display_mode_compact) to ViewMode.Style.COMPACT,
             getString(R.string.display_mode_list) to ViewMode.Style.LIST,
-            getString(R.string.display_mode_thumbnails) to ViewMode.Style.THUMBNAIL,
-            getString(R.string.display_mode_grid) to ViewMode.Style.GRID,
-            getString(R.string.display_mode_gallery) to ViewMode.Style.GALLERY
+            getString(R.string.display_mode_grid) to ViewMode.Style.GRID
         )
         for ((label, style) in styles) {
             val chip = Chip(requireContext()).apply {
@@ -425,6 +422,7 @@ class BrowseFragment : Fragment() {
     private fun setupDisplaySizeChips() {
         val chipGroup = binding.chipGroupDisplayGridColumns
         val sizes = listOf(
+            getString(R.string.size_xxs) to ViewMode.Size.XXS,
             getString(R.string.size_xs) to ViewMode.Size.XS,
             getString(R.string.size_sm) to ViewMode.Size.SM,
             getString(R.string.size_md) to ViewMode.Size.MD,

@@ -26,7 +26,6 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         private const val TYPE_HEADER = 0
         private const val TYPE_FILE = 1
         private const val TYPE_FILE_GRID = 11
-        private const val TYPE_FILE_COMPACT = 12
         private const val PAYLOAD_SELECTION = "selection"
 
         private val DIFF = object : DiffUtil.ItemCallback<Item>() {
@@ -219,7 +218,6 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is Item.Header -> TYPE_HEADER
         is Item.File -> when {
-            viewMode.style == ViewMode.Style.COMPACT -> TYPE_FILE_COMPACT
             viewMode.usesGridLayout -> TYPE_FILE_GRID
             else -> TYPE_FILE
         }
@@ -233,7 +231,6 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
             TYPE_HEADER -> HeaderViewHolder(inflater.inflate(R.layout.item_folder_header, parent, false))
             else -> {
                 val layoutRes = when (viewType) {
-                    TYPE_FILE_COMPACT -> R.layout.item_file_compact
                     TYPE_FILE_GRID -> R.layout.item_file_grid
                     else -> R.layout.item_file
                 }
@@ -333,23 +330,13 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
         // Resize icon/container based on mode + size
         if (!viewMode.usesGridLayout) {
             val sizePx = (viewMode.iconSizeDp * ctx.resources.displayMetrics.density).toInt()
-            if (viewMode.style == ViewMode.Style.COMPACT) {
-                val lp = holder.icon.layoutParams
-                lp.width = sizePx
-                lp.height = sizePx
-                holder.icon.layoutParams = lp
-            } else {
-                val container = holder.icon.parent as? android.view.View
-                if (container != null) {
-                    val clp = container.layoutParams
-                    clp.width = sizePx
-                    clp.height = sizePx
-                    container.layoutParams = clp
-                }
+            val container = holder.icon.parent as? android.view.View
+            if (container != null) {
+                val clp = container.layoutParams
+                clp.width = sizePx
+                clp.height = sizePx
+                container.layoutParams = clp
             }
-        } else if (viewMode.style == ViewMode.Style.GALLERY) {
-            val minH = (viewMode.galleryMinHeightDp * ctx.resources.displayMetrics.density).toInt()
-            holder.icon.minimumHeight = minH
         }
 
         // Load thumbnail or icon

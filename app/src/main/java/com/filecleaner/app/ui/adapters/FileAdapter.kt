@@ -26,7 +26,6 @@ class FileAdapter(
             override fun areItemsTheSame(a: FileItem, b: FileItem) = a.path == b.path
             override fun areContentsTheSame(a: FileItem, b: FileItem) = a == b
         }
-        private const val TYPE_COMPACT = 2
         private const val TYPE_LIST = 0
         private const val TYPE_GRID = 1
         private const val PAYLOAD_SELECTION = "selection"
@@ -82,14 +81,12 @@ class FileAdapter(
     }
 
     override fun getItemViewType(position: Int): Int = when {
-        viewMode.style == ViewMode.Style.COMPACT -> TYPE_COMPACT
         viewMode.usesGridLayout -> TYPE_GRID
         else -> TYPE_LIST
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
         val layoutRes = when (viewType) {
-            TYPE_COMPACT -> R.layout.item_file_compact
             TYPE_GRID -> R.layout.item_file_grid
             else -> R.layout.item_file
         }
@@ -147,26 +144,13 @@ class FileAdapter(
         // Resize icon/container based on mode + size
         if (!viewMode.usesGridLayout) {
             val sizePx = (viewMode.iconSizeDp * ctx.resources.displayMetrics.density).toInt()
-            if (viewMode.style == ViewMode.Style.COMPACT) {
-                // Compact: resize the ImageView directly (no container card)
-                val lp = holder.icon.layoutParams
-                lp.width = sizePx
-                lp.height = sizePx
-                holder.icon.layoutParams = lp
-            } else {
-                // List / Thumbnail: resize the container MaterialCardView
-                val container = holder.icon.parent as? View
-                if (container != null) {
-                    val clp = container.layoutParams
-                    clp.width = sizePx
-                    clp.height = sizePx
-                    container.layoutParams = clp
-                }
+            val container = holder.icon.parent as? View
+            if (container != null) {
+                val clp = container.layoutParams
+                clp.width = sizePx
+                clp.height = sizePx
+                container.layoutParams = clp
             }
-        } else if (viewMode.style == ViewMode.Style.GALLERY) {
-            // Gallery: set thumbnail min height based on size
-            val minH = (viewMode.galleryMinHeightDp * ctx.resources.displayMetrics.density).toInt()
-            holder.icon.minimumHeight = minH
         }
 
         // Load thumbnail or category icon

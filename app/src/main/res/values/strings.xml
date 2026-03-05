@@ -915,6 +915,7 @@
 
     <!-- Size labels -->
     <string name="size_label">Size</string>
+    <string name="size_xxs">XXS</string>
     <string name="size_xs">XS</string>
     <string name="size_sm">S</string>
     <string name="size_md">M</string>
