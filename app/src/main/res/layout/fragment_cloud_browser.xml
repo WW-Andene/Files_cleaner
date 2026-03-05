@@ -213,44 +213,51 @@
         android:visibility="gone" />
 
     <!-- Bottom bar for download -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/action_bar"
+        style="@style/Widget.FileCleaner.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingHorizontal="@dimen/spacing_md"
-        android:paddingVertical="@dimen/spacing_sm"
-        android:background="@color/surfaceDim"
         android:visibility="gone"
-        android:elevation="@dimen/elevation_raised"
-        android:minHeight="@dimen/touch_target_min">
+        app:cardElevation="@dimen/elevation_floating"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:strokeWidth="@dimen/stroke_none">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_download"
-            style="@style/Widget.FileCleaner.Button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height"
-            android:text="@string/cloud_download"
-            android:textAllCaps="false"
-            android:layout_marginEnd="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            app:cornerRadius="@dimen/radius_pill" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingVertical="@dimen/spacing_sm"
+            android:minHeight="@dimen/touch_target_min">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_upload"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height"
-            android:text="@string/cloud_upload"
-            android:textAllCaps="false"
-            android:layout_marginStart="@dimen/spacing_xs"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            style="@style/Widget.FileCleaner.Button.Outlined"
-            app:cornerRadius="@dimen/radius_pill"
-            app:strokeColor="@color/borderDefault" />
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_download"
+                style="@style/Widget.FileCleaner.Button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/cloud_download"
+                android:textAllCaps="false"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_upload"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/cloud_upload"
+                android:textAllCaps="false"
+                android:layout_marginStart="@dimen/spacing_xs"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                style="@style/Widget.FileCleaner.Button.Outlined"
+                app:cornerRadius="@dimen/radius_pill"
+                app:strokeColor="@color/borderDefault" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
