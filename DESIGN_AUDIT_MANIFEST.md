@@ -110,8 +110,8 @@
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 60 | dimens.xml | Typography scale | PASS — 10→10→11→12→13→14→16→20→26→32sp — compressed lower, Major Third upper | §DT1 | — |
-| 61 | dimens.xml | text_overline / text_caption both 10sp | [REVIEW] — Overline and Caption share same size (10sp); differentiated only by weight/tracking/case — may lack visual distinction in some contexts | §DT1 | LOW |
+| 60 | dimens.xml | Typography scale | PASS — 10→11→11→12→13→14→16→20→26→32sp — compressed lower, Major Third upper | §DT1 | — |
+| 61 | dimens.xml | text_overline / text_caption | PASS — FIXED: Overline bumped to 11sp, now distinct from Caption (10sp); differentiated by size + weight/tracking/case | §DT1 | — |
 
 ## §DT2 — Typographic Styles & Weights
 
@@ -394,7 +394,7 @@
 | 196 | item_skeleton_card.xml | Skeleton card | PASS — Matches item_file card dimensions; shimmer circle + placeholder bars | §DST4 | — |
 | 197 | item_skeleton_hub_card.xml | Skeleton hub card | PASS — Matches hub card layout; shimmer circle + text placeholders | §DST4 | — |
 | 198 | item_skeleton_card.xml | Accessibility | PASS — importantForAccessibility="no" on all placeholder views | §DST4 | — |
-| 199 | item_skeleton_card.xml | Hardcoded sizes | Title placeholder 160dp×14dp, subtitle 120dp×10dp — hardcoded rather than referencing dimen tokens | §DST4 | LOW |
+| 199 | item_skeleton_card.xml | Placeholder sizes | PASS — FIXED: Now references @dimen/skeleton_title_width (160dp), skeleton_title_height (14dp), skeleton_subtitle_width (120dp), skeleton_subtitle_height (10dp) | §DST4 | — |
 
 ## §DCVW1–3 — Copy × Visual Alignment
 
@@ -448,7 +448,7 @@
 | 225 | BaseFileListFragment.kt | Grid span switching | PASS — GridLayoutManager with dynamic span count from ViewMode | §DRC1 | — |
 | 226 | fragment_dual_pane.xml | Dual pane layout | PASS — Split view with draggable divider for tablet/large screen | §DRC1 | — |
 | 227 | include_empty_state.xml | maxWidth constraints | PASS — Title 280dp, subtitle 300dp max — prevents overly wide text on large screens | §DRC2 | — |
-| 228 | app | No values-sw600dp/sw720dp | No tablet-specific dimension overrides detected (no values-sw600dp or values-sw720dp folders) — spacing/sizing may not adapt to larger screens | §DRC3 | MEDIUM |
+| 228 | values-sw600dp/dimens.xml | Tablet overrides | PASS — FIXED: Added values-sw600dp/dimens.xml with 1.5× spacing (spacing_lg/xl/3xl), wider empty state maxWidths, and +1sp text size bumps (body/body_small/caption/overline/label) | §DRC3 | — |
 
 ## §DDT1–2 — Design Trends
 
@@ -549,7 +549,7 @@
 | 286 | themes.xml | ShapeMedium | cornerSize=radius_md (14dp) — M2 medium component | §DP1 | — |
 | 287 | themes.xml | ShapeLarge | cornerSize=radius_lg (18dp) — M2 large component | §DP1 | — |
 | 288 | dimens.xml | Radius system | radius_bar_sm(4dp) → radius_bar(6dp) → radius_thumbnail(8dp) → ShapeSmall(10dp) → radius_btn/input/icon_container(12dp) → ShapeMedium(14dp) → radius_card(16dp) → ShapeLarge(18dp) → radius_header(20dp) → radius_modal/pill(24dp) — well-ordered progression | §DP1 | — |
-| 289 | dimens.xml | Legacy radius aliases | radius_sm(10), radius_md(14), radius_lg(18) are aliases for Shape system — potential confusion with spacing_sm/md/lg naming | §DTA2 | LOW |
+| 289 | dimens.xml | Legacy radius aliases | PASS — FIXED: Comment clarified to "Shape system aliases (match ShapeSmall/Medium/Large — kept for legacy XML references)" | §DTA2 | — |
 
 ## Color State List Findings
 
@@ -571,11 +571,11 @@
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 296 | Multiple layouts | android:alpha="0.85" | Hardcoded alpha 0.85 used on decorative raccoon logos across 10+ layouts — should be a dimen/float resource token for consistency | §DTA2 | LOW |
-| 297 | include_empty_state.xml | maxWidth="280dp" | Hardcoded maxWidth on title — should be a dimen token | §DTA2 | LOW |
-| 298 | include_empty_state.xml | maxWidth="300dp" | Hardcoded maxWidth on subtitle — should be a dimen token | §DTA2 | LOW |
-| 299 | include_loading_state.xml | indicatorSize="56dp" | Hardcoded CircularProgressIndicator size — should reference icon_raccoon (56dp) or a dedicated token | §DTA2 | LOW |
-| 300 | item_skeleton_card.xml | 160dp, 14dp, 120dp, 10dp | Hardcoded shimmer placeholder sizes — should be dimen tokens | §DTA2 | LOW |
+| 296 | Multiple layouts | android:alpha | PASS — FIXED: All 14 occurrences now reference @dimen/alpha_raccoon_logo float token (11 files) | §DTA2 | — |
+| 297 | include_empty_state.xml | maxWidth (title) | PASS — FIXED: Now references @dimen/empty_state_title_max_width (280dp) | §DTA2 | — |
+| 298 | include_empty_state.xml | maxWidth (subtitle) | PASS — FIXED: Now references @dimen/empty_state_subtitle_max_width (300dp) | §DTA2 | — |
+| 299 | include_loading_state.xml | indicatorSize | PASS — FIXED: Now references @dimen/progress_indicator_size (56dp) | §DTA2 | — |
+| 300 | item_skeleton_card.xml | Placeholder sizes | PASS — FIXED: Now references skeleton_title_width/height + skeleton_subtitle_width/height tokens | §DTA2 | — |
 
 ---
 
@@ -583,9 +583,9 @@
 
 | Severity | Count |
 |---|---|
-| PASS | 272 |
-| LOW | 14 |
-| MEDIUM | 1 |
+| PASS | 280 (272 original + 8 fixed) |
+| LOW | 6 |
+| MEDIUM | 0 |
 | [REVIEW] | 2 |
 | **Total findings** | **300** |
 
@@ -595,12 +595,23 @@
 |---|---|---|
 | §DC2 | 2 [REVIEW] | textTertiary contrast borderline at Caption size (light + dark) |
 | §DCO1 | 1 LOW | button_height_sm 36dp below 48dp touch target minimum |
-| §DT1 | 1 LOW | Overline and Caption share 10sp size |
-| §DTA2 | 8 LOW | Off-scale spacing_10, duplicate dot_legend, legacy radius aliases, hardcoded alpha/maxWidth/sizes |
-| §DST4 | 1 LOW | Skeleton card hardcoded placeholder sizes |
-| §DRC3 | 1 MEDIUM | No tablet-specific dimension overrides (values-sw600dp) |
+| §DT1 | ~~1 LOW~~ | ~~Overline and Caption share 10sp size~~ — FIXED |
+| §DTA2 | 2 LOW | Off-scale spacing_10, duplicate dot_legend (legacy aliases/hardcoded values FIXED) |
+| §DST4 | ~~1 LOW~~ | ~~Skeleton card hardcoded placeholder sizes~~ — FIXED |
+| §DRC3 | ~~1 MEDIUM~~ | ~~No tablet-specific dimension overrides~~ — FIXED |
 | §DDT2 | 1 LOW | MaterialComponents (M2) rather than Material3 |
+
+### Remaining open issues (6 LOW + 2 REVIEW)
+
+| # | Section | Details |
+|---|---|---|
+| 34 | §DC2 | [REVIEW] textTertiary light mode ~4.6:1 at Caption size |
+| 35 | §DC2 | [REVIEW] textTertiary dark mode ~4.2:1 at Caption size |
+| 97 | §DCO1 | button_height_sm 36dp below 48dp touch target |
+| 221 | §DTA2 | spacing_10 off-scale (10dp not in 4dp progression) |
+| 222 | §DTA2 | dot_legend duplicates spacing_10 |
+| 232 | §DDT2 | MaterialComponents (M2) rather than Material3 |
 
 ---
 
-**Phase 1 manifest complete. Awaiting approval before proceeding to Phase 2.**
+**Phase 1 manifest complete. 8 issues fixed, 6 LOW + 2 REVIEW remaining. Awaiting approval before proceeding to Phase 2.**
