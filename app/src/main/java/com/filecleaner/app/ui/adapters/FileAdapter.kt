@@ -141,6 +141,15 @@ class FileAdapter(
 
         holder.name.text = item.name
 
+        // Scale grid thumbnail height to match cell width (≈ square aspect ratio)
+        if (viewMode.usesGridLayout) {
+            val lp = holder.icon.layoutParams
+            val screenWidth = ctx.resources.displayMetrics.widthPixels
+            val cellWidth = screenWidth / viewMode.spanCount
+            lp.height = cellWidth
+            holder.icon.layoutParams = lp
+        }
+
         // Resize icon/container and card padding based on mode + size
         if (!viewMode.usesGridLayout) {
             val density = ctx.resources.displayMetrics.density

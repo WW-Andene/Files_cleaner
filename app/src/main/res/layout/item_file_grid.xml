@@ -31,7 +31,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/radius_card"
+            app:cardCornerRadius="@dimen/radius_icon_container"
             app:cardElevation="@dimen/elevation_none"
             app:strokeWidth="@dimen/stroke_none"
             app:cardBackgroundColor="@color/surfaceDim">
