@@ -160,10 +160,10 @@ Some fragments used `spacing_md` (12dp), others `spacing_lg` (16dp) for Recycler
 
 - 6 missing ripple/touch feedbacks on programmatic views (identified in Kotlin UI code)
 
-### 3.9 Dialog Corner Radius Inconsistency
+### 3.9 Dialog Corner Radius Inconsistency — [FIXED]
 
-- dialog_threat_detail.xml:179 — Destructive button uses radius_pill (24dp) instead of radius_btn (12dp)
-- Redundant corner radius specs in dialog_cloud_connect.xml:101-105
+- dialog_threat_detail.xml:179 — [FIXED] Changed from radius_pill (24dp) to radius_btn (12dp)
+- dialog_cloud_connect.xml:101-105 — [FIXED] Removed redundant boxCornerRadius specs; using Widget.FileCleaner.TextInput style
 
 ---
 
@@ -171,20 +171,20 @@ Some fragments used `spacing_md` (12dp), others `spacing_lg` (16dp) for Recycler
 
 ### 4.1 Minor Polish Items
 
-- item_spinner.xml — Missing explicit textAppearance
-- item_spinner_dropdown.xml — minHeight excessive for dropdown
-- GitHub icon mismatch — Uses archive icon instead of branded GitHub icon
-- fragment_file_viewer.xml:9-58 — Four toolbar buttons lack visual grouping
-- Missing badge animations, dialog entrance animations
-- Cloud setup has no error recovery (form dismisses on failure)
-- No landscape/tablet layout variants
-- No keyboard shortcuts
+- item_spinner.xml — [FIXED] Added textAppearance="@style/TextAppearance.FileCleaner.Body"
+- item_spinner_dropdown.xml — minHeight excessive for dropdown (remaining)
+- GitHub icon mismatch — [FIXED] Created proper branded GitHub icon (ic_github.xml)
+- fragment_file_viewer.xml:9-58 — [FIXED] Added spacing_sm margin between toolbar buttons for visual grouping
+- Missing badge animations, dialog entrance animations (remaining)
+- Cloud setup has no error recovery — [FIXED] CloudSetupDialog now validates connection before saving; shows inline errors; keeps dialog open on failure with doOnTextChanged error clearing
+- No landscape/tablet layout variants (remaining)
+- No keyboard shortcuts — [FIXED] Added Ctrl+S (Settings) and Ctrl+F (Browse/search) in MainActivity
 
-### 4.2 Code Maintainability
+### 4.2 Code Maintainability — [PARTIALLY FIXED]
 
-- Redundant corner radius specs repeated inline when already in styles
-- Button inset overrides (insetTop/Bottom=0dp) inconsistently applied
-- 12+ hardcoded constants in settings/viewer/context menu code
+- Redundant corner radius specs repeated inline when already in styles — [FIXED] Removed redundant specs in dialog_cloud_connect.xml
+- Button inset overrides (insetTop/Bottom=0dp) inconsistently applied (remaining)
+- 12+ hardcoded constants in settings/viewer/context menu code — [FIXED] Replaced hardcoded dp values in DirectoryPickerDialog, FileContextMenu, OnboardingDialog, ConvertDialog, and MotionUtil with R.dimen references
 
 ---
 
