@@ -184,7 +184,7 @@
             android:textAppearance="@style/TextAppearance.FileCleaner.Title"
             android:textColor="@color/textPrimary"
             android:gravity="center"
-            android:maxWidth="280dp"
+            android:maxWidth="@dimen/content_max_width_narrow"
             android:lineSpacingExtra="@dimen/spacing_xs" />
 
         <com.google.android.material.button.MaterialButton

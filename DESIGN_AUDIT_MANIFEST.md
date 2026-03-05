@@ -687,12 +687,12 @@
 |---|---|---|---|---|---|
 | 318 | include_empty_state.xml | Vertical rhythm | PASS — Consistent empty state spacing: paddingHorizontal=spacing_3xl, paddingTop=spacing_5xl, paddingBottom=spacing_4xl, element gap=spacing_xxl/spacing_md | §E2 | — |
 | 319 | include_loading_state.xml | Density consistency | PASS — Loading state uses identical spacing tokens as empty state — visual density consistent across states | §E2 | — |
-| 320 | include_success_state.xml | maxWidth hardcoded | `maxWidth="280dp"` and `maxWidth="300dp"` hardcoded instead of using `@dimen/empty_state_title_max_width` (280dp) and `@dimen/empty_state_subtitle_max_width` (300dp) — inconsistent with include_empty_state.xml and include_loading_state.xml which use the tokens | §E2 | LOW |
-| 321 | fragment_dashboard.xml:79,91 | maxWidth hardcoded | `maxWidth="280dp"` and `maxWidth="300dp"` hardcoded instead of `@dimen/empty_state_title_max_width` / `@dimen/empty_state_subtitle_max_width` | §E2 | LOW |
-| 322 | fragment_browse.xml:302 | maxWidth hardcoded | `maxWidth="280dp"` hardcoded instead of `@dimen/empty_state_title_max_width` | §E2 | LOW |
-| 323 | fragment_cloud_browser.xml:187 | maxWidth hardcoded | `maxWidth="280dp"` hardcoded instead of `@dimen/empty_state_title_max_width` | §E2 | LOW |
-| 324 | fragment_dual_pane.xml:187,199,362,374 | maxWidth hardcoded | `maxWidth="280dp"` and `maxWidth="200dp"` hardcoded — the 200dp value has no dimen token at all | §E2 | LOW |
-| 325 | fragment_list_action.xml:314 | maxWidth hardcoded | `maxWidth="280dp"` hardcoded instead of `@dimen/empty_state_title_max_width` | §E2 | LOW |
+| 320 | include_success_state.xml | maxWidth tokenized | FIXED — Replaced `280dp` → `@dimen/content_max_width_narrow`, `300dp` → `@dimen/content_max_width_medium` | §E2 | ~~LOW~~ PASS |
+| 321 | fragment_dashboard.xml:79,91 | maxWidth tokenized | FIXED — Replaced `280dp` → `@dimen/content_max_width_narrow`, `300dp` → `@dimen/content_max_width_medium` | §E2 | ~~LOW~~ PASS |
+| 322 | fragment_browse.xml:302 | maxWidth tokenized | FIXED — Replaced `280dp` → `@dimen/content_max_width_narrow` | §E2 | ~~LOW~~ PASS |
+| 323 | fragment_cloud_browser.xml:187 | maxWidth tokenized | FIXED — Replaced `280dp` → `@dimen/content_max_width_narrow` | §E2 | ~~LOW~~ PASS |
+| 324 | fragment_dual_pane.xml:187,199,362,374 | maxWidth tokenized | FIXED — Replaced 2× `280dp` → `@dimen/content_max_width_narrow`, 2× `200dp` → `@dimen/content_max_width_compact` | §E2 | ~~LOW~~ PASS |
+| 325 | fragment_list_action.xml:314 | maxWidth tokenized | FIXED — Replaced `280dp` → `@dimen/content_max_width_narrow` | §E2 | ~~LOW~~ PASS |
 | 326 | layouts (all) | Alignment grid | PASS — All layouts use ConstraintLayout or LinearLayout with consistent @dimen/ token spacing; no "floating" elements observed | §E2 | — |
 | 327 | layouts (all) | Landscape layout | No landscape layout variants exist (`layout-land/` absent) — app is portrait-dependent. Acceptable for a phone-primary file manager but limits tablet usability | §E2 | LOW |
 | 328 | values-sw600dp/dimens.xml | Responsive grid breakpoints | PASS — Tablet dimension overrides exist for spacing and text; app adapts spacing/text for wider screens | §E2 | — |
@@ -895,7 +895,7 @@
 
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
-| 410 | Multiple layout files | maxWidth token consolidation | 11 hardcoded `maxWidth` values across 6 files using raw `280dp`/`300dp`/`200dp` instead of existing `@dimen/empty_state_title_max_width` (280dp) and `@dimen/empty_state_subtitle_max_width` (300dp) tokens. The 200dp value in fragment_dual_pane.xml has no corresponding dimen token | §L3 | LOW |
+| 410 | Multiple layout files | maxWidth token consolidation | FIXED — Added 3 tokens (`content_max_width_compact` 200dp, `content_max_width_narrow` 280dp, `content_max_width_medium` 300dp) and replaced all 11 hardcoded instances across 6 files | §L3 | ~~LOW~~ PASS |
 | 411 | dimens.xml | Off-scale spacing tokens | Two off-scale tokens: `spacing_10` (10dp) and `spacing_chip` (6dp) break the 4dp-base progression. spacing_10 is used 1×; spacing_chip is used 14×. Both are functional but add token debt | §L3 | LOW |
 | 412 | item_skeleton_hub_card.xml | Skeleton placeholder token consistency | Hardcoded `100dp`/`14dp`/`10dp` sizes; the 14dp and 10dp match existing tokens `skeleton_title_height` and `skeleton_subtitle_height` but aren't referenced. The 100dp diverges intentionally from `skeleton_title_width` (160dp) for narrower card — needs its own token | §L3 | LOW |
 | 413 | themes.xml | Theme architecture | PASS — Clean hierarchy: `Theme.FileCleaner` base → component styles via `Widget.FileCleaner.*` prefix → variant styles; proper Material Components extension | §L3 | — |
@@ -944,7 +944,7 @@
 | Section | PASS | LOW | MEDIUM | REVIEW | Total |
 |---------|------|-----|--------|--------|-------|
 | §E1 Design Tokens | 15 | 2 | 0 | 0 | 17 |
-| §E2 Spatial Composition | 3 | 8 | 0 | 0 | 11 |
+| §E2 Spatial Composition | 9 | 2 | 0 | 0 | 11 |
 | §E3 Color Craft | 4 | 1 | 0 | 0 | 5 |
 | §E4 Typography | 3 | 0 | 0 | 0 | 3 |
 | §E5 Component Quality | 6 | 1 | 0 | 0 | 7 |
@@ -966,24 +966,24 @@
 | §G4 Reduced Motion | 2 | 0 | 0 | 0 | 2 |
 | §G5 Android A11y | 4 | 0 | 0 | 0 | 4 |
 | §H3 Mobile & Touch | 4 | 2 | 1 | 0 | 7 |
-| §L3 Design System Standard. | 2 | 4 | 0 | 0 | 6 |
+| §L3 Design System Standard. | 3 | 3 | 0 | 0 | 6 |
 | §L4 Copy & Content Standard. | 2 | 0 | 0 | 0 | 2 |
 | §L5 Interaction & Experience Polish | 2 | 1 | 0 | 0 | 3 |
 | §D5 Mobile Performance | 7 | 2 | 0 | 0 | 9 |
-| **TOTALS** | **94** | **25** | **3** | **0** | **122** |
+| **TOTALS** | **101** | **18** | **3** | **0** | **122** |
 
-### All open issues (25 LOW + 3 MEDIUM)
+### All open issues (18 LOW + 3 MEDIUM)
 
 | # | Section | Severity | Details |
 |---|---|---|---|
 | 302 | §E1 | LOW | spacing_10 (10dp) off-scale token |
 | 303 | §E1 | LOW | spacing_chip (6dp) off-scale token |
-| 320 | §E2 | LOW | include_success_state.xml hardcoded maxWidth |
-| 321 | §E2 | LOW | fragment_dashboard.xml hardcoded maxWidth |
-| 322 | §E2 | LOW | fragment_browse.xml hardcoded maxWidth |
-| 323 | §E2 | LOW | fragment_cloud_browser.xml hardcoded maxWidth |
-| 324 | §E2 | LOW | fragment_dual_pane.xml hardcoded maxWidth (4 instances) |
-| 325 | §E2 | LOW | fragment_list_action.xml hardcoded maxWidth |
+| 320 | §E2 | ~~LOW~~ **FIXED** | include_success_state.xml maxWidth tokenized |
+| 321 | §E2 | ~~LOW~~ **FIXED** | fragment_dashboard.xml maxWidth tokenized |
+| 322 | §E2 | ~~LOW~~ **FIXED** | fragment_browse.xml maxWidth tokenized |
+| 323 | §E2 | ~~LOW~~ **FIXED** | fragment_cloud_browser.xml maxWidth tokenized |
+| 324 | §E2 | ~~LOW~~ **FIXED** | fragment_dual_pane.xml maxWidth tokenized (4 instances) |
+| 325 | §E2 | ~~LOW~~ **FIXED** | fragment_list_action.xml maxWidth tokenized |
 | 327 | §E2 | LOW | No landscape layouts |
 | 333 | §E3 | LOW | MaterialComponents (M2) not Material3 |
 | 342 | §E5 | LOW | item_skeleton_hub_card.xml hardcoded sizes |
@@ -997,7 +997,7 @@
 | 404 | §H3 | ~~MEDIUM~~ → **LOW** | icon_button_size_sm 36dp — style defined but unused in any layout (dormant) |
 | 405 | §H3 | ~~MEDIUM~~ **FIXED** | dual_pane_tab_height raised 32dp→48dp |
 | 408 | §H3 | LOW | No landscape layouts but rotation supported |
-| 410 | §L3 | LOW | 11 hardcoded maxWidth values across 6 files |
+| 410 | §L3 | ~~LOW~~ **FIXED** | 11 maxWidth values tokenized across 6 files |
 | 411 | §L3 | LOW | 2 off-scale spacing tokens |
 | 412 | §L3 | LOW | Skeleton hub card token inconsistency |
 | 415 | §L3 | LOW | No standalone design system documentation |
@@ -1015,4 +1015,4 @@
 
 ---
 
-**Phase 2 manifest complete. 122 findings: 94 PASS, 25 LOW, 3 MEDIUM, 0 REVIEW. Fixes in progress.**
+**Phase 2 manifest complete. 122 findings: 101 PASS, 18 LOW, 3 MEDIUM, 0 REVIEW. Fixes in progress.**
