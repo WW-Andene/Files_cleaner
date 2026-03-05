@@ -205,7 +205,7 @@
                 android:id="@+id/btn_scan_now"
                 style="@style/Widget.FileCleaner.Button"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/button_height_sm"
+                android:layout_height="@dimen/touch_target_min"
                 android:layout_marginTop="@dimen/spacing_lg"
                 android:text="@string/scan_storage"
                 android:textAllCaps="false"

@@ -881,7 +881,7 @@
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
 | 402 | dimens.xml | touch_target_min (48dp) | PASS — Named `touch_target_min` token at 48dp; used across layouts for interactive elements | §H3 | — |
-| 403 | dimens.xml | button_height_sm (36dp) | Known §DCO1 #97 — 36dp below 48dp minimum; used in 12 interactive contexts (chips, small buttons, dual-pane action buttons). Research completed; awaiting user decision on fix approach | §H3 | MEDIUM |
+| 403 | dimens.xml | button_height_sm (36dp) | FIXED (partial) — 2 true violations fixed: `dialog_cloud_connect.xml:234` and `fragment_arborescence.xml:208` changed from `button_height_sm` to `touch_target_min` (48dp). Remaining 5 usages: dual-pane tabs (minHeight moot after #405 fix), dual-pane action bar (parent provides 48dp touch target) | §H3 | ~~MEDIUM~~ PASS |
 | 404 | themes.xml:470-474 | icon_button_size_sm (36dp) | Style `Widget.FileCleaner.Button.Icon.Small` defines minWidth/minHeight at 36dp — below 48dp. **However, this style is defined but currently unused in any layout file.** No layout references `icon_button_size_sm` directly or applies `Button.Icon.Small`. Dormant token debt, not an active touch target violation | §H3 | LOW |
 | 405 | fragment_dual_pane.xml:78,253 | dual_pane_tab_height (32dp→48dp) | FIXED — Raised `dual_pane_tab_height` from 32dp to 48dp; both `btn_mode_left` and `btn_mode_right` now meet touch target minimum | §H3 | ~~MEDIUM~~ PASS |
 | 406 | layouts (all) | Touch feedback (ripple) | PASS — 38 ripple background instances across 14 files; all tappable elements provide visual touch feedback | §H3 | — |
@@ -965,14 +965,14 @@
 | §G3 Keyboard & Switch Access | 1 | 1 | 0 | 0 | 2 |
 | §G4 Reduced Motion | 2 | 0 | 0 | 0 | 2 |
 | §G5 Android A11y | 4 | 0 | 0 | 0 | 4 |
-| §H3 Mobile & Touch | 4 | 2 | 1 | 0 | 7 |
+| §H3 Mobile & Touch | 5 | 2 | 0 | 0 | 7 |
 | §L3 Design System Standard. | 3 | 3 | 0 | 0 | 6 |
 | §L4 Copy & Content Standard. | 2 | 0 | 0 | 0 | 2 |
 | §L5 Interaction & Experience Polish | 2 | 1 | 0 | 0 | 3 |
 | §D5 Mobile Performance | 8 | 1 | 0 | 0 | 9 |
-| **TOTALS** | **103** | **16** | **3** | **0** | **122** |
+| **TOTALS** | **104** | **16** | **2** | **0** | **122** |
 
-### All open issues (16 LOW + 3 MEDIUM)
+### All open issues (16 LOW + 2 MEDIUM)
 
 | # | Section | Severity | Details |
 |---|---|---|---|
@@ -993,7 +993,7 @@
 | 379 | §F5 | LOW | Limited haptic feedback coverage (2 of 5-8 recommended moments) |
 | 392 | §G2 | LOW | No screenReaderFocusable usage |
 | 394 | §G3 | LOW | No OnBackPressedCallback for custom back handling |
-| 403 | §H3 | **MEDIUM** | button_height_sm 36dp below 48dp (known #97) |
+| 403 | §H3 | ~~MEDIUM~~ **FIXED** | button_height_sm 2 true violations → touch_target_min |
 | 404 | §H3 | ~~MEDIUM~~ → **LOW** | icon_button_size_sm 36dp — style defined but unused in any layout (dormant) |
 | 405 | §H3 | ~~MEDIUM~~ **FIXED** | dual_pane_tab_height raised 32dp→48dp |
 | 408 | §H3 | LOW | No landscape layouts but rotation supported |
@@ -1015,4 +1015,4 @@
 
 ---
 
-**Phase 2 manifest complete. 122 findings: 103 PASS, 16 LOW, 3 MEDIUM, 0 REVIEW. Fixes in progress.**
+**Phase 2 manifest complete. 122 findings: 104 PASS, 16 LOW, 2 MEDIUM, 0 REVIEW. Fixes in progress.**
