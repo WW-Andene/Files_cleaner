@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══ Tablet overrides (≥600dp shortest width) ═══ -->
+    <!-- Rationale: tablets are viewed at arm's length on wider viewports;  -->
+    <!-- increase spacing for breathing room and bump text +1 scale step    -->
+    <!-- for comfortable reading distance.                                  -->
+
+    <!-- Spacing: ~1.5× increase for wider viewport breathing room -->
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">28dp</dimen>
+    <dimen name="spacing_3xl">48dp</dimen>
+
+    <!-- Empty/loading state: wider measure for tablet column width -->
+    <dimen name="empty_state_title_max_width">400dp</dimen>
+    <dimen name="empty_state_subtitle_max_width">440dp</dimen>
+
+    <!-- Typography: +1sp step for reading distance comfort -->
+    <dimen name="text_body">15sp</dimen>
+    <dimen name="text_body_small">13sp</dimen>
+    <dimen name="text_caption">11sp</dimen>
+    <dimen name="text_overline">12sp</dimen>
+    <dimen name="text_label">12sp</dimen>
+</resources>
