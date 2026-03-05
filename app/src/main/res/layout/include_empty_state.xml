@@ -30,7 +30,7 @@
         android:gravity="center"
         android:maxWidth="@dimen/empty_state_title_max_width"
         android:lineSpacingExtra="@dimen/spacing_xs"
-        tools:text="Raccoon is waiting to dig in!" />
+        tools:text="Ricky is waiting to dig in!" />
 
     <TextView
         android:id="@+id/tv_empty_subtitle"
@@ -42,6 +42,6 @@
         android:gravity="center"
         android:maxWidth="@dimen/empty_state_subtitle_max_width"
         android:lineSpacingExtra="@dimen/spacing_xs"
-        tools:text="Scan your storage and Raccoon will crunch the numbers for you." />
+        tools:text="Scan your storage and Ricky will crunch the numbers for you." />
 
 </LinearLayout>

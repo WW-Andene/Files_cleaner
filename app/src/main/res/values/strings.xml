@@ -9,29 +9,29 @@
 
     <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
-    <string name="scan_prompt">Tap here to let Raccoon scan your storage</string>
+    <string name="scan_prompt">Tap here to let Ricky scan your storage</string>
     <!-- scanning_progress removed: duplicate of scanning_phase_indexing -->
     <plurals name="scan_complete">
-        <item quantity="one">Raccoon is done! %1$d file found (%2$s)</item>
-        <item quantity="other">Raccoon is done! %1$d files found (%2$s)</item>
+        <item quantity="one">Ricky is done! %1$d file found (%2$s)</item>
+        <item quantity="other">Ricky is done! %1$d files found (%2$s)</item>
     </plurals>
-    <string name="scan_complete_simple">Raccoon finished scanning!</string>
-    <string name="scanning_in_progress">Raccoon is rummaging through your files\u2026</string>
+    <string name="scan_complete_simple">Ricky finished scanning!</string>
+    <string name="scanning_in_progress">Ricky is rummaging through your files\u2026</string>
     <string name="scan_cancel">Cancel scan</string>
-    <string name="scan_cancelled">Scan cancelled \u2014 Raccoon stopped mid-rummage.</string>
-    <string name="scanning_phase_indexing">Raccoon is indexing\u2026 %d files found</string>
-    <string name="scanning_phase_duplicates">Raccoon is sniffing out duplicates\u2026 %d files</string>
-    <string name="scanning_phase_analyzing">Raccoon is weighing file sizes\u2026 %d files</string>
-    <string name="scanning_phase_junk">Raccoon is hunting for junk\u2026 %d files</string>
+    <string name="scan_cancelled">Scan cancelled \u2014 Ricky stopped mid-rummage.</string>
+    <string name="scanning_phase_indexing">Ricky is indexing\u2026 %d files found</string>
+    <string name="scanning_phase_duplicates">Ricky is sniffing out duplicates\u2026 %d files</string>
+    <string name="scanning_phase_analyzing">Ricky is weighing file sizes\u2026 %d files</string>
+    <string name="scanning_phase_junk">Ricky is hunting for junk\u2026 %d files</string>
     <string name="error_prefix">Oops! %s \u2014 check permissions and give it another go.</string>
-    <string name="error_scan_failed">Raccoon hit a snag! Check storage permissions and try scanning again.</string>
+    <string name="error_scan_failed">Ricky hit a snag! Check storage permissions and try scanning again.</string>
 
     <!-- Scan progress indicators -->
     <string name="scan_percent">%d%%</string>
-    <string name="phase_label_indexing">Raccoon is scanning files\u2026</string>
-    <string name="phase_label_duplicates">Raccoon is finding duplicates\u2026</string>
-    <string name="phase_label_analyzing">Raccoon is analyzing sizes\u2026</string>
-    <string name="phase_label_junk">Raccoon is classifying junk\u2026</string>
+    <string name="phase_label_indexing">Ricky is scanning files\u2026</string>
+    <string name="phase_label_duplicates">Ricky is finding duplicates\u2026</string>
+    <string name="phase_label_analyzing">Ricky is analyzing sizes\u2026</string>
+    <string name="phase_label_junk">Ricky is classifying junk\u2026</string>
     <string name="phase_step">Step %1$d of %2$d</string>
     <string name="browse_scan_file_count">%d files</string>
 
@@ -63,10 +63,10 @@
 
     <!-- Permission dialogs -->
     <string name="storage_access_needed">Storage access needed</string>
-    <string name="storage_access_message">Raccoon needs permission to scan your files. Scan data stays on-device. Cloud features (SFTP, WebDAV, Google Drive) only transfer files when you choose to.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
+    <string name="storage_access_message">Ricky needs permission to scan your files. Scan data stays on-device. Cloud features (SFTP, WebDAV, Google Drive) only transfer files when you choose to.\n\nPlease grant \'Allow access to manage all files\' on the next screen.</string>
     <string name="open_settings">Open Settings</string>
     <string name="permission_required">Permission required</string>
-    <string name="permission_required_message">Storage permission is needed to scan files. Please grant it in Settings so Raccoon can help manage your storage.</string>
+    <string name="permission_required_message">Storage permission is needed to scan files. Please grant it in Settings so Ricky can help manage your storage.</string>
     <string name="settings">Settings</string>
 
     <!-- Browse -->
@@ -77,26 +77,26 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="no_files_found">Raccoon hasn\'t sniffed out any files yet.\nHead to the Manager tab to start a scan!</string>
-    <string name="nothing_found">Nothing in the den yet!\nLet Raccoon scan your storage first.</string>
-    <string name="scan_to_see_results">Let Raccoon rummage through your storage to see what\'s here</string>
+    <string name="no_files_found">Ricky hasn\'t sniffed out any files yet.\nHead to the Manager tab to start a scan!</string>
+    <string name="nothing_found">Nothing in the den yet!\nLet Ricky scan your storage first.</string>
+    <string name="scan_to_see_results">Let Ricky rummage through your storage to see what\'s here</string>
 
     <!-- Context-aware empty states (Browse) -->
-    <string name="empty_browse_pre_scan">Raccoon needs to scout your storage first!\nHead to the Manager tab and tap Scan.</string>
-    <string name="empty_browse_post_scan">Raccoon peeked everywhere but found nothing.\nTry a different category or clear the search.</string>
-    <string name="empty_search_results">Raccoon searched high and low \u2014 no results for \"%s\"</string>
+    <string name="empty_browse_pre_scan">Ricky needs to scout your storage first!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_browse_post_scan">Ricky peeked everywhere but found nothing.\nTry a different category or clear the search.</string>
+    <string name="empty_search_results">Ricky searched high and low \u2014 no results for \"%s\"</string>
 
     <!-- Context-aware empty states (Tree) -->
-    <string name="empty_tree_pre_scan">Raccoon needs scan data to build the tree!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_tree_pre_scan">Ricky needs scan data to build the tree!\nHead to the Manager tab and tap Scan.</string>
     <string name="empty_tree_post_scan">The tree is bare \u2014 no files to display here.</string>
     <string name="browsing_folder">Browsing %s</string>
 
     <!-- Context-aware empty states (Junk/Large/Duplicates) -->
-    <string name="empty_junk_pre_scan">Raccoon is ready to sniff out junk!\nHead to the Manager tab and tap Scan.</string>
-    <string name="empty_junk_post_scan">Squeaky clean! Raccoon found zero junk. Your storage is spotless.</string>
-    <string name="empty_large_pre_scan">Raccoon wants to hunt for space hogs!\nHead to the Manager tab and tap Scan.</string>
-    <string name="empty_large_post_scan">No big files lurking around \u2014 Raccoon approves of your tidy storage!</string>
-    <string name="empty_duplicates_pre_scan">Raccoon is eager to catch copycats!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_junk_pre_scan">Ricky is ready to sniff out junk!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_junk_post_scan">Squeaky clean! Ricky found zero junk. Your storage is spotless.</string>
+    <string name="empty_large_pre_scan">Ricky wants to hunt for space hogs!\nHead to the Manager tab and tap Scan.</string>
+    <string name="empty_large_post_scan">No big files lurking around \u2014 Ricky approves of your tidy storage!</string>
+    <string name="empty_duplicates_pre_scan">Ricky is eager to catch copycats!\nHead to the Manager tab and tap Scan.</string>
     <string name="empty_duplicates_post_scan">No duplicates spotted! Every file is one-of-a-kind.</string>
 
     <!-- Sort options -->
@@ -125,7 +125,7 @@
         <item quantity="one">%1$d duplicate file \u2014 %2$s in duplicates</item>
         <item quantity="other">%1$d duplicate files \u2014 %2$s in duplicates</item>
     </plurals>
-    <string name="no_junk_found">No junk in sight \u2014 Raccoon is impressed!</string>
+    <string name="no_junk_found">No junk in sight \u2014 Ricky is impressed!</string>
     <string name="no_large_found">No space hogs here \u2014 your storage is lean!</string>
     <string name="no_duplicates_found">Zero copycats found \u2014 every file is unique!</string>
     <plurals name="action_delete_n">
@@ -159,9 +159,9 @@
     <string name="analysis_quick_junk_detail">%1$d files \u2022 %2$s reclaimable</string>
     <string name="analysis_quick_large_detail">%1$d files \u2022 %2$s total</string>
     <string name="analysis_quick_duplicates_detail">%1$d files \u2022 %2$s wasted</string>
-    <string name="analysis_empty_title">Raccoon is waiting to dig in!</string>
-    <string name="analysis_empty_subtitle">Scan your storage and Raccoon will crunch the numbers for you.</string>
-    <string name="analysis_potential_savings">Raccoon found %s you could reclaim!</string>
+    <string name="analysis_empty_title">Ricky is waiting to dig in!</string>
+    <string name="analysis_empty_subtitle">Scan your storage and Ricky will crunch the numbers for you.</string>
+    <string name="analysis_potential_savings">Ricky found %s you could reclaim!</string>
 
     <!-- Accessibility -->
     <string name="a11y_select_file">Select %s</string>
@@ -209,11 +209,11 @@
     <!-- Search -->
     <string name="search_files_hint">Search\u2026 (try &gt;50mb or ext:pdf)</string>
     <string name="search_tree_hint">Search in tree\u2026</string>
-    <string name="search_not_found">Raccoon rummaged everywhere \u2014 no matching files found.</string>
+    <string name="search_not_found">Ricky rummaged everywhere \u2014 no matching files found.</string>
 
     <!-- File opening -->
     <string name="open_with">Open With</string>
-    <string name="no_app_found">Raccoon can\u0027t find an app to open this file. Try installing a compatible viewer.</string>
+    <string name="no_app_found">Ricky can\u0027t find an app to open this file. Try installing a compatible viewer.</string>
 
     <!-- Context menu -->
     <string name="ctx_open">Open</string>
@@ -235,9 +235,9 @@
     <string name="ctx_browse_folder">Browse folder</string>
     <string name="ctx_convert">Convert to\u2026</string>
     <string name="convert_title">Convert to</string>
-    <string name="convert_unsupported">Raccoon doesn\u0027t know how to convert this file type yet.</string>
-    <string name="convert_failed">Raccoon couldn\u0027t convert that file: %s</string>
-    <string name="convert_progress">Raccoon is converting\u2026</string>
+    <string name="convert_unsupported">Ricky doesn\u0027t know how to convert this file type yet.</string>
+    <string name="convert_failed">Ricky couldn\u0027t convert that file: %s</string>
+    <string name="convert_progress">Ricky is converting\u2026</string>
     <!-- Conversion action labels -->
     <string name="convert_action">Convert</string>
     <string name="convert_format_with_ext">%1$s (.%2$s)</string>
@@ -288,17 +288,17 @@
     <string name="convert_csv_to_table_desc">Convert CSV data into a neatly aligned text table with column headers.</string>
     <string name="ctx_properties">Properties</string>
     <string name="ctx_preview">Preview</string>
-    <string name="preview_error">Raccoon can\u0027t preview this one: %s</string>
+    <string name="preview_error">Ricky can\u0027t preview this one: %s</string>
     <string name="viewer_title">File Viewer</string>
     <string name="viewer_file_info">%1$s  \u2022  %2$s</string>
     <string name="viewer_pdf_page">Page %1$d of %2$d</string>
-    <string name="viewer_unsupported">Raccoon doesn\u0027t have a built-in viewer for .%s files \u2014 try opening with another app.</string>
+    <string name="viewer_unsupported">Ricky doesn\u0027t have a built-in viewer for .%s files \u2014 try opening with another app.</string>
     <string name="viewer_open_fullscreen">View fullscreen</string>
     <string name="viewer_audio_play">Play / Pause</string>
-    <string name="viewer_audio_error">Raccoon can\u0027t play this audio file \u2014 it may be corrupted or in an unsupported format.</string>
+    <string name="viewer_audio_error">Ricky can\u0027t play this audio file \u2014 it may be corrupted or in an unsupported format.</string>
     <string name="viewer_video_play">Play video</string>
-    <string name="viewer_video_error">Raccoon can\u0027t play this video \u2014 it may be corrupted or in an unsupported format.</string>
-    <string name="viewer_archive_error">Raccoon can\u0027t read this archive: %s</string>
+    <string name="viewer_video_error">Ricky can\u0027t play this video \u2014 it may be corrupted or in an unsupported format.</string>
+    <string name="viewer_archive_error">Ricky can\u0027t read this archive: %s</string>
 
     <string name="ctx_star">Star</string>
     <string name="ctx_unstar">Unstar</string>
@@ -309,18 +309,18 @@
     <string name="protected_added">%s protected from cleanup</string>
     <string name="protected_removed">%s cleanup protection removed</string>
     <!-- File operation feedback (used by ViewModel → Snackbar) -->
-    <string name="op_source_not_found">Raccoon can\u0027t find the original file \u2014 it may have been moved or deleted.</string>
-    <string name="op_file_not_found">Raccoon can\u0027t find that file \u2014 it may have been moved or deleted.</string>
+    <string name="op_source_not_found">Ricky can\u0027t find the original file \u2014 it may have been moved or deleted.</string>
+    <string name="op_file_not_found">Ricky can\u0027t find that file \u2014 it may have been moved or deleted.</string>
     <string name="op_file_exists_in_target">A file with that name already exists in the destination folder.</string>
-    <string name="op_no_parent_dir">Raccoon can\u0027t figure out where this file lives \u2014 try a different location.</string>
+    <string name="op_no_parent_dir">Ricky can\u0027t figure out where this file lives \u2014 try a different location.</string>
     <string name="op_invalid_name">Oops! File names can\u0027t contain / : * ? \" &lt; &gt; or | \u2014 try a different name.</string>
     <string name="op_name_exists">That name is already taken \u2014 pick a different one!</string>
-    <string name="op_moved">Raccoon moved %s to its new home!</string>
-    <string name="op_move_failed">Raccoon couldn\'t move that file \u2014 check if the destination is accessible.</string>
-    <string name="op_copied">Raccoon copied %s!</string>
-    <string name="op_copy_failed">Raccoon couldn\'t copy that: %s</string>
+    <string name="op_moved">Ricky moved %s to its new home!</string>
+    <string name="op_move_failed">Ricky couldn\'t move that file \u2014 check if the destination is accessible.</string>
+    <string name="op_copied">Ricky copied %s!</string>
+    <string name="op_copy_failed">Ricky couldn\'t copy that: %s</string>
     <string name="op_renamed">Renamed to %s \u2014 fresh new name!</string>
-    <string name="op_rename_failed">Raccoon couldn\'t rename that file. Try a different name.</string>
+    <string name="op_rename_failed">Ricky couldn\'t rename that file. Try a different name.</string>
     <string name="op_compressed">Packed into %s \u2014 nice and compact!</string>
     <string name="compress_title">Create ZIP archive</string>
     <string name="compress_name_hint">Archive name</string>
@@ -328,24 +328,24 @@
         <item quantity="one">%d file to compress</item>
         <item quantity="other">%d files to compress</item>
     </plurals>
-    <string name="op_compress_failed">Compression failed: %s. Raccoon will try harder next time.</string>
+    <string name="op_compress_failed">Compression failed: %s. Ricky will try harder next time.</string>
     <string name="op_extracted">Unpacked to %s \u2014 all files ready!</string>
-    <string name="op_extract_failed">Raccoon couldn\'t unpack that: %s</string>
-    <string name="op_zip_only">Raccoon can only unpack ZIP archives for now.</string>
-    <string name="op_too_many_entries">Whoa, that archive has too many files! Raccoon\u0027s limit is %d to keep things safe.</string>
+    <string name="op_extract_failed">Ricky couldn\'t unpack that: %s</string>
+    <string name="op_zip_only">Ricky can only unpack ZIP archives for now.</string>
+    <string name="op_too_many_entries">Whoa, that archive has too many files! Ricky\u0027s limit is %d to keep things safe.</string>
     <string name="op_archive_too_large">That archive is too large to unpack safely (over 2 GB). Try a smaller one!</string>
-    <string name="op_invalid_path">Raccoon can\u0027t reach that location \u2014 it\u0027s outside accessible storage.</string>
-    <string name="error_no_files_to_compress">Raccoon needs some files to pack \u2014 select a few first!</string>
-    <string name="op_scan_failed">Raccoon hit a snag while scanning. Give it another try!</string>
+    <string name="op_invalid_path">Ricky can\u0027t reach that location \u2014 it\u0027s outside accessible storage.</string>
+    <string name="error_no_files_to_compress">Ricky needs some files to pack \u2014 select a few first!</string>
+    <string name="op_scan_failed">Ricky hit a snag while scanning. Give it another try!</string>
 
     <!-- Undo / Delete feedback -->
     <string name="undo_deleted_single">Deleted %1$s (%2$s). Undo?</string>
     <string name="undo_deleted_multiple">Deleted %1$d files (%2$s). Undo?</string>
-    <string name="delete_partial_failure">Raccoon deleted %1$d but %2$d wouldn\u0027t budge \u2014 they may be in use by another app.</string>
+    <string name="delete_partial_failure">Ricky deleted %1$d but %2$d wouldn\u0027t budge \u2014 they may be in use by another app.</string>
 
     <!-- Post-scan summary -->
     <string name="scan_duration_suffix"> in %1$.1fs</string>
-    <string name="scan_summary">Raccoon found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
+    <string name="scan_summary">Ricky found %1$d files (%2$s) \u2014 %3$d duplicates, %4$d junk, %5$d large</string>
 
     <!-- Relative time -->
     <string name="time_just_now">Just now</string>
@@ -429,7 +429,7 @@
     <string name="batch_case_upper">UPPERCASE</string>
     <string name="batch_case_title">Title Case</string>
     <string name="batch_rename_start_hint">Start number</string>
-    <string name="batch_rename_result">Raccoon renamed %1$d files \u2014 %2$d couldn\u0027t be changed.</string>
+    <string name="batch_rename_result">Ricky renamed %1$d files \u2014 %2$d couldn\u0027t be changed.</string>
     <string name="batch_rename">Batch Rename</string>
 
     <!-- Accessibility -->
@@ -462,11 +462,11 @@
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_back">Back</string>
-    <string name="onboarding_done">Let Raccoon Scan!</string>
-    <string name="onboarding_title_1">Hey there! Meet Raccoon</string>
-    <string name="onboarding_body_1">Raccoon is your friendly storage sidekick! It sniffs out duplicates, hunts down large files, and sweeps away junk.\n\nEverything stays on your device \u2014 your data never leaves.</string>
+    <string name="onboarding_done">Let Ricky Scan!</string>
+    <string name="onboarding_title_1">Hey there! Meet Ricky</string>
+    <string name="onboarding_body_1">Ricky is your friendly storage sidekick! It sniffs out duplicates, hunts down large files, and sweeps away junk.\n\nEverything stays on your device \u2014 your data never leaves.</string>
     <string name="onboarding_title_2">Navigate with Tabs</string>
-    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 Raccoon\'s control center\n\u2022 Large Files \u2014 the biggest space hogs\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
+    <string name="onboarding_body_2">Use the bottom tabs to explore:\n\n\u2022 Browse \u2014 all your files by category\n\u2022 Duplicates \u2014 files with identical content\n\u2022 Manager \u2014 Ricky\'s control center\n\u2022 Large Files \u2014 the biggest space hogs\n\u2022 Junk Files \u2014 caches, temp files, old downloads</string>
     <!-- Dashboard (P2) -->
     <string name="dashboard_title">Storage Dashboard</string>
     <string name="dashboard_storage_title">Device Storage</string>
@@ -479,18 +479,18 @@
         <item quantity="one">%1$d file (%2$s)</item>
         <item quantity="other">%1$d files (%2$s)</item>
     </plurals>
-    <string name="dashboard_no_scan">Raccoon hasn\'t scanned yet \u2014 run a scan to see the breakdown!</string>
-    <string name="dashboard_scanning">Raccoon is working on it\u2026 Results will appear when complete.</string>
+    <string name="dashboard_no_scan">Ricky hasn\'t scanned yet \u2014 run a scan to see the breakdown!</string>
+    <string name="dashboard_scanning">Ricky is working on it\u2026 Results will appear when complete.</string>
 
-    <string name="onboarding_title_3">Raccoon Manager</string>
-    <string name="onboarding_body_3">Tap the Manager tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nRaccoon\'s den \u2014 your one-stop control center for tidy storage.</string>
+    <string name="onboarding_title_3">Ricky Manager</string>
+    <string name="onboarding_body_3">Tap the Manager tab for quick actions: Scan, Analysis, Quick Clean, Tree View, and Janitor.\n\nRicky\'s den \u2014 your one-stop control center for tidy storage.</string>
 
-    <!-- Raccoon Manager Hub -->
+    <!-- Ricky Manager Hub -->
     <string name="nav_raccoon">Manager</string>
-    <string name="raccoon_manager_title">Raccoon Manager</string>
-    <string name="raccoon_manager_subtitle">Raccoon\'s den \u2014 your tidy-up command center</string>
+    <string name="raccoon_manager_title">Ricky Manager</string>
+    <string name="raccoon_manager_subtitle">Ricky\'s den \u2014 your tidy-up command center</string>
     <string name="raccoon_action_scan">Scan Storage</string>
-    <string name="raccoon_action_scan_desc">Let Raccoon sniff out duplicates, junk, and large files</string>
+    <string name="raccoon_action_scan_desc">Let Ricky sniff out duplicates, junk, and large files</string>
     <string name="raccoon_action_analysis">Analysis</string>
     <string name="raccoon_action_analysis_desc">See where your space goes with a full breakdown</string>
     <string name="raccoon_action_quick_clean">Quick Clean</string>
@@ -498,7 +498,7 @@
     <string name="raccoon_action_arborescence">Tree View</string>
     <string name="raccoon_action_arborescence_desc">Explore your files in an interactive tree map</string>
     <string name="raccoon_action_janitor">Janitor</string>
-    <string name="raccoon_action_janitor_desc">Deep clean \u2014 Raccoon goes through everything</string>
+    <string name="raccoon_action_janitor_desc">Deep clean \u2014 Ricky goes through everything</string>
     <string name="raccoon_quick_clean_title">Quick Clean</string>
     <plurals name="raccoon_quick_clean_confirm">
         <item quantity="one">Clean %1$d junk file (%2$s)?</item>
@@ -509,7 +509,7 @@
     <string name="raccoon_janitor_desc">Deep clean finds duplicate files, oversized downloads, and old caches across your entire storage. Review and select what to remove.</string>
     <string name="raccoon_janitor_start">Start Deep Clean</string>
     <string name="raccoon_janitor_started">Starting deep clean\u2026 Review results in the Duplicates, Large, and Junk tabs.</string>
-    <string name="raccoon_scan_needed">Raccoon needs a scan first \u2014 tap Scan Storage to get started!</string>
+    <string name="raccoon_scan_needed">Ricky needs a scan first \u2014 tap Scan Storage to get started!</string>
 
     <!-- F1: Section labels -->
     <string name="raccoon_section_advanced">Advanced</string>
@@ -521,13 +521,13 @@
     <string name="a11y_settings_toggle_hidden">Toggle show hidden files</string>
 
     <!-- F6: Engagement & reward moments -->
-    <string name="scan_complete_celebration">Raccoon is done rummaging! Found %1$d files using %2$s.</string>
-    <string name="clean_success">Raccoon swept away %s \u2014 nice and tidy!</string>
-    <string name="raccoon_greeting_pre_scan">Raccoon is ready to tidy up! Tap Scan to get started.</string>
-    <string name="raccoon_greeting_post_scan">Looking good! %s free \u2014 Raccoon approves.</string>
-    <string name="dashboard_scan_stats_empty">Let Raccoon scan your storage to see a summary here.</string>
+    <string name="scan_complete_celebration">Ricky is done rummaging! Found %1$d files using %2$s.</string>
+    <string name="clean_success">Ricky swept away %s \u2014 nice and tidy!</string>
+    <string name="raccoon_greeting_pre_scan">Ricky is ready to tidy up! Tap Scan to get started.</string>
+    <string name="raccoon_greeting_post_scan">Looking good! %s free \u2014 Ricky approves.</string>
+    <string name="dashboard_scan_stats_empty">Let Ricky scan your storage to see a summary here.</string>
     <string name="dashboard_empty_title">No scan data yet</string>
-    <string name="dashboard_empty_subtitle">Run a scan from the Manager tab and Raccoon will build your dashboard.</string>
+    <string name="dashboard_empty_subtitle">Run a scan from the Manager tab and Ricky will build your dashboard.</string>
 
     <!-- Context-aware empty states (Dual Pane) -->
     <string name="dual_pane_empty_title">No files here</string>
@@ -536,7 +536,7 @@
     <!-- Storage Optimizer -->
     <string name="optimize_title">Optimize Storage</string>
     <string name="optimize_desc">Reorganize files into tidy folders by type and date</string>
-    <string name="optimize_empty">Raccoon checked every corner \u2014 your files are already perfectly organized!</string>
+    <string name="optimize_empty">Ricky checked every corner \u2014 your files are already perfectly organized!</string>
     <string name="optimize_apply">Apply Changes</string>
     <plurals name="optimize_summary">
         <item quantity="one">%d suggestion</item>
@@ -548,10 +548,10 @@
         <item quantity="other">Move %d files to their suggested locations?</item>
     </plurals>
     <plurals name="optimize_applied">
-        <item quantity="one">Raccoon tidied up %d file \u2014 looking organized!</item>
-        <item quantity="other">Raccoon tidied up %d files \u2014 looking organized!</item>
+        <item quantity="one">Ricky tidied up %d file \u2014 looking organized!</item>
+        <item quantity="other">Ricky tidied up %d files \u2014 looking organized!</item>
     </plurals>
-    <string name="optimize_none_selected">Pick some suggestions first \u2014 Raccoon needs something to work on!</string>
+    <string name="optimize_none_selected">Pick some suggestions first \u2014 Ricky needs something to work on!</string>
     <string name="optimize_info_title">How it works</string>
     <string name="optimize_info_body">This tool analyzes your files and suggests moving them into organized folders by type and date. Photos go to Pictures/YYYY-MM, videos to Videos/YYYY-MM, audio to Music, documents to Documents, and old downloads to OldDownloads. Uncheck any files you want to keep in place.</string>
     <string name="optimize_summary_detail">%1$d suggestions \u2022 %2$d selected</string>
@@ -568,9 +568,9 @@
     <string name="dual_pane_go_up">Go up one level</string>
     <string name="dual_pane_copy">Copy</string>
     <string name="dual_pane_move">Move</string>
-    <string name="dual_pane_no_selection">Raccoon needs you to select some files first!</string>
+    <string name="dual_pane_no_selection">Ricky needs you to select some files first!</string>
     <string name="dual_pane_no_files_to_delete">No files selected \u2014 folders can only be removed from the Browse tab.</string>
-    <string name="dual_pane_invalid_dir">Raccoon can\u0027t open that folder \u2014 it may have been moved or deleted.</string>
+    <string name="dual_pane_invalid_dir">Ricky can\u0027t open that folder \u2014 it may have been moved or deleted.</string>
     <string name="dual_pane_count">%1$d folders, %2$d files</string>
     <string name="dual_pane_swap">Swap panes</string>
     <string name="dual_pane_pick_directory">Choose folder</string>
@@ -600,7 +600,7 @@
 
     <!-- Dual Pane Drag & Drop -->
     <string name="dual_pane_drag_copy_or_move">Copy or Move?</string>
-    <string name="dual_pane_drag_message">What should Raccoon do with these files?</string>
+    <string name="dual_pane_drag_message">What should Ricky do with these files?</string>
 
     <!-- Antivirus progress -->
     <string name="av_progress_pct">%d%%</string>
@@ -612,24 +612,24 @@
     <string name="cloud_add_connection">Add Connection</string>
     <string name="cloud_connect">Connect</string>
     <string name="cloud_disconnect">Disconnect</string>
-    <string name="cloud_disconnected">Raccoon disconnected from the cloud.</string>
+    <string name="cloud_disconnected">Ricky disconnected from the cloud.</string>
     <string name="cloud_remove">Remove Connection</string>
     <string name="cloud_remove_confirm">Remove connection \"%s\"? This cannot be undone.</string>
-    <string name="cloud_empty">Raccoon hasn\'t ventured to the cloud yet.\nAdd a connection to explore remote files!</string>
-    <string name="cloud_empty_dir">This folder is empty \u2014 nothing for Raccoon to find here.</string>
-    <string name="cloud_connected">Raccoon connected to %s!</string>
-    <string name="cloud_connection_failed">Raccoon couldn\'t reach %s. Check your settings and try again.</string>
-    <string name="cloud_no_network">No internet connection \u2014 Raccoon can\'t reach the cloud right now.</string>
+    <string name="cloud_empty">Ricky hasn\'t ventured to the cloud yet.\nAdd a connection to explore remote files!</string>
+    <string name="cloud_empty_dir">This folder is empty \u2014 nothing for Ricky to find here.</string>
+    <string name="cloud_connected">Ricky connected to %s!</string>
+    <string name="cloud_connection_failed">Ricky couldn\'t reach %s. Check your settings and try again.</string>
+    <string name="cloud_no_network">No internet connection \u2014 Ricky can\'t reach the cloud right now.</string>
     <string name="cloud_auth_failed">Authentication failed \u2014 double-check your credentials and try again.</string>
     <string name="cloud_timeout">Connection timed out \u2014 the server may be busy. Try again in a moment.</string>
     <string name="cloud_host_not_found">Server not found \u2014 double-check the hostname and try again.</string>
-    <string name="cloud_added">Raccoon added %s to your connections!</string>
+    <string name="cloud_added">Ricky added %s to your connections!</string>
     <string name="cloud_download">Download</string>
     <string name="cloud_upload">Upload</string>
-    <string name="cloud_download_result">Raccoon grabbed %1$d files (%2$d failed)</string>
-    <string name="cloud_upload_success">Raccoon uploaded %s to the cloud!</string>
-    <string name="cloud_upload_failed">Raccoon couldn\u0027t upload: %s. Check your connection and try again.</string>
-    <string name="cloud_list_failed">Raccoon couldn\'t load this folder: %s</string>
+    <string name="cloud_download_result">Ricky grabbed %1$d files (%2$d failed)</string>
+    <string name="cloud_upload_success">Ricky uploaded %s to the cloud!</string>
+    <string name="cloud_upload_failed">Ricky couldn\u0027t upload: %s. Check your connection and try again.</string>
+    <string name="cloud_list_failed">Ricky couldn\'t load this folder: %s</string>
     <string name="cloud_directory">Directory</string>
     <string name="cloud_provider_type">Provider type</string>
     <string name="cloud_display_name">Connection name</string>
@@ -642,11 +642,11 @@
     <string name="cloud_type_google_drive">Google Drive</string>
     <string name="cloud_default_name">Cloud</string>
     <string name="cloud_default_server_name">My Server</string>
-    <string name="cloud_error_host_required">Raccoon needs a hostname to connect to!</string>
+    <string name="cloud_error_host_required">Ricky needs a hostname to connect to!</string>
     <string name="cloud_error_port_range">Port must be between 1 and 65535.</string>
-    <string name="cloud_error_username_required">Raccoon needs a username to log in!</string>
+    <string name="cloud_error_username_required">Ricky needs a username to log in!</string>
     <string name="cloud_error_password_required">Password is required for this connection.</string>
-    <string name="cloud_error_token_required">Raccoon needs an access token to connect!</string>
+    <string name="cloud_error_token_required">Ricky needs an access token to connect!</string>
     <string name="cloud_error_name_required">Give this connection a display name.</string>
     <string name="cloud_error_field_empty">Field cannot be empty</string>
     <string name="cloud_error_invalid_hostname">Invalid hostname</string>
@@ -676,12 +676,12 @@
     <string name="cloud_setup_title_sftp">Connect SFTP Server</string>
     <string name="cloud_setup_title_webdav">Connect WebDAV Server</string>
     <string name="cloud_test_connection">Test Connection</string>
-    <string name="cloud_testing_connection">Raccoon is testing the connection\u2026</string>
-    <string name="cloud_test_success">Raccoon connected successfully!</string>
-    <string name="cloud_test_failed">Raccoon couldn\u0027t connect: %s</string>
-    <string name="cloud_setup_connecting">Raccoon is connecting\u2026</string>
+    <string name="cloud_testing_connection">Ricky is testing the connection\u2026</string>
+    <string name="cloud_test_success">Ricky connected successfully!</string>
+    <string name="cloud_test_failed">Ricky couldn\u0027t connect: %s</string>
+    <string name="cloud_setup_connecting">Ricky is connecting\u2026</string>
     <string name="cloud_setup_connect_failed">Connection failed: %s\nFix the issue and try again.</string>
-    <string name="cloud_setup_connect_failed_generic">Raccoon couldn\u0027t reach the server. Check your settings and try again.</string>
+    <string name="cloud_setup_connect_failed_generic">Ricky couldn\u0027t reach the server. Check your settings and try again.</string>
     <string name="cloud_status_connected">Connected</string>
     <string name="cloud_status_disconnected">Not connected</string>
     <string name="a11y_connection_status">Connection status: %s</string>
@@ -692,17 +692,17 @@
     <!-- Antivirus / Security Scanner -->
     <string name="av_title">Security Scanner</string>
     <string name="av_desc">Scan for malware, root, privacy, and network risks</string>
-    <string name="av_ready">Raccoon is standing guard. Tap below to check for threats.</string>
+    <string name="av_ready">Ricky is standing guard. Tap below to check for threats.</string>
     <string name="av_start_scan">Start Security Scan</string>
-    <string name="av_scanning">Raccoon is investigating\u2026</string>
+    <string name="av_scanning">Ricky is investigating\u2026</string>
     <string name="av_scan_again">Scan Again</string>
-    <string name="av_all_clear">All clear! Raccoon gave your device a clean bill of health.</string>
+    <string name="av_all_clear">All clear! Ricky gave your device a clean bill of health.</string>
     <string name="av_threats">Threats</string>
     <string name="av_clean">Clean</string>
     <string name="av_last_scan">Last scan: %s</string>
     <plurals name="av_found_threats">
-        <item quantity="one">Raccoon spotted %d issue \u2014 review below.</item>
-        <item quantity="other">Raccoon spotted %d issues \u2014 review below.</item>
+        <item quantity="one">Ricky spotted %d issue \u2014 review below.</item>
+        <item quantity="other">Ricky spotted %d issues \u2014 review below.</item>
     </plurals>
 
     <!-- Scan phases (5-phase) -->
@@ -740,7 +740,7 @@
     <string name="av_quarantined">Quarantined</string>
     <string name="av_quarantined_msg">Quarantined %s</string>
     <string name="av_uninstall">Uninstall</string>
-    <string name="av_uninstall_failed">Raccoon couldn\u0027t open the uninstall screen \u2014 try removing the app from Settings.</string>
+    <string name="av_uninstall_failed">Ricky couldn\u0027t open the uninstall screen \u2014 try removing the app from Settings.</string>
     <string name="av_confirm_delete">Permanently delete %s?</string>
     <string name="av_deleted">Deleted %s</string>
     <string name="av_open_settings">Open Settings</string>
@@ -749,7 +749,7 @@
     <string name="av_fix_all_count">Fix All (%d)</string>
     <string name="av_fix_all_confirm">This will attempt to resolve all actionable threats:\n\n%s\n\nProceed?</string>
     <string name="av_proceed">Proceed</string>
-    <string name="av_fixed_count">Raccoon dealt with %d threats \u2014 your device is safer now!</string>
+    <string name="av_fixed_count">Ricky dealt with %d threats \u2014 your device is safer now!</string>
     <string name="av_dismiss">Dismiss</string>
 
     <!-- Threat detail dialog -->
@@ -775,7 +775,7 @@
 
     <!-- Scan history -->
     <string name="av_history">Scan History</string>
-    <string name="av_no_history">No scan history yet \u2014 Raccoon is ready for its first patrol!</string>
+    <string name="av_no_history">No scan history yet \u2014 Ricky is ready for its first patrol!</string>
     <string name="av_clear_history">Clear History</string>
     <string name="av_scan_history_summary">%1$d findings \u2014 %2$d critical, %3$d high, %4$d medium</string>
 
@@ -799,7 +799,7 @@
     <string name="settings_clear_data_desc">Remove scan cache, saved cloud credentials, preferences, and scan history</string>
     <string name="settings_clear_data_confirm_title">Clear All Data?</string>
     <string name="settings_clear_data_confirm_message">This will delete all scan data, saved cloud credentials, scan history, and reset preferences to defaults.\n\nThis cannot be undone.</string>
-    <string name="settings_clear_data_done">Raccoon wiped the slate clean \u2014 all app data has been cleared!</string>
+    <string name="settings_clear_data_done">Ricky wiped the slate clean \u2014 all app data has been cleared!</string>
 
     <!-- Crash Reporting -->
     <string name="settings_crash_section">Crash Reporting</string>
@@ -923,8 +923,8 @@
 
     <!-- Optimize enhancements -->
     <string name="optimize_reanalyze">Re-analyze</string>
-    <string name="optimize_analyzing">Raccoon is analyzing your files\u2026</string>
-    <string name="optimize_no_scan_data">Raccoon needs scan data to suggest optimizations.\nHead to the Manager tab and tap Scan Storage.</string>
+    <string name="optimize_analyzing">Ricky is analyzing your files\u2026</string>
+    <string name="optimize_no_scan_data">Ricky needs scan data to suggest optimizations.\nHead to the Manager tab and tap Scan Storage.</string>
     <string name="optimize_total_reorganize_size">%1$d files totaling %2$s can be reorganized</string>
 
     <!-- Cloud OAuth -->
@@ -932,13 +932,13 @@
     <!-- cloud_oauth_google removed: use cloud_gdrive_sign_in -->
     <string name="cloud_oauth_github">Sign in with GitHub</string>
     <string name="cloud_oauth_or_manual">or enter token manually</string>
-    <string name="cloud_oauth_success">Raccoon is authenticated \u2014 you\u0027re all set!</string>
-    <string name="cloud_oauth_failed">Raccoon couldn\u0027t sign in: %s</string>
+    <string name="cloud_oauth_success">Ricky is authenticated \u2014 you\u0027re all set!</string>
+    <string name="cloud_oauth_failed">Ricky couldn\u0027t sign in: %s</string>
     <!-- cloud_sign_in_google removed: use cloud_gdrive_sign_in -->
     <string name="cloud_connect_github">Connect with GitHub</string>
     <string name="cloud_oauth_note">Uses secure OAuth 2.0 authentication</string>
     <!-- cloud_oauth_sign_in_google and cloud_oauth_connect_github removed: use cloud_gdrive_sign_in / cloud_connect_github -->
-    <string name="cloud_oauth_authenticating">Raccoon is authenticating\u2026</string>
+    <string name="cloud_oauth_authenticating">Ricky is authenticating\u2026</string>
     <string name="cloud_oauth_config_title">OAuth Configuration</string>
     <string name="cloud_oauth_client_id_hint">OAuth Client ID</string>
     <string name="cloud_oauth_client_secret_hint">OAuth Client Secret (optional for PKCE)</string>
@@ -1010,7 +1010,7 @@
     <string name="a11y_swap_panes">Swap left and right panes</string>
 
     <!-- Accessibility: design audit additions -->
-    <string name="a11y_raccoon_bubble">Raccoon assistant. Double tap to open.</string>
+    <string name="a11y_raccoon_bubble">Ricky assistant. Double tap to open.</string>
     <string name="a11y_tab_selected">%s tab selected</string>
     <string name="a11y_file_icon">%1$s file icon</string>
     <string name="a11y_folder_icon">Folder icon</string>
