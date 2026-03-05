@@ -111,7 +111,9 @@
                     android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                     android:textColor="@color/textTertiary"
                     android:layout_marginTop="@dimen/spacing_xs"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:importantForAccessibility="yes"
+                    android:accessibilityLiveRegion="polite" />
             </LinearLayout>
 
             <!-- Phase progress area -->
@@ -162,7 +164,8 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
                     android:textColor="@color/textTertiary"
-                    android:layout_marginTop="@dimen/spacing_micro" />
+                    android:layout_marginTop="@dimen/spacing_micro"
+                    android:accessibilityLiveRegion="polite" />
             </LinearLayout>
 
             <!-- Start scan / scan again button -->
@@ -219,7 +222,8 @@
                             android:id="@+id/tv_critical_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:text="@string/av_default_count"
+                            android:contentDescription="@string/a11y_critical_threat_count"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/severityCritical"
                             android:accessibilityLiveRegion="polite"
@@ -259,7 +263,8 @@
                             android:id="@+id/tv_high_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:text="@string/av_default_count"
+                            android:contentDescription="@string/a11y_high_threat_count"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/severityHigh"
                             android:accessibilityLiveRegion="polite"
@@ -299,7 +304,8 @@
                             android:id="@+id/tv_medium_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:text="@string/av_default_count"
+                            android:contentDescription="@string/a11y_medium_threat_count"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/severityMedium"
                             android:accessibilityLiveRegion="polite"
@@ -339,7 +345,8 @@
                             android:id="@+id/tv_clean_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:text="@string/av_default_count"
+                            android:contentDescription="@string/a11y_clean_file_count"
                             android:textAppearance="@style/TextAppearance.FileCleaner.NumericTitle"
                             android:textColor="@color/severityLow"
                             android:accessibilityLiveRegion="polite"

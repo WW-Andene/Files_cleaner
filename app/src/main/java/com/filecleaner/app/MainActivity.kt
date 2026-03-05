@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -279,6 +280,38 @@ class MainActivity : AppCompatActivity() {
 
         // Handle OAuth callback
         handleOAuthIntent(intent)
+    }
+
+    // ── Keyboard shortcuts ──
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (event == null) return super.onKeyDown(keyCode, event)
+        val isCtrl = event.isCtrlPressed
+
+        if (isCtrl) {
+            when (keyCode) {
+                // Ctrl+S → Navigate to Settings
+                KeyEvent.KEYCODE_S -> {
+                    val navController = findNavController(R.id.nav_host_fragment)
+                    if (navController.currentDestination?.id != R.id.settingsFragment) {
+                        navController.navigate(R.id.settingsFragment, null, MotionUtil.navOptions())
+                    }
+                    return true
+                }
+                // Ctrl+F → Navigate to Browse tab and focus the search field
+                KeyEvent.KEYCODE_F -> {
+                    binding.bottomNav.selectedItemId = R.id.browseFragment
+                    // Post to allow fragment transaction to complete before requesting focus
+                    binding.root.post {
+                        val searchField = findViewById<View>(R.id.et_search)
+                        searchField?.requestFocus()
+                    }
+                    return true
+                }
+            }
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 
     override fun onNewIntent(intent: Intent) {
