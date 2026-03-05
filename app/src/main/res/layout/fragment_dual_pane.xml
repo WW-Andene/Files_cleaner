@@ -396,6 +396,7 @@
         android:orientation="vertical"
         android:background="@color/surfaceColor"
         android:elevation="@dimen/elevation_nav"
+        android:layout_marginBottom="@dimen/bottom_nav_height"
         android:visibility="gone"
         android:contentDescription="@string/a11y_selection_actions"
         android:accessibilityLiveRegion="polite"
