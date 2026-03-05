@@ -59,6 +59,10 @@
 
         <!-- Dialog styling — branded alert dialogs -->
         <item name="materialAlertDialogTheme">@style/Theme.FileCleaner.Dialog</item>
+
+        <!-- PopupMenu styling — branded popup menus -->
+        <item name="popupMenuStyle">@style/Widget.FileCleaner.PopupMenu</item>
+        <item name="android:popupMenuStyle">@style/Widget.FileCleaner.PopupMenu</item>
     </style>
 
     <!-- Dialog window animation -->
@@ -371,12 +375,18 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <!-- ═══ PopupMenu — branded with rounded corners and warm surface ═══ -->
+    <style name="Widget.FileCleaner.PopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:popupBackground">@drawable/bg_spinner_dropdown</item>
+    </style>
+
     <!-- ═══ NEW: Alert Dialog — branded with rounded corners ═══ -->
     <style name="Theme.FileCleaner.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.FileCleaner.Dialog</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorSurface">@color/surfaceColor</item>
         <item name="colorOnSurface">@color/textPrimary</item>
+        <item name="android:colorBackground">@color/surfaceColor</item>
         <!-- Enter/exit animations using the app's motion vocabulary -->
         <item name="android:windowAnimationStyle">@style/Animation.FileCleaner.Dialog</item>
     </style>
