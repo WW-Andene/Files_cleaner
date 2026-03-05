@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.widget.doAfterTextChanged
@@ -23,6 +24,7 @@ import java.io.File
 class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View {
@@ -134,7 +136,8 @@ class SettingsFragment : Fragment() {
         // Clear All Data (P3 Security: GDPR data erasure)
         binding.btnClearData.setOnClickListener {
             val ctx = context ?: return@setOnClickListener
-            MaterialAlertDialogBuilder(ctx)
+            activeDialog?.dismiss()
+            activeDialog = MaterialAlertDialogBuilder(ctx)
                 .setTitle(getString(R.string.settings_clear_data_confirm_title))
                 .setMessage(getString(R.string.settings_clear_data_confirm_message))
                 .setPositiveButton(getString(R.string.delete)) { _, _ ->
@@ -206,6 +209,8 @@ class SettingsFragment : Fragment() {
 
     // B5: Remove listeners to prevent callbacks on destroyed binding
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         binding.rgTheme.setOnCheckedChangeListener(null)
         binding.seekLargeFile.setOnSeekBarChangeListener(null)
         binding.seekStaleAge.setOnSeekBarChangeListener(null)

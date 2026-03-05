@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AdapterView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -56,6 +57,7 @@ import java.net.UnknownHostException
 class CloudBrowserFragment : Fragment() {
 
     private var _binding: FragmentCloudBrowserBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
 
     private var connections = mutableListOf<CloudConnection>()
@@ -412,7 +414,8 @@ class CloudBrowserFragment : Fragment() {
         val conn = connections[idx]
 
         val ctx = context ?: return
-        MaterialAlertDialogBuilder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(getString(R.string.cloud_remove))
             .setMessage(getString(R.string.cloud_remove_confirm, conn.displayName))
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
@@ -546,6 +549,8 @@ class CloudBrowserFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         // Disconnect cloud provider to prevent leaking network connections
         currentProvider?.let { provider ->
             // D5-06: Use NonCancellable scope — viewLifecycleOwner scope is cancelled during onDestroyView

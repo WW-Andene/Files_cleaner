@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -26,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 class RaccoonManagerFragment : Fragment() {
 
     private var _binding: FragmentRaccoonManagerBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
     /** Tracks whether a scan was in progress so we only celebrate on Scanning -> Done transitions. */
@@ -75,7 +77,8 @@ class RaccoonManagerFragment : Fragment() {
             val detail = resources.getQuantityString(
                 R.plurals.confirm_delete_detail,
                 junk.size, junk.size, totalSize, undoSeconds)
-            MaterialAlertDialogBuilder(requireContext())
+            activeDialog?.dismiss()
+            activeDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.raccoon_quick_clean_title))
                 .setMessage(detail)
                 .setPositiveButton(getString(R.string.clean)) { _, _ ->
@@ -228,6 +231,8 @@ class RaccoonManagerFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         super.onDestroyView()
         _binding = null
     }

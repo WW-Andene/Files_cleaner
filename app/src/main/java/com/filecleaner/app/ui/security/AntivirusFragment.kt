@@ -15,6 +15,7 @@ import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -48,6 +49,7 @@ import java.io.File
 class AntivirusFragment : Fragment() {
 
     private var _binding: FragmentAntivirusBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
     private var isScanning = false
@@ -322,7 +324,8 @@ class AntivirusFragment : Fragment() {
             recycler.adapter = HistoryAdapter(history)
         }
 
-        MaterialAlertDialogBuilder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setView(dialogView)
             .setPositiveButton(R.string.av_dismiss, null)
             .setNeutralButton(R.string.av_clear_history) { _, _ ->
@@ -347,7 +350,8 @@ class AntivirusFragment : Fragment() {
             if (uninstall.isNotEmpty()) append(resources.getQuantityString(R.plurals.av_fix_uninstall, uninstall.size, uninstall.size))
         }.trim()
 
-        MaterialAlertDialogBuilder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(getString(R.string.av_fix_all))
             .setMessage(getString(R.string.av_fix_all_confirm, summary))
             .setPositiveButton(getString(R.string.av_proceed)) { _, _ ->
@@ -399,6 +403,7 @@ class AntivirusFragment : Fragment() {
     }
 
     private fun showThreatDetail(threat: ThreatResult) {
+
         val ctx = context ?: return
         val dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_threat_detail, null)
 
@@ -444,9 +449,11 @@ class AntivirusFragment : Fragment() {
         // Category
         tvCategory.text = categoryLabel(ctx, threat.category)
 
+        activeDialog?.dismiss()
         val dialog = MaterialAlertDialogBuilder(ctx)
             .setView(dialogView)
             .create()
+        activeDialog = dialog
 
         btnDismiss.setOnClickListener { dialog.dismiss() }
 
@@ -511,7 +518,8 @@ class AntivirusFragment : Fragment() {
 
     private fun confirmDelete(filePath: String) {
         val ctx = context ?: return
-        MaterialAlertDialogBuilder(ctx)
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.av_confirm_delete, File(filePath).name))
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
@@ -736,6 +744,8 @@ class AntivirusFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         progressHandler.removeCallbacksAndMessages(null)
         stopShieldPulse()
         super.onDestroyView()

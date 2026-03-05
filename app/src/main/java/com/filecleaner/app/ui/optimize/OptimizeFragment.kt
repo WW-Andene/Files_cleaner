@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -30,6 +31,7 @@ import java.io.File
 class OptimizeFragment : Fragment() {
 
     private var _binding: FragmentOptimizeBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
 
@@ -295,7 +297,8 @@ class OptimizeFragment : Fragment() {
             return
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.optimize_confirm_title))
             .setMessage(resources.getQuantityString(R.plurals.optimize_confirm_message, accepted.size, accepted.size))
             .setPositiveButton(getString(R.string.move)) { _, _ ->
@@ -320,6 +323,8 @@ class OptimizeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         super.onDestroyView()
         _binding = null
     }

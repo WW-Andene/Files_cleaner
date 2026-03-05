@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,6 +30,7 @@ import java.io.File
 class ArborescenceFragment : Fragment() {
 
     private var _binding: FragmentArborescenceBinding? = null
+    private var activeDialog: AlertDialog? = null
     private val binding get() = _binding!!
     private val vm: MainViewModel by activityViewModels()
 
@@ -69,7 +71,8 @@ class ArborescenceFragment : Fragment() {
         binding.arborescenceView.onFileMoveRequested = { filePath, targetDirPath ->
             val fileName = File(filePath).name
             val targetName = File(targetDirPath).name
-            MaterialAlertDialogBuilder(requireContext())
+            activeDialog?.dismiss()
+            activeDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.confirm_move_title))
                 .setMessage(getString(R.string.confirm_move_message, fileName, targetName))
                 .setPositiveButton(getString(R.string.move)) { _, _ ->
@@ -118,7 +121,8 @@ class ArborescenceFragment : Fragment() {
         binding.arborescenceView.onFolderMoveRequested = { folderPath, targetDirPath ->
             val folderName = File(folderPath).name
             val targetName = File(targetDirPath).name
-            MaterialAlertDialogBuilder(requireContext())
+            activeDialog?.dismiss()
+            activeDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.confirm_move_title))
                 .setMessage(getString(R.string.confirm_move_message, folderName, targetName))
                 .setPositiveButton(getString(R.string.move)) { _, _ ->
@@ -398,6 +402,8 @@ class ArborescenceFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         savedExpandedPaths = binding.arborescenceView.getExpandedPaths()
         binding.spinnerTreeCategory.onItemSelectedListener = null
         binding.spinnerTreeSort.onItemSelectedListener = null

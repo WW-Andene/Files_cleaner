@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
@@ -58,6 +59,7 @@ abstract class BaseFileListFragment : Fragment() {
     private var _binding: FragmentListActionBinding? = null
     protected val binding get() = _binding!!
     protected val vm: MainViewModel by activityViewModels()
+    private var activeDialog: AlertDialog? = null
     protected lateinit var adapter: FileAdapter
     private var selected = listOf<FileItem>()
     private var pendingSelectionRestore: Set<String>? = null
@@ -332,7 +334,8 @@ abstract class BaseFileListFragment : Fragment() {
         val undoSeconds = try { com.filecleaner.app.data.UserPreferences.undoTimeoutMs / 1000 } catch (_: Exception) { 8 }
         val detailMessage = resources.getQuantityString(com.filecleaner.app.R.plurals.confirm_delete_detail,
             selected.size, selected.size, totalSize, undoSeconds)
-        MaterialAlertDialogBuilder(requireContext())
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(confirmTitle(selected.size))
             .setMessage(detailMessage)
             .setPositiveButton(confirmPositiveLabel) { _, _ ->
@@ -464,6 +467,8 @@ abstract class BaseFileListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         searchDebounceJob?.cancel()
         binding.spinnerSort.onItemSelectedListener = null
         super.onDestroyView()

@@ -24,6 +24,7 @@ import com.filecleaner.app.databinding.FragmentBrowseBinding
 import com.filecleaner.app.data.UserPreferences
 import com.filecleaner.app.ui.adapters.BrowseAdapter
 import com.filecleaner.app.ui.adapters.ViewMode
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.filecleaner.app.ui.common.BaseFileListFragment
 import com.filecleaner.app.ui.common.FileContextMenu
@@ -51,6 +52,7 @@ class BrowseFragment : Fragment() {
     private val vm: MainViewModel by activityViewModels()
     private lateinit var adapter: BrowseAdapter
 
+    private var activeDialog: AlertDialog? = null
     private var currentViewMode = ViewMode.LIST_MD
     private val selectedExtensions = mutableSetOf<String>()
     private var searchQuery = ""
@@ -131,7 +133,8 @@ class BrowseFragment : Fragment() {
             val items = adapter.getSelectedItems()
             if (items.isNotEmpty()) {
                 val totalSize = UndoHelper.totalSize(items)
-                MaterialAlertDialogBuilder(requireContext())
+                activeDialog?.dismiss()
+                activeDialog = MaterialAlertDialogBuilder(requireContext())
                     .setTitle(resources.getQuantityString(R.plurals.delete_n_files_title, items.size, items.size))
                     .setMessage(getString(R.string.confirm_delete_message, 8))
                     .setPositiveButton(R.string.delete) { _, _ ->
@@ -726,6 +729,8 @@ class BrowseFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         searchDebounceJob?.cancel()
         binding.spinnerCategory.onItemSelectedListener = null
         binding.spinnerSort.onItemSelectedListener = null

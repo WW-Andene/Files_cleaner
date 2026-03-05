@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -49,6 +50,7 @@ class DualPaneFragment : Fragment() {
 
     private var _binding: FragmentDualPaneBinding? = null
     private val binding get() = _binding!!
+    private var activeDialog: AlertDialog? = null
     private val vm: MainViewModel by activityViewModels()
 
     @Suppress("DEPRECATION")
@@ -330,7 +332,8 @@ class DualPaneFragment : Fragment() {
 
     private fun showDragCopyMoveDialog(items: List<PaneAdapter.PaneItem>, targetPane: Pane) {
         val targetPath = if (targetPane == Pane.LEFT) leftPath else rightPath
-        MaterialAlertDialogBuilder(requireContext())
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.dual_pane_drag_copy_or_move))
             .setMessage(getString(R.string.dual_pane_drag_message, items.size))
             .setPositiveButton(getString(R.string.dual_pane_copy)) { _, _ ->
@@ -521,7 +524,8 @@ class DualPaneFragment : Fragment() {
             setPadding(px48, px32, px48, px16)
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.dual_pane_pick_directory))
             .setView(input)
             .setPositiveButton(getString(R.string.select_directory)) { _, _ ->
@@ -583,7 +587,8 @@ class DualPaneFragment : Fragment() {
         val targetPath = if (activePane == Pane.LEFT) rightPath else leftPath
         val opName = if (copy) getString(R.string.dual_pane_copy) else getString(R.string.dual_pane_move)
 
-        MaterialAlertDialogBuilder(requireContext())
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(opName)
             .setMessage(resources.getQuantityString(
                 R.plurals.dual_pane_confirm_op, selected.size,
@@ -624,7 +629,8 @@ class DualPaneFragment : Fragment() {
             R.plurals.confirm_delete_detail, fileItems.size, fileItems.size, totalSize, undoSec
         )
 
-        MaterialAlertDialogBuilder(requireContext())
+        activeDialog?.dismiss()
+        activeDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(resources.getQuantityString(R.plurals.delete_n_files_title, fileItems.size, fileItems.size))
             .setMessage(detail)
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
@@ -701,6 +707,8 @@ class DualPaneFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        activeDialog?.dismiss()
+        activeDialog = null
         super.onDestroyView()
         _binding = null
     }
