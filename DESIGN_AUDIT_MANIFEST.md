@@ -818,7 +818,7 @@
 | # | FILE/COMPONENT | UI ELEMENT | ISSUE | SECTION | SEVERITY |
 |---|---|---|---|---|---|
 | 378 | ArborescenceView.kt | Haptic feedback | PASS — HapticFeedbackConstants.LONG_PRESS on tree node interactions (selection mode entry) — appropriate haptic moments | §F5 | — |
-| 379 | ArborescenceView.kt | Haptic coverage | Only arborescence tree view uses haptic feedback (2 instances). Other interactions (file selection, toggle, delete confirmation, pull-to-refresh) lack haptic feedback. Limited haptic coverage across the app | §F5 | LOW |
+| 379 | Multiple files | Haptic coverage | FIXED — Added haptic feedback to 5 key moments: (1) file long-press selection in BrowseAdapter/FileAdapter, (2) bulk delete confirmation in BaseFileListFragment, (3) scan complete with results, (4) empty scan result, (5) move/copy completion in DualPaneFragment/ArborescenceFragment. Uses CONFIRM/REJECT (API 30+) with LONG_PRESS fallback | §F5 | ~~LOW~~ PASS |
 | 380 | layouts (all) | Focus indicator quality | PASS — `@color/borderFocus` defined for keyboard focus; used in chip_stroke_color.xml and card_stroke_color.xml state selectors | §F5 | — |
 
 ## §F6 — Engagement, Delight & Emotional Design
@@ -915,7 +915,7 @@
 |---|---|---|---|---|---|
 | 418 | anim/ (14 files) | Transition coherence | PASS — Complete custom animation vocabulary: nav transitions use slide+fade; dialogs use scale+fade; items use translate+fade+stagger; all with appropriate interpolators | §L5 | — |
 | 419 | anim/nav_*.xml | Fragment transition quality | PASS — All 14 global nav_graph actions use custom enter/exit/popEnter/popExit animations; not default Material transitions | §L5 | — |
-| 420 | ArborescenceView.kt | Haptic feedback polish | Limited — Only arborescence tree has haptic feedback (LONG_PRESS on node interaction). Missing from: file list long-press selection, delete confirmation, toggle switches, pull-to-refresh threshold. App has 2 haptic moments out of recommended 5-8 | §L5 | LOW |
+| 420 | Multiple files | Haptic feedback polish | FIXED — App now has 7 haptic moments (2 existing tree + 5 new). See #379 for details | §L5 | ~~LOW~~ PASS |
 | 421 | Overall | Motion budget | PASS — No views with >2 simultaneous animations observed; animations are sequential/staggered rather than concurrent; motion budget well-managed | §L5 | — |
 
 ---
@@ -958,7 +958,7 @@
 | §F2 User Flow Quality | 3 | 0 | 0 | 0 | 3 |
 | §F3 Onboarding | 2 | 0 | 0 | 0 | 2 |
 | §F4 Copy Quality | 2 | 0 | 0 | 0 | 2 |
-| §F5 Micro-Interactions | 1 | 1 | 0 | 0 | 2 |
+| §F5 Micro-Interactions | 2 | 0 | 0 | 0 | 2 |
 | §F6 Engagement & Delight | 3 | 0 | 0 | 0 | 3 |
 | §G1 Accessibility Compliance | 8 | 0 | 0 | 0 | 8 |
 | §G2 Screen Reader Trace | 1 | 1 | 0 | 0 | 2 |
@@ -968,11 +968,11 @@
 | §H3 Mobile & Touch | 5 | 2 | 0 | 0 | 7 |
 | §L3 Design System Standard. | 3 | 3 | 0 | 0 | 6 |
 | §L4 Copy & Content Standard. | 2 | 0 | 0 | 0 | 2 |
-| §L5 Interaction & Experience Polish | 2 | 1 | 0 | 0 | 3 |
+| §L5 Interaction & Experience Polish | 3 | 0 | 0 | 0 | 3 |
 | §D5 Mobile Performance | 8 | 1 | 0 | 0 | 9 |
-| **TOTALS** | **106** | **16** | **0** | **0** | **122** |
+| **TOTALS** | **108** | **14** | **0** | **0** | **122** |
 
-### All open issues (16 LOW + 0 MEDIUM)
+### All open issues (14 LOW + 0 MEDIUM)
 
 | # | Section | Severity | Details |
 |---|---|---|---|
@@ -990,7 +990,7 @@
 | 365 | §E11 | ~~MEDIUM~~ **FIXED** | Splash Screen API implemented |
 | 366 | §E11 | LOW | No Dynamic Color support |
 | 367 | §E11 | ~~MEDIUM~~ **FIXED** | Predictive back enabled, no migrations needed |
-| 379 | §F5 | LOW | Limited haptic feedback coverage (2 of 5-8 recommended moments) |
+| 379 | §F5 | ~~LOW~~ **FIXED** | Haptic feedback added to 5 key interaction moments |
 | 392 | §G2 | LOW | No screenReaderFocusable usage |
 | 394 | §G3 | LOW | No OnBackPressedCallback for custom back handling |
 | 403 | §H3 | ~~MEDIUM~~ **FIXED** | button_height_sm 2 true violations → touch_target_min |
@@ -1001,7 +1001,7 @@
 | 411 | §L3 | LOW | 2 off-scale spacing tokens |
 | 412 | §L3 | LOW | Skeleton hub card token inconsistency |
 | 415 | §L3 | LOW | No standalone design system documentation |
-| 420 | §L5 | LOW | Limited haptic feedback (2 of 5-8 moments) |
+| 420 | §L5 | ~~LOW~~ **FIXED** | Haptic feedback expanded to 7 moments |
 | 427 | §D5 | ~~LOW~~ **FIXED** | NonCancellable coroutine wrapped with withTimeout(5000L) |
 | 430 | §D5 | LOW | No Baseline Profiles for startup optimization |
 
@@ -1015,4 +1015,4 @@
 
 ---
 
-**Phase 2 manifest complete. 122 findings: 106 PASS, 16 LOW, 0 MEDIUM, 0 REVIEW. Fixes in progress.**
+**Phase 2 manifest complete. 122 findings: 108 PASS, 14 LOW, 0 MEDIUM, 0 REVIEW. Fixes in progress.**

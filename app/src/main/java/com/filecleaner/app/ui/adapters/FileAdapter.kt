@@ -1,5 +1,6 @@
 package com.filecleaner.app.ui.adapters
 
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -227,6 +228,7 @@ class FileAdapter(
             holder.itemView.setOnLongClickListener { v ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     onItemLongClick?.invoke(getItem(pos), v)
                 }
                 true
@@ -251,6 +253,7 @@ class FileAdapter(
             holder.itemView.setOnLongClickListener { v ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     onItemLongClick?.invoke(getItem(pos), v)
                 }
                 true
@@ -273,6 +276,7 @@ class FileAdapter(
             holder.itemView.setOnLongClickListener { v ->
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     onItemLongClick?.invoke(getItem(pos), v)
                 }
                 true

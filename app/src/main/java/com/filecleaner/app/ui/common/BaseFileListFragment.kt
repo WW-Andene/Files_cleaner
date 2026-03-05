@@ -1,8 +1,10 @@
 package com.filecleaner.app.ui.common
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -259,6 +261,23 @@ abstract class BaseFileListFragment : Fragment() {
 
         vm.scanState.observe(viewLifecycleOwner) { state ->
             binding.progressScan.visibility = if (state is ScanState.Scanning) View.VISIBLE else View.GONE
+            if (state is ScanState.Done) {
+                if (rawItems.isNotEmpty()) {
+                    // Scan complete — results found
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        binding.root.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                    } else {
+                        binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    }
+                } else {
+                    // Scan complete — nothing found
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        binding.root.performHapticFeedback(HapticFeedbackConstants.REJECT)
+                    } else {
+                        binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    }
+                }
+            }
         }
     }
 
@@ -306,6 +325,11 @@ abstract class BaseFileListFragment : Fragment() {
             .setTitle(confirmTitle(selected.size))
             .setMessage(detailMessage)
             .setPositiveButton(confirmPositiveLabel) { _, _ ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    binding.root.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                } else {
+                    binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                }
                 vm.deleteFiles(selected)
                 adapter.deselectAll()
             }

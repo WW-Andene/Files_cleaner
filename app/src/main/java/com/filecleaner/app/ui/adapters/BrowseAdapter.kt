@@ -1,5 +1,6 @@
 package com.filecleaner.app.ui.adapters
 
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -390,6 +391,7 @@ class BrowseAdapter : ListAdapter<BrowseAdapter.Item, RecyclerView.ViewHolder>(D
             if (pos != RecyclerView.NO_POSITION) {
                 val current = getItem(pos)
                 if (current is Item.File) {
+                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     if (!selectionMode) {
                         enterSelectionMode(current.fileItem.path)
                     } else {

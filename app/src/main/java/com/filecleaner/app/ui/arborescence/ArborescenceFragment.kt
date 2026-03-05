@@ -1,6 +1,8 @@
 package com.filecleaner.app.ui.arborescence
 
+import android.os.Build
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -231,6 +233,11 @@ class ArborescenceFragment : Fragment() {
 
         // Observe move results
         vm.moveResult.observe(viewLifecycleOwner) { result ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                binding.root.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            } else {
+                binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            }
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
         }
 

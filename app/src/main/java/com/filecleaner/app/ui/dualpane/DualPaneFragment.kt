@@ -2,9 +2,11 @@ package com.filecleaner.app.ui.dualpane
 
 import android.content.ClipData
 import android.content.ClipDescription
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.DragEvent
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -150,6 +152,11 @@ class DualPaneFragment : Fragment() {
             refreshBothPanes()
         }
         vm.moveResult.observe(viewLifecycleOwner) { result ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                binding.root.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            } else {
+                binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            }
             Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
             refreshBothPanes()
         }
