@@ -136,6 +136,10 @@
     <!-- Alpha tokens -->
     <item name="alpha_raccoon_logo" format="float" type="dimen">0.85</item>
 
+    <!-- Empty/loading state constraints -->
+    <dimen name="empty_state_title_max_width">280dp</dimen>
+    <dimen name="empty_state_subtitle_max_width">300dp</dimen>
+
     <!-- Animation translation distances -->
     <dimen name="anim_slide_in_y">24dp</dimen>
     <dimen name="anim_slide_out_y">16dp</dimen>

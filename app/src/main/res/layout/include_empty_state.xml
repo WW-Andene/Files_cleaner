@@ -28,7 +28,7 @@
         android:textAppearance="@style/TextAppearance.FileCleaner.Title"
         android:textColor="@color/textPrimary"
         android:gravity="center"
-        android:maxWidth="280dp"
+        android:maxWidth="@dimen/empty_state_title_max_width"
         android:lineSpacingExtra="@dimen/spacing_xs"
         tools:text="Raccoon is waiting to dig in!" />
 
@@ -40,7 +40,7 @@
         android:textAppearance="@style/TextAppearance.FileCleaner.Body"
         android:textColor="@color/textSecondary"
         android:gravity="center"
-        android:maxWidth="300dp"
+        android:maxWidth="@dimen/empty_state_subtitle_max_width"
         android:lineSpacingExtra="@dimen/spacing_xs"
         tools:text="Scan your storage and Raccoon will crunch the numbers for you." />
 
