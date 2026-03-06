@@ -3744,6 +3744,14 @@ All patterns are reasonable, but there's no single canonical error type.
 | 25 packages / 76 files — good granularity | ✅ Well-organized |
 | No circular dependencies | ✅ Clean layering |
 
+#### Post-Agent Addendum — AntivirusFragment Polling Pattern
+
+> **F-078** | Severity: **MEDIUM** | Confidence: **HIGH**
+> **Title:** AntivirusFragment uses Handler-based polling instead of LiveData for scan progress
+> **Location:** `ui/security/AntivirusFragment.kt:60-78`
+> **Details:** AntivirusFragment polls `ScanService` static `@Volatile` properties (`isRunning`, `currentProgress`, `currentPhase`, `scanComplete`) every 500ms via `Handler.postDelayed`. This is inconsistent with the rest of the app which uses LiveData/coroutines reactively. The polling approach: (1) wastes CPU/battery checking unchanged state, (2) risks reading stale volatile values between scan phases, (3) is not lifecycle-aware — if the Fragment is paused, polling continues, and (4) violates the MVVM pattern by reading mutable static state directly from a Service.
+> **Suggestion:** Replace `@Volatile` static properties in `ScanService` with `MutableLiveData` in a companion object, and observe them in the Fragment via `viewLifecycleOwner`. This matches the existing `MainViewModel.scanState` pattern used for the main file scan.
+
 ---
 
 ### Phase 10 — Cumulative Finding Count
@@ -3752,9 +3760,9 @@ All patterns are reasonable, but there's no single canonical error type.
 |----------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
 | CRITICAL | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | HIGH | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 4 |
-| MEDIUM | 6 | 2 | 5 | 3 | 0 | 1 | 2 | 2 | 0 | 2 | 23 |
+| MEDIUM | 6 | 2 | 5 | 3 | 0 | 1 | 2 | 2 | 0 | 3 | 24 |
 | LOW | 11 | 6 | 5 | 5 | 6 | 3 | 3 | 3 | 3 | 4 | 49 |
-| **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **6** | **76** |
+| **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **7** | **77** |
 
 **Next: Phase 11 — Data Presentation (Category J)**
 
