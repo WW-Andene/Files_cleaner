@@ -290,7 +290,7 @@
         android:layout_height="@dimen/button_height"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginHorizontal="@dimen/spacing_lg"
-        android:layout_marginBottom="@dimen/spacing_above_nav"
+        android:layout_marginBottom="@dimen/spacing_bottom_inset"
         android:minWidth="@dimen/button_min_width"
         android:paddingHorizontal="@dimen/spacing_3xl"
         android:elevation="@dimen/elevation_floating"
