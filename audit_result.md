@@ -2668,6 +2668,357 @@ This step is not applicable.
 | LOW | 11 | 6 | 5 | 5 | 6 | 3 | 36 |
 | **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **56** |
 
-**Next: Phase 7 — UX & Information Architecture (Category F)**
+---
 
-Awaiting confirmation to proceed with Phase 7, or to fix findings from Phase 1-6.
+## PHASE 7 — UX & INFORMATION ARCHITECTURE (Category F)
+
+> **Calibration reminder:** §F was amplified during Phase 0 (Productivity/Utility domain).
+> File managers live or die by flow efficiency — every extra tap costs trust.
+
+### Step 7.1 — §F1: Information Architecture
+
+```
+[POSITIVE VERIFICATION] — Well-structured hub-and-spoke navigation model
+
+**Navigation structure:**
+- Single Activity (MainActivity) with NavHostFragment
+- 5 bottom nav tabs: Browse | Duplicates | Raccoon Hub | Large | Junk
+- 14 total fragment destinations in nav_graph.xml
+- Hub (RaccoonManagerFragment) is the start destination and central spoke
+
+**Bottom nav tab architecture (5 tabs):**
+1. Browse — full file browser with search, filter, sort
+2. Duplicates — duplicate files list with selection/delete
+3. Raccoon Hub (center) — central hub with 8 feature cards
+4. Large Files — files sorted by size with selection/delete
+5. Junk — identified junk files with selection/delete
+
+**Hub spoke destinations (from center tab):**
+- Scan Storage → triggers scan (in-place)
+- Analysis → StorageDashboardFragment
+- Quick Clean → delete confirmation dialog (in-place)
+- Janitor → re-scan + review (dialog, then tab navigation)
+- Arborescence → ArborescenceFragment (tree view)
+- Optimize → OptimizeFragment
+- Dual Pane → DualPaneFragment
+- Cloud → CloudBrowserFragment
+- Antivirus → AntivirusFragment
+
+**Feature discoverability (30-second test):**
+- Bottom nav: Browse, Duplicates, Large, Junk — immediately visible (4 features)
+- Center hub: Scan, Analysis, Quick Clean, Janitor, Tree, Optimize, Dual Pane,
+  Cloud, Antivirus — visible after scrolling hub (9 features)
+- Settings: gear icon in top-right header — standard placement
+- Dashboard: accessible from Analysis card OR tapping scan status after completion
+Total: 13 major features discoverable within 30 seconds ✓
+
+**Depth vs breadth:**
+- Maximum depth: 2 taps from hub to any feature (Hub → card → destination)
+- Browse can go deeper via folder navigation, but breadcrumbs/back maintain orientation
+- No feature is buried more than 2 levels deep ✓
+```
+
+```
+[LOW] — F-057: Janitor card action is ambiguous — re-scans then expects manual tab navigation
+Section: §F1 — Information Architecture
+Finding: RaccoonManagerFragment.kt:219-233 — The "Janitor" (deep clean) card triggers a
+  re-scan via requestPermissionsAndScan() and shows a snackbar "Ricky is starting a deep
+  clean," but doesn't actually navigate anywhere after the scan completes. The user is
+  left on the hub screen with a comment in code: "After scan completes, user can review
+  duplicates/junk/large tabs" (line 226). There's no automatic navigation or guidance
+  about what to do next.
+Why it matters: The Janitor promises "deep clean" but delivers "scan + figure it out."
+  The user must manually navigate to each tab (Duplicates, Large, Junk) to review.
+  This breaks the "no dead ends" principle.
+Recommendation: After scan completion, either auto-navigate to a summary screen or
+  show a dialog with quick links to Duplicates/Large/Junk tabs.
+Effort: MEDIUM
+Confidence: HIGH — Source: [CODE]
+```
+
+```
+[LOW] — F-058: Bottom nav uses ic_nav_large (server rack icon) for "Large Files"
+Section: §F1 — Information Architecture
+Finding: bottom_nav_menu.xml:20-21 — The Large Files tab uses `ic_nav_large` which is a
+  server rack / horizontal bars icon (pathData shows three horizontal bar groups). This
+  icon doesn't clearly communicate "large files" — it could mean "storage", "database",
+  or "server." The icon would be more intuitive as a size-related symbol (e.g., expanding
+  arrows, a large file with size indicator).
+Why it matters: Minor — users learn icon meanings quickly, but first-time recognition
+  could be improved.
+Recommendation: Consider using a more size-suggestive icon for the Large Files tab.
+Effort: TRIVIAL
+Confidence: LOW — Source: [CODE]
+```
+
+### Step 7.2 — §F2: User Flow Quality
+
+```
+[POSITIVE VERIFICATION] — Critical user flows are well-designed
+
+**Flow 1: Scan Storage**
+Hub → "Scan Storage" card → permission check → scan progress (with phases, percentage,
+cancel button) → completion snackbar with summary → scan status bar becomes tappable
+(opens dashboard). No dead ends. Error recovery: permission denied dialog with "Open
+Settings" button. Scan failure: error snackbar with styled error appearance.
+
+**Flow 2: Browse Files**
+Browse tab → search bar → filter panel (category, sort, extensions) → file list →
+long-press file → context menu bottom sheet → actions (open, share, rename, move,
+copy, compress, delete, favorites, protected). No dead ends. Back navigation works
+at every level.
+
+**Flow 3: Delete Files (with undo)**
+Select files (checkbox) → selection action bar appears → "Delete" button →
+confirmation dialog with file count + total size + undo timeout → delete →
+undo snackbar with configurable timeout (default 8s) → files moved to trash.
+Error recovery: move-to-trash failure shows specific error message.
+
+**Flow 4: Quick Clean**
+Hub → "Quick Clean" card → if no junk: "Sparkling clean!" snackbar → if junk exists:
+confirmation dialog with count + size + undo timeout → clean → undo snackbar.
+Pre-scan guard: "Ricky needs scan data first" snackbar. No dead ends.
+
+**Flow 5: Cloud Setup**
+Hub → "Cloud" card → CloudBrowserFragment → provider picker → OAuth flow (Google Drive,
+GitHub) or manual setup (SFTP, WebDAV) → connection test → browse remote files.
+Error recovery: connection failure snackbar with retry guidance.
+
+**Back navigation:**
+- All non-tab fragments have back button in toolbar (ImageButton with ic_arrow_back)
+- Bottom nav reselect pops back stack to tab root
+- Navigation animations: enter/exit + pop_enter/pop_exit for all transitions
+- Bottom nav hides on non-tab screens, reappears on tab screens (with slide animation)
+```
+
+```
+[MEDIUM] — F-059: Scan-dependent features show no affordance change when scan is needed
+Section: §F2 — User Flow Quality
+Finding: RaccoonManagerFragment.kt:175-179 — Cards requiring scan data (Analysis, Quick
+  Clean, Arborescence, Optimize, Janitor) are dimmed to alpha 0.5f when no scan data
+  exists. However, they remain clickable and tapping them shows a generic snackbar
+  "Ricky needs scan data first." There's no visual indicator (badge, lock icon, or text
+  overlay) explaining WHY the card is dimmed or what action is needed.
+Why it matters: The alpha dimming is ambiguous — it could mean "disabled", "loading",
+  or "unavailable." Combined with no inline explanation, this violates the principle of
+  clear affordances. A new user may not understand why 5 of 8 hub cards appear inactive.
+Recommendation: Add a subtitle text like "Scan first" or a small lock/scan icon overlay
+  on dimmed cards. The existing card description text does update to "Scan first" —
+  verify this is visible enough at 0.5f alpha.
+Effort: LOW
+Confidence: MEDIUM — Source: [CODE]
+```
+
+### Step 7.3 — §F3: Onboarding & First Use
+
+```
+[POSITIVE VERIFICATION] — Well-designed progressive onboarding
+
+**First-run sequence:**
+1. Splash screen (installSplashScreen) → brief branded moment
+2. OnboardingDialog (3 steps): Welcome → Browse → Scan
+   - Step indicator: "Step 1 of 3" with a11y announcement
+   - Per-step icon: raccoon logo → browse icon → scan icon
+   - Skip button on steps 1-2, Back button on steps 2-3
+   - "Done" on final step triggers permission request
+   - Non-cancelable (setCancelable(false)) — can't dismiss accidentally
+3. Privacy notice dialog (if first launch): title + message + "Accept" button
+   - Non-cancelable, must accept before proceeding
+4. Permission request: MANAGE_EXTERNAL_STORAGE (Android 11+) or READ/WRITE (Android 10)
+   - If denied: dialog explaining why permission is needed with "Open Settings" link
+5. Auto-scan: on permission grant, scan starts automatically
+
+**Value before permission:**
+- Onboarding explains what the app does BEFORE requesting storage access ✓
+- Privacy notice appears BEFORE scan starts ✓
+- Permission request explains WHY access is needed ✓
+
+**Progressive disclosure:**
+- Hub shows all features but dims scan-dependent ones
+- Advanced tools separated in "Advanced" section with section header
+- Filters/display options in Browse are collapsible (hidden by default)
+```
+
+```
+[LOW] — F-060: Onboarding dialog uses programmatic view construction instead of XML layout
+Section: §F3 — Onboarding & First Use
+Finding: OnboardingDialog.kt:45-91 — The onboarding dialog constructs its entire UI
+  programmatically using LinearLayout, TextView, ImageView created in code with manual
+  padding, margins, and text appearance references. This bypasses the design token system
+  for spacing (hardcoded getDimensionPixelSize calls) and makes the layout harder to
+  maintain and preview in Android Studio.
+Why it matters: The programmatic approach works but is inconsistent with all other screens
+  which use XML layouts. It also means the onboarding can't be previewed in the layout
+  editor, making design iteration harder.
+Recommendation: Create a dedicated onboarding step layout XML file with proper token
+  references, matching the pattern used by all other screens.
+Effort: LOW
+Confidence: MEDIUM — Source: [CODE]
+```
+
+### Step 7.4 — §F4: Copy Quality
+
+```
+[POSITIVE VERIFICATION] — Excellent copy quality across 808 strings
+
+**Labels:** Clear and unambiguous throughout:
+- "Scan Storage" (not "Index"), "Move to Trash" (not "Delete permanently")
+- Tab labels: Browse, Duplicates, Raccoon, Large, Junk — all under 12 chars
+- Settings labels with descriptive section headers
+
+**Error messages:** Human, specific, and actionable (30+ error strings):
+- "Ricky couldn't move that file — check if the destination is accessible"
+- "Oops! File names can't contain / : * ? \" < > or | — try a different name"
+- Each error includes: what went wrong + likely cause + suggested action
+
+**Terminology:** Mostly consistent:
+- "Scan" for main action, "analyze" for post-scan processing
+- "File" used consistently (not "item")
+- "Move to Trash" preferred over "Delete" for file removal
+
+**Pluralization:** Proper Android plurals used for countable items:
+- scan_complete, confirm_delete_detail, optimize_applied all use <plurals> tags
+- 25 plural string resources defined
+```
+
+```
+[MEDIUM] — F-061: "Delete" vs "Move to Trash" terminology inconsistency
+Section: §F4 — Copy Quality
+Finding: The app uses "Move to Trash" in some contexts but "Delete" in others:
+  - ctx_delete: "Move to Trash" (context menu — correct, soft language)
+  - delete_selected: "Move selected to Trash" (selection bar title — correct)
+  - btn_delete_selected button text: "Delete" (selection bar button — incorrect,
+    says "Delete" but action is Move to Trash)
+  - delete_n_files_title: "Move %d file(s) to trash?" (confirmation dialog — correct)
+  The destructive button in the selection bar says "Delete" (hard language) while the
+  confirmation dialog clarifies it's actually "Move to Trash" (soft language).
+Why it matters: Users see "Delete" on the red button and may think files are permanently
+  removed. The confirmation dialog then says "Move to Trash" which creates confusion.
+  Consistent soft language throughout would reduce anxiety.
+Recommendation: Change the destructive button label to "Trash" or "Move to Trash" to
+  match the confirmation dialog language.
+Effort: TRIVIAL
+Confidence: HIGH — Source: [CODE]
+```
+
+### Step 7.5 — §F5: Micro-Interaction Quality
+
+```
+[POSITIVE VERIFICATION] — Comprehensive micro-interaction feedback
+
+**Button press feedback:**
+- All MaterialButtons have built-in ripple feedback ✓
+- ImageButtons use `?attr/selectableItemBackgroundBorderless` for circular ripple ✓
+- Cards use `android:foreground="@drawable/ripple_card"` for bounded ripple ✓
+- Hero card uses branded `ripple_hero_card` for distinct feedback ✓
+
+**State change confirmation:**
+- File operations (move, copy, rename, compress, extract) all show success snackbars
+  with specific messages ("Ricky moved %s to its new home!")
+- Delete operations show undo snackbar with configurable timeout
+- Scan completion shows both snackbar (summary) and status bar update
+- Selection mode: count updates live in selection bar ("3 selected")
+
+**Drag-and-drop feedback:**
+- card_state_list_anim: translationZ +6dp on drag_hovered state
+- Cards visually lift when dragged over ✓
+
+**Form submission feedback:**
+- Cloud connection test shows progress → success/failure snackbar
+- Search: live filtering with 300ms debounce, count updates in real-time
+- Permission request: dialog explains why → system dialog → result dialog if denied
+
+**Selection feedback:**
+- CheckBox toggles with primary-colored buttonTint
+- Selected card background changes to selectedBackground color
+- Selection action bar slides in with count + action buttons
+- Bulk selection: "Select All Files", "Select All Folders", "Select All", "Deselect All"
+
+**Hub card state feedback:**
+- Dimmed (alpha 0.5f) when scan not done
+- Description text updates during scan to show current phase
+- Raccoon avatar bounces (scale 1.15f with overshoot) when scan completes
+```
+
+### Step 7.6 — §F6: Engagement, Delight & Emotional Design
+
+```
+[POSITIVE VERIFICATION] — Genuine personality and delight moments
+
+**Delight moments:**
+1. **Raccoon celebration bounce** — when scan completes, the raccoon avatar on the hub
+   does a 1.15x scale-up with OvershootInterpolator (RaccoonManagerFragment.kt:140-152).
+   Respects reduced motion settings.
+2. **Success check animation** — success_check_enter.xml: 30%→100% scale with gentle
+   overshoot at 400ms emphasis duration. Used for operation completions.
+3. **Scan completion celebration** — "Ricky is done rummaging! Found %d files using %s."
+   with snackbar summary showing duplicates, junk, large file counts.
+4. **Quick Clean success** — "Raccoon swept away %s — nice and tidy!" with specific
+   size information.
+5. **Empty state personality** — 14 unique empty state messages with raccoon character:
+   "Ricky searched high and low — no results for '%s'"
+
+**Reward patterns:**
+- Post-scan summary: immediate reward showing what was found
+- Clean completion: size freed is highlighted ("swept away 250 MB")
+- Hub badge counts on tabs: show actionable item counts (duplicates: 12, junk: 45)
+  creating implicit "clean up" motivation
+
+**Emotional design assessment:**
+- The app feels alive: Ricky has opinions ("approves of your tidy storage!"),
+  reactions ("hit a snag!"), and celebrations ("done rummaging!")
+- Not purely transactional: operations have personality throughout
+- The casual tone reduces anxiety around destructive operations (delete → "Move to Trash"
+  with undo, not "permanently delete")
+
+**Missing delight opportunities:**
+- No streak/milestone rewards (e.g., "3rd scan this week!")
+- No progress-over-time visualization (storage freed total)
+- No animated transitions between scan phases on hub (just text updates)
+These are nice-to-haves, not requirements for a utility app.
+```
+
+---
+
+### Phase 7 Summary
+
+| Step | Findings | CRIT | HIGH | MED | LOW |
+|------|----------|------|------|-----|-----|
+| §F1 — Information Architecture | 2 | 0 | 0 | 0 | 2 |
+| §F2 — User Flow Quality | 1 | 0 | 0 | 1 | 0 |
+| §F3 — Onboarding & First Use | 1 | 0 | 0 | 0 | 1 |
+| §F4 — Copy Quality | 1 | 0 | 0 | 1 | 0 |
+| §F5 — Micro-Interaction Quality | 0 | 0 | 0 | 0 | 0 |
+| §F6 — Engagement & Delight | 0 | 0 | 0 | 0 | 0 |
+| **TOTAL** | **5** | **0** | **0** | **2** | **3** |
+
+### Positive Verifications (Phase 7)
+
+1. **Hub-and-spoke navigation** — all 13 major features discoverable within 30 seconds, max 2-tap depth [CODE]
+2. **Critical user flows** — scan, browse, delete, quick clean, cloud all have complete flows with error recovery [CODE]
+3. **Progressive onboarding** — 3-step dialog with value-before-permission, skip/back navigation, privacy notice [CODE]
+4. **808 strings with excellent copy** — human error messages, consistent terminology, proper pluralization [CODE]
+5. **Comprehensive micro-interaction feedback** — ripple on all interactives, success snackbars, undo for deletes [CODE]
+6. **Genuine personality and delight** — raccoon bounce, success celebration, 14 unique empty states, encouraging copy [CODE]
+7. **Back navigation completeness** — all non-tab fragments have back buttons, reselect pops to tab root [CODE]
+8. **Bottom nav visibility management** — slides in/out based on tab vs non-tab destinations [CODE]
+9. **Keyboard shortcuts** — Ctrl+S (settings), Ctrl+F (search) for power users [CODE]
+10. **Badge counts** — actionable item counts on Duplicates/Large/Junk tabs as implicit motivation [CODE]
+
+---
+
+**Phase 7 is complete.**
+
+**Cumulative findings: Phase 1 through Phase 7**
+
+| Severity | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 5 | Phase 6 | Phase 7 | Total |
+|----------|---------|---------|---------|---------|---------|---------|---------|-------|
+| CRITICAL | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| HIGH | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 3 |
+| MEDIUM | 6 | 2 | 5 | 3 | 0 | 1 | 2 | 19 |
+| LOW | 11 | 6 | 5 | 5 | 6 | 3 | 3 | 39 |
+| **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **61** |
+
+**Next: Phase 8 — Accessibility (Category G + §L7)**
+
+Awaiting confirmation to proceed with Phase 8, or to fix findings from Phase 1-7.
