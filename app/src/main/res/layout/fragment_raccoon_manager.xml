@@ -71,6 +71,8 @@
             android:accessibilityLiveRegion="polite" />
 
         <!-- Scan Storage card — hero gradient -->
+        <!-- F-051: Hero card total elevation = cardElevation (4dp) + translationZ from stateListAnimator
+             Resting: 4dp+2dp=6dp, Pressed: 4dp+0dp=4dp, Focused: 4dp+4dp=8dp, Dragged: 4dp+6dp=10dp -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_scan"
             style="@style/Widget.FileCleaner.Card"
@@ -138,7 +140,7 @@
                     android:src="@drawable/ic_chevron_right"
                     android:importantForAccessibility="no"
                     app:tint="@color/textOnPrimary"
-                    android:alpha="0.87" />
+                    android:alpha="@dimen/alpha_text_emphasis" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

@@ -5,7 +5,8 @@
     <dimen name="spacing_micro">2dp</dimen>
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
-    <!-- Off 4dp grid: intentional — chip dot and legend spacing -->
+    <!-- F-047: Off 4dp grid: intentional — 10dp is optical correction for legend dot
+         centering between 8dp and 12dp where neither looks balanced -->
     <dimen name="spacing_10">10dp</dimen>
     <dimen name="spacing_md">12dp</dimen>
     <dimen name="spacing_lg">16dp</dimen>
@@ -37,6 +38,7 @@
     <dimen name="divider_width">1dp</dimen>
     <dimen name="divider_thick">4dp</dimen>
     <dimen name="spacing_bottom_inset">72dp</dimen>
+    <!-- F-047: Off 4dp grid: 57dp = 56dp Material spec + 1dp top divider stroke -->
     <dimen name="bottom_nav_height">57dp</dimen>
     <dimen name="spacing_above_nav">80dp</dimen>
     <dimen name="spacing_fab_clearance">80dp</dimen>
@@ -71,6 +73,7 @@
     <dimen name="icon_hub_circle">52dp</dimen>
 
     <!-- Component sizes -->
+    <!-- F-047: Off 4dp grid: 6dp matches Material chip internal padding spec -->
     <dimen name="spacing_chip">6dp</dimen>
     <dimen name="button_min_width">200dp</dimen>
     <dimen name="node_detail_max_width">240dp</dimen>
@@ -136,6 +139,9 @@
 
     <!-- Alpha tokens -->
     <item name="alpha_raccoon_logo" format="float" type="dimen">0.85</item>
+    <!-- F-049: Tokenized alpha values for text emphasis levels -->
+    <item name="alpha_text_emphasis" format="float" type="dimen">0.87</item>
+    <item name="alpha_text_secondary_on_surface" format="float" type="dimen">0.8</item>
 
     <!-- Content max-width constraints -->
     <dimen name="content_max_width_compact">200dp</dimen>

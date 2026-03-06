@@ -64,14 +64,13 @@
                     android:textColor="@color/colorOnPrimaryContainer"
                     android:textAlignment="center" />
 
-                <ProgressBar
+                <!-- F-052: Use branded LinearProgressIndicator instead of platform ProgressBar -->
+                <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/progress_storage"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    style="@style/Widget.FileCleaner.ProgressIndicator"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/spacing_md"
-                    android:layout_marginTop="@dimen/spacing_md"
-                    android:progressTint="@color/colorPrimary"
-                    android:progressBackgroundTint="@color/borderDefault" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md" />
 
                 <TextView
                     android:id="@+id/tv_storage_used"
@@ -89,7 +88,7 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:textAppearance="@style/TextAppearance.FileCleaner.Numeric"
                     android:textColor="@color/colorOnPrimaryContainer"
-                    android:alpha="0.8"
+                    android:alpha="@dimen/alpha_text_secondary_on_surface"
                     android:textAlignment="center" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -266,7 +265,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_clean_junk"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_clean_junk"
@@ -281,7 +280,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_view_duplicates"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_view_duplicates"
@@ -296,7 +295,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_view_large"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.FileCleaner.Button.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_view_large"
