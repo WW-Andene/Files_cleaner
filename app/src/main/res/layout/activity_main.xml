@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:layout_marginHorizontal="@dimen/spacing_lg"
-            android:layout_marginTop="@dimen/spacing_sm"
+            android:layout_marginTop="@dimen/spacing_lg"
             android:layout_marginBottom="@dimen/spacing_xs"
             app:cardCornerRadius="@dimen/radius_card"
             app:cardElevation="@dimen/elevation_none"

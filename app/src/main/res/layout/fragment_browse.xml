@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
-        android:layout_marginTop="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/spacing_lg"
         android:contentDescription="@string/a11y_search_files"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"
