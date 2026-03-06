@@ -121,6 +121,11 @@ class RaccoonManagerFragment : Fragment() {
             findNavController().navigate(R.id.antivirusFragment, null, navAnimOptions)
         }
 
+        // Settings — app preferences & configuration
+        binding.cardSettings.setOnClickListener {
+            findNavController().navigate(R.id.settingsFragment, null, navAnimOptions)
+        }
+
         // Janitor — deep clean (navigate to duplicates tab for comprehensive review)
         binding.cardJanitor.setOnClickListener {
             if (!hasScanData()) {

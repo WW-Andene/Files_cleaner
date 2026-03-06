@@ -115,6 +115,8 @@
     <color name="tintDualPane">#DAF0F5</color>
     <color name="tintCloud">#E8E0FF</color>
     <color name="tintAntivirus">#DCEFDF</color>
+    <color name="tintSettings">#F0E6D6</color>
+    <color name="accentOnTintSettings">#6D4C00</color>
     <color name="tintJanitor">#E0E4FC</color>
 
     <!-- ── Text on colored backgrounds (e.g. tree view headers) ── -->

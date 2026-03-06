@@ -83,9 +83,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Show version number in header
-        binding.tvVersion.text = getString(R.string.version_format, BuildConfig.VERSION_NAME)
-
         // Navigation setup
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment ?: return
@@ -295,11 +292,6 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.junkFiles.observe(this) { junk ->
             updateBadge(R.id.junkFragment, junk.size)
-        }
-
-        // Settings button
-        binding.btnSettings.setOnClickListener {
-            findNavController(R.id.nav_host_fragment).navigate(R.id.settingsFragment, null, navAnimOptions)
         }
 
         // First-launch onboarding
