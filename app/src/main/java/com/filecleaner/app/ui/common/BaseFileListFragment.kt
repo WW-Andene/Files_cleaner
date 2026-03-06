@@ -13,8 +13,6 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.doOnLayout
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -77,9 +75,6 @@ abstract class BaseFileListFragment : Fragment() {
     /** Screen title shown in the header. */
     abstract val screenTitle: String
 
-    /** Default action button label when nothing is selected. */
-    abstract val defaultActionLabel: String
-
     /** Label for the action button when items are selected, e.g. "Delete 3 selected (12 MB)". */
     abstract fun actionLabel(count: Int, sizeText: String): String
 
@@ -128,11 +123,6 @@ abstract class BaseFileListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.tvTitle.text = screenTitle
 
-        // Pad RecyclerView so the bottom action button never obscures the last items
-        binding.btnAction.doOnLayout { bar ->
-            binding.recyclerView.updatePadding(bottom = bar.height)
-        }
-
         // Restore view mode & sort from config change
         savedInstanceState?.let { state ->
             state.getInt(KEY_VIEW_MODE, -1).let { ordinal ->
@@ -151,11 +141,15 @@ abstract class BaseFileListFragment : Fragment() {
         adapter = FileAdapter(selectable = true) { sel ->
             selected = sel
             selectionBackCallback.isEnabled = sel.isNotEmpty()
-            binding.btnAction.isEnabled = sel.isNotEmpty()
-            binding.btnAction.text = actionLabel(sel.size, UndoHelper.totalSize(sel))
-            binding.selectionButtonsBar.visibility = if (sel.isNotEmpty()) View.VISIBLE else View.GONE
-            binding.btnBatchRename.visibility = if (sel.size >= 2) View.VISIBLE else View.GONE
-            binding.btnBatchCompress.visibility = if (sel.isNotEmpty()) View.VISIBLE else View.GONE
+            if (sel.isNotEmpty()) {
+                binding.btnAction.text = actionLabel(sel.size, UndoHelper.totalSize(sel))
+                binding.btnAction.isEnabled = true
+                if (binding.btnAction.visibility != View.VISIBLE) {
+                    MotionUtil.fadeSlideIn(binding.btnAction)
+                }
+            } else {
+                MotionUtil.fadeSlideOut(binding.btnAction)
+            }
         }
         adapter.viewMode = currentViewMode
         adapter.colorMode = colorMode
@@ -181,27 +175,7 @@ abstract class BaseFileListFragment : Fragment() {
             binding.recyclerView.layoutAnimation = null
         }
 
-        binding.btnSelectAll.setOnClickListener { onSelectAll() }
-        binding.btnDeselectAll.setOnClickListener { adapter.deselectAll() }
-        binding.btnBatchRename.setOnClickListener {
-            if (selected.size >= 2) {
-                BatchRenameDialog.show(requireContext(), selected) { renames ->
-                    vm.batchRename(renames)
-                    adapter.deselectAll()
-                }
-            }
-        }
-        binding.btnBatchCompress.setOnClickListener {
-            if (selected.isNotEmpty()) {
-                CompressDialog.show(requireContext(), selected) { archiveName, paths ->
-                    vm.compressFiles(paths, archiveName)
-                    adapter.deselectAll()
-                }
-            }
-        }
-
-        binding.btnAction.text = defaultActionLabel
-        binding.btnAction.isEnabled = false
+        binding.btnAction.visibility = View.GONE
         binding.btnAction.setOnClickListener { confirmDelete() }
 
         // Sort spinner
