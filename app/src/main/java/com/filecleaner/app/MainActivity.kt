@@ -234,20 +234,20 @@ class MainActivity : AppCompatActivity() {
                 }
                 is ScanState.Done     -> {
                     hideScanProgress()
-                    binding.scanBarCard.visibility = View.VISIBLE
-                    // §G1: Announce scan completion to accessibility services
-                    binding.tvScanStatus.sendAccessibilityEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)
+                    binding.scanBarCard.visibility = View.GONE
                     val stats = viewModel.storageStats.value
                     if (stats != null) {
                         val durationText = if (stats.scanDurationMs > 0) {
                             getString(R.string.scan_duration_suffix, stats.scanDurationMs / 1000.0)
                         } else ""
-                        binding.tvScanStatus.text = resources.getQuantityString(
+                        val message = resources.getQuantityString(
                             R.plurals.scan_complete,
                             stats.totalFiles,
                             stats.totalFiles,
                             UndoHelper.formatBytes(stats.totalSize)
                         ) + durationText
+                        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+                            .setAnchorView(binding.bottomNav).show()
                         Snackbar.make(
                             binding.root,
                             getString(R.string.scan_summary,
@@ -259,26 +259,22 @@ class MainActivity : AppCompatActivity() {
                             ),
                             Snackbar.LENGTH_LONG
                         ).setAnchorView(binding.bottomNav).show()
-                        // Make scan status tappable to open dashboard
-                        binding.tvScanStatus.setOnClickListener {
-                            findNavController(R.id.nav_host_fragment).navigate(R.id.dashboardFragment, null, navAnimOptions)
-                        }
                     } else {
-                        binding.tvScanStatus.text = getString(R.string.scan_complete_simple)
+                        Snackbar.make(binding.root, getString(R.string.scan_complete_simple), Snackbar.LENGTH_LONG)
+                            .setAnchorView(binding.bottomNav).show()
                     }
                 }
                 is ScanState.Cancelled -> {
                     hideScanProgress()
-                    binding.scanBarCard.visibility = View.VISIBLE
-                    binding.tvScanStatus.text = getString(R.string.scan_cancelled)
+                    binding.scanBarCard.visibility = View.GONE
+                    Snackbar.make(binding.root, getString(R.string.scan_cancelled), Snackbar.LENGTH_LONG)
+                        .setAnchorView(binding.bottomNav).show()
                 }
                 is ScanState.Error    -> {
                     hideScanProgress()
-                    binding.scanBarCard.visibility = View.VISIBLE
-                    binding.tvScanStatus.text = getString(R.string.error_scan_failed)
-                    Snackbar.make(binding.root,
-                        getString(R.string.error_prefix, state.message),
-                        Snackbar.LENGTH_LONG).setAnchorView(binding.bottomNav).styleAsError().show()
+                    binding.scanBarCard.visibility = View.GONE
+                    Snackbar.make(binding.root, getString(R.string.error_scan_failed), Snackbar.LENGTH_LONG)
+                        .setAnchorView(binding.bottomNav).styleAsError().show()
                 }
             }
         }
