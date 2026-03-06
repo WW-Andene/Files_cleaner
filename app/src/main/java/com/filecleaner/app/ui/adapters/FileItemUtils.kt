@@ -226,13 +226,9 @@ object FileItemUtils {
 
     // ── Meta text builder ────────────────────────────────────────────────
 
-    // D1: ThreadLocal date format to avoid per-call allocation while remaining thread-safe
-    private val dateFormat = object : ThreadLocal<java.text.SimpleDateFormat>() {
-        override fun initialValue() = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
-    }
-
+    // F-081: Delegate to centralized DateFormatUtils for consistent formatting
     fun buildMeta(textView: TextView, item: FileItem) {
-        val dateStr = dateFormat.get()!!.format(Date(item.lastModified))
+        val dateStr = com.filecleaner.app.utils.DateFormatUtils.formatDate(item.lastModified)
         textView.text = "${item.sizeReadable}  \u2022  $dateStr"
     }
 }

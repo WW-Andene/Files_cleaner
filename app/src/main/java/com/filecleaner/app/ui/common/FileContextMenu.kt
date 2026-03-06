@@ -378,7 +378,7 @@ object FileContextMenu {
     }
 
     private fun showProperties(context: Context, item: FileItem) {
-        val dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM)
+        // F-081: Use centralized date formatting
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(item.extension) ?: "unknown"
         val parentDir = File(item.path).parent ?: "/"
 
@@ -386,7 +386,7 @@ object FileContextMenu {
             appendLine("${context.getString(R.string.prop_name)}: ${item.name}")
             appendLine("${context.getString(R.string.prop_path)}: ${item.path}")
             appendLine("${context.getString(R.string.prop_size)}: ${UndoHelper.formatBytes(item.size)} (${item.size} bytes)")
-            appendLine("${context.getString(R.string.prop_modified)}: ${dateFormat.format(Date(item.lastModified))}")
+            appendLine("${context.getString(R.string.prop_modified)}: ${com.filecleaner.app.utils.DateFormatUtils.formatDateTime(item.lastModified)}")
             appendLine("${context.getString(R.string.prop_category)}: ${context.getString(item.category.displayNameRes)}")
             appendLine("${context.getString(R.string.prop_type)}: $mimeType")
             appendLine("${context.getString(R.string.prop_folder)}: $parentDir")

@@ -167,6 +167,7 @@
     <string name="dashboard_view_duplicates">View Duplicates</string>
     <string name="dashboard_view_large">View Large Files</string>
     <string name="dashboard_potential_savings">Potential savings: %s</string>
+    <string name="dashboard_total_scanned">Total scanned: %1$s across %2$d files</string>
 
     <!-- Analysis tab -->
     <string name="analysis_storage_overview">Storage Overview</string>

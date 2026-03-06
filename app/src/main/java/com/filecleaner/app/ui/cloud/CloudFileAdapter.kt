@@ -90,7 +90,8 @@ class CloudFileAdapter : ListAdapter<CloudFileAdapter.CloudFileItem, CloudFileAd
             holder.icon.setImageResource(iconForMime(item.cloudFile.mimeType, item.name))
             val sizeStr = UndoHelper.formatBytes(item.size)
             if (item.lastModified > 0) {
-                val dateStr = DateFormat.getDateInstance(DateFormat.SHORT).format(Date(item.lastModified))
+                // F-081: Use centralized date formatting
+                val dateStr = com.filecleaner.app.utils.DateFormatUtils.formatDate(item.lastModified)
                 holder.meta.text = "$sizeStr \u2022 $dateStr"
             } else {
                 holder.meta.text = sizeStr

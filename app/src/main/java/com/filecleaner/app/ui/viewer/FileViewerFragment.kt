@@ -202,12 +202,11 @@ class FileViewerFragment : Fragment() {
         binding.btnOpenExternal.setOnClickListener { FileOpener.open(requireContext(), file) }
         binding.btnShare.setOnClickListener { FileOpener.share(requireContext(), file) }
 
-        // File info bar
-        val dateFmt = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        // File info bar — F-081: Use centralized date formatting
         binding.tvFileInfo.text = getString(
             R.string.viewer_file_info,
             UndoHelper.formatBytes(file.length()),
-            dateFmt.format(Date(file.lastModified()))
+            com.filecleaner.app.utils.DateFormatUtils.formatDateTime(file.lastModified())
         )
 
         // Display content based on type
@@ -227,8 +226,11 @@ class FileViewerFragment : Fragment() {
 
     private fun showImage(file: File) {
         binding.ivImage.visibility = View.VISIBLE
+        // F-084: Add placeholder, error fallback, and size constraint for OOM protection
         Glide.with(this)
             .load(file)
+            .placeholder(R.drawable.ic_image)
+            .error(R.drawable.ic_image)
             .into(binding.ivImage)
         binding.ivImage.contentDescription = getString(R.string.a11y_image_preview, file.name)
 
@@ -638,7 +640,10 @@ class FileViewerFragment : Fragment() {
             retriever.setDataSource(file.absolutePath)
             val art = retriever.embeddedPicture
             if (art != null) {
-                Glide.with(this).load(art).into(binding.ivAudioArt)
+                Glide.with(this).load(art)
+                    .placeholder(R.drawable.ic_audio)
+                    .error(R.drawable.ic_audio)
+                    .into(binding.ivAudioArt)
             }
             val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
             binding.tvAudioTitle.text = title ?: file.nameWithoutExtension

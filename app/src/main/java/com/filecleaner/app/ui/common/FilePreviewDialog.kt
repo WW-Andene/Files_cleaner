@@ -104,8 +104,11 @@ object FilePreviewDialog {
             contentDescription = context.getString(R.string.a11y_preview_image, item.name)
         }
 
+        // F-083: Add placeholder and error fallback to prevent empty dialog
         Glide.with(context)
             .load(item.file)
+            .placeholder(R.drawable.ic_image)
+            .error(R.drawable.ic_image)
             .into(imageView)
 
         MaterialAlertDialogBuilder(context)

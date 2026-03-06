@@ -123,8 +123,8 @@ class PaneAdapter : ListAdapter<PaneAdapter.PaneItem, PaneAdapter.ViewHolder>(DI
             holder.chevron.visibility = View.VISIBLE
         } else {
             holder.icon.setImageResource(iconForFile(item.name))
-            val dateStr = DateFormat.getDateInstance(DateFormat.SHORT)
-                .format(Date(item.lastModified))
+            // F-081: Use centralized date formatting
+            val dateStr = com.filecleaner.app.utils.DateFormatUtils.formatDate(item.lastModified)
             holder.meta.text = "${UndoHelper.formatBytes(item.size)} \u2022 $dateStr"
             holder.chevron.visibility = View.GONE
         }

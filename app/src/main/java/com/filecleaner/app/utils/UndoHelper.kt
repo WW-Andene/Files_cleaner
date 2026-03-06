@@ -49,12 +49,15 @@ object UndoHelper {
     }
 
     fun formatBytes(bytes: Long): String {
+        // F-079: Clamp negative values to zero — prevents confusing "-1.5 MB" display
+        // from corrupted data or subtraction deltas.
+        val safe = bytes.coerceAtLeast(0L)
         val locale = java.util.Locale.getDefault()
         return when {
-            bytes >= 1_073_741_824 -> String.format(locale, "%.1f GB", bytes / 1_073_741_824.0)
-            bytes >= 1_048_576     -> String.format(locale, "%.1f MB", bytes / 1_048_576.0)
-            bytes >= 1_024         -> String.format(locale, "%.1f KB", bytes / 1_024.0)
-            else                   -> "$bytes B"
+            safe >= 1_073_741_824 -> String.format(locale, "%.1f GB", safe / 1_073_741_824.0)
+            safe >= 1_048_576     -> String.format(locale, "%.1f MB", safe / 1_048_576.0)
+            safe >= 1_024         -> String.format(locale, "%.1f KB", safe / 1_024.0)
+            else                   -> "$safe B"
         }
     }
 

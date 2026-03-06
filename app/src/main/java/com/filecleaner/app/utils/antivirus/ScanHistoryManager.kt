@@ -144,12 +144,14 @@ object ScanHistoryManager {
         val diff = System.currentTimeMillis() - timestampMs
 
         return when {
-            diff < 0 -> SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(Date(timestampMs))
+            // F-081: Use centralized date formatting
+            diff < 0 -> com.filecleaner.app.utils.DateFormatUtils.formatDateTime(timestampMs)
             diff < 60_000 -> context.getString(R.string.time_just_now)
             diff < 3_600_000 -> context.getString(R.string.time_minutes_ago, (diff / 60_000).toInt())
             diff < 86_400_000 -> context.getString(R.string.time_hours_ago, (diff / 3_600_000).toInt())
             diff < 172_800_000 -> context.getString(R.string.time_yesterday)
-            else -> SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(timestampMs))
+            // F-081: Use centralized date formatting
+            else -> com.filecleaner.app.utils.DateFormatUtils.formatDate(timestampMs)
         }
     }
 

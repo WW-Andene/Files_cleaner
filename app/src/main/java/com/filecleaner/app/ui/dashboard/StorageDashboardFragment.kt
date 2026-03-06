@@ -22,6 +22,7 @@ import com.filecleaner.app.databinding.FragmentDashboardBinding
 import com.filecleaner.app.utils.UndoHelper
 import com.filecleaner.app.viewmodel.MainViewModel
 import com.filecleaner.app.viewmodel.ScanState
+import kotlin.math.roundToInt
 
 /**
  * Storage dashboard showing device storage summary, category breakdown with
@@ -62,21 +63,8 @@ class StorageDashboardFragment : Fragment() {
         // Back button
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
-        // Device storage via StatFs
-        @Suppress("DEPRECATION")
-        val statFs = StatFs(android.os.Environment.getExternalStorageDirectory().absolutePath)
-        val totalBytes = statFs.totalBytes
-        val freeBytes = statFs.freeBytes
-        val usedBytes = totalBytes - freeBytes
-        val usedPct = if (totalBytes > 0) ((usedBytes * 100.0) / totalBytes).toInt() else 0
-
         binding.tvStorageTitle.text = getString(R.string.dashboard_storage_title)
-        binding.tvStorageUsed.text = getString(R.string.dashboard_storage_used,
-            UndoHelper.formatBytes(usedBytes), UndoHelper.formatBytes(totalBytes), usedPct)
-        binding.tvStorageFree.text = getString(R.string.dashboard_storage_free,
-            UndoHelper.formatBytes(freeBytes))
-        binding.progressStorage.max = 100
-        binding.progressStorage.progress = usedPct
+        refreshStorageStats()
 
         // Quick action buttons
         binding.btnCleanJunk.setOnClickListener {
@@ -140,6 +128,31 @@ class StorageDashboardFragment : Fragment() {
         }
     }
 
+    // F-085: Refresh storage stats when returning to the fragment (e.g., after
+    // deleting files via another app). StatFs is a cheap native call.
+    override fun onResume() {
+        super.onResume()
+        refreshStorageStats()
+    }
+
+    /** Read device storage via StatFs and update the header. */
+    @Suppress("DEPRECATION")
+    private fun refreshStorageStats() {
+        val b = _binding ?: return
+        val statFs = StatFs(android.os.Environment.getExternalStorageDirectory().absolutePath)
+        val totalBytes = statFs.totalBytes
+        val freeBytes = statFs.freeBytes
+        val usedBytes = totalBytes - freeBytes
+        val usedPct = if (totalBytes > 0) ((usedBytes * 100.0) / totalBytes).toInt() else 0
+
+        b.tvStorageUsed.text = getString(R.string.dashboard_storage_used,
+            UndoHelper.formatBytes(usedBytes), UndoHelper.formatBytes(totalBytes), usedPct)
+        b.tvStorageFree.text = getString(R.string.dashboard_storage_free,
+            UndoHelper.formatBytes(freeBytes))
+        b.progressStorage.max = 100
+        b.progressStorage.progress = usedPct
+    }
+
     /**
      * Build individual category rows with colored indicators and progress bars.
      * Uses view recycling: if the category keys are unchanged, existing row views
@@ -174,7 +187,10 @@ class StorageDashboardFragment : Fragment() {
             for ((i, entry) in entries.withIndex()) {
                 val (cat, files) = entry
                 val catSize = files.sumOf { it.size }
-                val pct = if (totalSize > 0) ((catSize * 100.0) / totalSize).toInt() else 0
+                // F-080: Round instead of truncate; clamp to 1% for non-empty categories
+                val pct = if (totalSize > 0 && catSize > 0)
+                    ((catSize * 100.0) / totalSize).roundToInt().coerceAtLeast(1)
+                else 0
                 val colorRes = categoryColorRes[cat] ?: R.color.catOther
                 val color = ContextCompat.getColor(ctx, colorRes)
 
@@ -204,7 +220,10 @@ class StorageDashboardFragment : Fragment() {
 
             for ((cat, files) in entries) {
                 val catSize = files.sumOf { it.size }
-                val pct = if (totalSize > 0) ((catSize * 100.0) / totalSize).toInt() else 0
+                // F-080: Round instead of truncate; clamp to 1% for non-empty categories
+                val pct = if (totalSize > 0 && catSize > 0)
+                    ((catSize * 100.0) / totalSize).roundToInt().coerceAtLeast(1)
+                else 0
                 val colorRes = categoryColorRes[cat] ?: R.color.catOther
                 val color = ContextCompat.getColor(ctx, colorRes)
 
@@ -278,6 +297,15 @@ class StorageDashboardFragment : Fragment() {
         }
 
         lastCategoryKeys = newKeys
+
+        // F-082: Summary row showing total scanned size to anchor the percentages
+        val totalFiles = entries.sumOf { it.value.size }
+        binding.tvCategoryBreakdown.visibility = View.VISIBLE
+        binding.tvCategoryBreakdown.text = getString(
+            R.string.dashboard_total_scanned,
+            UndoHelper.formatBytes(totalSize),
+            totalFiles
+        )
     }
 
     /**
