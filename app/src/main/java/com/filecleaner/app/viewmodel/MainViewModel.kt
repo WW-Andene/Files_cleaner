@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.io.File
 
 enum class ScanPhase(val order: Int, val totalPhases: Int = 4) {
@@ -160,7 +161,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     // D5: Debounce cache writes — at most once per 3 seconds
     private var saveCacheJob: Job? = null
-    private val cacheLock = Any()
 
     @Volatile
     private var _isScanning = false
@@ -176,6 +176,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         // B1: Use postValue for thread-safety (cancelScan can be called from any thread)
         _scanState.postValue(ScanState.Cancelled)
         _isScanning = false
+        // F-008: Clear partial state from cancelled scan so stale data isn't cached
+        latestFiles = emptyList()
+        latestTree = null
     }
 
     init {
@@ -267,16 +270,23 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
         // Use a standalone coroutine instead of Thread + runBlocking.
         // NonCancellable ensures completion even after scope cancellation.
+        // F-014: Wrap in withTimeout to prevent indefinite coroutine if storage hangs.
         kotlinx.coroutines.CoroutineScope(Dispatchers.IO + NonCancellable).launch {
-            for ((_, trashPath) in trashSnapshot) {
-                File(trashPath).delete()
-            }
-            if (files.isNotEmpty() && tree != null) {
-                try {
-                    ScanCache.save(getApplication(), files, tree)
-                } catch (e: Exception) {
-                    android.util.Log.w("MainViewModel", "Cache save failed in onCleared", e)
+            try {
+                withTimeout(10_000) {
+                    for ((_, trashPath) in trashSnapshot) {
+                        File(trashPath).delete()
+                    }
+                    if (files.isNotEmpty() && tree != null) {
+                        try {
+                            ScanCache.save(getApplication(), files, tree)
+                        } catch (e: Exception) {
+                            android.util.Log.w("MainViewModel", "Cache save failed in onCleared", e)
+                        }
+                    }
                 }
+            } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
+                android.util.Log.w("MainViewModel", "onCleared cleanup timed out after 10s")
             }
         }
     }
@@ -707,20 +717,20 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
      *  D5: Debounced — rapid successive file operations (rename, move, delete)
      *  coalesce into a single write after 3 seconds of inactivity.
      *  Uses NonCancellable so the write finishes even if the scope is cancelled. */
+    // F-016: Removed unnecessary synchronized(cacheLock) — viewModelScope.launch is
+    // main-thread-safe and saveCacheJob cancel is already thread-safe via coroutines.
     private fun saveCache() {
-        synchronized(cacheLock) {
-            saveCacheJob?.cancel()
-            saveCacheJob = viewModelScope.launch {
-                delay(SAVE_CACHE_DEBOUNCE_MS)
-                // Capture state after delay so the cache reflects the latest data
-                val files = latestFiles.ifEmpty { return@launch }
-                val tree = latestTree ?: return@launch
-                withContext(NonCancellable + Dispatchers.IO) {
-                    try {
-                        ScanCache.save(getApplication(), files, tree)
-                    } catch (_: Exception) {
-                        // Non-critical — cache will be rebuilt on next scan
-                    }
+        saveCacheJob?.cancel()
+        saveCacheJob = viewModelScope.launch {
+            delay(SAVE_CACHE_DEBOUNCE_MS)
+            // Capture state after delay so the cache reflects the latest data
+            val files = latestFiles.ifEmpty { return@launch }
+            val tree = latestTree ?: return@launch
+            withContext(NonCancellable + Dispatchers.IO) {
+                try {
+                    ScanCache.save(getApplication(), files, tree)
+                } catch (_: Exception) {
+                    // Non-critical — cache will be rebuilt on next scan
                 }
             }
         }
@@ -730,14 +740,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private fun saveCacheNow() {
         val files = latestFiles.ifEmpty { return }
         val tree = latestTree ?: return
-        synchronized(cacheLock) {
-            saveCacheJob?.cancel()
-            saveCacheJob = viewModelScope.launch {
-                withContext(NonCancellable + Dispatchers.IO) {
-                    try {
-                        ScanCache.save(getApplication(), files, tree)
-                    } catch (_: Exception) { }
-                }
+        saveCacheJob?.cancel()
+        saveCacheJob = viewModelScope.launch {
+            withContext(NonCancellable + Dispatchers.IO) {
+                try {
+                    ScanCache.save(getApplication(), files, tree)
+                } catch (_: Exception) { }
             }
         }
     }

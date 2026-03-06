@@ -17,6 +17,7 @@ import com.filecleaner.app.MainActivity
 import com.filecleaner.app.R
 import com.filecleaner.app.utils.antivirus.*
 import kotlinx.coroutines.*
+import java.util.concurrent.atomic.AtomicReference
 
 class ScanService : Service() {
 
@@ -27,17 +28,34 @@ class ScanService : Service() {
         const val ACTION_START = "com.filecleaner.app.ACTION_START_SCAN"
         const val ACTION_STOP = "com.filecleaner.app.ACTION_STOP_SCAN"
 
-        // Shared state accessible from the fragment
-        @Volatile var isRunning = false
-            private set
-        @Volatile var currentProgress = 0
-            private set
-        @Volatile var currentPhase = ""
-            private set
-        @Volatile var scanResults: List<ThreatResult>? = null
-            private set
-        @Volatile var scanComplete = false
-            private set
+        // F-009: Single atomic reference replaces multiple @Volatile fields to ensure
+        // consistent reads across all state fields (progress, phase, results, complete).
+        data class ScanStatus(
+            val isRunning: Boolean = false,
+            val currentProgress: Int = 0,
+            val currentPhase: String = "",
+            val scanResults: List<ThreatResult>? = null,
+            val scanComplete: Boolean = false
+        )
+
+        private val _status = AtomicReference(ScanStatus())
+
+        // Public accessors for backward compatibility
+        val status: ScanStatus get() = _status.get()
+        val isRunning: Boolean get() = _status.get().isRunning
+        val currentProgress: Int get() = _status.get().currentProgress
+        val currentPhase: String get() = _status.get().currentPhase
+        val scanResults: List<ThreatResult>? get() = _status.get().scanResults
+        val scanComplete: Boolean get() = _status.get().scanComplete
+
+        private fun updateStatus(transform: ScanStatus.() -> ScanStatus) {
+            var current: ScanStatus
+            var next: ScanStatus
+            do {
+                current = _status.get()
+                next = current.transform()
+            } while (!_status.compareAndSet(current, next))
+        }
 
         fun start(context: Context) {
             val intent = Intent(context, ScanService::class.java).apply {
@@ -58,10 +76,7 @@ class ScanService : Service() {
         }
 
         fun clearResults() {
-            scanResults = null
-            scanComplete = false
-            currentProgress = 0
-            currentPhase = ""
+            updateStatus { copy(scanResults = null, scanComplete = false, currentProgress = 0, currentPhase = "") }
         }
     }
 
@@ -78,10 +93,8 @@ class ScanService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
-                if (!isRunning) {
-                    isRunning = true
-                    scanComplete = false
-                    scanResults = null
+                if (!_status.get().isRunning) {
+                    updateStatus { copy(isRunning = true, scanComplete = false, scanResults = null) }
                     ServiceCompat.startForeground(
                         this,
                         NOTIFICATION_ID,
@@ -95,7 +108,7 @@ class ScanService : Service() {
             }
             ACTION_STOP -> {
                 scanJob?.cancel()
-                isRunning = false
+                updateStatus { copy(isRunning = false) }
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
@@ -149,8 +162,8 @@ class ScanService : Service() {
                     ScanHistoryManager.saveResult(applicationContext, threats)
                 }
 
-                scanResults = threats
-                scanComplete = true
+                // F-009: Atomic update ensures fragment sees both results and complete together
+                updateStatus { copy(scanResults = threats, scanComplete = true) }
 
                 // Show completion notification
                 showCompletionNotification(threats)
@@ -161,7 +174,7 @@ class ScanService : Service() {
             } catch (e: Exception) {
                 Log.e(TAG, "Scan failed", e)
             } finally {
-                isRunning = false
+                updateStatus { copy(isRunning = false) }
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
@@ -169,8 +182,7 @@ class ScanService : Service() {
     }
 
     private fun updateNotification(progress: Int, phase: String) {
-        currentProgress = progress
-        currentPhase = phase
+        updateStatus { copy(currentProgress = progress, currentPhase = phase) }
         val nm = getSystemService(NotificationManager::class.java)
         nm?.notify(NOTIFICATION_ID, buildNotification(progress, phase))
     }
@@ -252,12 +264,13 @@ class ScanService : Service() {
     override fun onDestroy() {
         scanJob?.cancel()
         serviceScope.cancel()
-        isRunning = false
-        // Clear static references to prevent memory retention after service destruction
-        if (!scanComplete) {
-            scanResults = null
-            currentProgress = 0
-            currentPhase = ""
+        // F-009: Atomic update — clear state references to prevent memory retention
+        updateStatus {
+            if (!scanComplete) {
+                copy(isRunning = false, scanResults = null, currentProgress = 0, currentPhase = "")
+            } else {
+                copy(isRunning = false)
+            }
         }
         super.onDestroy()
     }

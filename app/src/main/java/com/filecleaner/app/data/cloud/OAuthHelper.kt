@@ -124,13 +124,12 @@ object OAuthHelper {
      * via the REDIRECT_URI deep link.
      */
     fun launchAuthFlow(context: Context, provider: ProviderType, clientId: String) {
-        pendingProvider = provider
-
         val authUrl = when (provider) {
             ProviderType.GOOGLE_DRIVE -> {
                 // Generate PKCE code verifier and challenge
                 val codeVerifier = generateCodeVerifier()
-                pendingCodeVerifier = codeVerifier
+                // F-007: Persist PKCE state before launching browser
+                savePkceState(context, codeVerifier, provider)
                 val codeChallenge = generateCodeChallenge(codeVerifier)
 
                 "$GOOGLE_AUTH_URL?" +
@@ -146,7 +145,8 @@ object OAuthHelper {
             ProviderType.GITHUB -> {
                 // GitHub uses state parameter for CSRF protection
                 val state = generateState()
-                pendingCodeVerifier = state
+                // F-007: Persist PKCE state before launching browser
+                savePkceState(context, state, provider)
 
                 "$GITHUB_AUTH_URL?" +
                     "client_id=${enc(clientId)}" +
@@ -166,10 +166,10 @@ object OAuthHelper {
      */
     fun buildGoogleAuthUrl(context: Context): String? {
         val config = getConfig(context, ProviderType.GOOGLE_DRIVE) ?: return null
-        pendingProvider = ProviderType.GOOGLE_DRIVE
 
         val codeVerifier = generateCodeVerifier()
-        pendingCodeVerifier = codeVerifier
+        // F-007: Persist PKCE state before launching browser
+        savePkceState(context, codeVerifier, ProviderType.GOOGLE_DRIVE)
         val codeChallenge = generateCodeChallenge(codeVerifier)
 
         return "$GOOGLE_AUTH_URL?" +
@@ -189,10 +189,10 @@ object OAuthHelper {
      */
     fun buildGitHubAuthUrl(context: Context): String? {
         val config = getConfig(context, ProviderType.GITHUB) ?: return null
-        pendingProvider = ProviderType.GITHUB
 
         val state = generateState()
-        pendingCodeVerifier = state
+        // F-007: Persist PKCE state before launching browser
+        savePkceState(context, state, ProviderType.GITHUB)
 
         return "$GITHUB_AUTH_URL?" +
             "client_id=${enc(config.clientId)}" +
@@ -210,6 +210,8 @@ object OAuthHelper {
         code: String,
         provider: ProviderType? = null
     ): OAuthTokenResult = withContext(Dispatchers.IO) {
+        // F-007: Restore PKCE state from SharedPreferences in case process was killed
+        loadPkceState(context)
         val activeProvider = provider ?: pendingProvider
             ?: return@withContext OAuthTokenResult(error = "No pending OAuth provider")
         val config = getConfig(context, activeProvider)
@@ -224,8 +226,8 @@ object OAuthHelper {
         } catch (e: Exception) {
             OAuthTokenResult(error = e.localizedMessage ?: e.javaClass.simpleName)
         } finally {
-            pendingCodeVerifier = null
-            pendingProvider = null
+            // F-007: Clear persisted PKCE state after exchange completes or fails
+            clearPkceState(context)
         }
     }
 
@@ -250,6 +252,8 @@ object OAuthHelper {
             exchangeGitHubCode(code, config)
         }
 
+    // F-007: Note — callers should use exchangeCodeForToken which calls loadPkceState internally.
+    // This getter is for UI display only and may return null after process death without context.
     fun getPendingProvider(): ProviderType? = pendingProvider
 
     /**

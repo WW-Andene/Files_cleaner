@@ -10,9 +10,11 @@ import java.io.RandomAccessFile
 import java.security.MessageDigest
 
 /**
- * Enhanced file signature scanner.
- * Scans files against multiple threat vectors:
- * - File hash matching (MD5 + SHA-256 dual-hash)
+ * Heuristic file scanner.
+ *
+ * F-011: This scanner uses heuristic analysis — it does NOT provide comprehensive
+ * antivirus protection. The hash database contains only test/sample entries.
+ * Detection relies primarily on:
  * - Filename pattern matching for known malware names
  * - Suspicious file characteristics (APKs in unusual locations)
  * - ELF binary detection (Linux executables on Android storage)
@@ -21,17 +23,23 @@ import java.security.MessageDigest
  * - Large APK detection (unusually large APKs that may be packed malware)
  * - Archive bombs (suspiciously small archives)
  * - DEX file detection outside app directories
+ * - Limited file hash matching (test signatures only — not a production malware DB)
  */
 object SignatureScanner {
 
-    /** Known malware file hashes (MD5). In production, load from updatable DB. */
+    /**
+     * F-011: Test-only hash database — contains only the EICAR test file and sample entries.
+     * This is NOT a production malware signature database. Hash matching is provided for
+     * demonstration and testing purposes only. For real malware detection, integrate an
+     * updatable signature database from a threat intelligence feed.
+     */
     private val KNOWN_MALWARE_MD5 = setOf(
         "44d88612fea8a8f36de82e1278abb02f", // EICAR test file
         "e1105070ba828007508566e28a2b8d4c", // Known Android malware sample
         "3395856ce81f2b7382dee72602f798b6"  // Suspicious payload
     )
 
-    /** Known malware SHA-256 hashes */
+    /** Test-only SHA-256 hashes (see F-011 note above) */
     private val KNOWN_MALWARE_SHA256 = setOf(
         "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"  // EICAR SHA-256
     )

@@ -31,13 +31,16 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     /** Cached credential for reconnection after credential is cleared from connection */
     private var cachedAuthToken: String = connection.authToken
 
-    private val lock = Mutex()
+    // F-013: Separate connection lock from operation lock.
+    // connectionLock guards connect/disconnect which mutate session/channel state.
+    // Operations grab a channel reference under connectionLock but don't hold it during I/O.
+    private val connectionLock = Mutex()
 
     override val isConnected: Boolean
         get() = session?.isConnected == true && channel?.isConnected == true
 
     override suspend fun connect(): Boolean = withContext(Dispatchers.IO) {
-        lock.withLock {
+        connectionLock.withLock {
             try {
                 retryOnNetworkError {
                     val jsch = JSch()
@@ -92,7 +95,7 @@ class SftpProvider(private var connection: CloudConnection, private val context:
     }
 
     override suspend fun disconnect() = withContext(Dispatchers.IO) {
-        lock.withLock {
+        connectionLock.withLock {
             try { channel?.disconnect() } catch (_: Exception) {}
             try { session?.disconnect() } catch (_: Exception) {}
             channel = null
@@ -101,80 +104,84 @@ class SftpProvider(private var connection: CloudConnection, private val context:
         Unit
     }
 
+    // F-013: Helper to atomically grab a channel reference without holding the lock during I/O
+    private suspend fun requireChannel(): ChannelSftp {
+        return connectionLock.withLock {
+            channel ?: throw IllegalStateException("Not connected")
+        }
+    }
+
+    private suspend fun channelOrNull(): ChannelSftp? {
+        return connectionLock.withLock { channel }
+    }
+
+    // F-013: Operations grab channel reference atomically but don't hold the lock during I/O.
+    // This prevents long-running transfers from blocking listFiles, disconnect, etc.
+
     override suspend fun listFiles(remotePath: String): List<CloudFile> = withContext(Dispatchers.IO) {
-        lock.withLock {
-            val ch = channel ?: return@withLock emptyList()
-            try {
-                retryOnNetworkError {
-                    @Suppress("UNCHECKED_CAST")
-                    val entries = ch.ls(remotePath) as Vector<ChannelSftp.LsEntry>
-                    entries
-                        .filter { it.filename != "." && it.filename != ".." }
-                        .map { entry ->
-                            val attrs = entry.attrs
-                            CloudFile(
-                                name = entry.filename,
-                                remotePath = if (remotePath.endsWith("/")) "$remotePath${entry.filename}"
-                                else "$remotePath/${entry.filename}",
-                                isDirectory = attrs.isDir,
-                                size = attrs.size,
-                                lastModified = attrs.mTime.toLong() * 1000L,
-                                mimeType = ""
-                            )
-                        }
-                        .sortedWith(compareBy<CloudFile> { !it.isDirectory }.thenBy { it.name.lowercase() })
-                }
-            } catch (e: Exception) {
-                emptyList()
+        val ch = channelOrNull() ?: return@withContext emptyList()
+        try {
+            retryOnNetworkError {
+                @Suppress("UNCHECKED_CAST")
+                val entries = ch.ls(remotePath) as Vector<ChannelSftp.LsEntry>
+                entries
+                    .filter { it.filename != "." && it.filename != ".." }
+                    .map { entry ->
+                        val attrs = entry.attrs
+                        CloudFile(
+                            name = entry.filename,
+                            remotePath = if (remotePath.endsWith("/")) "$remotePath${entry.filename}"
+                            else "$remotePath/${entry.filename}",
+                            isDirectory = attrs.isDir,
+                            size = attrs.size,
+                            lastModified = attrs.mTime.toLong() * 1000L,
+                            mimeType = ""
+                        )
+                    }
+                    .sortedWith(compareBy<CloudFile> { !it.isDirectory }.thenBy { it.name.lowercase() })
             }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
     override suspend fun download(remotePath: String, output: OutputStream) = withContext(Dispatchers.IO) {
-        lock.withLock {
-            val ch = channel ?: throw IllegalStateException("Not connected")
-            retryOnNetworkError {
-                ch.get(remotePath, output)
-            }
+        val ch = requireChannel()
+        retryOnNetworkError {
+            ch.get(remotePath, output)
         }
         Unit
     }
 
     override suspend fun upload(remotePath: String, input: InputStream, fileName: String, mimeType: String) =
         withContext(Dispatchers.IO) {
-            lock.withLock {
-                val ch = channel ?: throw IllegalStateException("Not connected")
-                val fullPath = if (remotePath.endsWith("/")) "$remotePath$fileName"
-                else "$remotePath/$fileName"
-                retryOnNetworkError {
-                    ch.put(input, fullPath)
-                }
+            val ch = requireChannel()
+            val fullPath = if (remotePath.endsWith("/")) "$remotePath$fileName"
+            else "$remotePath/$fileName"
+            retryOnNetworkError {
+                ch.put(input, fullPath)
             }
             Unit
         }
 
     override suspend fun delete(remotePath: String) = withContext(Dispatchers.IO) {
-        lock.withLock {
-            val ch = channel ?: throw IllegalStateException("Not connected")
+        val ch = requireChannel()
+        try {
+            ch.rm(remotePath)
+        } catch (rmEx: Exception) {
+            // Might be a directory, try rmdir; if that also fails, throw the original
             try {
-                ch.rm(remotePath)
-            } catch (rmEx: Exception) {
-                // Might be a directory, try rmdir; if that also fails, throw the original
-                try {
-                    ch.rmdir(remotePath)
-                } catch (_: Exception) {
-                    throw rmEx
-                }
+                ch.rmdir(remotePath)
+            } catch (_: Exception) {
+                throw rmEx
             }
         }
         Unit
     }
 
     override suspend fun createDirectory(remotePath: String) = withContext(Dispatchers.IO) {
-        lock.withLock {
-            val ch = channel ?: throw IllegalStateException("Not connected")
-            ch.mkdir(remotePath)
-        }
+        val ch = requireChannel()
+        ch.mkdir(remotePath)
         Unit
     }
 }
