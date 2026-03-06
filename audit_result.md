@@ -3764,6 +3764,260 @@ All patterns are reasonable, but there's no single canonical error type.
 | LOW | 11 | 6 | 5 | 5 | 6 | 3 | 3 | 3 | 3 | 4 | 49 |
 | **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **7** | **77** |
 
-**Next: Phase 11 — Data Presentation (Category J)**
+---
 
-Awaiting confirmation to proceed with Phase 11, or to fix findings from Phases 1-10.
+## PHASE 11 — DATA PRESENTATION (Category J)
+
+### Step 11.1 — §J1: Number & Data Formatting
+
+#### File Size Formatting — Central Utility
+
+The app uses a single centralized function `UndoHelper.formatBytes()` (`utils/UndoHelper.kt:51-59`) for all file size display. This is correctly used across the entire codebase — `FileItem.sizeReadable`, `StorageDashboardFragment`, `ArborescenceView`, `ArborescenceFragment`, `CloudFileAdapter`, `MainActivity` scan summaries, and delete undo messages all delegate to the same function.
+
+**Positive Verifications:**
+- ✅ Locale-aware formatting: `Locale.getDefault()` used in `String.format()` — decimal separators adapt to user locale
+- ✅ Binary thresholds (1024-based) used consistently — matches Android/file manager convention
+- ✅ Single decimal place (`%.1f`) for all units > bytes — appropriate precision for file sizes
+- ✅ Zero handled correctly: `formatBytes(0)` returns `"0 B"` (confirmed by `UndoHelperTest.kt:10`)
+- ✅ Unit labels use decimal convention (KB/MB/GB) while using binary thresholds — this is the standard Android convention (matching `Formatter.formatFileSize()` behavior)
+
+> **F-079** | Severity: **LOW** | Confidence: **MEDIUM**
+> **Title:** `formatBytes()` does not handle negative byte values
+> **Section:** §J1 — Number & Data Formatting
+> **Finding:** `UndoHelper.formatBytes()` at `UndoHelper.kt:51-59` has no guard for negative `bytes` values. While file sizes should never be negative, the function is called with computed values (e.g., `stats.totalSize`, `list.sumOf { it.size }`) and delta calculations. A negative value would produce confusing output like `"-1.5 MB"` instead of being clamped or flagged.
+> **Why it matters:** Defensive formatting prevents confusing display if upstream data is ever corrupted or if a subtraction (e.g., freed space delta) produces a negative value.
+> **Recommendation:** Add `if (bytes < 0) return "0 B"` or `val abs = bytes.coerceAtLeast(0L)` as the first line.
+> **Effort:** LOW
+> **Confidence:** MEDIUM — Source: [CODE] — Negative input is unlikely but not impossible in delta scenarios.
+
+#### Percentage Calculations
+
+Dashboard storage percentage (`StorageDashboardFragment.kt:71`):
+```kotlin
+val usedPct = if (totalBytes > 0) ((usedBytes * 100.0) / totalBytes).toInt() else 0
+```
+
+Category breakdown percentage (`StorageDashboardFragment.kt:177, 207`):
+```kotlin
+val pct = if (totalSize > 0) ((catSize * 100.0) / totalSize).toInt() else 0
+```
+
+**Positive Verifications:**
+- ✅ Division-by-zero guarded with `if (totalSize > 0)` checks
+- ✅ Uses `Double` arithmetic (`* 100.0`) before `.toInt()` — no integer overflow risk
+- ✅ Percentage displayed alongside absolute values (e.g., `"12 files, 450.2 MB (34%)"`) — good practice
+
+> **F-080** | Severity: **LOW** | Confidence: **HIGH**
+> **Title:** Category percentages use `toInt()` truncation — small categories may show 0%
+> **Section:** §J1 — Number & Data Formatting
+> **Finding:** In `StorageDashboardFragment.kt:177` and `:207`, category percentages are truncated via `.toInt()` (floor). A category with 0.8% of storage shows as `(0%)`, which misleads users into thinking the category occupies zero space when it doesn't. With 8 categories, multiple small categories can all show 0%, and the displayed percentages may sum to well under 100%.
+> **Why it matters:** Users rely on percentages to understand storage distribution. Showing `0%` for non-empty categories is confusing — especially next to a visible progress bar that shows a sliver.
+> **Recommendation:** Use `Math.round()` instead of `.toInt()`, and clamp to at least 1% for non-zero categories:
+> ```kotlin
+> val pct = if (totalSize > 0 && catSize > 0)
+>     ((catSize * 100.0) / totalSize).roundToInt().coerceAtLeast(1)
+> else 0
+> ```
+> **Effort:** LOW
+> **Confidence:** HIGH — Source: [CODE]
+
+#### Date Formatting Inconsistency
+
+User-facing date formats across the app:
+
+| Location | Format | Locale |
+|----------|--------|--------|
+| `FileItemUtils.kt:231` (file lists) | `"dd MMM yyyy"` | `Locale.getDefault()` |
+| `FileViewerFragment.kt:206` (viewer) | `"yyyy-MM-dd HH:mm"` | `Locale.getDefault()` |
+| `CloudFileAdapter.kt:93` (cloud) | `DateFormat.SHORT` | System default |
+| `ScanHistoryManager.kt:137` (AV) | `"MMM dd, yyyy HH:mm"` | `Locale.getDefault()` |
+| `ScanHistoryManager.kt:142` (AV) | `"MMM dd, yyyy"` | `Locale.getDefault()` |
+| `BatchRenameDialog.kt:278` (rename) | `"yyyy-MM-dd"` | `Locale.getDefault()` |
+
+> **F-081** | Severity: **LOW** | Confidence: **HIGH**
+> **Title:** Four different user-facing date formats across the app
+> **Section:** §J1 — Number & Data Formatting
+> **Finding:** File lists show `"dd MMM yyyy"` (e.g., "15 Jan 2025"), the file viewer shows `"yyyy-MM-dd HH:mm"` (e.g., "2025-01-15 14:30"), the cloud browser uses system short format (e.g., "1/15/25"), and antivirus history uses `"MMM dd, yyyy"` (e.g., "Jan 15, 2025"). A user navigating from browse → viewer → cloud sees three different date styles for the same concept (file modification date).
+> **Why it matters:** Inconsistent date formatting increases cognitive load and feels unpolished. Users must mentally re-parse dates in each context.
+> **Recommendation:** Standardize on two formats: (1) `"dd MMM yyyy"` for date-only display, (2) `"dd MMM yyyy HH:mm"` for date+time. Create a `DateFormatUtils` object with `formatDate()` and `formatDateTime()` methods using ThreadLocal `SimpleDateFormat`. The cloud adapter (`CloudFileAdapter.kt:93`) is the only location using `DateFormat.getDateInstance()` — switch it to the shared format.
+> **Effort:** MEDIUM
+> **Confidence:** HIGH — Source: [CODE]
+
+### Step 11.2 — §J2: Data Visualization Quality
+
+#### Storage Dashboard Category Breakdown
+
+`StorageDashboardFragment.kt:148-281` builds a category breakdown with:
+- Color dot indicator per category
+- Category name + emoji + file count + size + percentage
+- Horizontal `ProgressBar` showing proportion
+
+**Positive Verifications:**
+- ✅ Each category has a distinct brand color (`categoryColorRes` map) — 8 unique colors
+- ✅ Progress bars use category-specific `progressTintList` — no ambiguity
+- ✅ Empty state handled: shows "No scan data" when `catMap.isEmpty()`
+- ✅ View recycling with in-place updates when category keys are unchanged — avoids layout thrashing
+- ✅ Categories sorted by descending total size — most impactful shown first
+
+> **F-082** | Severity: **LOW** | Confidence: **HIGH**
+> **Title:** Dashboard category visualization lacks a total/summary row
+> **Section:** §J2 — Data Visualization Quality
+> **Finding:** `StorageDashboardFragment.kt` builds individual category rows showing count, size, and percentage for each category, but there is no summary row showing the total scanned size or total file count at the bottom of the category list. The storage header shows *device* usage (used/total), but the category breakdown reflects *scanned files* which is a subset. The user cannot quickly verify what fraction of device storage the scanned files represent.
+> **Why it matters:** Without a total row, users may assume the category percentages represent all device storage, when they only represent scanned files. This is a data communication gap.
+> **Recommendation:** Add a summary row at the bottom of `buildCategoryRows()` showing: `"Total scanned: 14,523 files • 45.2 GB"`. This anchors the percentages and gives users a clear mental model.
+> **Effort:** LOW
+> **Confidence:** HIGH — Source: [CODE]
+
+#### Arborescence Tree Visualization
+
+`ArborescenceView.kt` (1,235 LOC) is a fully custom Canvas-drawn tree visualization showing directory hierarchy. This is the app's most distinctive data visualization.
+
+**Positive Verifications:**
+- ✅ Custom Canvas rendering with proper measurement, layout, and draw phases
+- ✅ Pinch-to-zoom and pan supported
+- ✅ Node sizes displayed with `formatSize()` delegating to centralized `UndoHelper.formatBytes()`
+- ✅ Pluralized file counts via `getQuantityString()` — proper i18n
+- ✅ Accessibility: content descriptions set on root with file count and total size
+- ✅ Filter by category/extension supported
+- ✅ Expanded state preservation across configuration changes
+
+#### Progress Indicators
+
+Scan progress (`MainActivity.kt:474-486`):
+- Indeterminate mode during indexing (`progressPercent < 0`)
+- Determinate with `setProgressCompat(percent, true)` during later phases
+- Percentage text displayed alongside bar
+
+Antivirus scan (`AntivirusFragment.kt:149-155`):
+- Determinate `ProgressBar` with percentage text
+- Phase description text updated during scan
+
+**Positive Verifications:**
+- ✅ Material `LinearProgressIndicator` with smooth animation (`setProgressCompat` with `animated = true`)
+- ✅ Indeterminate → determinate transition handled correctly
+- ✅ Percentage text accompanies progress bar — no ambiguous "loading" states
+
+### Step 11.3 — §J3: Asset Management
+
+#### Thumbnail Loading via Glide
+
+`FileItemUtils.loadThumbnail()` (`FileItemUtils.kt:128-199`) handles all file list thumbnails:
+
+| File Type | Strategy | Placeholder | Error Fallback |
+|-----------|----------|-------------|----------------|
+| Image | `Glide.load(file)` with `CenterCrop + RoundedCorners` | `ic_image` | `ic_image` |
+| Video | `Glide.load(file)` with `CenterCrop + RoundedCorners` | `ic_video` | `ic_video` |
+| Audio | `Glide.load(uri)` (album art) with `CenterCrop + RoundedCorners` | `ic_audio` | `ic_audio` |
+| APK | `Glide.load(uri)` (app icon) | `ic_apk` | `ic_apk` |
+| Others | Category vector icon with tint | N/A | N/A |
+
+**Positive Verifications:**
+- ✅ Placeholder images shown during load — no blank thumbnails
+- ✅ Error fallback set for all Glide loads — graceful degradation
+- ✅ `CenterCrop` + `RoundedCorners` for consistent visual treatment
+- ✅ Rich thumbnails conditional on `showRichThumbnails` parameter (tied to `ViewMode`)
+- ✅ `Glide.with(ctx).clear(imageView)` called on fallback path — prevents stale thumbnails in recycled views
+- ✅ File existence checked before Glide load (`file.exists()`)
+- ✅ Accessibility: `contentDescription` set on all thumbnail ImageViews
+
+#### File Preview Dialog
+
+`FilePreviewDialog.kt:107` uses Glide for full-size image preview but:
+
+> **F-083** | Severity: **LOW** | Confidence: **HIGH**
+> **Title:** `FilePreviewDialog` Glide load missing placeholder and error fallback
+> **Section:** §J3 — Asset Management
+> **Finding:** `FilePreviewDialog.kt:107-109` loads a full-size image via `Glide.with(context).load(item.file).into(imageView)` without `.placeholder()` or `.error()` callbacks. If the image fails to load (corrupted file, unsupported format), the ImageView shows nothing — the dialog appears empty with no feedback. Compare with `FileItemUtils.loadThumbnail()` which correctly sets both `.placeholder()` and `.error()` on every Glide call.
+> **Why it matters:** A user tapping a corrupted image sees an empty dialog with no indication of what went wrong. This is a dead-end interaction.
+> **Recommendation:** Add `.placeholder(R.drawable.ic_image)` and `.error(R.drawable.ic_image)` to the Glide chain, and consider adding an error listener to show a "Cannot preview this file" message.
+> **Effort:** LOW
+> **Confidence:** HIGH — Source: [CODE]
+
+#### FileViewer Glide Load
+
+`FileViewerFragment.kt:230-232`:
+```kotlin
+Glide.with(this).load(file).into(binding.ivImage)
+```
+
+> **F-084** | Severity: **LOW** | Confidence: **HIGH**
+> **Title:** `FileViewerFragment` image load missing placeholder, error fallback, and size constraint
+> **Section:** §J3 — Asset Management
+> **Finding:** `FileViewerFragment.kt:230-232` loads images via Glide with no `.placeholder()`, `.error()`, or `.override()` size constraint. For very large images (e.g., 8K photos, panoramas), Glide will attempt to decode at full resolution into the ImageView, risking OOM on constrained devices. The `FileItemUtils.loadThumbnail()` pattern with placeholders and error handling is not followed here.
+> **Why it matters:** (1) No placeholder means a blank screen during load of large images. (2) No size constraint means potential OOM crashes for very large images. (3) No error callback means corrupted images show nothing.
+> **Recommendation:** Add `.placeholder(R.drawable.ic_image)`, `.error(R.drawable.ic_image)`, and consider `.override(Target.SIZE_ORIGINAL)` with a `RequestListener` to handle failures. For OOM protection, consider setting a maximum decoded bitmap size.
+> **Effort:** LOW
+> **Confidence:** HIGH — Source: [CODE]
+
+#### No GlideModule Configuration
+
+No custom `GlideModule` (or `@GlideModule` annotated class) exists in the project. Glide runs with default configuration.
+
+**Assessment:** For a file manager that may display thousands of thumbnails, the default Glide configuration is generally adequate. The `GlideModule` is optional — default memory cache (LRU based on screen dimensions) and disk cache (250MB internal) are reasonable. **No finding needed** — this is appropriate for the app's scale.
+
+### Step 11.4 — §J4: Real-Time Data Freshness
+
+#### Scan Progress — LiveData (Main Scan)
+
+The main file scan uses `LiveData<ScanState>` observed via `viewLifecycleOwner` in `MainActivity.kt:214+`. Progress updates flow reactively from `MainViewModel` → `_scanState.postValue()` → UI observer. This is lifecycle-aware and efficient.
+
+**Positive Verification:** ✅ Reactive, lifecycle-aware, no polling.
+
+#### Antivirus Scan Progress — Handler Polling
+
+Already captured in **F-078** (Phase 10): `AntivirusFragment.kt:60-78` polls `ScanService` static `@Volatile` properties every 500ms via `Handler.postDelayed`. This is the only polling-based data freshness pattern in the app.
+
+#### Storage Dashboard — Static Snapshot
+
+`StorageDashboardFragment` reads `StatFs` once in `onViewCreated()` and observes `LiveData` for scan results. The device storage values are a point-in-time snapshot.
+
+> **F-085** | Severity: **POLISH** | Confidence: **MEDIUM**
+> **Title:** Dashboard storage stats are a one-time snapshot with no staleness indicator
+> **Section:** §J4 — Real-Time Data Freshness
+> **Finding:** `StorageDashboardFragment.kt:67-71` reads `StatFs` once in `onViewCreated()`. If the user deletes files via another app or the system frees cache, the dashboard shows stale storage values until the fragment is recreated. There is no "last updated" timestamp or pull-to-refresh gesture on the dashboard. The category breakdown updates reactively via `LiveData`, but the device storage header does not.
+> **Why it matters:** Users expect a dashboard to reflect current reality. Stale storage data after a cleanup operation performed elsewhere could confuse users.
+> **Recommendation:** Either (1) re-read `StatFs` in `onResume()` to refresh on fragment return, or (2) add a subtle "updated just now" indicator. Option 1 is simpler and covers the common case.
+> **Effort:** LOW
+> **Confidence:** MEDIUM — Source: [CODE] — The staleness window is typically short (user must leave and return).
+
+#### Cloud Browser — On-Demand Loading
+
+`CloudBrowserFragment` loads cloud file listings on-demand when the user navigates directories. There is no auto-refresh or polling for remote changes. This is appropriate for the use case — cloud file listings are not expected to auto-update.
+
+**Positive Verification:** ✅ On-demand loading is the correct pattern for cloud browsing.
+
+---
+
+### Phase 11 — Positive Verification Summary
+
+| Area | Verdict |
+|------|---------|
+| Centralized `formatBytes()` used everywhere | ✅ Excellent — single source of truth |
+| Locale-aware number formatting | ✅ Correct — `Locale.getDefault()` used |
+| Division-by-zero guards on percentages | ✅ Present on all percentage calculations |
+| Glide thumbnail loading with placeholders + error fallbacks | ✅ Well-implemented in `FileItemUtils` |
+| Glide view recycling cleanup (`Glide.clear()`) | ✅ Correct |
+| Category breakdown sorted by size, colored, with progress bars | ✅ Good data communication |
+| Arborescence tree: custom Canvas visualization | ✅ Distinctive, well-implemented |
+| Scan progress: indeterminate → determinate transition | ✅ Proper Material pattern |
+| LiveData-based reactive updates for main scan | ✅ Lifecycle-aware |
+| Cloud browser on-demand loading | ✅ Appropriate pattern |
+| File existence checked before Glide load | ✅ Defensive |
+| Accessibility descriptions on all thumbnails | ✅ Thorough |
+
+---
+
+### Phase 11 — Cumulative Finding Count
+
+| Severity | P1 | P2 | P3 | P4 | P5 | P6 | P7 | P8 | P9 | P10 | P11 | Total |
+|----------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
+| CRITICAL | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| HIGH | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 4 |
+| MEDIUM | 6 | 2 | 5 | 3 | 0 | 1 | 2 | 2 | 0 | 3 | 0 | 24 |
+| LOW | 11 | 6 | 5 | 5 | 6 | 3 | 3 | 3 | 3 | 4 | 5 | 54 |
+| POLISH | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **7** | **6** | **83** |
+
+**Next: Phase 12 — Specialized Domain Depths (Category K)**
+
+Awaiting confirmation to proceed with Phase 12, or to fix findings from Phase 11.
