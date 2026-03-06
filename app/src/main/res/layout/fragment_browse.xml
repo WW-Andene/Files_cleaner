@@ -7,12 +7,52 @@
     android:orientation="vertical"
     android:background="@color/surfaceBase">
 
+    <!-- Header card — matches Duplicates/Large/Junk style -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.FileCleaner.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_lg"
+        app:cardCornerRadius="@dimen/radius_header"
+        app:cardElevation="@dimen/elevation_none"
+        app:cardBackgroundColor="@color/colorPrimaryContainer"
+        app:strokeWidth="@dimen/stroke_none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingVertical="@dimen/spacing_md">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/browse_header_title"
+                android:textAppearance="@style/TextAppearance.FileCleaner.Title"
+                android:textColor="@color/colorOnPrimaryContainer"
+                android:maxLines="1"
+                android:accessibilityHeading="true" />
+
+            <TextView
+                android:id="@+id/tv_browse_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/browse_header_subtitle"
+                android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+                android:textColor="@color/colorOnPrimaryContainer"
+                android:alpha="0.75"
+                android:layout_marginTop="@dimen/spacing_xs" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Search bar -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_lg"
-        android:layout_marginTop="@dimen/spacing_lg"
+        android:layout_marginTop="@dimen/spacing_sm"
         android:contentDescription="@string/a11y_search_files"
         app:startIconDrawable="@drawable/ic_search"
         app:endIconMode="clear_text"

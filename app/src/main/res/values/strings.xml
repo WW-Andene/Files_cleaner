@@ -72,6 +72,8 @@
     <string name="settings_desc">Preferences &amp; configuration</string>
 
     <!-- Browse -->
+    <string name="browse_header_title">Browse Files</string>
+    <string name="browse_header_subtitle">Explore and manage your storage</string>
     <string name="all_files">All files</string>
     <string name="cat_recent">\uD83D\uDD52 Recent (7 days)</string>
     <string name="cat_favorites">\u2B50 Favorites</string>
