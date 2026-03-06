@@ -313,7 +313,8 @@ object SignatureScanner {
 
             // F-042: Read line-by-line with early exit instead of loading entire file
             file.bufferedReader(Charsets.UTF_8).use { reader ->
-                reader.forEachLine { line ->
+                var line = reader.readLine()
+                while (line != null) {
                     for (pattern in DANGEROUS_SCRIPT_PATTERNS) {
                         if (pattern.containsMatchIn(line)) {
                             results.add(
@@ -330,6 +331,7 @@ object SignatureScanner {
                             return
                         }
                     }
+                    line = reader.readLine()
                 }
             }
         } catch (_: Exception) {
