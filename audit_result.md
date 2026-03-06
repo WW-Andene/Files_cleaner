@@ -4361,6 +4361,137 @@ All file data is held in memory as `List<FileItem>`. A device with 200,000+ file
 | POLISH | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 2 |
 | **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **7** | **6** | **1** | **6** | **90** |
 
-**Next: Phase 14 — Cross-Cutting Concern Map (§VIII)**
+---
 
-Awaiting confirmation to proceed with Phase 14, or to fix findings from Phase 13.
+## PHASE 14 — CROSS-CUTTING CONCERN MAP (§VIII)
+
+*Check every known compound failure chain across all 90 findings.*
+
+### Chain 1: Validation Gap → Data Formatting → User Decisions
+
+**Findings involved:** F-079 (negative bytes), F-080 (percentage truncation), F-082 (no total row)
+
+**Chain:** If `formatBytes()` receives a negative value (F-079), it displays misleading sizes like "-1.5 MB". This combines with percentage truncation (F-080) where small categories show 0%. Without a total row (F-082), users cannot cross-check whether the individual percentages make sense. The compound effect: users could make deletion decisions based on distorted data — a category appearing as "0%" could still contain important files.
+
+**Escalated severity:** The individual findings are all LOW, but the chain — distorted sizes + truncated percentages + no cross-reference — is **MEDIUM** in combination. Users make irreversible deletion decisions based on this data.
+
+**Mitigation priority:** Fix F-079 (negative guard) and F-080 (round-to-1%) first — these prevent data misrepresentation. F-082 (total row) is a nice-to-have anchor.
+
+---
+
+### Chain 2: Hardcoded Strings → i18n Block → Market Limitation
+
+**Findings involved:** F-088 (StorageOptimizer hardcoded strings), F-089 (DualPaneFragment hardcoded label), F-092 (no i18n infrastructure)
+
+**Chain:** The app's string resource system is 90% complete — `strings.xml` covers most UI text. But F-088 and F-089 create hard blocks for localization. Even if someone translates all of `strings.xml`, these two files would still show English. Combined with F-092 (no RTL, no translation dirs), the app is locked out of non-English markets.
+
+**Escalated severity:** Individual findings are LOW-MEDIUM, but the chain is **MEDIUM** — it blocks a high-impact growth lever (global distribution) with only LOW-effort fixes needed.
+
+**Mitigation priority:** Fix F-088 and F-089 (move strings to resources) — this is 30 minutes of work that unblocks the entire i18n pipeline.
+
+---
+
+### Chain 3: OAuth Deep Link Hijack → Token Storage → Credential Exposure
+
+**Findings involved:** F-037 (OAuth deep link hijack, HIGH), F-027 (CrashReporter token plaintext, HIGH)
+
+**Chain:** F-037 describes how a malicious app could intercept the OAuth redirect and steal the authorization code. F-027 describes the CrashReporter GitHub token stored in plaintext SharedPreferences. While these are different tokens (OAuth vs GitHub API), they share a pattern: credentials stored or transmitted without adequate protection. If a device is rooted (which `AppIntegrityScanner` checks), both the OAuth tokens in EncryptedSharedPreferences and the plaintext GitHub token become accessible.
+
+**Escalated severity:** Already HIGH individually. The compound effect is that **two independent credential vectors** exist — cloud provider OAuth and GitHub crash reporting. An attacker with root access gets both.
+
+**Mitigation priority:** F-027 is the lower-hanging fix — move the GitHub token to `EncryptedSharedPreferences` (the same mechanism already used for cloud credentials).
+
+---
+
+### Chain 4: SFTP Mutex Lock → UI Thread → ANR Risk
+
+**Findings involved:** F-013 (SftpProvider Mutex during I/O, HIGH), F-078 (AntivirusFragment Handler polling, MEDIUM)
+
+**Chain:** F-013 describes the SFTP provider holding a coroutine Mutex during all I/O operations, serializing all transfers. F-078 describes the antivirus scanner polling via Handler rather than LiveData. While these are in different features, they share a pattern: blocking patterns that don't follow the app's otherwise reactive architecture. If a user initiates both a cloud SFTP operation and an antivirus scan simultaneously, the Handler-based polling (F-078) continues consuming UI thread cycles while SFTP operations queue up behind the Mutex (F-013).
+
+**Escalated severity:** The compound effect is **MEDIUM** — unlikely to cause a crash but represents two architectural deviations from the reactive pattern used everywhere else.
+
+**Mitigation priority:** F-078 (replace polling with LiveData) is the easier fix and aligns with the existing pattern.
+
+---
+
+### Chain 5: Glide Missing Safeguards → OOM → Viewer Crash
+
+**Findings involved:** F-083 (FilePreviewDialog no placeholder/error), F-084 (FileViewerFragment no size constraint)
+
+**Chain:** F-083 (preview dialog) and F-084 (file viewer) both load images via Glide without the safeguards present in `FileItemUtils.loadThumbnail()`. If a user opens a very large image (e.g., 50MP panorama) via the viewer (F-084), Glide attempts full-resolution decode with no `override()` constraint, risking OOM. If OOM occurs, the preview dialog (F-083) has no error callback — it shows an empty dialog. The user taps preview → blank screen → retries → OOM crash.
+
+**Escalated severity:** Individual findings are LOW, but the chain is **MEDIUM** — a predictable user workflow (browse → tap large image → preview) can lead to OOM crash with no error feedback.
+
+**Mitigation priority:** Fix F-084 first (add `.override()` size constraint) as it's the OOM trigger. F-083 (error callback) prevents the dead-end UX.
+
+---
+
+### Chain 6: Theme Completeness → Accessibility → Custom View Gap
+
+**Findings involved:** F-065 (ArborescenceView no ExploreByTouchHelper, HIGH), multiple LOW accessibility findings in P8
+
+**Chain:** The app has excellent accessibility across standard views — TalkBack descriptions, state descriptions, focus order, reduced motion support. But F-065 creates a total accessibility gap for the tree visualization, the app's most distinctive feature. This is not a gradual degradation — screen reader users go from "fully supported" in file lists to "completely inaccessible" in the tree view. The contrast makes the gap more jarring.
+
+**Escalated severity:** Already HIGH individually. The compound effect reinforces the priority — the tree view is the one feature where the app differentiates, and it's the one feature that's inaccessible.
+
+**Mitigation priority:** F-065 is the single most impactful accessibility fix in the entire audit.
+
+---
+
+### Chain 7: Date Format Inconsistency → Cloud Adapter → User Confusion
+
+**Findings involved:** F-081 (4 different date formats), F-092 (locale-specific search parsing)
+
+**Chain:** The user sees dates in 4 different formats as they navigate the app (F-081). When they try to search by date, the search parser uses `Locale.US` format (F-092), which may not match any of the displayed formats. A user who sees "15 Jan 2025" in file lists cannot use that format in search — they must type "2025-01-15".
+
+**Escalated severity:** Individual findings are LOW. The compound effect is **LOW-MEDIUM** — a usability friction that's confusing but not harmful.
+
+---
+
+### Chains NOT Present (Confirmed Absent)
+
+| Chain Pattern | Status | Reason |
+|--------------|--------|--------|
+| Floating-point precision (§A1 → §J1) | ✅ Not present | File sizes use `Long` (integer bytes), percentages are display-only |
+| Stale closure cascades (§A6 → §B1) | ✅ Not present | LiveData observers are lifecycle-bound, no stale closure risk |
+| AI output injection (§K5 → §C2) | ✅ Not applicable | No AI/LLM integration |
+| Design-nature mismatch (§E8 → §E9) | ✅ Not present | Raccoon personality consistently applied across UI |
+| Delight debt (§F6 → §L5) | ✅ Not present | `MotionUtil` provides consistent, well-implemented delight layer |
+
+---
+
+### Phase 14 — Cross-Cutting Findings Summary
+
+| Chain | Involved Findings | Individual Max | Escalated | Priority |
+|-------|-------------------|---------------|-----------|----------|
+| 1. Data distortion → deletion decisions | F-079, F-080, F-082 | LOW | **MEDIUM** | Fix F-079, F-080 |
+| 2. Hardcoded strings → i18n block | F-088, F-089, F-092 | MEDIUM | **MEDIUM** | Fix F-088, F-089 |
+| 3. Dual credential exposure | F-037, F-027 | HIGH | **HIGH** | Fix F-027 |
+| 4. Blocking patterns (SFTP + polling) | F-013, F-078 | HIGH | **MEDIUM** (compound) | Fix F-078 |
+| 5. Glide OOM → blank preview | F-083, F-084 | LOW | **MEDIUM** | Fix F-084 |
+| 6. Tree view accessibility gap | F-065 + P8 | HIGH | **HIGH** | Fix F-065 |
+| 7. Date formats → search mismatch | F-081, F-092 | LOW | **LOW-MEDIUM** | Fix F-081 |
+
+**Key Takeaway:** The 4 HIGH findings (F-013, F-027, F-037, F-065) are all independent — no single chain combines to create a CRITICAL compound failure. This is a strong sign of good architectural separation. The most actionable compound chains are #1 (data distortion, 3 easy fixes) and #2 (i18n block, 2 easy fixes).
+
+---
+
+### Phase 14 — No New Finding IDs
+
+Phase 14 escalates existing findings via compound analysis — no new F-numbers are assigned. The escalated severities are noted above for prioritization purposes.
+
+### Cumulative Finding Count (unchanged from Phase 13)
+
+| Severity | Total |
+|----------|-------|
+| CRITICAL | 0 |
+| HIGH | 4 |
+| MEDIUM | 25 |
+| LOW | 59 |
+| POLISH | 2 |
+| **Grand Total** | **90** |
+
+**Next: Phase 15 — R&D & Feature Improvement (§X)**
+
+Awaiting confirmation to proceed with Phase 15, or to fix findings.
