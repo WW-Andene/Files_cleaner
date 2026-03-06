@@ -9,8 +9,7 @@
 
     <!-- Scan -->
     <string name="scan_storage">Scan Storage</string>
-    <string name="scan_prompt">Tap here to let Raccoon scan your storage</string>
-    <!-- scanning_progress removed: duplicate of scanning_phase_indexing -->
+<!-- scanning_progress removed: duplicate of scanning_phase_indexing -->
     <plurals name="scan_complete">
         <item quantity="one">Ricky is done! %1$d file found (%2$s)</item>
         <item quantity="other">Ricky is done! %1$d files found (%2$s)</item>

@@ -54,7 +54,7 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/spacing_md"
-                        android:text="@string/scan_prompt"
+                        android:text=""
                         android:textAppearance="@style/TextAppearance.FileCleaner.BodyMedium"
                         android:textColor="@color/scanBarText"
                         android:maxLines="1"
