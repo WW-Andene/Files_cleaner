@@ -742,5 +742,80 @@
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
+        <!-- Third row: Settings -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/spacing_md"
+            android:baselineAligned="false">
+
+            <!-- Settings card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_settings"
+                style="@style/Widget.FileCleaner.Card"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:foreground="@drawable/ripple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:nextFocusUp="@id/card_cloud"
+                android:stateListAnimator="@animator/card_state_list_anim"
+                android:contentDescription="@string/settings">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/icon_hub_circle"
+                        android:layout_height="@dimen/icon_hub_circle"
+                        android:background="@drawable/bg_hub_icon_circle"
+                        android:backgroundTint="@color/tintSettings"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="@dimen/hub_card_icon_inner"
+                            android:layout_height="@dimen/hub_card_icon_inner"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_settings"
+                            android:scaleType="centerInside"
+                            android:importantForAccessibility="no"
+                            app:tint="@color/accentOnTintSettings" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:text="@string/settings"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Subtitle"
+                        android:textColor="@color/textPrimary"
+                        android:accessibilityHeading="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_desc"
+                        android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:maxLines="2" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Empty spacer to maintain grid alignment -->
+            <View
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/spacing_sm" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
