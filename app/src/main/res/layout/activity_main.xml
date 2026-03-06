@@ -12,10 +12,12 @@
         android:background="@color/surfaceBase"
         app:elevation="@dimen/elevation_none">
 
-        <!-- Scan status bar — soft container style -->
+        <!-- Scan status bar — soft container style; hidden in idle, shown during scan/result -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/scan_bar_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginHorizontal="@dimen/spacing_lg"
             android:layout_marginTop="@dimen/spacing_sm"
             android:layout_marginBottom="@dimen/spacing_xs"

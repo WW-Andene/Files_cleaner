@@ -226,17 +226,15 @@ class MainActivity : AppCompatActivity() {
             when (state) {
                 is ScanState.Idle     -> {
                     hideScanProgress()
-                    binding.tvScanStatus.text = getString(R.string.scan_prompt)
-                    // F3: Make scan bar tappable to start scan
-                    binding.tvScanStatus.setOnClickListener {
-                        requestPermissionsAndScan()
-                    }
+                    binding.scanBarCard.visibility = View.GONE
                 }
                 is ScanState.Scanning -> {
+                    binding.scanBarCard.visibility = View.VISIBLE
                     showScanProgress(state)
                 }
                 is ScanState.Done     -> {
                     hideScanProgress()
+                    binding.scanBarCard.visibility = View.VISIBLE
                     // §G1: Announce scan completion to accessibility services
                     binding.tvScanStatus.sendAccessibilityEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)
                     val stats = viewModel.storageStats.value
@@ -271,10 +269,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 is ScanState.Cancelled -> {
                     hideScanProgress()
+                    binding.scanBarCard.visibility = View.VISIBLE
                     binding.tvScanStatus.text = getString(R.string.scan_cancelled)
                 }
                 is ScanState.Error    -> {
                     hideScanProgress()
+                    binding.scanBarCard.visibility = View.VISIBLE
                     binding.tvScanStatus.text = getString(R.string.error_scan_failed)
                     Snackbar.make(binding.root,
                         getString(R.string.error_prefix, state.message),
