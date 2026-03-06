@@ -4018,6 +4018,72 @@ Already captured in **F-078** (Phase 10): `AntivirusFragment.kt:60-78` polls `Sc
 | POLISH | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **7** | **6** | **83** |
 
-**Next: Phase 12 — Specialized Domain Depths (Category K)**
+---
 
-Awaiting confirmation to proceed with Phase 12, or to fix findings from Phase 11.
+## PHASE 12 — SPECIALIZED DOMAIN DEPTHS (Category K)
+
+*Activate only the sections relevant to this app's domain classification.*
+
+### Domain Classification Recap
+
+From Phase 0 (§I.1): **Productivity/Utility** — File manager with storage analysis, file operations, cloud browsing, and device security scanning. This is not a financial, medical, gambling, collaborative, or AI-powered app.
+
+### Step 12.1 — §K1: Financial Precision
+**Not applicable.** No monetary values, currency display, or financial calculations in the app. File sizes use binary byte arithmetic (Long), not decimal currency. ✅ Correctly excluded.
+
+### Step 12.2 — §K2: Medical / Health Precision
+**Not applicable.** No health data, dosage calculations, or medical features. ✅ Correctly excluded.
+
+### Step 12.3 — §K3: Probability & Gambling
+**Not applicable.** No RNG, gacha, or probability-based features. The duplicate detection uses MD5 hashing (deterministic), not probabilistic algorithms. ✅ Correctly excluded.
+
+### Step 12.4 — §K4: Real-Time & Collaborative
+**Not applicable.** No multi-user collaboration, conflict resolution, or real-time sync. Cloud features are single-user browse/download/upload. ✅ Correctly excluded.
+
+### Step 12.5 — §K5: AI / LLM Integration
+**Not applicable.** No AI, LLM, or machine learning integration. The "antivirus" scanner (`AppIntegrityScanner.kt`) uses heuristic pattern matching (known package lists, binary path checks, permission analysis) — not AI/ML models. No prompt injection, token cost, or hallucination risks. ✅ Correctly excluded.
+
+### Domain-Adjacent: Security Scanning (Heuristic-Based)
+
+While no §K category directly covers "heuristic security scanning," the `AppIntegrityScanner.kt` (712 LOC) and `AppVerificationScanner.kt` contain embedded reference data that deserves specialized audit attention. This was partially covered in Phase 1 (§A5 — Embedded Data Accuracy), but a domain-depth note is warranted:
+
+> **F-086** | Severity: **LOW** | Confidence: **MEDIUM**
+> **Title:** Malicious package list and root binary paths are static — no update mechanism
+> **Section:** §K (Domain-Adjacent) — Security Scanning
+> **Finding:** `AppIntegrityScanner.kt:36-73` contains hardcoded lists: `ROOT_BINARIES` (12 paths), `ROOT_PACKAGES` (12 packages), `KNOWN_MALICIOUS_PACKAGES` (12 packages), and `EMULATOR_INDICATORS` (14 strings). These lists are baked into the APK at build time with no mechanism for remote updates. New root methods (e.g., KernelSU, APatch) and new malware packages will not be detected until the user updates the app.
+> **Why it matters:** Security scanning tools create user trust. Outdated detection lists erode that trust over time and give users a false sense of security. The current lists are reasonable for 2024-2025 but will age.
+> **Recommendation:** This is a **known architectural limitation** consistent with the app's constraints (no backend server). Document the limitation in-app (e.g., "Definitions last updated: [build date]") so users understand the scan reflects a point-in-time snapshot. For a future evolution, consider a lightweight JSON definition file that could be fetched from a GitHub Releases endpoint.
+> **Effort:** LOW (documentation) / HIGH (remote update mechanism)
+> **Confidence:** MEDIUM — Source: [CODE] — This is an inherent tradeoff of no-backend architecture, not a bug.
+
+---
+
+### Phase 12 — Positive Verification Summary
+
+| Area | Verdict |
+|------|---------|
+| No financial calculations requiring decimal precision | ✅ N/A — correctly absent |
+| No medical/health data handling | ✅ N/A — correctly absent |
+| No probability/RNG features | ✅ N/A — correctly absent |
+| No collaborative/real-time features | ✅ N/A — correctly absent |
+| No AI/LLM integration | ✅ N/A — correctly absent |
+| Security scanning: heuristic pattern matching (deterministic) | ✅ Appropriate for scope |
+| MD5 duplicate detection: deterministic hash grouping | ✅ No probabilistic false positives |
+| File size arithmetic: `Long` throughout | ✅ No overflow risk for typical devices (< 9.2 EB) |
+
+---
+
+### Phase 12 — Cumulative Finding Count
+
+| Severity | P1 | P2 | P3 | P4 | P5 | P6 | P7 | P8 | P9 | P10 | P11 | P12 | Total |
+|----------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-------|
+| CRITICAL | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| HIGH | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 4 |
+| MEDIUM | 6 | 2 | 5 | 3 | 0 | 1 | 2 | 2 | 0 | 3 | 0 | 0 | 24 |
+| LOW | 11 | 6 | 5 | 5 | 6 | 3 | 3 | 3 | 3 | 4 | 5 | 1 | 55 |
+| POLISH | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 |
+| **Total** | **18** | **8** | **12** | **8** | **6** | **4** | **5** | **6** | **3** | **7** | **6** | **1** | **84** |
+
+**Next: Phase 13 — Operations, i18n & Projections (Categories L3–L5, M, N, O)**
+
+Awaiting confirmation to proceed with Phase 13, or to fix findings from Phase 12.
