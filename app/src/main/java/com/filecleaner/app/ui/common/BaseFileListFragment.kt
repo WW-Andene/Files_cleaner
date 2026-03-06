@@ -141,6 +141,7 @@ abstract class BaseFileListFragment : Fragment() {
         adapter = FileAdapter(selectable = true) { sel ->
             selected = sel
             selectionBackCallback.isEnabled = sel.isNotEmpty()
+            binding.btnActionsMenu.visibility = if (sel.isNotEmpty()) View.VISIBLE else View.GONE
             if (sel.isNotEmpty()) {
                 binding.btnAction.text = actionLabel(sel.size, UndoHelper.totalSize(sel))
                 binding.btnAction.isEnabled = true
@@ -177,6 +178,9 @@ abstract class BaseFileListFragment : Fragment() {
 
         binding.btnAction.visibility = View.GONE
         binding.btnAction.setOnClickListener { confirmDelete() }
+
+        // Actions popup menu (Select All, Deselect All, Batch Rename, Compress)
+        binding.btnActionsMenu.setOnClickListener { showActionsPopup() }
 
         // Sort spinner
         val sortOptions = listOf(
@@ -372,6 +376,33 @@ abstract class BaseFileListFragment : Fragment() {
             adapter.viewMode = currentViewMode
             applyLayoutManager()
             syncSizeChips()
+            true
+        }
+        popup.show()
+    }
+
+    private fun showActionsPopup() {
+        val popup = PopupMenu(requireContext(), binding.btnActionsMenu)
+        val items = mutableListOf(
+            0 to getString(R.string.select_all),
+            1 to getString(R.string.deselect_all)
+        )
+        if (selected.size >= 2) items.add(2 to getString(R.string.batch_rename))
+        if (selected.isNotEmpty()) items.add(3 to getString(R.string.ctx_compress))
+        items.forEach { (id, label) -> popup.menu.add(0, id, id, label) }
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                0 -> onSelectAll()
+                1 -> adapter.deselectAll()
+                2 -> BatchRenameDialog.show(requireContext(), selected) { renames ->
+                    vm.batchRename(renames)
+                    adapter.deselectAll()
+                }
+                3 -> CompressDialog.show(requireContext(), selected) { archiveName, paths ->
+                    vm.compressFiles(paths, archiveName)
+                    adapter.deselectAll()
+                }
+            }
             true
         }
         popup.show()

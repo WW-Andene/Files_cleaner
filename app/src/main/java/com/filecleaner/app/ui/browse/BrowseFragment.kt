@@ -195,10 +195,9 @@ class BrowseFragment : Fragment() {
         binding.btnToggleExpandCollapse.setOnClickListener { toggleAllFolders() }
         updateExpandCollapseButton()
 
-        // Display options panel
-        binding.btnToggleDisplay.setOnClickListener { toggleDisplayOptionsPanel() }
-        setupDisplayModeChips()
-        setupDisplaySizeChips()
+        // View mode and size popup menus
+        binding.btnViewMode.setOnClickListener { showViewModePopup() }
+        binding.btnSizeMode.setOnClickListener { showSizeModePopup() }
 
         // Swipe drag-to-select touch listener
         setupDragToSelect()
@@ -334,12 +333,6 @@ class BrowseFragment : Fragment() {
         binding.btnToggleFilters.setIconResource(
             if (filtersExpanded) R.drawable.ic_chevron_up else R.drawable.ic_arrow_down
         )
-        // Close display panel when filter panel opens (avoid both taking screen space)
-        if (filtersExpanded && displayOptionsExpanded) {
-            displayOptionsExpanded = false
-            binding.displayOptionsPanel.visibility = View.GONE
-            binding.btnToggleDisplay.setIconResource(R.drawable.ic_arrow_down)
-        }
     }
 
     private fun applyLayoutManager() {
@@ -363,72 +356,29 @@ class BrowseFragment : Fragment() {
         }
     }
 
-    // ── Display Options Panel ────────────────────────────────────────────
+    // ── View Mode & Size PopupMenus ─────────────────────────────────────
 
-    private var displayOptionsExpanded = false
-    private var suppressDisplayModeChipListener = false
-    private var suppressDisplaySizeChipListener = false
-
-    private fun toggleDisplayOptionsPanel() {
-        displayOptionsExpanded = !displayOptionsExpanded
-        binding.displayOptionsPanel.visibility = if (displayOptionsExpanded) View.VISIBLE else View.GONE
-        binding.btnToggleDisplay.setIconResource(
-            if (displayOptionsExpanded) R.drawable.ic_chevron_up else R.drawable.ic_arrow_down
-        )
-        if (displayOptionsExpanded) {
-            syncDisplayModeChips()
-            syncDisplaySizeChips()
-            // Close filter panel when display panel opens
-            if (filtersExpanded) {
-                filtersExpanded = false
-                binding.filterPanel.visibility = View.GONE
-                binding.btnToggleFilters.setIconResource(R.drawable.ic_arrow_down)
-            }
-        }
-    }
-
-    private fun setupDisplayModeChips() {
-        val chipGroup = binding.chipGroupDisplayMode
+    private fun showViewModePopup() {
+        val popup = android.widget.PopupMenu(requireContext(), binding.btnViewMode)
         val styles = listOf(
             getString(R.string.display_mode_list) to ViewMode.Style.LIST,
             getString(R.string.display_mode_grid) to ViewMode.Style.GRID
         )
-        for ((label, style) in styles) {
-            val chip = Chip(requireContext()).apply {
-                text = label
-                isCheckable = true
-                isChecked = currentViewMode.style == style
-                tag = style
-            }
-            chipGroup.addView(chip)
+        styles.forEachIndexed { index, (label, _) ->
+            popup.menu.add(0, index, index, label)
         }
-        chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (suppressDisplayModeChipListener) return@setOnCheckedStateChangeListener
-            if (checkedIds.isNotEmpty()) {
-                val selectedChip = group.findViewById<Chip>(checkedIds.first())
-                val style = selectedChip?.tag as? ViewMode.Style ?: return@setOnCheckedStateChangeListener
-                if (style != currentViewMode.style) {
-                    currentViewMode = ViewMode.of(style, currentViewMode.size)
-                    adapter.viewMode = currentViewMode
-                    applyLayoutManager()
-                }
-            }
+        popup.setOnMenuItemClickListener { item ->
+            val (_, style) = styles[item.itemId]
+            currentViewMode = ViewMode.of(style, currentViewMode.size)
+            adapter.viewMode = currentViewMode
+            applyLayoutManager()
+            true
         }
+        popup.show()
     }
 
-    private fun syncDisplayModeChips() {
-        suppressDisplayModeChipListener = true
-        val chipGroup = binding.chipGroupDisplayMode
-        for (i in 0 until chipGroup.childCount) {
-            val chip = chipGroup.getChildAt(i) as? Chip ?: continue
-            val chipStyle = chip.tag as? ViewMode.Style ?: continue
-            chip.isChecked = currentViewMode.style == chipStyle
-        }
-        suppressDisplayModeChipListener = false
-    }
-
-    private fun setupDisplaySizeChips() {
-        val chipGroup = binding.chipGroupDisplayGridColumns
+    private fun showSizeModePopup() {
+        val popup = android.widget.PopupMenu(requireContext(), binding.btnSizeMode)
         val sizes = listOf(
             getString(R.string.size_xxs) to ViewMode.Size.XXS,
             getString(R.string.size_xs) to ViewMode.Size.XS,
@@ -437,38 +387,17 @@ class BrowseFragment : Fragment() {
             getString(R.string.size_lg) to ViewMode.Size.LG,
             getString(R.string.size_xl) to ViewMode.Size.XL
         )
-        for ((label, size) in sizes) {
-            val chip = Chip(requireContext()).apply {
-                text = label
-                isCheckable = true
-                isChecked = currentViewMode.size == size
-                tag = size
-            }
-            chipGroup.addView(chip)
+        sizes.forEachIndexed { index, (label, _) ->
+            popup.menu.add(0, index, index, label)
         }
-        chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (suppressDisplaySizeChipListener) return@setOnCheckedStateChangeListener
-            if (checkedIds.isNotEmpty()) {
-                val selectedChip = group.findViewById<Chip>(checkedIds.first())
-                val size = selectedChip?.tag as? ViewMode.Size ?: return@setOnCheckedStateChangeListener
-                if (size != currentViewMode.size) {
-                    currentViewMode = ViewMode.of(currentViewMode.style, size)
-                    adapter.viewMode = currentViewMode
-                    applyLayoutManager()
-                }
-            }
+        popup.setOnMenuItemClickListener { item ->
+            val (_, size) = sizes[item.itemId]
+            currentViewMode = ViewMode.of(currentViewMode.style, size)
+            adapter.viewMode = currentViewMode
+            applyLayoutManager()
+            true
         }
-    }
-
-    private fun syncDisplaySizeChips() {
-        suppressDisplaySizeChipListener = true
-        val chipGroup = binding.chipGroupDisplayGridColumns
-        for (i in 0 until chipGroup.childCount) {
-            val chip = chipGroup.getChildAt(i) as? Chip ?: continue
-            val chipSize = chip.tag as? ViewMode.Size ?: continue
-            chip.isChecked = currentViewMode.size == chipSize
-        }
-        suppressDisplaySizeChipListener = false
+        popup.show()
     }
 
     // ── Drag-to-select (swipe finger multi-selection) ───────────────────

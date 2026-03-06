@@ -143,6 +143,23 @@
             app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
             app:iconTint="@color/textSecondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_actions_menu"
+            style="@style/Widget.FileCleaner.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height"
+            android:text="@string/actions_label"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:visibility="gone"
+            app:icon="@drawable/ic_arrow_down"
+            app:iconSize="@dimen/icon_small"
+            app:iconGravity="end"
+            app:iconTint="@color/textSecondary" />
     </LinearLayout>
 
     <!-- Expandable filter panel -->

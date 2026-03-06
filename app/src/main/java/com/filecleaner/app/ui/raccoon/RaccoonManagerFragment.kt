@@ -212,7 +212,7 @@ class RaccoonManagerFragment : Fragment() {
 
     private fun showScanNeeded() {
         Snackbar.make(binding.root, getString(R.string.raccoon_scan_needed), Snackbar.LENGTH_SHORT)
-            .apply { view.rootView.findViewById<View?>(R.id.bottom_nav)?.let { anchorView = it } }
+            .apply { activity?.findViewById<View>(R.id.bottom_nav)?.let { anchorView = it } }
             .show()
     }
 

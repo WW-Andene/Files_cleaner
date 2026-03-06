@@ -36,6 +36,7 @@
     <string name="browse_scan_file_count">%d files</string>
 
     <!-- Actions -->
+    <string name="actions_label">Actions</string>
     <string name="delete_selected">Move selected to Trash</string>
     <string name="clean_selected">Clean selected</string>
     <string name="select_all">Select all</string>

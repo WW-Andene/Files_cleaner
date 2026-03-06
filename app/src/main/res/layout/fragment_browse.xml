@@ -90,69 +90,38 @@
             app:iconTint="@color/textSecondary" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_toggle_display"
+            android:id="@+id/btn_view_mode"
             style="@style/Widget.FileCleaner.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
-            android:text="@string/display_options"
+            android:text="@string/view_mode"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
             android:textColor="@color/textSecondary"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:contentDescription="@string/a11y_display_options"
+            android:contentDescription="@string/a11y_view_mode"
             app:icon="@drawable/ic_arrow_down"
             app:iconSize="@dimen/icon_small"
             app:iconGravity="end"
             app:iconTint="@color/textSecondary" />
 
-    </LinearLayout>
-
-    <!-- Collapsible display options panel -->
-    <LinearLayout
-        android:id="@+id/display_options_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/spacing_lg"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/view_mode"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:textColor="@color/textTertiary"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:layout_marginBottom="@dimen/spacing_xs"
-            android:accessibilityHeading="true" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_display_mode"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_size_mode"
+            style="@style/Widget.FileCleaner.Button.Text"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:selectionRequired="true"
-            app:chipSpacingHorizontal="@dimen/spacing_chip" />
-
-        <!-- Size selector (always visible) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_height"
             android:text="@string/size_label"
-            android:textAppearance="@style/TextAppearance.FileCleaner.Caption"
-            android:textColor="@color/textTertiary"
-            android:layout_marginTop="@dimen/spacing_sm"
-            android:layout_marginBottom="@dimen/spacing_xs"
-            android:accessibilityHeading="true" />
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.FileCleaner.BodySmall"
+            android:textColor="@color/textSecondary"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_arrow_down"
+            app:iconSize="@dimen/icon_small"
+            app:iconGravity="end"
+            app:iconTint="@color/textSecondary" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_display_grid_columns"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:selectionRequired="true"
-            app:chipSpacingHorizontal="@dimen/spacing_chip" />
     </LinearLayout>
 
     <!-- Expandable filter panel -->
