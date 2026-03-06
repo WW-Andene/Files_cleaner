@@ -294,6 +294,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * F-044: Release in-memory file list and tree copies when the system signals
+     * low memory. These are recoverable from the disk cache on next access.
+     * Call from Activity.onTrimMemory() when level >= TRIM_MEMORY_RUNNING_LOW.
+     */
+    fun trimMemory() {
+        if (!_isScanning) {
+            latestFiles = emptyList()
+            latestTree = null
+        }
+    }
+
     // F-022: Direct access — UserPreferences.init() guaranteed by Application.onCreate()
     fun startScan(minLargeFileMb: Int = UserPreferences.largeFileThresholdMb) {
         scanJob?.cancel()

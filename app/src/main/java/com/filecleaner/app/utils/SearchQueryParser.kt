@@ -16,6 +16,11 @@ import java.util.Locale
  * - Plain text — name contains (case-insensitive)
  *
  * Multiple operators can be combined: `>10mb ext:pdf report`
+ *
+ * F-004: Size units use binary (1024-based) multipliers: 1 KB = 1024 bytes,
+ * 1 MB = 1,048,576 bytes, 1 GB = 1,073,741,824 bytes. This is consistent
+ * with how Android reports file sizes and how formatBytes() displays them
+ * throughout the app. Users searching ">1gb" filter at ~1.07 billion bytes.
  */
 object SearchQueryParser {
 
@@ -49,7 +54,7 @@ object SearchQueryParser {
         // Extract and remove operators from query
         var remaining = query
 
-        // Size operators
+        // Size operators — F-004: binary (1024-based) units, consistent with formatBytes()
         SIZE_PATTERN.findAll(query).forEach { match ->
             val op = match.groupValues[1]
             val num = match.groupValues[2].toDoubleOrNull() ?: return@forEach

@@ -361,6 +361,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleOAuthIntent(intent: Intent?) {
         val uri = intent?.data ?: return
+        // F-037: Reject callbacks when no OAuth flow is pending — prevents unsolicited
+        // deep link injection from malicious apps that register the same custom scheme.
+        // Combined with F-028 state validation, this provides defense-in-depth against
+        // authorization code injection. Full mitigation requires Android App Links migration.
+        if (OAuthHelper.getPendingProvider() == null) return
         // F-028: Pass context to validate state parameter (CSRF protection)
         val code = OAuthHelper.parseCallbackCode(uri, this) ?: return
 
@@ -518,5 +523,14 @@ class MainActivity : AppCompatActivity() {
         binding.scanPhaseRow.visibility = View.GONE
         binding.tvScanPercent.visibility = View.GONE
         binding.scanProgressIndicator.isIndeterminate = true
+    }
+
+    // F-044: Release in-memory file list copies when system signals low memory.
+    // Data is recoverable from disk cache on next access.
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            viewModel.trimMemory()
+        }
     }
 }
